@@ -27,7 +27,7 @@ namespace Assets.Scripts.Actions
             //ONLY FOR TARGETINGOPTION.ENEMY SKILLS
             if (skill.Tags.Contains(SKILLTAG.PROJECTILE))
             {
-
+                ;
             }
 
 
@@ -38,7 +38,7 @@ namespace Assets.Scripts.Actions
                 if (!(targetVector.magnitude < 2f))
                 {
                     var minimumDistance = targetVector.normalized;
-                    casterActor.MoveToPosition(casterActor.transform.position + targetVector - minimumDistance, State.Move, () => {
+                    casterActor.MoveToPosition(casterActor.transform.position + targetVector - minimumDistance, MoveState.Move, () => {
                         casterActor.PlayAnimation(skill.AnimationType.ToString(), () => 
                         {
                             onPerformEnd();

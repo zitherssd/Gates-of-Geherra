@@ -11,7 +11,7 @@ namespace Assets
     {
         [SerializeField]
         private Actor baseActor;
-        private State state;
+        private MoveState state;
         private bool isPlayerTeam;
         private GameObject selectionCircle;
         private Vector3 slideTargetPosition;
@@ -22,11 +22,13 @@ namespace Assets
         private Rigidbody rigidbody;
         private CapsuleCollider capsuleCollider;
         private float lastSqrMag;
+        private bool cancelMoveCallback;
         internal bool isBlocking;
 
-        public enum State
+        public enum MoveState
         {
             Idle,
+            Knockback,
             Sliding,
             Move,
             Busy
@@ -37,37 +39,38 @@ namespace Assets
             rigidbody = gameObject.GetComponentInParent<Rigidbody>();
             animator = gameObject.GetComponent<Animator>();
             selectionCircle = GameObject.FindGameObjectWithTag("SelectionCircle");
-            state = State.Idle;
+            state = MoveState.Idle;
         }
 
         private void Update()
         {
             switch (state)
             {
-                case State.Idle:
+                case MoveState.Idle:
                     break;
-                case State.Sliding:
+                case MoveState.Sliding:
 
                     if (rigidbody.velocity.magnitude < 0.01f)
                     {
-                        state = State.Idle;
+                        state = MoveState.Idle;
                         onMoveComplete();
                     }
 
                     break;
-                case State.Busy:
+                case MoveState.Busy:
                     break;
-                case State.Move:
+                case MoveState.Move:
                     var sqrMag = (slideTargetPosition - transform.position).sqrMagnitude;
                     float moveSpeed = 4f;
-                    Debug.Log((slideTargetPosition - transform.position).normalized * moveSpeed * Time.deltaTime);
                     rigidbody.velocity = (slideTargetPosition - transform.position).normalized * moveSpeed;
 
                     if (sqrMag > lastSqrMag)
                     {
                         rigidbody.velocity = Vector3.zero;
-                        state = State.Idle;
-                        onMoveComplete();
+                        state = MoveState.Idle;
+                        if (!cancelMoveCallback)
+                            onMoveComplete();
+                        else return;
                     }
 
                     lastSqrMag = sqrMag;
@@ -163,7 +166,7 @@ namespace Assets
                         animator.Play("HurtGround");
 
                 //Force
-                this.MoveToPosition(transform.position + direction.normalized * force, State.Sliding, () => { animator.Play("Idle"); onKnockbackFinished(); });
+                this.MoveToPosition(transform.position + direction.normalized * force, MoveState.Sliding, () => { animator.Play("Idle"); onKnockbackFinished(); });
 
             }
             else
@@ -171,9 +174,9 @@ namespace Assets
 
         }
 
-        public void MoveToPosition(Vector3 TargetPosition, State state, Action onMoveComplete)
+        public void MoveToPosition(Vector3 TargetPosition, MoveState state, Action onMoveComplete)
         {
-            if (state == State.Sliding)
+            if (state == MoveState.Sliding)
                 rigidbody.velocity = (TargetPosition - transform.position);
 
             lastSqrMag = Mathf.Infinity;
@@ -189,7 +192,7 @@ namespace Assets
             lastSqrMag = Mathf.Infinity;
             this.slideTargetPosition = transform.position + (direction * baseActor.AGI);
             this.onMoveComplete = onMoveComplete;
-            this.state = State.Move;
+            this.state = MoveState.Move;
         }
 
         public void PlayAnimation(string AnimationName, Action onAnimationHitComplete)
@@ -262,5 +265,6 @@ namespace Assets
         {
             return baseActor;
         }
+
     }
 }

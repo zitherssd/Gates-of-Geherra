@@ -66,7 +66,7 @@ namespace Assets.Scripts.Actions
                     forward.Normalize(); right.Normalize();
 
                     var desiredMoveDirection = forward * target.y + right * target.x;
-                    actor.MoveToPosition(desiredMoveDirection * 6 + actor.transform.position, State.Sliding, () =>
+                    actor.MoveToPosition(desiredMoveDirection * 6 + actor.transform.position, MoveState.Sliding, () =>
                     {
                         actor.PlayAnimation("Idle"); 
                     });
