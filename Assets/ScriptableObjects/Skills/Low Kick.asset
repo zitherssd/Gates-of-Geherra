@@ -14,11 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Low Kick
   Rarity: 0
-  TotalUses: 1
-  remainingUses: -1
+  TotalUses: 2
+  remainingUses: -3
   AnimationType: 2
   AttackType: 0
   TargetOption: 1
   Tags: 00000000
-  Power: 4
+  Range: 4
+  Damage: 4
+  PostureDamage: 10
   KnockbackForce: 4

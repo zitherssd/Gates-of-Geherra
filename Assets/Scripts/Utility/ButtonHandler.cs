@@ -5,11 +5,8 @@ using UnityEngine;
 
 public class ButtonHandler : MonoBehaviour
 {
-    [SerializeField]
-    private TextMeshProUGUI SkillName;
-    [SerializeField]
-    private TextMeshProUGUI RemainingUses;
-    [SerializeField]
+    [SerializeField] private TextMeshProUGUI skillName;
+    [SerializeField] private TextMeshProUGUI remainingUses;
 
     public BaseAction referencedAction;
     public BaseSkill referencedSkill;
@@ -17,62 +14,63 @@ public class ButtonHandler : MonoBehaviour
 
     public static void KillAll()
     {
-        var diers = GameObject.FindGameObjectsWithTag("SkillButton");
-        foreach (var dier in diers)
+        var skillButtons = GameObject.FindGameObjectsWithTag("SkillButton");
+        foreach (var button in skillButtons)
         {
-            Destroy(dier);
+            Destroy(button);
         }
+    }
+
+    public void Init()
+    {
+        if(referencedAction != null) SetUIFromAction(referencedAction);
+        if (referencedSkill != null)  SetUIFromAction(referencedSkill);
+        if (referencedReaction != null)  SetUIFromAction(referencedReaction);
+    }
+
+    private void SetUIFromAction(BaseAction action)
+    {
+        if (action != null)
+        {
+            skillName.text = action.Name;
+            string plusSymbol = "+";
+            remainingUses.text = action.TotalUses != 0 ? ConcatWithPlus(plusSymbol, action.remainingUses) : string.Empty;
+            SetButtonInteractable(action);
+        }
+    }
+
+    public void SetRemainingUsesText(string text)
+    {
+        remainingUses.text = text;
+    }
+
+    private string ConcatWithPlus(string symbol, int value)
+    {
+        return new string(symbol[0], value);
+    }
+
+    private void SetButtonInteractable(BaseAction action)
+    {
+        GetComponent<UnityEngine.UI.Button>().interactable = action.HasUsesLeft();
+        
+    }
+
+    public void SetButtonInteractable(bool interactable)
+    {
+        GetComponent<UnityEngine.UI.Button>().interactable = interactable;
     }
 
     public void OnClick()
     {
         KillAll();
-        UIManager.GetInstance().selectedSkill = referencedSkill;
-        UIManager.GetInstance().selectedReaction = referencedReaction;
-        UIManager.GetInstance().CallbackActionSelected();
+        var uiManager = UIManager.GetInstance();
+        uiManager.selectedSkill = referencedSkill;
+        uiManager.selectedReaction = referencedReaction;
+        uiManager.CallbackActionSelected();
     }
 
-    public void Start()
+    private void Update()
     {
-        if (referencedAction != null)
-        {
-            SkillName.text = referencedAction.Name;
-            string plussyombol = "+";
-
-            RemainingUses.text = referencedAction.TotalUses != 0 ? Concatx(plussyombol, referencedAction.remainingUses) : string.Empty;
-            
-            
-            if (referencedAction.TotalUses != 0 && referencedAction.remainingUses == 0)
-                GetComponent<UnityEngine.UI.Button>().interactable = false;
-        }
-        if (referencedSkill != null)
-        {
-            SkillName.text = referencedSkill.Name;
-            string plussyombol = "+";
-
-            RemainingUses.text = referencedSkill.TotalUses != 0 ? Concatx(plussyombol, referencedSkill.remainingUses) : string.Empty;
-            if (referencedSkill.TotalUses != 0 && referencedSkill.remainingUses == 0)
-                GetComponent<UnityEngine.UI.Button>().interactable = false;
-        }
-        if (referencedReaction != null)
-        {
-            SkillName.text = referencedReaction.Name;
-            string plussyombol = "+";
-
-            RemainingUses.text = referencedReaction.TotalUses != 0 ? Concatx(plussyombol, referencedReaction.remainingUses) : string.Empty;
-            if (referencedReaction.TotalUses != 0 && referencedReaction.remainingUses == 0)
-                GetComponent<UnityEngine.UI.Button>().interactable = false;
-        }
-    }
-
-    private string Concatx(string concatee, int repeats)
-    {
-        var orig = concatee;
-        var result = string.Empty;
-        for (int i = 0; i < repeats; i++)
-        {
-            result += orig;
-        }
-        return result;
+        transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one, 0.1f);
     }
 }

@@ -44,7 +44,13 @@ public class UIManager : MonoBehaviour
     public void ChangeStatus(string status)
     {
         Status.text = status;
-        StoneSlab.text += status + Environment.NewLine;
+    }
+
+    public void AddToStoneSlab(string textToAdd)
+    {
+        var previous = StoneSlab.text;
+        StoneSlab.text = textToAdd + Environment.NewLine;
+        StoneSlab.text += previous;
     }
 
     private void Update()
@@ -61,7 +67,7 @@ public class UIManager : MonoBehaviour
         TopTextbox.color = new Color(currentColor.r, currentColor.g, currentColor.b, alpha);
     }
 
-    public List<ButtonHandler> DrawActionsRadiallyOnScreenPoint(Vector2 point, List<BaseAction> actions)
+    public List<ButtonHandler> DrawActionsRadiallyOnScreenPoint(List<BaseAction> actions)
     {
         float radius = 100f;
         var handlers = new List<ButtonHandler>();
@@ -74,11 +80,12 @@ public class UIManager : MonoBehaviour
             float y = radius * Mathf.Sin(Mathf.Deg2Rad * angle);
             Vector2 position = new Vector2(x, y);
 
-            GameObject UISkill = Instantiate(ButtonPrefab, position + point, Quaternion.identity);
-            UISkill.transform.SetParent(GameObject.FindGameObjectWithTag("MainCanvas").transform);
-            UISkill.GetComponent<RectTransform>().position = point + position;
+            GameObject UISkill = Instantiate(ButtonPrefab, position, Quaternion.identity);
+            UISkill.transform.SetParent(GameObject.FindGameObjectWithTag("OriginPoint").transform);
+            UISkill.GetComponent<RectTransform>().localPosition = position;
             var handler = UISkill.GetComponent<ButtonHandler>();
             handler.referencedAction = actions[i];
+            handler.Init();
             handlers.Add(handler);
         }
         return handlers;
@@ -101,18 +108,21 @@ public class UIManager : MonoBehaviour
             List<BaseAction> fakeActions = new List<BaseAction>();
             var activeChar = BattleManager.GetInstance().GetActiveActor();
             var skills = activeChar.GetBaseActor().skills;
-            var originPoint = Camera.main.WorldToScreenPoint(activeChar.transform.position + Vector3.up * 0.5f);
 
             foreach (var skill in skills)
             {
                 fakeActions.Add(skill);
             }
 
-            var buttonHandlers = DrawActionsRadiallyOnScreenPoint(originPoint, fakeActions);
+            var buttonHandlers = DrawActionsRadiallyOnScreenPoint(fakeActions);
             for (int i = 0; i < skills.Count; i++)
             {
+                var invalidReason = "";
+
                 buttonHandlers[i].referencedSkill = skills[i];
                 buttonHandlers[i].referencedAction = null;
+                buttonHandlers[i].SetButtonInteractable(skills[i].IsValid(activeChar, out invalidReason)) ;
+                if (invalidReason != string.Empty) buttonHandlers[i].SetRemainingUsesText(invalidReason);
             }
             this.onActionSelected = onSkillSelected;
             this.waitingForAction = true;
@@ -125,14 +135,13 @@ public class UIManager : MonoBehaviour
         {
             List<BaseAction> fakeReactions = new List<BaseAction>();
             var reactions = actor.GetBaseActor().reactions;
-            var originPoint = Camera.main.WorldToScreenPoint(actor.transform.position + Vector3.up * 0.5f);
 
             foreach (var reaction in reactions)
             {
                 fakeReactions.Add(reaction);
             }
 
-            var buttonHandlers = DrawActionsRadiallyOnScreenPoint(originPoint, fakeReactions);
+            var buttonHandlers = DrawActionsRadiallyOnScreenPoint(fakeReactions);
             for (int i = 0; i < reactions.Count; i++)
             {
                 buttonHandlers[i].referencedReaction = reactions[i];

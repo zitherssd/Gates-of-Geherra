@@ -15,19 +15,28 @@ MonoBehaviour:
   Name: MC
   baseHP: 50
   baseBuildup: 0
-  basePosture: 100
+  basePosture: 50
   Controllable: 1
-  skills:
+  baseSkills:
   - {fileID: 11400000, guid: 9cc21a5b1be74d54c92d4a9df41fe25b, type: 2}
   - {fileID: 11400000, guid: 369a53d3c0b8136438ffa364125fd5f6, type: 2}
-  reactions:
+  - {fileID: 11400000, guid: 1a758131c89d1434a8171a21ef1a94f7, type: 2}
+  baseReactions:
+  - {fileID: 11400000, guid: f272d4950a245d34d9c22f8bc60d7882, type: 2}
   - {fileID: 11400000, guid: e1de275c6a1741e4091bfa7141119117, type: 2}
   - {fileID: 11400000, guid: fb0edb5316194b4469a5c02751a9673a, type: 2}
-  - {fileID: 11400000, guid: f272d4950a245d34d9c22f8bc60d7882, type: 2}
-  currentHp: 44
+  skills:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  reactions:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  currentHp: 50
   currentBuildup: 0
-  currentPosture: 100
+  currentPosture: 50
   ATK: 1
   DEF: 1
-  AGI: 1
+  AGI: 2
   INT: 1

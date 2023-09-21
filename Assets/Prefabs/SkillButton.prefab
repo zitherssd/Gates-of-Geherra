@@ -29,7 +29,7 @@ RectTransform:
   m_GameObject: {fileID: 8699122292447703190}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8699122292997910122}
@@ -119,7 +119,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 8699122292447703189}
   m_OnClick:
     m_PersistentCalls:
@@ -148,10 +148,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e6ea4d4a6dcc0e4f84e9ea3fe9e6c3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SkillName: {fileID: 8699122292997910123}
-  RemainingUses: {fileID: 8699122293257293797}
+  skillName: {fileID: 8699122292997910123}
+  remainingUses: {fileID: 8699122293257293797}
   referencedAction: {fileID: 0}
   referencedSkill: {fileID: 0}
+  referencedReaction: {fileID: 0}
 --- !u!1 &8699122292997910125
 GameObject:
   m_ObjectHideFlags: 0
@@ -322,7 +323,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 11.1}
+  m_AnchoredPosition: {x: 0, y: 14.3}
   m_SizeDelta: {x: 130, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8699122293257293794
@@ -353,7 +354,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: +++
+  m_text: too far
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 967bf664b2a497a4a98b1d3922d23500, type: 2}
   m_sharedMaterial: {fileID: -2192851111158595281, guid: 967bf664b2a497a4a98b1d3922d23500, type: 2}

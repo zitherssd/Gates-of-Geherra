@@ -9,16 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d0c263cb04d7f3408086e343db9bc31, type: 3}
-  m_Name: CommonPunch
+  m_Script: {fileID: 11500000, guid: 6a17dd5c91c8ab94792f1477de4a33e3, type: 3}
+  m_Name: CommonBlock
   m_EditorClassIdentifier: 
-  Name: Weak Jab
+  Name: Block
   Rarity: 0
-  TotalUses: 0
-  remainingUses: 0
-  AnimationType: 1
-  AttackType: 0
-  TargetOption: 1
-  Tags: 00000000
-  Power: 4
-  KnockbackForce: 1
+  TotalUses: 2
+  remainingUses: 2
+  ReactionType: 2

@@ -39,6 +39,21 @@ namespace Assets.Scripts.Actions
             }
         }
 
+        public float PostureModifier(float inputPosture)
+        {
+            switch (ReactionType)
+            {
+                case REACTIONTYPE.Dodge:
+                    return inputPosture * 0f;
+                case REACTIONTYPE.Block:
+                    return inputPosture * 0.75f;
+                case REACTIONTYPE.NONE:
+                    return inputPosture;
+                default:
+                    return inputPosture;
+            }
+        }
+
         public void React(BaseActorBattler actor, Action onReactionComplete)
         {
             switch (ReactionType)
@@ -101,6 +116,19 @@ namespace Assets.Scripts.Actions
             //Show skill name,
             //Certain special effects
         }
+
+        public override bool IsValid(BaseActorBattler caster, out string InvalidReason)
+        {
+            InvalidReason = "";
+            return true;
+        }
+
+        //public new bool HasUsesLeft()
+        //{
+        //    if (TotalUses == 0) return true;
+        //    if (remainingUses > 0) return true;
+        //    else return false;
+        //}
 
         public enum REACTIONTYPE { NONE, Dodge, Block }
 

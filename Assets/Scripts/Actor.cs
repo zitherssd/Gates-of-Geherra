@@ -10,11 +10,16 @@ using UnityEngine;
 public class Actor : ScriptableObject
 {
 
+
+
     public string Name;
     public float baseHP;
     public float baseBuildup;
     public float basePosture;
     public bool Controllable;
+    public List<BaseSkill> baseSkills;
+    public List<BaseReaction> baseReactions;
+
     public List<BaseSkill> skills;
     public List<BaseReaction> reactions;
 
@@ -42,9 +47,20 @@ public class Actor : ScriptableObject
         currentHp -= damage;
         if( currentHp <= 0)
         {
+            currentPosture = 0;
             currentHp = 0;
-
         }
+    }
+
+    public bool DealPostureDamage(float postureDamage)
+    {
+        currentPosture -= postureDamage;
+        if (currentPosture <= 0)
+        {
+            currentPosture = basePosture;
+            return true;
+        }
+        else return false;
     }
 
     public float GetCurrentHP()
@@ -63,18 +79,24 @@ public class Actor : ScriptableObject
         else return false;
     }
 
-    public void Reset()
+    public void Initialize()
     {
         currentHp = baseHP;
         currentBuildup = baseBuildup;
         currentPosture = basePosture;
-        foreach (var skill in skills)
+        skills.Clear();
+        reactions.Clear();
+        foreach (var skill in baseSkills)
         {
-            skill.remainingUses = skill.TotalUses;
+            var clone = Instantiate(skill);
+            clone.remainingUses = clone.TotalUses;
+            skills.Add(clone);
         }
-        foreach (var reaction in reactions)
+        foreach (var reaction in baseReactions)
         {
-            reaction.remainingUses = reaction.TotalUses;
+            var clone = Instantiate(reaction);
+            clone.remainingUses = clone.TotalUses;
+            reactions.Add(clone);
         }
     }
 

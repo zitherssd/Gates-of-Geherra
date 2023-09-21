@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a17dd5c91c8ab94792f1477de4a33e3, type: 3}
   m_Name: CommonDodge
   m_EditorClassIdentifier: 
-  Name: Roll away
+  Name: Roll Away
   Rarity: 0
   TotalUses: 1
-  remainingUses: 1
+  remainingUses: 0
   ReactionType: 1

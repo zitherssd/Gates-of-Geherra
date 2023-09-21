@@ -17,10 +17,11 @@ namespace Assets
         [SerializeField] public List<BaseActorBattler> PlayerActors;
         [SerializeField] public List<BaseActorBattler> EnemyActors;
         private BaseActorBattler activeBattler;
+        private bool repeatTurn;
 
         private void Awake()
         {
-            instance = this;   
+            instance = this;
         }
 
         void Start()
@@ -35,21 +36,21 @@ namespace Assets
             //Assing the enemies. This is mostly done in the inspctor.
             //Units are already spawned.
             //chose dialogue
-            foreach(var actor in PlayerActors)
+            foreach (var actor in PlayerActors)
             {
-                actor.GetBaseActor().Reset();
+                actor.GetBaseActor().Initialize();
                 actor.GetBaseActor().Controllable = true;
             }
             foreach (var actor in EnemyActors)
             {
-                actor.GetBaseActor().Reset();
+                actor.GetBaseActor().Initialize();
                 actor.GetBaseActor().Controllable = false;
             }
         }
 
         private void SetActiveCharacterBattle(BaseActorBattler battler)
         {
-            if(activeBattler != null)
+            if (activeBattler != null)
             {
                 //HideCircle?
             }
@@ -66,7 +67,7 @@ namespace Assets
             {
                 UIManager.GetInstance().ChangeStatus("YOU LOSE");
                 return true;
-             }
+            }
             if (EnemyActors.TrueForAll(actor => actor.GetBaseActor().GetCurrentHP() == 0))
             {
                 UIManager.GetInstance().ChangeStatus("YOU WIN!!");
@@ -77,24 +78,64 @@ namespace Assets
 
         private void ChooseNextActiveCharacter()
         {
-            if (TestBattleOver()){ return; }
+            if (TestBattleOver()) { return; }
 
+            EnemyActors[0].isBlocking = false;
+            PlayerActors[0].isBlocking = false;
+
+            if (!repeatTurn)
+            {
+                HandleRegularTurn();
+            }
+            else
+            {
+                repeatTurn = false;
+                HandleRepeatTurn();
+            }
+        }
+
+        private void HandleRegularTurn()
+        {
             if (activeBattler == PlayerActors[0])
             {
                 UIManager.GetInstance().ChangeStatus("ENEMY TURN");
                 SetActiveCharacterBattle(EnemyActors[0]);
                 state = State.Busy;
-                EnemyActors[0].isBlocking = false;
-                EnemyActors[0].UseSkill(EnemyActors[0].ChooseSkillAtRandom(), () => { ChooseNextActiveCharacter(); });
+
+                var chosenSkill = EnemyActors[0].ChooseValidSkillAtRandomOrReturnNull();
+                if (chosenSkill != null)
+                    EnemyActors[0].UseSkill(chosenSkill, ChooseNextActiveCharacter);
+                else
+                    //Move closer
+                    EnemyActors[0].Move((PlayerActors[0].transform.position - EnemyActors[0].transform.position).normalized, ChooseNextActiveCharacter);
             }
             else
             {
-                PlayerActors[0].isBlocking = false;
                 UIManager.GetInstance().ChangeStatus("PLAYER TURN");
                 SetActiveCharacterBattle(PlayerActors[0]);
                 state = State.WaitingForPlayer;
             }
         }
+
+        private void HandleRepeatTurn()
+        {
+            SetActiveCharacterBattle(activeBattler);
+
+            if (activeBattler == PlayerActors[0])
+            {
+                state = State.WaitingForPlayer;
+            }
+            else
+            {
+                EnemyActors[0].UseSkill(EnemyActors[0].ChooseValidSkillAtRandom(), () => { ChooseNextActiveCharacter(); });
+            }
+        }
+
+        public void RepeatTurn()
+        {
+            repeatTurn = true;
+        }
+
 
         private void Update()
         {
