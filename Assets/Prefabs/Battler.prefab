@@ -67,7 +67,7 @@ RectTransform:
   m_GameObject: {fileID: 2098779822917788088}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
+  m_LocalScale: {x: 0.007, y: 0.01, z: 0.01}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2098779824773079745}
@@ -168,7 +168,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87f35d5133fc01342b49a77080e34b66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  billboardType: 1
+  billboardType: 0
 --- !u!1 &2098779823096122727
 GameObject:
   m_ObjectHideFlags: 0
@@ -480,6 +480,7 @@ GameObject:
   - component: {fileID: 2098779824087089282}
   - component: {fileID: 2098779824087089280}
   - component: {fileID: 2098779824087089281}
+  - component: {fileID: 7429374208941939488}
   m_Layer: 0
   m_Name: Graphic
   m_TagString: Untagged
@@ -567,6 +568,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   billboardType: 0
+--- !u!114 &7429374208941939488
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2098779824087089283}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4540d11613f0b54b8900976b7559376, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainColor: {r: 0.6132076, g: 0, b: 0, a: 1}
+  secondaryColor: {r: 0.35496423, g: 0.9339623, b: 0, a: 1}
 --- !u!1 &2098779824529659817
 GameObject:
   m_ObjectHideFlags: 0
@@ -815,7 +830,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2098779824770817834}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 4e50d5886d3fced41a4112cf0616b68a, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.3
@@ -870,7 +885,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f5cfec32a53ab743a7d333f0d533c44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseActor: {fileID: 0}
+  baseActor: {fileID: 11400000, guid: b207ceed528926d4582e73f9dd3aaf85, type: 2}
 --- !u!1 &2098779824773079746
 GameObject:
   m_ObjectHideFlags: 0

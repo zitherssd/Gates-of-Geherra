@@ -18,24 +18,16 @@ MonoBehaviour:
   basePosture: 25
   Controllable: 0
   baseSkills:
-  - {fileID: 11400000, guid: 185786cdd1cf7704fa0be053e5214f04, type: 2}
-  - {fileID: 11400000, guid: 83e30c38186e1604ebbc68bcceaeb2e6, type: 2}
-  - {fileID: 11400000, guid: 9cc21a5b1be74d54c92d4a9df41fe25b, type: 2}
+  - {fileID: 11400000, guid: 8498923809869424b99fa2cdc3be152d, type: 2}
   baseReactions:
   - {fileID: 11400000, guid: e1de275c6a1741e4091bfa7141119117, type: 2}
-  - {fileID: 11400000, guid: f272d4950a245d34d9c22f8bc60d7882, type: 2}
-  - {fileID: 11400000, guid: fb0edb5316194b4469a5c02751a9673a, type: 2}
   skills:
-  - {fileID: 0}
-  - {fileID: 0}
   - {fileID: 0}
   reactions:
   - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  currentHp: 25
+  currentHp: 0
   currentBuildup: 0
-  currentPosture: 25
+  currentPosture: 0
   ATK: 2
   DEF: 1
   AGI: 2

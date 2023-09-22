@@ -16,4 +16,5 @@ MonoBehaviour:
   Rarity: 0
   TotalUses: 0
   remainingUses: 0
+  Speed: 999
   ReactionType: 0

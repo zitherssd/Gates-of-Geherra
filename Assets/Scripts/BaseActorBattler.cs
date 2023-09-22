@@ -23,7 +23,9 @@ namespace Assets
         private CapsuleCollider capsuleCollider;
         private float lastSqrMag;
         private bool cancelMoveCallback;
+        private AudioSource audioSource;
         internal bool isBlocking;
+        internal bool collisionOccured;
 
         public enum MoveState
         {
@@ -36,7 +38,8 @@ namespace Assets
 
         private void Awake()
         {
-            rigidbody = gameObject.GetComponentInParent<Rigidbody>();
+            audioSource = gameObject.GetComponent<AudioSource>();
+            rigidbody = gameObject.GetComponent<Rigidbody>();
             animator = gameObject.GetComponent<Animator>();
             selectionCircle = GameObject.FindGameObjectWithTag("SelectionCircle");
             state = MoveState.Idle;
@@ -78,15 +81,12 @@ namespace Assets
             }
         }
 
-        internal void MoveFromKnockback()
-        {
-            baseActor.DealPostureDamage(10f);
-        }
-
         public void UseSkill(BaseSkill skill, Action onSkillComplete)
         {
             if (skill.TotalUses != 0)
                 skill.remainingUses -= 1;
+
+            UIManager.GetInstance().SetTextThenFade($"{this.GetBaseActor().Name} uses {skill.Name}!", 0.5f);
 
             if (skill.TargetOption == TARGETINGOPTION.ENEMY)
             {
@@ -97,7 +97,7 @@ namespace Assets
                 else // Enemy attacking player
                 {
                     var targetActor = BattleManager.GetInstance().PlayerActors[0];
-                    UIManager.GetInstance().DrawAllActorReactions(targetActor, () => PerformSkillOnTarget(skill, onSkillComplete));
+                    UIManager.GetInstance().DrawAllActorReactionsAboveSpeed(targetActor, skill.Speed, () => PerformSkillOnTarget(skill, onSkillComplete));
                 }
             }
             if (skill.TargetOption == TARGETINGOPTION.SELF)
@@ -119,9 +119,10 @@ namespace Assets
         {
             var targetActor = isControllable() ? InputManager.GetInstance().GetSelectedTarget() : BattleManager.GetInstance().PlayerActors[0];
 
+
             skill.WarmUp(this, () =>
             {
-                var targetReaction = isControllable() ? targetActor.ChooseValidReactionAtRandom() : UIManager.GetInstance().GetSelectedReaction();
+                var targetReaction = isControllable() ? targetActor.ChooseValidReactionAtRandom(skill.Speed) : UIManager.GetInstance().GetSelectedReaction();
                 UIManager.GetInstance().AddToStoneSlab($"{skill.Name} vs {targetReaction.Name}");
 
                 targetReaction.WarmUp(targetActor, () =>
@@ -133,6 +134,7 @@ namespace Assets
                             // Apply Damage
                             var damage = targetReaction.DamageModifier(skill.Damage + this.GetBaseActor().ATK);
                             targetActor.GetBaseActor().DealDamage(damage);
+                            targetActor.PlayAudio("Blow1");
 
                             // Appply Posture
                             var postureDamage = targetReaction.PostureModifier(skill.PostureDamage);
@@ -193,6 +195,7 @@ namespace Assets
         public void Move(Vector3 direction, Action onMoveComplete)
         {
             UIManager.GetInstance().AddToStoneSlab($"{baseActor.Name} moves");
+            PlayAudio("Move2");
 
             lastSqrMag = Mathf.Infinity;
             this.slideTargetPosition = transform.position + (direction * baseActor.AGI);
@@ -211,11 +214,11 @@ namespace Assets
             animator.Play(AnimationName);
         }
 
-        public BaseReaction ChooseValidReactionAtRandom()
+        public BaseReaction ChooseValidReactionAtRandom(int minimumReactionSpeed)
         {
             List<BaseReaction> validreactions = new List<BaseReaction>();
 
-            validreactions = baseActor.reactions.Where(reaction => reaction.HasUsesLeft()).ToList();
+            validreactions = baseActor.reactions.Where(reaction => reaction.Speed >= minimumReactionSpeed && reaction.HasUsesLeft()).ToList();
             if (validreactions.Count == 0) return new BaseReaction { ReactionType = BaseReaction.REACTIONTYPE.NONE, Name = "Nothing" };
 
             var random = new System.Random();
@@ -252,6 +255,13 @@ namespace Assets
             return validskills[index];
         }
 
+        public void PlayAudio(string clipName)
+        {
+            var clip = SoundManager.instance.GetAudioClipByName(clipName);
+            audioSource.clip = clip;
+            audioSource.Play();
+        }
+
         public void ShowSelectionCircle()
         {
             selectionCircle.GetComponent<SelectionCircle>().target = this.transform;
@@ -260,6 +270,12 @@ namespace Assets
         public void AnimationHit()
         {
             onAnimationHitComplete();
+        }
+
+        public void ResetFlags()
+        {
+            isBlocking = false;
+            collisionOccured = false;
         }
 
         public bool isControllable()
@@ -277,11 +293,18 @@ namespace Assets
             var velocityThreshold = 1;
 
             // Check if collided object has the "Level" tag
+            if (collisionOccured) return;
+
             if (collision.gameObject.CompareTag("Level"))
             {
                 Debug.Log($"Velocity on collision is {rigidbody.velocity.magnitude / Time.deltaTime}");
+
+                UIManager.GetInstance().AddToStoneSlab($"{baseActor.Name} hits a wall!");
+                baseActor.DealPostureDamage(5f);
+                collisionOccured = true;
+
                 // Check if velocity magnitude is greater than the threshold
-                if (rigidbody.velocity.magnitude / Time.deltaTime > 1)
+                if (rigidbody.velocity.magnitude / Time.deltaTime > 0.00001)
                 {
                     // Calculate mirrored velocity (mirror along current velocity)
                     Vector3 mirroredVelocity = Vector3.Reflect(rigidbody.velocity, collision.contacts[0].normal);

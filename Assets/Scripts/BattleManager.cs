@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using Assets.Scripts.Utility;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,6 +20,11 @@ namespace Assets
         [SerializeField] public List<BaseActorBattler> EnemyActors;
         private BaseActorBattler activeBattler;
         private bool repeatTurn;
+        private bool waiting;
+        private Action onFinishedWaiting;
+        private float timer;
+        private float timerSecondsToWait;
+        private UIManager uiManager;
 
         private void Awake()
         {
@@ -26,9 +33,22 @@ namespace Assets
 
         void Start()
         {
-            SetupBattle();
-            SetActiveCharacterBattle(PlayerActors[0]);
-            state = State.WaitingForPlayer;
+            uiManager = UIManager.GetInstance();
+            StartCoroutine(uiManager.TypeTextMiddleLetterByLetter($"{PlayerActors[0].GetBaseActor().Name} vs {EnemyActors[0].GetBaseActor().Name}", () =>
+            {
+                SoundManager.instance.PlayMusic(null);
+                StartCoroutine(uiManager.FadeMiddleText(1));
+                StartCoroutine(uiManager.Fade(false, () =>
+                {
+                    WaitForSeconds(0.1f, () =>
+                    {
+                        SetupBattle();
+                        SetActiveCharacterBattle(PlayerActors[0]);
+                        state = State.WaitingForPlayer;
+                    });
+                }));
+
+            }));
         }
 
         void SetupBattle()
@@ -65,11 +85,16 @@ namespace Assets
             //foreach battler in enemyactors check if dead // show player wins return true
             if (PlayerActors.TrueForAll(actor => actor.GetBaseActor().GetCurrentHP() == 0))
             {
+
+                EnemyActors[0].PlayAnimation("Victory");
+                PlayerActors[0].PlayAnimation("Down");
                 UIManager.GetInstance().ChangeStatus("YOU LOSE");
                 return true;
             }
             if (EnemyActors.TrueForAll(actor => actor.GetBaseActor().GetCurrentHP() == 0))
             {
+                EnemyActors[0].PlayAnimation("Down");
+                PlayerActors[0].PlayAnimation("Victory");
                 UIManager.GetInstance().ChangeStatus("YOU WIN!!");
                 return true;
             }
@@ -80,8 +105,8 @@ namespace Assets
         {
             if (TestBattleOver()) { return; }
 
-            EnemyActors[0].isBlocking = false;
-            PlayerActors[0].isBlocking = false;
+            EnemyActors[0].ResetFlags();
+            PlayerActors[0].ResetFlags();  
 
             if (!repeatTurn)
             {
@@ -99,15 +124,19 @@ namespace Assets
             if (activeBattler == PlayerActors[0])
             {
                 UIManager.GetInstance().ChangeStatus("ENEMY TURN");
+
                 SetActiveCharacterBattle(EnemyActors[0]);
                 state = State.Busy;
 
-                var chosenSkill = EnemyActors[0].ChooseValidSkillAtRandomOrReturnNull();
-                if (chosenSkill != null)
-                    EnemyActors[0].UseSkill(chosenSkill, ChooseNextActiveCharacter);
-                else
-                    //Move closer
-                    EnemyActors[0].Move((PlayerActors[0].transform.position - EnemyActors[0].transform.position).normalized, ChooseNextActiveCharacter);
+                WaitForSeconds(0.5f, () =>
+                {
+                    var chosenSkill = EnemyActors[0].ChooseValidSkillAtRandomOrReturnNull();
+                    if (chosenSkill != null)
+                        EnemyActors[0].UseSkill(chosenSkill, ChooseNextActiveCharacter);
+                    else
+                        //Move closer
+                        EnemyActors[0].Move((PlayerActors[0].transform.position - EnemyActors[0].transform.position).normalized, ChooseNextActiveCharacter);
+                });
             }
             else
             {
@@ -123,10 +152,12 @@ namespace Assets
 
             if (activeBattler == PlayerActors[0])
             {
+                EnemyActors[0].GetBaseActor().currentPosture = EnemyActors[0].GetBaseActor().basePosture;
                 state = State.WaitingForPlayer;
             }
             else
             {
+                PlayerActors[0].GetBaseActor().currentPosture = PlayerActors[0].GetBaseActor().basePosture;
                 EnemyActors[0].UseSkill(EnemyActors[0].ChooseValidSkillAtRandom(), () => { ChooseNextActiveCharacter(); });
             }
         }
@@ -136,9 +167,12 @@ namespace Assets
             repeatTurn = true;
         }
 
-
         private void Update()
         {
+            if (waiting)
+                CheckForFinish();
+
+
             if (state == State.WaitingForPlayer)
             {
                 InputManager.GetInstance().WaitForTurn(() =>
@@ -147,6 +181,20 @@ namespace Assets
                 });
                 state = State.Busy;
             }
+        }
+
+        private void CheckForFinish()
+        {
+            if (timer > timerSecondsToWait)
+            {
+                waiting = false;
+                timer = 0;
+                timerSecondsToWait = 0;
+                onFinishedWaiting();
+                this.onFinishedWaiting = null;
+            }
+            else
+                timer += Time.deltaTime;
         }
 
         public BaseActorBattler GetActiveActor()
@@ -159,14 +207,12 @@ namespace Assets
 
         }
 
-        IEnumerator wait(float seconds)
+        private void WaitForSeconds(float seconds, Action onFinishedWaiting)
         {
-            float counter = 0;
-            while (counter < seconds)
-            {
-                counter += Time.deltaTime;
-                yield return null;
-            }
+            timer = 0f;
+            timerSecondsToWait = seconds;
+            waiting = true;
+            this.onFinishedWaiting = onFinishedWaiting;
         }
     }
 }

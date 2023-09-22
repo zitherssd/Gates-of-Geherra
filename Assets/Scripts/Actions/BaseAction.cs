@@ -13,6 +13,7 @@ namespace Assets
         //public int Range;
         //public SpriteRenderer sprite;
         public int remainingUses;
+        public int Speed;
 
         public virtual bool HasUsesLeft()
         {

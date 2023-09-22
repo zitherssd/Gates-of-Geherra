@@ -133,7 +133,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 192
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -154,7 +154,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 64
-        y: 192
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -175,7 +175,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 128
-        y: 192
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -196,7 +196,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 192
-        y: 192
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -217,7 +217,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 256
-        y: 192
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -238,7 +238,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 128
+        y: 256
         width: 64
         height: 64
       alignment: 7
@@ -259,7 +259,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 64
-        y: 128
+        y: 256
         width: 64
         height: 64
       alignment: 7
@@ -280,7 +280,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 128
-        y: 128
+        y: 256
         width: 64
         height: 64
       alignment: 7
@@ -301,7 +301,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 192
-        y: 128
+        y: 256
         width: 64
         height: 64
       alignment: 7
@@ -322,7 +322,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 256
-        y: 128
+        y: 256
         width: 64
         height: 64
       alignment: 7
@@ -343,7 +343,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 64
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -364,7 +364,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 64
-        y: 64
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -385,7 +385,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 128
-        y: 64
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -406,7 +406,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 192
-        y: 64
+        y: 192
         width: 64
         height: 64
       alignment: 7
@@ -427,11 +427,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 256
-        y: 64
+        y: 192
         width: 64
         height: 64
-      alignment: 9
-      pivot: {x: 0.59, y: 0.17}
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -448,7 +448,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
+        y: 128
         width: 64
         height: 64
       alignment: 7
@@ -469,7 +469,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 64
-        y: 0
+        y: 128
         width: 64
         height: 64
       alignment: 7
@@ -490,7 +490,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 128
-        y: 0
+        y: 128
         width: 64
         height: 64
       alignment: 7
@@ -511,7 +511,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 192
-        y: 0
+        y: 128
         width: 64
         height: 64
       alignment: 7
@@ -527,6 +527,153 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Sprite-0001-Sheet_19
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b74c8960c32d38c48ae907dbc67d7123
+      internalID: 228645295
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite-0001-Sheet_20
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ddaaf7180c72a3a4aaa3d172524d8b15
+      internalID: -651038874
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite-0001-Sheet_21
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 85f470f1f5b2da740a9ee8e62405f0fd
+      internalID: -1053371171
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite-0001-Sheet_22
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d5f44e4f3cae04449957bce4ee1e68c4
+      internalID: -71755199
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite-0001-Sheet_23
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 50291afbd67c6a5488f8e83849b2aa29
+      internalID: -487538640
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite-0001-Sheet_24
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fbd2f26db1af0d04aa90060fff0fb7f8
+      internalID: -508321851
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite-0001-Sheet_25
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5b8a5ea84dc26024dae48184d602a4f6
+      internalID: -492785423
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -538,16 +685,23 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
+      Sprite-0001-Sheet_21: -1053371171
       Sprite-0001-Sheet_14: -1009268391
       Sprite-0001-Sheet_5: -1144189026
+      Sprite-0001-Sheet_22: -71755199
       Sprite-0001-Sheet_16: 2051634366
       Sprite-0001-Sheet_17: 595684752
+      Sprite-0001-Sheet_24: -508321851
       Sprite-0001-Sheet_0: 1619807635
+      Sprite-0001-Sheet_19: 228645295
       Sprite-0001-Sheet_10: 1064112422
       Sprite-0001-Sheet_4: 1341526326
+      Sprite-0001-Sheet_25: -492785423
       Sprite-0001-Sheet_2: 689381355
+      Sprite-0001-Sheet_23: -487538640
       Sprite-0001-Sheet_8: 1656081155
       Sprite-0001-Sheet_6: 1604616874
+      Sprite-0001-Sheet_20: -651038874
       Sprite-0001-Sheet_9: -1518226875
       Sprite-0001-Sheet_3: -1111480702
       Sprite-0001-Sheet_12: 925616898

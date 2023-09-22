@@ -27,17 +27,23 @@ namespace Assets.Scripts.Actions
             //ONLY FOR TARGETINGOPTION.ENEMY SKILLS
             if (skill.Tags.Contains(SKILLTAG.PROJECTILE))
             {
-                ;
+                
             }
 
 
             if (skill.Tags.Contains(SKILLTAG.MOVE_NEAR_ENEMY_BEFORE_ATTACK))
             {
+
                 var targetVector = enemyActor.transform.position - casterActor.transform.position;
 
-                if (!(targetVector.magnitude < 2f))
+                if (skill.Tags.Contains(SKILLTAG.MOVE_OFFSET_BEHIND)) targetVector += Vector3.Cross((enemyActor.transform.position - casterActor.transform.position), Vector3.up).normalized;
+                if (skill.Tags.Contains(SKILLTAG.MOVE_OFFSET_INFRONT)) targetVector += Vector3.Cross((enemyActor.transform.position - casterActor.transform.position), -Vector3.up).normalized;
+
+
+
+                    if (!(targetVector.magnitude < 2f))
                 {
-                    var minimumDistance = targetVector.normalized;
+                    var minimumDistance = targetVector.normalized * 0.66f;
                     casterActor.MoveToPosition(casterActor.transform.position + targetVector - minimumDistance, MoveState.Move, () => {
                         casterActor.PlayAnimation(skill.AnimationType.ToString(), () => 
                         {
@@ -62,8 +68,8 @@ namespace Assets.Scripts.Actions
 
         public void WarmUp(BaseActorBattler casterActor, Action onWarmUpEnd)
         {
-            var texttobeshown = $"{casterActor.name} is using { this.Name }!";
-            UIManager.GetInstance().SetTextThenFade(texttobeshown, 1f);
+
+
 
             if (AttackType == ATTACKTYPE.Projectile)
             {
@@ -126,10 +132,10 @@ namespace Assets.Scripts.Actions
         }
     }
 
-    public enum ANIMATIONTYPE { NONE, Punch, Kick, Shuriken, Highkick }
+    public enum ANIMATIONTYPE { NONE, Punch, Kick, Shuriken, Highkick, PalmStrike }
     public enum ATTACKTYPE { Attack, Projectile }
     public enum TARGETINGOPTION { SELF, ENEMY }
-    public enum SKILLTAG { MOVE_NEAR_ENEMY_BEFORE_ATTACK, PROJECTILE, KNOCKBACK_AIR }
+    public enum SKILLTAG { MOVE_NEAR_ENEMY_BEFORE_ATTACK, PROJECTILE, KNOCKBACK_AIR, MOVE_OFFSET_BEHIND, MOVE_OFFSET_INFRONT }
 
 
 }

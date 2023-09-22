@@ -1,31 +1,38 @@
 using Assets;
 using Assets.Scripts.Actions;
+using Assets.Scripts.Utility;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
-    [SerializeField]
-    private GameObject ButtonPrefab;
-    [SerializeField]
-    private TextMeshProUGUI TopTextbox; 
-    [SerializeField]
-    private TextMeshProUGUI Status;
-    [SerializeField]
-    private TextMeshProUGUI StoneSlab;
+    [SerializeField] private GameObject buttonPrefab;
+    [SerializeField] private TextMeshProUGUI TopTextbox;
+    [SerializeField] private TextMeshProUGUI MiddleTextbox;
+    [SerializeField] private TextMeshProUGUI StoneSlab;
+    [SerializeField] public UnityEngine.UI.Image fadeImage;
+    [Range(0, 1)] public float letterPause = 0.1f;
+    [Range(0, 1)] public float fadeSpeed;
+    public AudioClip typeSound1;
+    public AudioClip typeSound2;
+
+    [HideInInspector] public BaseReaction selectedReaction;
+    [HideInInspector] public BaseAction selectedAction;
+    [HideInInspector] public BaseSkill selectedSkill;
+
+
+    private static UIManager instance;
     private float fadeduration = 9999f;
     private float timer = 0f;
-    private static UIManager instance;
-    internal BaseAction selectedAction;
-    internal BaseSkill selectedSkill;
-    public bool waitingForAction = false;
+    private bool waitingForAction = false;
     private Action onActionSelected;
-    internal BaseReaction selectedReaction;
+
+
 
     public static UIManager GetInstance()
     {
@@ -36,14 +43,9 @@ public class UIManager : MonoBehaviour
         instance = this;
     }
 
-    public void Start()
-    {
-        
-    }
-
     public void ChangeStatus(string status)
     {
-        Status.text = status;
+        TopTextbox.text = status;
     }
 
     public void AddToStoneSlab(string textToAdd)
@@ -73,14 +75,14 @@ public class UIManager : MonoBehaviour
         var handlers = new List<ButtonHandler>();
 
         float anglestep = 360f / actions.Count;
-        for(int i = 0; i < actions.Count; i++)
+        for (int i = 0; i < actions.Count; i++)
         {
             float angle = i * anglestep;
             float x = radius * Mathf.Cos(Mathf.Deg2Rad * angle);
             float y = radius * Mathf.Sin(Mathf.Deg2Rad * angle);
             Vector2 position = new Vector2(x, y);
 
-            GameObject UISkill = Instantiate(ButtonPrefab, position, Quaternion.identity);
+            GameObject UISkill = Instantiate(buttonPrefab, position, Quaternion.identity);
             UISkill.transform.SetParent(GameObject.FindGameObjectWithTag("OriginPoint").transform);
             UISkill.GetComponent<RectTransform>().localPosition = position;
             var handler = UISkill.GetComponent<ButtonHandler>();
@@ -93,12 +95,12 @@ public class UIManager : MonoBehaviour
 
     public void CancelAll()
     {
-    ButtonHandler.KillAll();
-    selectedAction = null;
-    selectedSkill = null;
-    selectedReaction = null;
-    waitingForAction = false;
-    onActionSelected = null;
+        ButtonHandler.KillAll();
+        selectedAction = null;
+        selectedSkill = null;
+        selectedReaction = null;
+        waitingForAction = false;
+        onActionSelected = null;
     }
 
     public void DrawActiveActorSkills(Action onSkillSelected)
@@ -121,7 +123,7 @@ public class UIManager : MonoBehaviour
 
                 buttonHandlers[i].referencedSkill = skills[i];
                 buttonHandlers[i].referencedAction = null;
-                buttonHandlers[i].SetButtonInteractable(skills[i].IsValid(activeChar, out invalidReason)) ;
+                buttonHandlers[i].SetButtonInteractable(skills[i].IsValid(activeChar, out invalidReason));
                 if (invalidReason != string.Empty) buttonHandlers[i].SetRemainingUsesText(invalidReason);
             }
             this.onActionSelected = onSkillSelected;
@@ -145,6 +147,33 @@ public class UIManager : MonoBehaviour
             for (int i = 0; i < reactions.Count; i++)
             {
                 buttonHandlers[i].referencedReaction = reactions[i];
+                buttonHandlers[i].referencedAction = null;
+            }
+            this.onActionSelected = onReactionSelected;
+            this.waitingForAction = true;
+        }
+    }
+
+    public void DrawAllActorReactionsAboveSpeed(BaseActorBattler actor, int minimumSpeed, Action onReactionSelected)
+    {
+        if (!waitingForAction)
+        {
+            List<BaseAction> fakeReactions = new List<BaseAction>();
+            List<BaseReaction> chosenReactions = new List<BaseReaction>();
+            var reactions = actor.GetBaseActor().reactions;
+
+
+            foreach (var reaction in reactions)
+            {
+                if (reaction.Speed >= minimumSpeed)
+                    fakeReactions.Add(reaction);
+                chosenReactions.Add(reaction);
+            }
+
+            var buttonHandlers = DrawActionsRadiallyOnScreenPoint(fakeReactions);
+            for (int i = 0; i < fakeReactions.Count; i++)
+            {
+                buttonHandlers[i].referencedReaction = chosenReactions[i];
                 buttonHandlers[i].referencedAction = null;
             }
             this.onActionSelected = onReactionSelected;
@@ -201,6 +230,57 @@ public class UIManager : MonoBehaviour
         this.fadeduration = fadeduration;
         timer = 0f;
     }
+
+    public IEnumerator TypeTextMiddleLetterByLetter(string text, Action onTypingComplete)
+    {
+        foreach (char letter in text.ToCharArray())
+        {
+            MiddleTextbox.text += letter;
+            if (typeSound1 && typeSound2)
+                SoundManager.instance.RandomizeSfx(typeSound1, typeSound2);
+            yield return 0;
+            yield return new WaitForSeconds(letterPause);
+        }
+        onTypingComplete();
+    }
+
+    public IEnumerator FadeMiddleText(float fadeDuration)
+    {
+        Color originalColor = MiddleTextbox.color;
+        Color targetColor = new Color(originalColor.r, originalColor.g, originalColor.b, 0f); // Fade to transparent
+
+        float elapsedTime = 0f;
+
+        while (elapsedTime < fadeDuration)
+        {
+            MiddleTextbox.color = Color.Lerp(originalColor, targetColor, elapsedTime / fadeDuration);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        // Ensure the target color is reached
+        MiddleTextbox.color = targetColor;
+    }
+
+    public IEnumerator Fade(bool fadeIn, Action onFadeComplete)
+    {
+        var imgColor = fadeImage.color;
+        float targetAlpha = fadeIn ? 1.0f : 0.0f;
+
+        while (Mathf.Abs(imgColor.a - targetAlpha) > 0.01f)
+        {
+            imgColor.a = Mathf.Lerp(imgColor.a, targetAlpha, fadeSpeed * Time.deltaTime);
+            fadeImage.color = imgColor;
+            yield return null;
+        }
+
+        imgColor.a = targetAlpha;
+        fadeImage.color = imgColor;
+
+        onFadeComplete();
+    }
+
+
 
     //1. Attack or Move or Skill // MoveWithingRange if able;
     //2. Reaction Check > Give control to the enemy. Allow him to chose from his reactions (Skill used for mitigation damage)

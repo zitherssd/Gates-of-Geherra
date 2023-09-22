@@ -58,7 +58,9 @@ public class Actor : ScriptableObject
         if (currentPosture <= 0)
         {
             if (currentHp == 0) { currentPosture = 0; return false; }
-            currentPosture = basePosture;
+
+            UIManager.GetInstance().AddToStoneSlab($"{Name}'s posture breaks!");
+            BattleManager.GetInstance().RepeatTurn();
             return true;
         }
         else return false;

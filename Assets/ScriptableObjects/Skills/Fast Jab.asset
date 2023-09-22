@@ -10,17 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6d0c263cb04d7f3408086e343db9bc31, type: 3}
-  m_Name: Palm Strike
+  m_Name: Fast Jab
   m_EditorClassIdentifier: 
-  Name: Palm Strike
+  Name: Fast Jab
   Rarity: 0
   TotalUses: 2
-  remainingUses: 2
-  AnimationType: 5
+  remainingUses: 0
+  Speed: 1
+  AnimationType: 1
   AttackType: 0
   TargetOption: 1
   Tags: 00000000
-  Range: 2
-  Damage: 3
-  PostureDamage: 15
-  KnockbackForce: 20
+  Range: 3
+  Damage: 4
+  PostureDamage: 5
+  KnockbackForce: 3
