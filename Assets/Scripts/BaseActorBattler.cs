@@ -204,6 +204,22 @@ namespace Assets
 
         }
 
+        public void Move(Vector2 direction, Action onMoveComplete)
+        {
+            UIManager.GetInstance().AddToStoneSlab($"{baseActor.Name} moves");
+            PlayAudio("Move2");
+
+            var camera = Camera.main;
+            var forward = camera.transform.forward; forward.y = 0;
+            var right = camera.transform.right; right.y = 0;
+            forward.Normalize(); right.Normalize();
+
+            var desiredMoveDirection = forward * direction.y + right * direction.x;
+            Move(desiredMoveDirection, onMoveComplete);
+        }
+
+
+
         public void PlayAnimation(string AnimationName, Action onAnimationHitComplete)
         {
             animator.Play(AnimationName);

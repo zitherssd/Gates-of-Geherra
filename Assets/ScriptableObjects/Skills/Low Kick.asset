@@ -15,12 +15,13 @@ MonoBehaviour:
   Name: Low Kick
   Rarity: 0
   TotalUses: 2
-  remainingUses: -3
+  remainingUses: 0
+  Speed: 0
   AnimationType: 2
   AttackType: 0
   TargetOption: 1
   Tags: 00000000
-  Range: 4
+  Range: 3.5
   Damage: 4
-  PostureDamage: 10
+  PostureDamage: 9
   KnockbackForce: 4

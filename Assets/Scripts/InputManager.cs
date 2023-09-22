@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -10,6 +11,7 @@ namespace Assets
         [SerializeField] private InputActionReference StartPos;
         [SerializeField] private InputActionReference EndPos;
         [SerializeField] private InputActionReference DoubleTap;
+        [SerializeField] private InputActionReference Move;
 
         private BattleManager battleManager;
         private Action onTurnEnd = null;
@@ -23,6 +25,7 @@ namespace Assets
 
         private BaseActorBattler selectedTarget;
         private Vector2 selectedSwipeDirection;
+        private Vector2 delta;
 
         public static InputManager GetInstance()
         {
@@ -41,21 +44,27 @@ namespace Assets
 
         private void Update()
         {
-            if (!inputEnabled)
-                return;
+            Debug.Log(Move.action.phase);
+            Debug.Log(Move.action.ReadValue<Vector2>());
+            //if (waitingForTurn)
+            //{
+            //    if (Move.action.phase == InputActionPhase.Performed)
+            //    {
+            //        var delta = Move.action.ReadValue<Vector2>();
+            //        battleManager.GetActiveActor().Move(delta, onTurnEnd);
+            //        waitingForTurn = false;
+            //        DisableInput();
+            //    }
+            //}
 
-            var startpos = StartPos.action.ReadValue<Vector2>();
-            var endpos = EndPos.action.ReadValue<Vector2>();
-            var moveVector = endpos - startpos;
+            //if (!inputEnabled)
+            //    return;
 
-            if (waitingForTarget)
-                CheckForTarget(startpos);
+            //if (waitingForTarget)
+            //    CheckForTarget(StartPos.action.ReadValue<Vector2>());
 
-            if (waitingForTurn)
-                CheckForTurn(moveVector);
-
-            if (waitingForSwipe)
-                CheckForSwipe(moveVector);
+            ////if (waitingForSwipe)
+            ////    CheckForSwipe(move);
         }
 
         private void CheckForTarget(Vector2 startpos)
@@ -102,8 +111,20 @@ namespace Assets
             }
         }
 
+        private IEnumerator WaitForMove(Action onDeltaObtained)
+        {
+            Move.action.Enable();
+
+            while (Move.action.phase != InputActionPhase.Started) yield return 0;
+
+            this.delta = Move.action.ReadValue<Vector2>();
+            Move.action.Disable();
+            onDeltaObtained();
+        }
+
         public void EnableInput()
         {
+            Move.action.Enable();
             inputEnabled = true;
         }
 
@@ -114,14 +135,59 @@ namespace Assets
 
         public void WaitForTurn(Action onTurnEnd)
         {
+            //Enable Inputs
+            //Options: Move or Select Skill
+
+            //when does the turn end? when you choose to call the callback;
+            // when doe onTurnEnd run? i.e. Choosing next active character
+            // after the movement has executed or the skill has finished acting
+            UIManager.GetInstance().DrawActiveActorSkills(() => //one shot option for the skill
+            {
+                battleManager.GetActiveActor().UseSkill(UIManager.GetInstance().GetSelectedSkill(), onTurnEnd);
+                waitingForTurn = false;
+                DisableInput();
+            });
+
+            StartCoroutine(WaitForMove(() =>
+            {
+                if (waitingForTurn)
+                {
+                    battleManager.GetActiveActor().Move(delta, onTurnEnd);
+                    waitingForTurn = false;
+                    DisableInput();
+                }
+            }));
+
+
             this.onTurnEnd = onTurnEnd;
             waitingForTurn = true;
             EnableInput();
-            UIManager.GetInstance().DrawActiveActorSkills(() =>
+        }
+
+        public IEnumerator GetSwipe(Action onSwipeGot)
+        {
+            EnableInput();
+
+            while (true)
             {
-                waitingForTurn = false;
-                battleManager.GetActiveActor().UseSkill(UIManager.GetInstance().GetSelectedSkill(), onTurnEnd);
-            });
+                if (Move.action.phase == InputActionPhase.Performed)
+                {
+                    var delta = Move.action.ReadValue<Vector2>();
+                    UIManager.GetInstance().CancelAll();
+                    var camera = Camera.main;
+                    var forward = camera.transform.forward; forward.y = 0;
+                    var right = camera.transform.right; right.y = 0;
+                    forward.Normalize(); right.Normalize();
+
+                    var desiredMoveDirection = forward * delta.y + right * delta.x;
+                    var activeChar = battleManager.GetActiveActor();
+                    activeChar.Move(desiredMoveDirection, onTurnEnd);
+                    onTurnEnd = null;
+                }
+                yield return 0;
+            }
+
+            DisableInput();
         }
 
         public void WaitForSwipe(Action onSwipeEnded)
@@ -130,6 +196,7 @@ namespace Assets
             EnableInput();
             this.onSwipeEnded = onSwipeEnded;
             waitingForSwipe = true;
+            //Start coroutine called GetSwipe(
         }
 
         public void WaitForTarget(Action onTargetSelected)

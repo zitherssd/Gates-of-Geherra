@@ -40,7 +40,7 @@ namespace Assets
                 StartCoroutine(uiManager.FadeMiddleText(1));
                 StartCoroutine(uiManager.Fade(false, () =>
                 {
-                    WaitForSeconds(0.1f, () =>
+                    WaitForSeconds(0.5f, () =>
                     {
                         SetupBattle();
                         SetActiveCharacterBattle(PlayerActors[0]);

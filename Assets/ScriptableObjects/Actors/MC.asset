@@ -37,7 +37,7 @@ MonoBehaviour:
   - {fileID: 0}
   currentHp: 38
   currentBuildup: 0
-  currentPosture: 15
+  currentPosture: 13
   ATK: 1
   DEF: 1
   AGI: 2

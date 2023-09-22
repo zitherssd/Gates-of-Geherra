@@ -19,9 +19,11 @@ MonoBehaviour:
   Controllable: 0
   baseSkills:
   - {fileID: 11400000, guid: 8498923809869424b99fa2cdc3be152d, type: 2}
+  - {fileID: 11400000, guid: 369a53d3c0b8136438ffa364125fd5f6, type: 2}
   baseReactions:
   - {fileID: 11400000, guid: e1de275c6a1741e4091bfa7141119117, type: 2}
   skills:
+  - {fileID: 0}
   - {fileID: 0}
   reactions:
   - {fileID: 0}
