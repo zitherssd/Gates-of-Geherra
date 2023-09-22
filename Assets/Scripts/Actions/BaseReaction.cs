@@ -70,7 +70,7 @@ namespace Assets.Scripts.Actions
                     {
                         actor.PlayAnimation("Idle"); 
                     });
-                    actor.PlayAnimation("Dash");
+                    actor.PlayAnimation("Step");
                     onReactionComplete();
                     break;
                 case REACTIONTYPE.Block:

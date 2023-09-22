@@ -57,6 +57,7 @@ public class Actor : ScriptableObject
         currentPosture -= postureDamage;
         if (currentPosture <= 0)
         {
+            if (currentHp == 0) { currentPosture = 0; return false; }
             currentPosture = basePosture;
             return true;
         }

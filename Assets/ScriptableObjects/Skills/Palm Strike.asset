@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Palm Strike
   Rarity: 0
-  TotalUses: 1
-  remainingUses: 0
+  TotalUses: 2
+  remainingUses: 2
   AnimationType: 1
   AttackType: 0
   TargetOption: 1
@@ -23,4 +23,4 @@ MonoBehaviour:
   Range: 2
   Damage: 3
   PostureDamage: 15
-  KnockbackForce: 10
+  KnockbackForce: 20

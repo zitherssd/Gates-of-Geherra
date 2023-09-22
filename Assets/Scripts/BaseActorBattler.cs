@@ -78,6 +78,11 @@ namespace Assets
             }
         }
 
+        internal void MoveFromKnockback()
+        {
+            baseActor.DealPostureDamage(10f);
+        }
+
         public void UseSkill(BaseSkill skill, Action onSkillComplete)
         {
             if (skill.TotalUses != 0)
@@ -139,8 +144,8 @@ namespace Assets
                             }
 
 
-                                // Apply Knockback
-                                var direction = (targetActor.transform.position - this.transform.position).normalized;
+                            // Apply Knockback
+                            var direction = (targetActor.transform.position - this.transform.position).normalized;
                             if (skill.Tags.Contains(SKILLTAG.KNOCKBACK_AIR)) direction = (direction + Vector3.up).normalized;
                             targetActor.ApplyKnockback(direction, targetReaction.KnockbackModifier(skill.KnockbackForce), () =>
                             {
@@ -193,6 +198,7 @@ namespace Assets
             this.slideTargetPosition = transform.position + (direction * baseActor.AGI);
             this.onMoveComplete = onMoveComplete;
             this.state = MoveState.Move;
+
         }
 
         public void PlayAnimation(string AnimationName, Action onAnimationHitComplete)
@@ -266,5 +272,24 @@ namespace Assets
             return baseActor;
         }
 
+        private void OnCollisionEnter(Collision collision)
+        {
+            var velocityThreshold = 1;
+
+            // Check if collided object has the "Level" tag
+            if (collision.gameObject.CompareTag("Level"))
+            {
+                Debug.Log($"Velocity on collision is {rigidbody.velocity.magnitude / Time.deltaTime}");
+                // Check if velocity magnitude is greater than the threshold
+                if (rigidbody.velocity.magnitude / Time.deltaTime > 1)
+                {
+                    // Calculate mirrored velocity (mirror along current velocity)
+                    Vector3 mirroredVelocity = Vector3.Reflect(rigidbody.velocity, collision.contacts[0].normal);
+
+                    // Replace current velocity with the mirrored velocity
+                    rigidbody.velocity = mirroredVelocity;
+                }
+            }
+        }
     }
 }
