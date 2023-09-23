@@ -153,11 +153,11 @@ namespace Assets
                 if (waitingForTurn)
                 {
                     battleManager.GetActiveActor().Move(delta, onTurnEnd);
+                    ButtonHandler.KillAll();
                     waitingForTurn = false;
                     DisableInput();
                 }
             }));
-
 
             this.onTurnEnd = onTurnEnd;
             waitingForTurn = true;

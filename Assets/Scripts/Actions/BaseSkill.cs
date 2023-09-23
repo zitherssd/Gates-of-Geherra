@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 using static Assets.BaseActorBattler;
 
@@ -22,42 +21,29 @@ namespace Assets.Scripts.Actions
 
 
 
-        public void Perform(BaseActorBattler casterActor, BaseActorBattler enemyActor, BaseSkill skill, BaseReaction reaction, Action onPerformEnd)
+        public void Perform(BaseActorBattler casterActor, BaseActorBattler enemyActor, BaseReaction reaction, Action onPerformEnd)
         {
-            //ONLY FOR TARGETINGOPTION.ENEMY SKILLS
-            if (skill.Tags.Contains(SKILLTAG.PROJECTILE))
+            //Performed used for single Target skills
+            if (this.Tags.Contains(SKILLTAG.MOVE_OFFSET_BEHIND) || this.Tags.Contains(SKILLTAG.MOVE_OFFSET_INFRONT))
             {
-                
-            }
 
-
-            if (skill.Tags.Contains(SKILLTAG.MOVE_NEAR_ENEMY_BEFORE_ATTACK))
-            {
 
                 var targetVector = enemyActor.transform.position - casterActor.transform.position;
 
-                if (skill.Tags.Contains(SKILLTAG.MOVE_OFFSET_BEHIND)) targetVector += Vector3.Cross((enemyActor.transform.position - casterActor.transform.position), Vector3.up).normalized;
-                if (skill.Tags.Contains(SKILLTAG.MOVE_OFFSET_INFRONT)) targetVector += Vector3.Cross((enemyActor.transform.position - casterActor.transform.position), -Vector3.up).normalized;
+                if (this.Tags.Contains(SKILLTAG.MOVE_OFFSET_BEHIND)) targetVector += Vector3.Cross(targetVector, Vector3.up).normalized;
+                if (this.Tags.Contains(SKILLTAG.MOVE_OFFSET_INFRONT)) targetVector += Vector3.Cross(targetVector, -Vector3.up).normalized;
+
+                casterActor.MoveToPosition(casterActor.transform.position + targetVector, MoveState.Slerp, () => { });
 
 
+            }
 
-                    if (!(targetVector.magnitude < 2f))
-                {
-                    var minimumDistance = targetVector.normalized * 0.66f;
-                    casterActor.MoveToPosition(casterActor.transform.position + targetVector - minimumDistance, MoveState.Move, () => {
-                        casterActor.PlayAnimation(skill.AnimationType.ToString(), () => 
-                        {
-                            onPerformEnd();
-                            return;
-                        });
-                    });
-                }
-                else casterActor.PlayAnimation(skill.AnimationType.ToString(), () =>
-                {
-                    onPerformEnd();
-                    return;
-                });
-            };
+            casterActor.PlayAnimation(this.AnimationType.ToString(), () =>
+            {
+                onPerformEnd();
+                return;
+            });
+
         }
 
         public void Perform(BaseActorBattler casterActor, BaseSkill skill, Action onPerformEnd)
@@ -66,18 +52,28 @@ namespace Assets.Scripts.Actions
             onPerformEnd();
         }
 
-        public void WarmUp(BaseActorBattler casterActor, Action onWarmUpEnd)
+        public void WarmUp(BaseActorBattler casterActor, BaseActorBattler targetActor, Action onWarmUpEnd)
         {
+            if (this.Tags.Contains(SKILLTAG.MOVE_NEAR_ENEMY_BEFORE_ATTACK))
+            {
 
+                var targetVector = targetActor.transform.position - casterActor.transform.position;
 
+                if (!(targetVector.magnitude < 1f))
+                {
+                    var minimumDistance = targetVector.normalized * 0.66f;
+                    casterActor.MoveToPosition(casterActor.transform.position + targetVector - minimumDistance, MoveState.Move, onWarmUpEnd);
+                    return;
+                }
+            };
 
             if (AttackType == ATTACKTYPE.Projectile)
             {
                 //Summon projectile
             }
-            
-            
-            
+
+
+
             onWarmUpEnd();
             //Play an animation before moving,
             //Show skill name,
@@ -88,7 +84,7 @@ namespace Assets.Scripts.Actions
         {
             InvalidReason = "";
             if (!HasUsesLeft()) return false;
-            
+
             if (Range != 0)
             {
                 //Get all active 

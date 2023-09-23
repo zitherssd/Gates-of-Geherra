@@ -33,7 +33,8 @@ namespace Assets
             Knockback,
             Sliding,
             Move,
-            Busy
+            Busy,
+            Slerp
         }
 
         private void Awake()
@@ -78,6 +79,24 @@ namespace Assets
 
                     lastSqrMag = sqrMag;
                     break;
+                case MoveState.Knockback:
+                    break;
+                case MoveState.Slerp:
+                    sqrMag = (slideTargetPosition - transform.position).sqrMagnitude;
+                    moveSpeed = 4f;
+                    rigidbody.transform.Translate (Vector3.Slerp(rigidbody.transform.position, slideTargetPosition, 0.1f));
+
+                    if (sqrMag > lastSqrMag)
+                    {
+                        rigidbody.velocity = Vector3.zero;
+                        state = MoveState.Idle;
+                        if (!cancelMoveCallback)
+                            onMoveComplete();
+                        else return;
+                    }
+
+                    lastSqrMag = sqrMag;
+                    break;
             }
         }
 
@@ -108,7 +127,7 @@ namespace Assets
 
         private void PerformSkillOnSelf(BaseSkill skill, Action onSkillComplete)
         {
-            skill.WarmUp(this, () =>
+            skill.WarmUp(this, null, () =>
             {
                 UIManager.GetInstance().AddToStoneSlab($"{skill.Name}");
                 skill.Perform(this, skill, onSkillComplete);
@@ -120,14 +139,14 @@ namespace Assets
             var targetActor = isControllable() ? InputManager.GetInstance().GetSelectedTarget() : BattleManager.GetInstance().PlayerActors[0];
 
 
-            skill.WarmUp(this, () =>
+            skill.WarmUp(this, targetActor, () =>
             {
                 var targetReaction = isControllable() ? targetActor.ChooseValidReactionAtRandom(skill.Speed) : UIManager.GetInstance().GetSelectedReaction();
                 UIManager.GetInstance().AddToStoneSlab($"{skill.Name} vs {targetReaction.Name}");
 
                 targetReaction.WarmUp(targetActor, () =>
                 {
-                    skill.Perform(this, targetActor, skill, targetReaction, () =>
+                    skill.Perform(this, targetActor, targetReaction, () =>
                     {
                         targetReaction.React(targetActor, () =>
                         {

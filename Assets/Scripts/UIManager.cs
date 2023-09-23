@@ -15,7 +15,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI TopTextbox;
     [SerializeField] private TextMeshProUGUI MiddleTextbox;
     [SerializeField] private TextMeshProUGUI StoneSlab;
-    [SerializeField] public UnityEngine.UI.Image fadeImage;
+    [SerializeField] private UnityEngine.UI.Image fadeImage;
     [Range(0, 1)] public float letterPause = 0.1f;
     [Range(0, 1)] public float fadeSpeed;
     public AudioClip typeSound1;
@@ -27,7 +27,7 @@ public class UIManager : MonoBehaviour
 
 
     private static UIManager instance;
-    private float fadeduration = 9999f;
+    private float fadeduration = 1;
     private float timer = 0f;
     private bool waitingForAction = false;
     private Action onActionSelected;
@@ -105,8 +105,7 @@ public class UIManager : MonoBehaviour
 
     public void DrawActiveActorSkills(Action onSkillSelected)
     {
-        if (!waitingForAction)
-        {
+
             List<BaseAction> fakeActions = new List<BaseAction>();
             var activeChar = BattleManager.GetInstance().GetActiveActor();
             var skills = activeChar.GetBaseActor().skills;
@@ -128,7 +127,6 @@ public class UIManager : MonoBehaviour
             }
             this.onActionSelected = onSkillSelected;
             this.waitingForAction = true;
-        }
     }
 
     public void DrawAllActorReactions(BaseActorBattler actor, Action onReactionSelected)
@@ -156,8 +154,7 @@ public class UIManager : MonoBehaviour
 
     public void DrawAllActorReactionsAboveSpeed(BaseActorBattler actor, int minimumSpeed, Action onReactionSelected)
     {
-        if (!waitingForAction)
-        {
+
             List<BaseAction> fakeReactions = new List<BaseAction>();
             List<BaseReaction> chosenReactions = new List<BaseReaction>();
             var reactions = actor.GetBaseActor().reactions;
@@ -178,7 +175,6 @@ public class UIManager : MonoBehaviour
             }
             this.onActionSelected = onReactionSelected;
             this.waitingForAction = true;
-        }
     }
 
 
@@ -265,19 +261,25 @@ public class UIManager : MonoBehaviour
     public IEnumerator Fade(bool fadeIn, Action onFadeComplete)
     {
         var imgColor = fadeImage.color;
+        float startAlpha = imgColor.a;
         float targetAlpha = fadeIn ? 1.0f : 0.0f;
 
-        while (Mathf.Abs(imgColor.a - targetAlpha) > 0.01f)
+        float elapsedTime = 0f;
+
+        while (elapsedTime < fadeSpeed)
         {
-            imgColor.a = Mathf.Lerp(imgColor.a, targetAlpha, fadeSpeed * Time.deltaTime);
+            float t = elapsedTime / fadeSpeed;
+            imgColor.a = Mathf.Lerp(startAlpha, targetAlpha, t);
             fadeImage.color = imgColor;
+
+            elapsedTime += Time.deltaTime;
             yield return null;
         }
 
         imgColor.a = targetAlpha;
         fadeImage.color = imgColor;
 
-        onFadeComplete();
+        onFadeComplete?.Invoke();
     }
 
 
