@@ -10,18 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6d0c263cb04d7f3408086e343db9bc31, type: 3}
-  m_Name: High Kick
+  m_Name: Taunt
   m_EditorClassIdentifier: 
-  Name: High Kick
+  Name: Taunt
   Rarity: 0
-  TotalUses: 2
-  remainingUses: 1
+  TotalUses: 0
+  remainingUses: 0
   Speed: 0
-  AnimationType: 4
-  AttackType: 0
+  AnimationType: 0
+  SkillType: 2
   TargetOption: 1
-  Tags: 0200000004000000
-  Range: 2
-  Damage: 10
-  PostureDamage: 8
-  KnockbackForce: 7
+  Tags: 0500000006000000
+  Range: 0
+  Damage: 0
+  PostureDamage: 0
+  KnockbackForce: 0

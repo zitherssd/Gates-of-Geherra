@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.Actions;
 using Assets.Scripts.Utility;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -84,7 +85,7 @@ namespace Assets
                 case MoveState.Slerp:
                     sqrMag = (slideTargetPosition - transform.position).sqrMagnitude;
                     moveSpeed = 4f;
-                    rigidbody.transform.Translate (Vector3.Slerp(rigidbody.transform.position, slideTargetPosition, 0.1f));
+                    rigidbody.transform.position = (Vector3.Slerp(rigidbody.transform.position, slideTargetPosition, 0.01f));
 
                     if (sqrMag > lastSqrMag)
                     {
@@ -111,7 +112,7 @@ namespace Assets
             {
                 if (isControllable()) // Player attacking enemy
                 {
-                    InputManager.GetInstance().WaitForTarget(() => PerformSkillOnTarget(skill, onSkillComplete));
+                    InputManager.GetInstance().WaitForTargetActor(() => PerformSkillOnTarget(skill, onSkillComplete));
                 }
                 else // Enemy attacking player
                 {
@@ -130,7 +131,7 @@ namespace Assets
             skill.WarmUp(this, null, () =>
             {
                 UIManager.GetInstance().AddToStoneSlab($"{skill.Name}");
-                skill.Perform(this, skill, onSkillComplete);
+                skill.Perform(this, onSkillComplete);
             });
         }
 
@@ -138,9 +139,17 @@ namespace Assets
         {
             var targetActor = isControllable() ? InputManager.GetInstance().GetSelectedTarget() : BattleManager.GetInstance().PlayerActors[0];
 
-
             skill.WarmUp(this, targetActor, () =>
             {
+                if (skill.Tags.Contains(SKILLTAG.NO_REACTION))
+                {
+                    skill.Perform(this, targetActor, new BaseReaction { ReactionType = BaseReaction.REACTIONTYPE.NONE, Name = "Nothing" }, () =>
+                    {
+                        skill.ApplyDamageEffects(this, targetActor, new BaseReaction { ReactionType = BaseReaction.REACTIONTYPE.NONE, Name = "Nothing" }, onSkillComplete);
+                    });
+                    return;
+                }
+
                 var targetReaction = isControllable() ? targetActor.ChooseValidReactionAtRandom(skill.Speed) : UIManager.GetInstance().GetSelectedReaction();
                 UIManager.GetInstance().AddToStoneSlab($"{skill.Name} vs {targetReaction.Name}");
 
@@ -150,35 +159,31 @@ namespace Assets
                     {
                         targetReaction.React(targetActor, () =>
                         {
-                            // Apply Damage
-                            var damage = targetReaction.DamageModifier(skill.Damage + this.GetBaseActor().ATK);
-                            targetActor.GetBaseActor().DealDamage(damage);
-                            targetActor.PlayAudio("Blow1");
+                            skill.ApplyDamageEffects(this, targetActor, targetReaction, onSkillComplete);
+                            //1. Choose Skill
 
-                            // Appply Posture
-                            var postureDamage = targetReaction.PostureModifier(skill.PostureDamage);
-                            var broken = targetActor.GetBaseActor().DealPostureDamage(postureDamage);
-                            if (broken)
-                            {
-                                UIManager.GetInstance().AddToStoneSlab("Posture break!");
-                                BattleManager.GetInstance().RepeatTurn(); //Posture break check
-                            }
+                            //2. Skill Warmpup (Pre-reaction choice) (move near enemy)
+                             
+                            //3. Reaction Choice ( )
 
+                            //3. Skill PostReaction (move degree 90)
 
-                            // Apply Knockback
-                            var direction = (targetActor.transform.position - this.transform.position).normalized;
-                            if (skill.Tags.Contains(SKILLTAG.KNOCKBACK_AIR)) direction = (direction + Vector3.up).normalized;
-                            targetActor.ApplyKnockback(direction, targetReaction.KnockbackModifier(skill.KnockbackForce), () =>
-                            {
-                                onSkillComplete();
-                            });
+                            //4. Reaction WarmUp (chose dodge direction)
+
+                            //5. Skill Perform (Skill anim starts)
+
+                            //6. Reaction Perform (
+
+                            //7. Skill PostPerform
+
+                            //8. Reaction PostPerform
                         });
                     });
                 });
             });
         }
 
-        private void ApplyKnockback(Vector3 direction, float force, Action onKnockbackFinished)
+        public void ApplyKnockback(Vector3 direction, float force, Action onKnockbackFinished)
         {
             var animator = this.GetComponent<Animator>();
 
@@ -193,6 +198,8 @@ namespace Assets
 
                 //Force
                 this.MoveToPosition(transform.position + direction.normalized * force, MoveState.Sliding, () => { animator.Play("Idle"); onKnockbackFinished(); });
+                //Blood particles
+                //GetComponentInChildren<ParticleSystem>().Play();
 
             }
             else
@@ -210,6 +217,27 @@ namespace Assets
             this.onMoveComplete = onMoveComplete;
             this.state = state;
         }
+
+        public System.Collections.IEnumerator MoveSpherically(Vector3 center, Vector3 endpos, Action onMoveComplete)
+        {
+            var starttime = Time.time;
+            var journeytime = 3f;
+            Vector3 relStart = transform.position - center;
+            Vector3 relEnd = endpos - center;
+            float fracComplete = 0;
+
+            while (fracComplete < 1 - float.Epsilon)
+            {
+
+                fracComplete = (Time.time - starttime) / journeytime;
+                transform.position = Vector3.Slerp(relStart, relEnd, fracComplete);
+                transform.position += center;
+                yield return 0;
+            }
+
+            onMoveComplete();
+        }
+
 
         public void Move(Vector3 direction, Action onMoveComplete)
         {
@@ -348,6 +376,24 @@ namespace Assets
                     rigidbody.velocity = mirroredVelocity;
                 }
             }
+        }
+
+        public void TriggerHitstop(float duration)
+        {
+            Time.timeScale = 0.0f; // Pause the game
+            StartCoroutine(ResumeTimeScale(duration));
+        }
+
+        // Coroutine to resume normal time scale after a duration
+        private IEnumerator ResumeTimeScale(float duration)
+        {
+            yield return new WaitForSecondsRealtime(duration);
+            Time.timeScale = 1f; // Restore the original time scale
+        }
+
+        float LinearMap(float input, float inputMin, float inputMax, float outputMin, float outputMax)
+        {
+            return outputMin + (outputMax - outputMin) * ((input - inputMin) / (inputMax - inputMin));
         }
     }
 }

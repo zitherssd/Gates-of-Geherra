@@ -24,8 +24,11 @@ namespace Assets
         [SerializeField] private bool waitingForSwipe = false;
 
         private BaseActorBattler selectedTarget;
+        private Vector3 selectedTargetPoint;
         private Vector2 selectedSwipeDirection;
         private Vector2 delta;
+        private Action onTargetPointSelected;
+        private bool waitingForTargetPoint;
 
         public static InputManager GetInstance()
         {
@@ -44,27 +47,25 @@ namespace Assets
 
         private void Update()
         {
-            Debug.Log(Move.action.phase);
-            Debug.Log(Move.action.ReadValue<Vector2>());
-            //if (waitingForTurn)
-            //{
-            //    if (Move.action.phase == InputActionPhase.Performed)
-            //    {
-            //        var delta = Move.action.ReadValue<Vector2>();
-            //        battleManager.GetActiveActor().Move(delta, onTurnEnd);
-            //        waitingForTurn = false;
-            //        DisableInput();
-            //    }
-            //}
+            if (!inputEnabled)
+                return;
 
-            //if (!inputEnabled)
-            //    return;
+            var startpos = StartPos.action.ReadValue<Vector2>();
+            var endpos = EndPos.action.ReadValue<Vector2>();
+            var moveVector = endpos - startpos;
 
-            //if (waitingForTarget)
-            //    CheckForTarget(StartPos.action.ReadValue<Vector2>());
+            if (waitingForTarget)
+                CheckForTarget(startpos);
 
-            ////if (waitingForSwipe)
-            ////    CheckForSwipe(move);
+            if (waitingForTurn)
+                CheckForTurn(moveVector);
+
+            if (waitingForSwipe)
+                CheckForSwipe(moveVector);
+
+            if (waitingForTargetPoint)
+                CheckForTargetPoint(startpos);
+
         }
 
         private void CheckForTarget(Vector2 startpos)
@@ -111,6 +112,19 @@ namespace Assets
             }
         }
 
+        private void CheckForTargetPoint(Vector2 endpos)
+        {
+            {
+                Debug.Log(endpos);
+                DisableInput();
+                waitingForTargetPoint = false;
+                selectedTargetPoint = Camera.main.ScreenToWorldPoint(endpos);
+            }
+
+
+        }
+
+
         private IEnumerator WaitForMove(Action onDeltaObtained)
         {
             Move.action.Enable();
@@ -147,17 +161,6 @@ namespace Assets
                 waitingForTurn = false;
                 DisableInput();
             });
-
-            StartCoroutine(WaitForMove(() =>
-            {
-                if (waitingForTurn)
-                {
-                    battleManager.GetActiveActor().Move(delta, onTurnEnd);
-                    ButtonHandler.KillAll();
-                    waitingForTurn = false;
-                    DisableInput();
-                }
-            }));
 
             this.onTurnEnd = onTurnEnd;
             waitingForTurn = true;
@@ -199,7 +202,7 @@ namespace Assets
             //Start coroutine called GetSwipe(
         }
 
-        public void WaitForTarget(Action onTargetSelected)
+        public void WaitForTargetActor(Action onTargetSelected)
         {
             UIManager.GetInstance().ChangeStatus("SELECT TARGET");
             if (battleManager.GetActiveActor().isControllable())
@@ -216,6 +219,21 @@ namespace Assets
                 onTargetSelected?.Invoke();
             }
         }
+
+        public void WaitForTargetPoint(Action onTargetPointSelected)
+        {
+            UIManager.GetInstance().ChangeStatus("SELECT TARGET POINT");
+            EnableInput();
+            this.onTargetPointSelected = onTargetPointSelected;
+            waitingForTargetPoint = true;
+        }
+
+        public Vector3 GetSelectedTargetPoint()
+        {
+            UIManager.GetInstance().ChangeStatus(string.Empty);
+            return selectedTargetPoint;
+        }
+
 
         public BaseActorBattler GetSelectedTarget()
         {

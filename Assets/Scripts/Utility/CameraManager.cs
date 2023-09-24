@@ -7,7 +7,9 @@ namespace Assets
     {
         private Vector3 targetPosition;
         private Vector3 targetRotation;
-
+        private float shakeDuration = 0f;
+        private float shakeMagnitude = 0.7f;
+        private float dampingSpeed = 1.0f;
 
 
         private BattleManager battleManager;
@@ -32,7 +34,9 @@ namespace Assets
             var enemy = battleManager.EnemyActors[0].transform.position;
 
             var distvector = (enemy + player) / 2; //start point
+            distvector = new Vector3(distvector.x, 0, distvector.z);
             var directionvector = (enemy - player) / 2;
+            directionvector = new Vector3(directionvector.x, 0, directionvector.z);
 
             if(!Override)
             {
@@ -44,8 +48,15 @@ namespace Assets
             var blue = Vector3.Cross(directionvector, Vector3.up).normalized;
             var newposition = distvector + Vector3.up * UpDistance + -blue * BackDistance;
 
-            transform.position = newposition;
-
+            if (shakeDuration > 0)
+            {
+                transform.position = newposition + Random.insideUnitSphere * shakeMagnitude;
+                shakeDuration -= Time.deltaTime * dampingSpeed;
+            }
+            else
+            {
+                transform.position = newposition;
+            } 
 
             transform.LookAt(distvector + Vector3.up * 1.5f);
 
@@ -54,6 +65,12 @@ namespace Assets
         float LinearMap(float input, float inputMin, float inputMax, float outputMin, float outputMax)
         {
             return outputMin + (outputMax - outputMin) * ((input - inputMin) / (inputMax - inputMin));
+        }
+
+        public void TriggerShake(float duration, float magnitude)
+        {
+            shakeDuration = duration;
+            shakeMagnitude = magnitude;
         }
     }
 }
