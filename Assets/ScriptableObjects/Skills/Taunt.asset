@@ -14,13 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Taunt
   Rarity: 0
-  TotalUses: 0
+  TotalUses: 1
   remainingUses: 0
   Speed: 0
   AnimationType: 0
   SkillType: 2
   TargetOption: 1
-  Tags: 0500000006000000
+  Tags: 05000000
   Range: 0
   Damage: 0
   PostureDamage: 0

@@ -18,10 +18,10 @@ MonoBehaviour:
   remainingUses: 0
   Speed: 0
   AnimationType: 1
-  AttackType: 0
+  SkillType: 0
   TargetOption: 1
   Tags: 00000000
   Range: 3
   Damage: 3
-  PostureDamage: 5
-  KnockbackForce: 3
+  PostureDamage: 4
+  KnockbackForce: 1

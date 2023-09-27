@@ -229,6 +229,7 @@ public class UIManager : MonoBehaviour
 
     public IEnumerator TypeTextMiddleLetterByLetter(string text, Action onTypingComplete)
     {
+        MiddleTextbox.color = new Color(MiddleTextbox.color.r, MiddleTextbox.color.g, MiddleTextbox.color.b, 1);
         foreach (char letter in text.ToCharArray())
         {
             MiddleTextbox.text += letter;
@@ -256,6 +257,7 @@ public class UIManager : MonoBehaviour
 
         // Ensure the target color is reached
         MiddleTextbox.color = targetColor;
+        MiddleTextbox.text = string.Empty;
     }
 
     public IEnumerator Fade(bool fadeIn, Action onFadeComplete)

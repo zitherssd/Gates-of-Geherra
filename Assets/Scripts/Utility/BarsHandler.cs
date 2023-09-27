@@ -16,12 +16,12 @@ public class BarsHandler : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        actorData = actor.GetBaseActor();
     }
 
     // Update is called once per frame
     void Update()
     {
+        actorData = actor.GetBaseActor();
         hpBar.value = actorData.GetCurrentHP() / actorData.baseHP;
         postureBar.value = actorData.GetCurrentPosture() / actorData.basePosture;
 

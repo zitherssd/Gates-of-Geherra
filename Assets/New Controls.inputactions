@@ -6,106 +6,84 @@
             "id": "2c093099-ca1e-4a05-b2db-30b3c47440e4",
             "actions": [
                 {
-                    "name": "StartPosition",
-                    "type": "Value",
-                    "id": "28fa72c5-f273-435e-8e9d-fd5b79ec49a9",
-                    "expectedControlType": "Vector2",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
-                    "name": "EndPosition",
-                    "type": "Value",
-                    "id": "ceb17d8e-17b4-44c2-8e62-b0a7df3ae29b",
-                    "expectedControlType": "Vector2",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
-                    "name": "DoubleTap",
+                    "name": "PressBegin",
                     "type": "Button",
-                    "id": "0465bf07-221a-45de-8325-7d4620ac85c8",
+                    "id": "e9fac833-99df-4b3a-bafd-96e750aaea2b",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "MultiTap",
-                    "initialStateCheck": true
+                    "interactions": "Press",
+                    "initialStateCheck": false
                 },
                 {
-                    "name": "Move",
-                    "type": "Value",
-                    "id": "9f0d75c3-6c29-4745-acfe-f6ebe0474a66",
-                    "expectedControlType": "Vector2",
-                    "processors": "NormalizeVector2",
+                    "name": "PressEnd",
+                    "type": "Button",
+                    "id": "2cf99876-4370-4881-8617-42cc864cd76c",
+                    "expectedControlType": "Button",
+                    "processors": "",
                     "interactions": "Press(behavior=1)",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "PressHold",
+                    "type": "Button",
+                    "id": "1940fc91-54f2-449f-834a-7e75680c2698",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Hold",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "PressPosition",
+                    "type": "Value",
+                    "id": "b77fbad0-e1de-4c2d-8f9b-6e19b7cc890b",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
                     "initialStateCheck": true
                 }
             ],
             "bindings": [
                 {
                     "name": "",
-                    "id": "a6e2e108-e274-49f2-aaae-aade6735afdc",
-                    "path": "<Touchscreen>/primaryTouch/startPosition",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "StartPosition",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "88fe7a9d-f162-4723-9199-a04480c203d9",
-                    "path": "<Touchscreen>/primaryTouch/position",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "EndPosition",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "9d6392f0-0f9d-4699-8d7e-07da2ed2c9a8",
-                    "path": "<Touchscreen>/touch*/Press",
-                    "interactions": "MultiTap",
-                    "processors": "",
-                    "groups": "",
-                    "action": "DoubleTap",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "da542a7e-1048-43bf-8c0a-63fde5ba0518",
+                    "id": "15bf4962-ccbe-4765-b324-921fa7264bfb",
                     "path": "<Touchscreen>/Press",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "DoubleTap",
+                    "action": "PressBegin",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "4ed13358-ec90-4a51-a282-c59351fd447d",
-                    "path": "<Mouse>/delta",
+                    "id": "173bcc9c-5973-42b9-b7e8-6f81cfd6ee4c",
+                    "path": "<Touchscreen>/Press",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move",
+                    "action": "PressEnd",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "287b0406-b041-4b26-a5d5-8fe16f22e287",
-                    "path": "<Touchscreen>/delta",
+                    "id": "720fac27-b91b-4241-89c1-af921eb1f228",
+                    "path": "<Touchscreen>/position",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move",
+                    "action": "PressPosition",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6f7820c6-7ca7-4c18-a708-8fe78cfadaa9",
+                    "path": "<Touchscreen>/Press",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "PressHold",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

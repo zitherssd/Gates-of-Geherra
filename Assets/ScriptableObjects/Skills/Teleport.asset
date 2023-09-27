@@ -12,15 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d0c263cb04d7f3408086e343db9bc31, type: 3}
   m_Name: Teleport
   m_EditorClassIdentifier: 
-  Name: Teleport
+  Name: 'Omae wa mou '
   Rarity: 0
   TotalUses: 0
   remainingUses: 0
   Speed: 0
-  AnimationType: 0
+  AnimationType: 6
   SkillType: 3
-  TargetOption: 1
-  Tags: 0500000006000000
+  TargetOption: 0
+  Tags: 06000000
   Range: 0
   Damage: 0
   PostureDamage: 0

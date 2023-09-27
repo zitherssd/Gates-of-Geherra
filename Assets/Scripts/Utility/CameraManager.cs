@@ -30,6 +30,7 @@ namespace Assets
         // Update is called once per frame
         void Update()
         {
+            Vector3 targetpos;
             var player = battleManager.PlayerActors[0].transform.position;
             var enemy = battleManager.EnemyActors[0].transform.position;
 
@@ -50,14 +51,15 @@ namespace Assets
 
             if (shakeDuration > 0)
             {
-                transform.position = newposition + Random.insideUnitSphere * shakeMagnitude;
+                targetpos = newposition + Random.insideUnitSphere * shakeMagnitude;
                 shakeDuration -= Time.deltaTime * dampingSpeed;
             }
             else
             {
-                transform.position = newposition;
-            } 
+                targetpos = newposition;
+            }
 
+            transform.position = Vector3.Lerp(transform.position, targetpos, 0.1f);
             transform.LookAt(distvector + Vector3.up * 1.5f);
 
         }
