@@ -14,14 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Low Kick
   Rarity: 0
+  cooldownTurns: 1
   TotalUses: 2
   remainingUses: 0
   Speed: 0
+  currentCooldownTurns: 0
   AnimationType: 2
   SkillType: 0
   TargetOption: 1
   Tags: 
-  Range: 3
+  Range: 2.5
   Damage: 4
   PostureDamage: 6
   KnockbackForce: 5
+  SelfForce: 2

@@ -14,14 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Fast Jab
   Rarity: 0
+  cooldownTurns: 0
   TotalUses: 2
   remainingUses: 0
   Speed: 1
+  currentCooldownTurns: 0
   AnimationType: 1
   SkillType: 0
   TargetOption: 1
   Tags: 00000000
-  Range: 2.5
+  Range: 2
   Damage: 3.5
   PostureDamage: 3
   KnockbackForce: 2
+  SelfForce: 0.6

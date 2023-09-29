@@ -13,7 +13,7 @@ namespace Assets
         private Action onTurnEnd = null;
         private Action<BaseActorBattler> onTargetSelected = null;
         private Action<Vector2> onSwipeGot = null;
-        private Action<Vector3> onTargetPointSelected;
+        private Action<Vector3> onTargetPointSelected = null;
 
         private void Awake()
         {
@@ -28,15 +28,23 @@ namespace Assets
 
         public void WaitForTurn(Action onTurnEnd)
         {
+            InputHandler.instance.enabled = false;
+            InputHandler.instance.enabled = true;
             InputHandler.instance.OnSwipe += MoveActor;
             InputHandler.instance.OnHold += EndTurn;
 
             this.onTurnEnd = onTurnEnd;
+            var skillsToDraw = battleManager.GetActiveActor().GetValidStartComboSkills();
 
-            UIManager.GetInstance().DrawActiveActorSkills(() => //one shot option for the skill
+            UIManager.GetInstance().DrawSkillsAndWaitForSelectionOrNull(skillsToDraw, selectedSkill =>    //one shot option for the skill
             {
                 InputHandler.instance.OnSwipe -= MoveActor;
-                battleManager.GetActiveActor().UseSkill(UIManager.GetInstance().GetSelectedSkill(), onTurnEnd);
+                InputHandler.instance.OnHold -= EndTurn;
+
+                if (selectedSkill == null)
+                    onTurnEnd();
+                else
+                    battleManager.GetActiveActor().StartCombo(selectedSkill, onTurnEnd);
             });
         }
         private void MoveActor(Vector2 delta)
@@ -48,10 +56,18 @@ namespace Assets
             battleManager.GetActiveActor().MoveRelativeToCamera(delta.normalized, () =>
             {
                 InputHandler.instance.OnHold += EndTurn;
-                UIManager.GetInstance().DrawActiveActorSkills(() => //one shot option for the skill
+
+                if  (battleManager.GetActiveActor().GetValidStartComboSkills().Count == 0) { EndTurn(Vector2.zero); return; }; //Automatically end turn if no valid skills
+
+                var skillsToDraw = battleManager.GetActiveActor().GetValidStartComboSkills();
+                UIManager.GetInstance().DrawSkillsAndWaitForSelectionOrNull(skillsToDraw, selectedSkill =>    //one shot option for the skill
                 {
-                    battleManager.GetActiveActor().UseSkill(UIManager.GetInstance().GetSelectedSkill(), onTurnEnd);
-                    //waitingForTurn = false;
+                    InputHandler.instance.OnHold -= EndTurn;
+
+                    if (selectedSkill == null)
+                        onTurnEnd();
+                    else
+                        battleManager.GetActiveActor().StartCombo(selectedSkill, onTurnEnd);
                 });
             });
         }
@@ -65,6 +81,7 @@ namespace Assets
 
         public void WaitForSwipe(Action<Vector2> onSwipeGot)
         {
+            Time.timeScale = 0f;
             UIManager.GetInstance().ChangeStatus("SWIPE TO CHOOSE DIRECTION");
             this.onSwipeGot = onSwipeGot;
             InputHandler.instance.OnSwipe += OnSwipeRecieved;
@@ -73,6 +90,7 @@ namespace Assets
         {
             UIManager.GetInstance().ChangeStatus(string.Empty);
             InputHandler.instance.OnSwipe -= OnSwipeRecieved;
+            Time.timeScale = 1f;
             onSwipeGot?.Invoke(direction);
         }
 

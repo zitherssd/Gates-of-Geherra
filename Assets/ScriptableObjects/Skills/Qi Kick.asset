@@ -14,14 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Qi Kick
   Rarity: 0
+  cooldownTurns: 1
   TotalUses: 1
   remainingUses: 1
   Speed: 0
+  currentCooldownTurns: 0
   AnimationType: 4
   SkillType: 0
   TargetOption: 1
   Tags: 0000000004000000
   Range: 2
   Damage: 6
-  PostureDamage: 12
-  KnockbackForce: 4
+  PostureDamage: 6
+  KnockbackForce: 6
+  SelfForce: -2

@@ -22,6 +22,10 @@ MonoBehaviour:
   baseSkills:
   - {fileID: 11400000, guid: 9cc21a5b1be74d54c92d4a9df41fe25b, type: 2}
   - {fileID: 11400000, guid: 369a53d3c0b8136438ffa364125fd5f6, type: 2}
+  - {fileID: 11400000, guid: 744fcc040a82dd341afc7f704b4fc8b2, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   baseReactions:
   - {fileID: 11400000, guid: f272d4950a245d34d9c22f8bc60d7882, type: 2}
   - {fileID: 11400000, guid: e1de275c6a1741e4091bfa7141119117, type: 2}
@@ -29,13 +33,17 @@ MonoBehaviour:
   skills:
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   reactions:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  currentHp: 48.6
+  currentHp: 23.000002
   currentBuildup: 0
-  currentPosture: 21
+  currentPosture: 25
   ATK: 1
   DEF: 1
   AGI: 2

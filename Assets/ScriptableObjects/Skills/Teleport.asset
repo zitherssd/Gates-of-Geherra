@@ -20,8 +20,9 @@ MonoBehaviour:
   AnimationType: 6
   SkillType: 3
   TargetOption: 0
-  Tags: 06000000
+  Tags: 07000000
   Range: 0
   Damage: 0
   PostureDamage: 0
   KnockbackForce: 0
+  SelfForce: 0

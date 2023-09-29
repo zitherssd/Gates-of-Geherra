@@ -4,7 +4,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
 using UnityEngine;
 
 namespace Assets
@@ -13,13 +12,13 @@ namespace Assets
     {
         [SerializeField]
         public Actor Actor;
-        private MoveState state;
+        public MoveState currentState;
         private GameObject selectionCircle;
         private Vector3 slideTargetPosition;
         private Action onMoveComplete;
         private Action onAnimationHitComplete;
         private Animator animator;
-        private Rigidbody rigidbody;
+        public Rigidbody rigidbody;
         private float lastSqrMag;
         private bool cancelMoveCallback;
         private AudioSource audioSource;
@@ -27,16 +26,9 @@ namespace Assets
         internal bool collisionOccured;
         public GameObject damagePopupPrefab;
         public GameObject posturePopupPrefab;
+        public LayerMask layer;
 
-        public enum MoveState
-        {
-            Idle,
-            Knockback,
-            Sliding,
-            Move,
-            Busy,
-            Slerp
-        }
+
 
         private void Awake()
         {
@@ -44,16 +36,15 @@ namespace Assets
             rigidbody = gameObject.GetComponent<Rigidbody>();
             animator = gameObject.GetComponent<Animator>();
             selectionCircle = GameObject.FindGameObjectWithTag("SelectionCircle");
-            state = MoveState.Idle;
+            currentState = MoveState.Idle;
 
             //var cc = GetComponentInChildren<ColorController>();
             //cc.mainColor = baseActor.mainColor;
             //cc.secondaryColor = baseActor.secondaryColor;
         }
-
         private void Update()
         {
-            switch (state)
+            switch (currentState)
             {
                 case MoveState.Idle:
                     break;
@@ -61,7 +52,7 @@ namespace Assets
 
                     if (rigidbody.velocity.magnitude < 0.01f)
                     {
-                        state = MoveState.Idle;
+                        currentState = MoveState.Idle;
                         onMoveComplete();
                     }
 
@@ -76,7 +67,7 @@ namespace Assets
                     if (sqrMag > lastSqrMag)
                     {
                         rigidbody.velocity = Vector3.zero;
-                        state = MoveState.Idle;
+                        currentState = MoveState.Idle;
                         if (!cancelMoveCallback)
                             onMoveComplete();
                         else return;
@@ -85,6 +76,8 @@ namespace Assets
                     lastSqrMag = sqrMag;
                     break;
                 case MoveState.Knockback:
+                    if (rigidbody.velocity.magnitude < 0 + float.Epsilon)
+                        currentState = MoveState.Idle;
                     break;
                 case MoveState.Slerp:
                     sqrMag = (slideTargetPosition - transform.position).sqrMagnitude;
@@ -94,7 +87,7 @@ namespace Assets
                     if (sqrMag > lastSqrMag)
                     {
                         rigidbody.velocity = Vector3.zero;
-                        state = MoveState.Idle;
+                        currentState = MoveState.Idle;
                         if (!cancelMoveCallback)
                             onMoveComplete();
                         else return;
@@ -104,7 +97,6 @@ namespace Assets
                     break;
             }
         }
-
         public void Initialize()
         {
             var actor = GetBaseActor();
@@ -112,16 +104,102 @@ namespace Assets
             //actor.OnPostureDamage += ShowPosturePopup;
         }
 
+
+
+        public void StartCombo(Action onComboEnd)
+        {
+            //Pre-emptive check
+            List<BaseSkill> validSkills = GetValidStartComboSkills();
+            if (validSkills.Count == 0)
+            {
+                onComboEnd();
+                return;
+            }
+
+            //Flow for player
+            if (isControllable())
+            {
+                UIManager.GetInstance().DrawSkillsAndWaitForSelectionOrNull(validSkills, selectedSkill =>
+                {
+                    if (selectedSkill == null) onComboEnd();
+                    else
+                    {
+                        if (selectedSkill.Tags.Contains(SKILLTAG.FINISHER)) UseSkill(selectedSkill, onComboEnd);
+                        else UseSkill(selectedSkill, () => ContinueCombo(onComboEnd));
+                    }
+                });
+                //Draw all valid skills and Wait for selecting a skill.
+                //If Skill has been selected > Use that skill > OnSkillComplete call continue Combo
+                //if SKill is null call onComboEnd
+                return;
+            }
+
+            //Flow for enemy
+            var selectedSkill = validSkills[RandomFromList(validSkills.Count)];
+            if (selectedSkill.Tags.Contains(SKILLTAG.FINISHER)) UseSkill(selectedSkill, onComboEnd);
+            else UseSkill(selectedSkill, () => ContinueCombo(onComboEnd));
+        }
+        public void StartCombo(BaseSkill skill, Action onComboEnd)
+        {
+            if (skill.Tags.Contains(SKILLTAG.FINISHER)) UseSkill(skill, onComboEnd);
+            else UseSkill(skill, () => ContinueCombo(onComboEnd));
+        }
+        public void ContinueCombo(Action onComboEnd)
+        {
+            //If enemy is dead return to onComboEnd
+            if (BattleManager.GetInstance().TestBattleOver())
+            {
+                onComboEnd();
+                return;
+            }
+
+            //Pre-emptive check
+            List<BaseSkill> validSkills = GetValidContinueComboSkills();
+            if (validSkills.Count == 0)
+            {
+                onComboEnd();
+                return;
+            }
+
+            //Flow for Player
+            if (isControllable())
+            {
+                Time.timeScale = 0f;
+                UIManager.GetInstance().DrawSkillsAndWaitForSelectionOrNull(validSkills, selectedSkill =>
+                {
+                    if (selectedSkill == null)
+                    {
+                        onComboEnd();
+                        Time.timeScale = 1f;
+                    }
+                    else
+                    {
+                        if (selectedSkill.Tags.Contains(SKILLTAG.FINISHER)) UseSkill(selectedSkill, onComboEnd);
+                        else UseSkill(selectedSkill, () => ContinueCombo(onComboEnd));
+                        Time.timeScale = 1f;
+                    }
+                });
+                return;
+            }
+
+            //Flow for Enemy
+            var selectedSkill = validSkills[RandomFromList(validSkills.Count)];
+            if (selectedSkill.Tags.Contains(SKILLTAG.FINISHER)) UseSkill(selectedSkill, onComboEnd);
+            else UseSkill(selectedSkill, () => ContinueCombo(onComboEnd));
+        }
         public void UseSkill(BaseSkill skill, Action onSkillComplete)
         {
-            if (skill.TotalUses != 0)
-                skill.remainingUses -= 1;
+            skill.UpdateReaminingUses();
+            skill.ResetCooldown();
 
             UIManager.GetInstance().SetTextThenFade($"{this.GetBaseActor().Name} uses {skill.Name}!", 0.5f);
 
-            if (skill.TargetOption == TARGETINGOPTION.ENEMY && isControllable())
+            if (isControllable())
             {
-                InputManager.instance.WaitForTargetActor(targetActor => PerformSkillOnTarget(skill, targetActor, onSkillComplete));
+                if (skill.TargetOption == TARGETINGOPTION.ENEMY)
+                    InputManager.instance.WaitForTargetActor(targetActor => PerformSkillOnTarget(skill, targetActor, onSkillComplete));
+                if (skill.TargetOption == TARGETINGOPTION.SELF)
+                    PerformSkillOnSelf(skill, onSkillComplete);
                 return;
             }
 
@@ -129,7 +207,7 @@ namespace Assets
             {
                 //Enemy attacking me
                 var targetActor = BattleManager.GetInstance().PlayerActors[0];
-                UIManager.GetInstance().DrawAllActorReactionsAboveSpeed(targetActor, skill.Speed, () => PerformSkillOnTarget(skill, targetActor, onSkillComplete));
+                PerformSkillOnTarget(skill, targetActor, onSkillComplete);
                 return;
             }
 
@@ -139,74 +217,46 @@ namespace Assets
             }
         }
 
-        private void PerformSkillOnSelf(BaseSkill skill, Action onSkillComplete)
+
+
+        public List<BaseSkill> GetValidContinueComboSkills()
         {
-            skill.WarmUp(this, null, () =>
-            {
-                UIManager.GetInstance().AddToStoneSlab($"{this.GetBaseActor().Name} uses {skill.Name}");
-                skill.PerformSelf(this, onSkillComplete);
-            });
+            return Actor.skills.Where(skill => skill.IsValid(this) && !skill.Tags.Contains(SKILLTAG.STARTER)).ToList();
+        }
+        public List<BaseSkill> GetValidStartComboSkills()
+        {
+            return Actor.skills.Where(skill => skill.IsValid(this)).ToList();
+        }
+        public List<BaseReaction> GetValidReactionsForSkill(BaseSkill skill)
+        {
+            return Actor.reactions.Where(reaction => reaction.IsValid(this)).ToList();
         }
 
-        private void PerformSkillOnTarget(BaseSkill skill, BaseActorBattler targetActor, Action onSkillComplete)
-        {
 
-            BaseReaction targetReaction;
-            if (skill.Tags.Contains(SKILLTAG.NO_REACTION))
-            {
-                targetReaction = BaseReaction.NoReaction;
-            }
-            else
-            {
-                if(targetActor.isControllable())
-                {
-                    targetReaction = UIManager.GetInstance().GetSelectedReaction();
-                }
-                else
-                {
-                    targetReaction = targetActor.ChooseValidReactionAtRandom(skill.Speed);
-                }
-            }
 
-            skill.WarmUp(this, targetActor, () =>
-            {
-                targetReaction.WarmUp(targetActor, () =>
-                {
-                    skill.PerformTarget(this, targetActor, targetReaction, () =>
-                    {
-                        targetReaction.React(targetActor, () =>
-                        {
-                            skill.ApplyDamageEffects(this, targetActor, targetReaction, onSkillComplete);
-                        });
-                    });
-                });
-            });
-        }
-
-        public void ApplyKnockback(Vector3 direction, float force, Action onKnockbackFinished)
+        public void ApplyKnockback(Vector3 direction, float force)
         {
             var animator = this.GetComponent<Animator>();
-
             if (force > 0)
             {
                 //Animation
                 if (!isBlocking)
+                {
                     if (direction.y > 0.1)
                         animator.Play("HurtAir");
                     else
                         animator.Play("HurtGround");
+                    currentState = MoveState.Knockback;
+                }
 
                 //Force
-                this.MoveToPosition(transform.position + direction.normalized * force, MoveState.Sliding, () => { animator.Play("Idle"); onKnockbackFinished(); });
+                rigidbody.AddForce(direction * 100 * force);
+
+                //this.MoveToPosition(transform.position + direction.normalized * force, MoveState.Sliding, () => { animator.Play("Idle"); onKnockbackFinished(); });
                 //Blood particles
                 //GetComponentInChildren<ParticleSystem>().Play();
-
             }
-            else
-                onKnockbackFinished();
-
         }
-
         public void MoveToPosition(Vector3 TargetPosition, MoveState state, Action onMoveComplete)
         {
             if (state == MoveState.Sliding)
@@ -215,9 +265,8 @@ namespace Assets
             lastSqrMag = Mathf.Infinity;
             this.slideTargetPosition = TargetPosition;
             this.onMoveComplete = onMoveComplete;
-            this.state = state;
+            this.currentState = state;
         }
-
         public void Move(Vector3 direction, Action onMoveComplete)
         {
             UIManager.GetInstance().AddToStoneSlab($"{Actor.Name} moves");
@@ -226,10 +275,9 @@ namespace Assets
             lastSqrMag = Mathf.Infinity;
             this.slideTargetPosition = transform.position + (direction * Actor.AGI);
             this.onMoveComplete = onMoveComplete;
-            this.state = MoveState.Move;
+            this.currentState = MoveState.Move;
 
         }
-
         public void MoveRelativeToCamera(Vector2 direction, Action onMoveComplete)
         {
             var camera = Camera.main;
@@ -240,43 +288,77 @@ namespace Assets
             var desiredMoveDirection = forward * direction.y + right * direction.x;
             Move(desiredMoveDirection, onMoveComplete);
         }
-
         public void PlayAnimation(string AnimationName, Action onAnimationHitComplete)
         {
-            animator.Play(AnimationName);
+            animator.Play(AnimationName, -1, 0);
             this.onAnimationHitComplete = onAnimationHitComplete;
         }
         public void PlayAnimation(string AnimationName)
         {
-            animator.Play(AnimationName);
+            animator.Play(AnimationName, -1, 0);
         }
 
-        public BaseReaction ChooseValidReactionAtRandom(int minimumReactionSpeed)
+
+
+        private void PerformSkillOnSelf(BaseSkill skill, Action onSkillComplete)
         {
-            List<BaseReaction> validreactions = new List<BaseReaction>();
-
-            validreactions = Actor.reactions.Where(reaction => reaction.Speed >= minimumReactionSpeed && reaction.HasUsesLeft()).ToList();
-            if (validreactions.Count == 0) return BaseReaction.NoReaction;
-
-            var random = new System.Random();
-            var index = random.Next(validreactions.Count);
-
-            return validreactions[index];
+            skill.WarmUp(this, null, () =>
+            {
+                UIManager.GetInstance().AddToStoneSlab($"{this.GetBaseActor().Name} uses {skill.Name}");
+                skill.PerformSelf(this, onSkillComplete);
+            });
         }
-
-        public BaseSkill ChooseValidSkillAtRandom()
+        private void PerformSkillOnTarget(BaseSkill skill, BaseActorBattler targetActor, Action onSkillComplete)
         {
-            List<BaseSkill> validskills = new List<BaseSkill>();
-
-            validskills = Actor.skills.Where(skills => skills.IsValid(this)).ToList();
-
-            if (validskills.Count == 0) return new BaseSkill { TargetOption = TARGETINGOPTION.SELF, Name = "Nothing" };
-
-            var random = new System.Random();
-            var index = random.Next(validskills.Count);
-
-            return validskills[index];
+            //No reaction tag check
+            if (skill.Tags.Contains(SKILLTAG.NO_REACTION))
+            {
+                PerformSkillFlow(skill, targetActor, BaseReaction.NoReaction, onSkillComplete);
+            }
+            else
+            {
+                //Get all valid reactions
+                var validReactions = targetActor.GetValidReactionsForSkill(skill);
+                if(targetActor.isControllable())
+                {
+                    //Player handling
+                    Time.timeScale = 0f;
+                    UIManager.GetInstance().DrawReactionsAndWaitForSelectionOrNull(validReactions, selectedReaction =>
+                    {
+                        Time.timeScale = 1f;
+                        PerformSkillFlow(skill, targetActor, selectedReaction, onSkillComplete);
+                    });
+                    return;
+                }
+                else
+                {
+                    //Enemy handling
+                    PerformSkillFlow(skill, targetActor, validReactions[RandomFromList(validReactions.Count)], onSkillComplete);
+                }
+            }
         }
+        private void PerformSkillFlow(BaseSkill skill, BaseActorBattler targetActor, BaseReaction targetReaction, Action onSkillComplete)
+        {
+            skill.WarmUp(this, targetActor, () =>
+            {
+                targetReaction.WarmUp(targetActor, () =>
+                {
+                    skill.PerformTarget(this, targetActor, targetReaction, () =>
+                    {
+                        targetReaction.React(targetActor, () =>
+                        {
+                            // Range check
+                            if (Vector3.Distance(this.transform.position, targetActor.transform.position) <= skill.Range)
+                                skill.ApplyDamageEffects(this, targetActor, targetReaction, onSkillComplete);
+                            else
+                                onSkillComplete();
+                        });
+                    });
+                });
+            });
+        }
+
+
 
         public BaseSkill ChooseValidSkillAtRandomOrReturnNull()
         {
@@ -291,46 +373,46 @@ namespace Assets
 
             return validskills[index];
         }
-
         public void PlayAudio(string clipName)
         {
             var clip = SoundManager.instance.GetAudioClipByName(clipName);
             audioSource.clip = clip;
             audioSource.Play();
         }
-
         public void ShowSelectionCircle()
         {
             selectionCircle.GetComponent<SelectionCircle>().target = this.transform;
         }
-
         public void AnimationHit()
         {
             onAnimationHitComplete();
         }
-
         public void ResetFlags()
         {
             isBlocking = false;
             collisionOccured = false;
+            foreach(var skill in Actor.skills)
+            {
+                skill.UpdateCooldown();
+            }
+            foreach(var reaction in Actor.reactions)
+            {
+                reaction.UpdateCooldown();
+            }
         }
-
         public bool isControllable()
         {
             return Actor.Controllable;
         }
-
         public Actor GetBaseActor()
         {
             return Actor;
         }
-
         public Actor SetBaseActor(Actor actor)
         {
             Actor = actor;
             return Actor;
         }
-
         private void OnCollisionEnter(Collision collision)
         {
             var velocityThreshold = 1;
@@ -343,7 +425,7 @@ namespace Assets
                 Debug.Log($"Velocity on collision is {rigidbody.velocity.magnitude / Time.deltaTime}");
 
                 UIManager.GetInstance().AddToStoneSlab($"{Actor.Name} hits a wall!");
-                Actor.DealPostureDamage(5f);
+                if (Actor.DealPostureDamage(5f)) HandlePostureBreak();
                 collisionOccured = true;
 
                 // Check if velocity magnitude is greater than the threshold
@@ -357,23 +439,17 @@ namespace Assets
                 }
             }
         }
-
         public void TriggerHitstop(float duration)
         {
             Time.timeScale = 0.0f; // Pause the game
             StartCoroutine(ResumeTimeScale(duration));
         }
-
-        // Coroutine to resume normal time scale after a duration
         private IEnumerator ResumeTimeScale(float duration)
         {
             yield return new WaitForSecondsRealtime(duration);
             Time.timeScale = 1f; // Restore the original time scale
         }
-
-       
-
-        public void HandlePostureBreak(Actor actor)
+        public void HandlePostureBreak()
         {
             TriggerHitstop(0.5f);
             PlayAnimation("PostureBroken");
@@ -381,12 +457,10 @@ namespace Assets
             UIManager.GetInstance().AddToStoneSlab("Posture break!");
             BattleManager.GetInstance().RepeatTurn(); //Posture break check
         }
-
         public void HandleOnDeath(Actor actor)
         {
             //PlayAnimation("Down");
         }
-
         public void ShowDamagePopup(float damageAmount)
         {
             // Instantiate the damage popup prefab
@@ -395,7 +469,6 @@ namespace Assets
             popup.GetComponentInChildren<DamagePopup>().Initialize(damageAmount);
 
         }
-
         public void ShowPosturePopup(float damageAmount)
         {
             // Instantiate the damage popup prefab
@@ -405,11 +478,27 @@ namespace Assets
             popup.GetComponentInChildren<DamagePopup>().Initialize(damageAmount);
 
         }
-
+        private int RandomFromList(int count)
+        {
+            var random = new System.Random();
+            var index = random.Next(count);
+            return index;
+        }
         private void OnDestroy()
         {
             GetBaseActor().OnDamageDealt -= ShowDamagePopup;
             GetBaseActor().OnPostureDamage -= ShowPosturePopup;
         }
     }
+
+    public enum MoveState
+    {
+        Idle,
+        Knockback,
+        Sliding,
+        Move,
+        Busy,
+        Slerp
+    }
+
 }

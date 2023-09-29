@@ -30,11 +30,13 @@ namespace Assets.Scripts.Actions
                     var desiredMoveDirection = forward * target.y + right * target.x;
                     actor.PlayAnimation("Step");
 
-                    actor.MoveToPosition(desiredMoveDirection * 6 + actor.transform.position, MoveState.Sliding, () =>
-                    {
+                    actor.rigidbody.AddForce(desiredMoveDirection.normalized * 100 * 2);
+
+                    //actor.MoveToPosition(desiredMoveDirection * 6 + actor.transform.position, MoveState.Sliding, () =>
+                    //{
                         onReactionComplete();
-                        actor.PlayAnimation("Idle"); 
-                    });
+                    //    actor.PlayAnimation("Idle"); 
+                    //});
                     break;
                 case REACTIONTYPE.Block:
                     actor.isBlocking = true;
@@ -79,25 +81,16 @@ namespace Assets.Scripts.Actions
             //Show skill name,
             //Certain special effects
         }
-
-        private void GetSwipeAndUnsubscribe(Vector2 delta, Action onCompletion)
-        {
-            direction = delta;
-            onCompletion.Invoke();
-        }
-
         public override bool IsValid(BaseActorBattler caster, out string InvalidReason)
         {
             InvalidReason = "";
+            if (IsSkillOnCooldown())
+            {
+                InvalidReason = $"usable in {currentCooldownTurns}";
+                return false;
+            }
             return true;
         }
-
-        //public new bool HasUsesLeft()
-        //{
-        //    if (TotalUses == 0) return true;
-        //    if (remainingUses > 0) return true;
-        //    else return false;
-        //}
 
         public enum REACTIONTYPE { NONE, Dodge, Block }
 

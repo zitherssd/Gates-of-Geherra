@@ -3,6 +3,7 @@ using Assets.Scripts.Utility;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Assets
@@ -39,7 +40,7 @@ namespace Assets
             uiManager = UIManager.GetInstance();
             StartCoroutine(uiManager.TypeTextMiddleLetterByLetter($"{PlayerActors[0].GetBaseActor().Name} vs {EnemyActors[0].GetBaseActor().Name}", () =>
             {
-                SoundManager.instance.PlayMusic(null);
+                //SoundManager.instance.PlayMusic(null);
                 StartCoroutine(uiManager.FadeMiddleText(1));
                 StartCoroutine(uiManager.Fade(false, () =>
                 {
@@ -47,10 +48,9 @@ namespace Assets
                     {
                         SetupBattle();
                         if (PlayerActors[0].GetBaseActor().AGI >= EnemyActors[0].GetBaseActor().AGI)
-                            SetActiveCharacterBattle(PlayerActors[0]);
+                            StartPlayerTurn();
                         else
-                            SetActiveCharacterBattle(EnemyActors[0]);
-                        state = State.WaitingForPlayer;
+                            StartEnemyTurn();
                     }));
                 }));
             }));
@@ -80,6 +80,8 @@ namespace Assets
             EnemyActors[0].SetBaseActor(enemy);
             EnemyActors[0].GetBaseActor().Reset();
             EnemyActors[0].PlayAnimation("Idle");
+            PlayerActors[0].PlayAnimation("Idle");
+            PlayerActors[0].GetBaseActor().currentPosture = PlayerActors[0].GetBaseActor().basePosture;
 
             uiManager = UIManager.GetInstance();
             StartCoroutine(uiManager.TypeTextMiddleLetterByLetter($"{PlayerActors[0].GetBaseActor().Name} vs {EnemyActors[0].GetBaseActor().Name}", () =>
@@ -90,10 +92,9 @@ namespace Assets
                     PlayerActors[0].GetBaseActor().Initialize();
 
                     if (PlayerActors[0].GetBaseActor().AGI >= EnemyActors[0].GetBaseActor().AGI)
-                        SetActiveCharacterBattle(PlayerActors[0]);
+                        StartPlayerTurn();
                     else
-                        SetActiveCharacterBattle(EnemyActors[0]);
-                    HandleRegularTurn();
+                        StartEnemyTurn();
                 }));
             }));
         }
@@ -109,26 +110,14 @@ namespace Assets
             activeBattler.ShowSelectionCircle();
         }
 
-        private bool TestBattleOver()
+        public bool TestBattleOver()
         {
-            //foreach battler in PlayerActors check if dead // show enemy wins return true
-            //foreach battler in enemyactors check if dead // show player wins return true
             if (PlayerActors.TrueForAll(actor => actor.GetBaseActor().GetCurrentHP() == 0))
             {
-
-                EnemyActors[0].PlayAnimation("Victory");
-                PlayerActors[0].PlayAnimation("Down");
-                UIManager.GetInstance().ChangeStatus("YOU LOSE");
-                SoundManager.instance.PlaySingle(SoundManager.instance.GetAudioClipByName("Curse2"));
                 return true;
             }
             if (EnemyActors.TrueForAll(actor => actor.GetBaseActor().GetCurrentHP() == 0))
             {
-                EnemyActors[0].PlayAnimation("Down");
-                PlayerActors[0].PlayAnimation("Victory");
-                SoundManager.instance.PlaySingle(SoundManager.instance.GetAudioClipByName("Like"));
-                UIManager.GetInstance().ChangeStatus("YOU WIN!!");
-                FloorManager.GetInstance().ProgressToNextFloor();
                 return true;
             }
             return false;
@@ -221,33 +210,124 @@ namespace Assets
             repeatTurn = true;
         }
 
-        private void Update()
-        {
-            //if (state == State.WaitingForPlayer)
-            //{
-            //    InputManager.instance.WaitForTurn(() =>
-            //    {
-            //        ChooseNextActiveCharacter(); //End the turn on skill completion;
-            //    });
-            //    state = State.Busy;
-            //}
-        }
-
         public BaseActorBattler GetActiveActor()
         {
             return activeBattler;
-        }
-
-        private void ThinkAndAct()
-        {
-            //if out of range of all skills move
-
         }
 
         IEnumerator WaitForSeconds(float seconds, Action onFinishedWaiting)
         {
             yield return new WaitForSeconds(seconds);
             onFinishedWaiting();
+        }
+
+        private void StartPlayerTurn()
+        {
+            UIManager.GetInstance().ChangeStatus("PLAYER TURN");
+            SetActiveCharacterBattle(PlayerActors[0]);
+            InputManager.instance.WaitForTurn(SwitchToNextTurn);
+        }
+        private void StartEnemyTurn()
+        {
+            UIManager.GetInstance().ChangeStatus("ENEMY TURN");
+            SetActiveCharacterBattle(EnemyActors[0]);
+
+            // Enemy Ai here I guess
+            var chosenSkill = EnemyActors[0].ChooseValidSkillAtRandomOrReturnNull();
+            if (chosenSkill == null)
+            {
+                EnemyActors[0].Move((PlayerActors[0].transform.position - EnemyActors[0].transform.position).normalized, () =>
+                {
+                    var chosenSkill = EnemyActors[0].ChooseValidSkillAtRandomOrReturnNull();
+                    if (chosenSkill == null)
+                        SwitchToNextTurn();
+                    else
+                        EnemyActors[0].StartCombo(SwitchToNextTurn);
+                });
+            }
+            else
+                EnemyActors[0].StartCombo(SwitchToNextTurn);
+        }
+        private void SwitchToNextTurn()
+        {
+            StartCoroutine(WaitForMovementCompletion(() =>
+            {
+                if(TestBattleOver())
+                {
+                    End();
+                    return;
+                }
+
+                EnemyActors[0].ResetFlags();
+                PlayerActors[0].ResetFlags();
+
+                // Check if a repeat turn is requested
+                if (repeatTurn)
+                {
+                    // If repeat turn, set isRepeatTurn to false for next turn
+                    repeatTurn = false;
+
+                    // Repeat the turn for the same actor
+                    if (activeBattler == PlayerActors[0])
+                        StartPlayerTurn();
+                    else
+                        StartEnemyTurn();
+                }
+                else
+                {
+                    // Proceed to the next turn normally
+                    activeBattler = (activeBattler == PlayerActors[0]) ? EnemyActors[0] : PlayerActors[0];
+
+                    if (activeBattler == PlayerActors[0])
+                        StartPlayerTurn();
+                    else
+                        StartEnemyTurn();
+                }
+            }));
+        }
+
+        public IEnumerator WaitForMovementCompletion(Action onMovementComplete)
+        {
+            bool allActorsIdle = false;
+
+            while (!allActorsIdle)
+            {
+                allActorsIdle = true;
+
+                foreach (var actor in PlayerActors.Concat(EnemyActors))
+                {
+                    if (actor.currentState != MoveState.Idle)
+                    {
+                        allActorsIdle = false;
+                        break; // At least one actor is still moving, exit the loop
+                    }
+                }
+                yield return null; // Wait for the next frame
+            }
+
+            // All actors are now idle (no movement)
+            // Proceed with further actions or logic
+            onMovementComplete?.Invoke();
+
+        }
+
+        private void End()
+        {
+            if (PlayerActors.TrueForAll(actor => actor.GetBaseActor().GetCurrentHP() == 0))
+            {
+                EnemyActors[0].PlayAnimation("Victory");
+                PlayerActors[0].PlayAnimation("Down");
+                UIManager.GetInstance().ChangeStatus("YOU LOSE");
+                SoundManager.instance.PlaySingle(SoundManager.instance.GetAudioClipByName("Curse2"));
+            }
+            if (EnemyActors.TrueForAll(actor => actor.GetBaseActor().GetCurrentHP() == 0))
+            {
+                EnemyActors[0].PlayAnimation("Down");
+                PlayerActors[0].PlayAnimation("Victory");
+                //SoundManager.instance.PlaySingle(SoundManager.instance.GetAudioClipByName("Like"));
+                UIManager.GetInstance().ChangeStatus("YOU WIN!!");
+                FloorManager.GetInstance().ProgressToNextFloor();
+            }
         }
     }
 }

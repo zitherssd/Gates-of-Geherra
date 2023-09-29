@@ -12,16 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d0c263cb04d7f3408086e343db9bc31, type: 3}
   m_Name: Hook
   m_EditorClassIdentifier: 
-  Name: Hook
+  Name: Right Hook
   Rarity: 0
+  cooldownTurns: 1
   TotalUses: 2
   remainingUses: 0
   Speed: 0
+  currentCooldownTurns: 0
   AnimationType: 1
   SkillType: 0
   TargetOption: 1
   Tags: 0000000003000000
-  Range: 2
+  Range: 1.5
   Damage: 4
   PostureDamage: 5
   KnockbackForce: 2.5
+  SelfForce: 0

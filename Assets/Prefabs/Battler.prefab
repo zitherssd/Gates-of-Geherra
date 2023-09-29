@@ -733,7 +733,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 145}
-  m_SizeDelta: {x: 160, y: 8}
+  m_SizeDelta: {x: 160, y: 10}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2098779824683362541
 MonoBehaviour:
@@ -887,8 +887,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Actor: {fileID: 0}
+  rigidbody: {fileID: 0}
   damagePopupPrefab: {fileID: 8946536730787550334, guid: c35d7f82b3cb7ee41894851ecd5f801d, type: 3}
   posturePopupPrefab: {fileID: 8946536730787550334, guid: 77a958dca9c8539448e2a9bd8624282f, type: 3}
+  layer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!82 &3707727745461469949
 AudioSource:
   m_ObjectHideFlags: 0

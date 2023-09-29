@@ -123,19 +123,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8699122292447703189}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 4872896927259916123}
-        m_TargetAssemblyTypeName: ButtonHandler, Assembly-CSharp
-        m_MethodName: OnClick
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &4872896927259916123
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -150,6 +138,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skillName: {fileID: 8699122292997910123}
   remainingUses: {fileID: 8699122293257293797}
+  speed: {fileID: 0}
+  range: {fileID: 0}
+  damage: {fileID: 0}
+  postureDamage: {fileID: 0}
+  knockback: {fileID: 0}
+  tags: {fileID: 0}
   referencedAction: {fileID: 0}
   referencedSkill: {fileID: 0}
   referencedReaction: {fileID: 0}

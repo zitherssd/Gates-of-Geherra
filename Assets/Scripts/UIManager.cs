@@ -32,7 +32,8 @@ public class UIManager : MonoBehaviour
     private bool waitingForAction = false;
     private Action onActionSelected;
 
-
+    public Action<BaseSkill> OnSkillSelected { get; private set; }
+    public Action<BaseReaction> OnReactionSelected { get; private set; }
 
     public static UIManager GetInstance()
     {
@@ -53,20 +54,6 @@ public class UIManager : MonoBehaviour
         var previous = StoneSlab.text;
         StoneSlab.text = textToAdd + Environment.NewLine;
         StoneSlab.text += previous;
-    }
-
-    private void Update()
-    {
-        if (selectedSkill != null)
-            onActionSelected();
-    }
-
-    private void FadeOutText()
-    {
-        Color currentColor = TopTextbox.color;
-        //float alpha = Mathf.Pow(1f - (timer / fadeduration), 2);
-        float alpha = Mathf.Lerp(1f, 0f, (timer - fadeduration) / fadeduration);
-        TopTextbox.color = new Color(currentColor.r, currentColor.g, currentColor.b, alpha);
     }
 
     public List<ButtonHandler> DrawActionsRadiallyOnScreenPoint(List<BaseAction> actions)
@@ -177,6 +164,77 @@ public class UIManager : MonoBehaviour
             this.waitingForAction = true;
     }
 
+    public void DrawSkillsAndWaitForSelectionOrNull(List<BaseSkill> SkillsToDraw, Action<BaseSkill> onSkillSelected)
+    {
+        List<BaseAction> fakeActions = new List<BaseAction>();
+        this.OnSkillSelected = onSkillSelected;
+        var skills = SkillsToDraw;
+
+        foreach (var skill in skills)
+        {
+            fakeActions.Add(skill);
+        }
+
+        var buttonHandlers = DrawActionsRadiallyOnScreenPoint(fakeActions);
+        
+        for (int i = 0; i < skills.Count; i++)
+        {
+            buttonHandlers[i].referencedSkill = skills[i];
+            buttonHandlers[i].referencedAction = null;
+        }
+
+        foreach (var buttonHandler in buttonHandlers)
+        {
+            buttonHandler.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(delegate ()
+            {
+                this.OnSkillSelected(buttonHandler.referencedSkill);
+                ButtonHandler.KillAll();
+                InputHandler.instance.OnHold -= ReturnNullSkill;
+            });
+        }
+
+        InputHandler.instance.OnHold += ReturnNullSkill;
+    }
+
+    public void DrawReactionsAndWaitForSelectionOrNull(List<BaseReaction> ReactionsToDraw, Action<BaseReaction> onReactionSelected)
+    {
+        List<BaseAction> fakeActions = new List<BaseAction>();
+        this.OnReactionSelected = onReactionSelected;
+        var reactions = ReactionsToDraw;
+
+        foreach (var reaction in reactions)
+        {
+            fakeActions.Add(reaction);
+        }
+
+        var buttonHandlers = DrawActionsRadiallyOnScreenPoint(fakeActions);
+
+        for (int i = 0; i < reactions.Count; i++)
+        {
+            buttonHandlers[i].referencedReaction = reactions[i];
+            buttonHandlers[i].referencedAction = null;
+        }
+
+        foreach (var buttonHandler in buttonHandlers)
+        {
+            buttonHandler.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(delegate ()
+            {
+                this.OnReactionSelected(buttonHandler.referencedReaction);
+                ButtonHandler.KillAll();
+                InputHandler.instance.OnHold -= ReturnNullSkill;
+            });
+        }
+
+        InputHandler.instance.OnHold += ReturnNullSkill;
+    }
+
+
+    public void ReturnNullSkill(Vector2 position)
+    {
+        InputHandler.instance.OnHold -= ReturnNullSkill;
+        ButtonHandler.KillAll();
+        this.OnSkillSelected(null);
+    }
 
 
 

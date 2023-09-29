@@ -14,14 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Palm Strike
   Rarity: 0
+  cooldownTurns: 1
   TotalUses: 1
   remainingUses: 2
   Speed: 0
+  currentCooldownTurns: 0
   AnimationType: 5
   SkillType: 0
   TargetOption: 1
-  Tags: 00000000
+  Tags: 
   Range: 2.5
   Damage: 4
-  PostureDamage: 8
+  PostureDamage: 9
   KnockbackForce: 7
+  SelfForce: 2

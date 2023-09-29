@@ -18,35 +18,46 @@ namespace Assets.Scripts.Actions
         public float Damage;
         public float PostureDamage;
         public float KnockbackForce;
+        public float SelfForce;
         private Vector3 targetPoint;
 
 
         public void PerformTarget(BaseActorBattler casterActor, BaseActorBattler enemyActor, BaseReaction reaction, Action onPerformEnd)
         {
-            //Perform move offset then play animation
+            //Apply Force on caster
+
+            //Range Check
+            //Perform move offset then play animation 
             if (this.Tags.Contains(SKILLTAG.MOVE_OFFSET_BEHIND) || this.Tags.Contains(SKILLTAG.MOVE_OFFSET_INFRONT))
             {
                 var targetVector = enemyActor.transform.position - casterActor.transform.position;
-                
+
                 if (this.Tags.Contains(SKILLTAG.MOVE_OFFSET_BEHIND)) targetVector += Vector3.Cross(targetVector, Vector3.up);
                 if (this.Tags.Contains(SKILLTAG.MOVE_OFFSET_INFRONT)) targetVector += Vector3.Cross(targetVector, -Vector3.up);
 
-                casterActor.MoveToPosition(casterActor.transform.position + targetVector, MoveState.Move, () => {
+                casterActor.MoveToPosition(casterActor.transform.position + targetVector, MoveState.Move, () =>
+                {
+                    casterActor.rigidbody.AddForce((enemyActor.transform.position - casterActor.transform.position).normalized * 100 * SelfForce);
                     casterActor.PlayAnimation(this.AnimationType.ToString(), () =>
                     {
+                        Physics.IgnoreLayerCollision(LayerMask.NameToLayer("Battler"), LayerMask.NameToLayer("Battler"), false);
                         onPerformEnd();
                     });
                 });
                 return;
             }
 
-            
+
 
             // Perform animation if specified
             if (AnimationType != ANIMATIONTYPE.NONE)
             {
+                casterActor.rigidbody.AddForce((enemyActor.transform.position - casterActor.transform.position).normalized * 100 * SelfForce);
+                Physics.IgnoreLayerCollision(LayerMask.NameToLayer("Battler"), LayerMask.NameToLayer("Battler"), true);
+
                 casterActor.PlayAnimation(this.AnimationType.ToString(), () =>
                 {
+                    Physics.IgnoreLayerCollision(LayerMask.NameToLayer("Battler"), LayerMask.NameToLayer("Battler"), false);
                     onPerformEnd();
                 });
                 return;
@@ -138,24 +149,16 @@ namespace Assets.Scripts.Actions
             // Appply Posture
             var postureDamage = PostureDamage * targetReaction.postureModifier;
             //Camera.main.GetComponent<CameraManager>().TriggerShake(LinearMap(postureDamage, 0, 30, 0, 0.015f), LinearMap(postureDamage, 0, 30, 0, 0.5f));
-            if (targetActor.GetBaseActor().DealPostureDamage(postureDamage))
-            {
-                targetActor.TriggerHitstop(0.5f);
-                targetActor.PlayAnimation("PostureBroken");
-                targetActor.PlayAudio("Attack1");
-                UIManager.GetInstance().AddToStoneSlab("Posture break!");
-                BattleManager.GetInstance().RepeatTurn(); //Posture break check }
-            }
+            if (targetActor.GetBaseActor().DealPostureDamage(postureDamage)) targetActor.HandlePostureBreak();
             targetActor.ShowPosturePopup(postureDamage);
-
 
             // Apply Knockback
             var direction = (targetActor.transform.position - casterActor.transform.position).normalized;
+            if (this.Tags.Contains(SKILLTAG.KNOCKBACK_BACK)) direction = Vector3.Cross(direction, Vector3.up);
+            if (this.Tags.Contains(SKILLTAG.KNOCKBACK_FRONT)) direction += Vector3.Cross(direction, -Vector3.up);
             if (this.Tags.Contains(SKILLTAG.KNOCKBACK_AIR)) direction = (direction + Vector3.up).normalized;
-            targetActor.ApplyKnockback(direction, KnockbackForce * targetReaction.knockbackModifier, () =>
-            {
-                onDamageEffectsApplied();
-            });
+            targetActor.ApplyKnockback(direction, KnockbackForce * targetReaction.knockbackModifier);
+            onDamageEffectsApplied();
         }
 
         public void PreReaction(BaseActorBattler casterActor, Action onPreReactionEnd)
@@ -166,6 +169,12 @@ namespace Assets.Scripts.Actions
         {
             InvalidReason = "";
             if (!HasUsesLeft()) return false;
+
+            if (IsSkillOnCooldown())
+            {
+                InvalidReason = $"usable in {currentCooldownTurns}";
+                return false;
+            }
 
             if (Range != 0)
             {
@@ -187,6 +196,8 @@ namespace Assets.Scripts.Actions
         public override bool IsValid(BaseActorBattler caster)
         {
             if (!HasUsesLeft()) return false;
+
+            if (IsSkillOnCooldown()) return false;
 
             if (Range != 0)
             {
@@ -213,7 +224,5 @@ namespace Assets.Scripts.Actions
     public enum ANIMATIONTYPE { NONE, Punch, Kick, Shuriken, Highkick, PalmStrike, Ninjutsu }
     public enum SKILLTYPE { Attack, Projectile, Taunt, Teleport }
     public enum TARGETINGOPTION { SELF, ENEMY }
-    public enum SKILLTAG { MOVE_NEAR_ENEMY_BEFORE_ATTACK, PROJECTILE, KNOCKBACK_AIR, MOVE_OFFSET_BEHIND, MOVE_OFFSET_INFRONT, NO_REACTION, REPEAT_TURN }
-
-
+    public enum SKILLTAG { MOVE_NEAR_ENEMY_BEFORE_ATTACK, PROJECTILE, KNOCKBACK_AIR, KNOCKBACK_BACK, KNOCKBACK_FRONT, MOVE_OFFSET_BEHIND, MOVE_OFFSET_INFRONT, NO_REACTION, REPEAT_TURN, STARTER, FINISHER, COUNTER}
 }

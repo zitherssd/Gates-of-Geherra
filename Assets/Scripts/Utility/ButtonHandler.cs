@@ -116,15 +116,6 @@ public class ButtonHandler : MonoBehaviour
         GetComponent<UnityEngine.UI.Button>().interactable = interactable;
     }
 
-    public void OnClick()
-    {
-        KillAll();
-        var uiManager = UIManager.GetInstance();
-        uiManager.selectedSkill = referencedSkill;
-        uiManager.selectedReaction = referencedReaction;
-        uiManager.CallbackActionSelected();
-    }
-
     private void Update()
     {
         transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one, 0.1f);
