@@ -13,14 +13,13 @@ MonoBehaviour:
   m_Name: Old Prisoner
   m_EditorClassIdentifier: 
   Name: Old Prisoner
-  baseHP: 10
-  baseBuildup: 0
-  basePosture: 10
+  maxHp: 30
+  maxBuildup: 0
+  maxPosture: 30
   Controllable: 0
   mainColor: {r: 0, g: 0, b: 0, a: 0}
   secondaryColor: {r: 0, g: 0, b: 0, a: 0}
-  baseSkills:
-  - {fileID: 11400000, guid: 9cc21a5b1be74d54c92d4a9df41fe25b, type: 2}
+  baseActions:
   - {fileID: 11400000, guid: 9cc21a5b1be74d54c92d4a9df41fe25b, type: 2}
   - {fileID: 11400000, guid: 83e30c38186e1604ebbc68bcceaeb2e6, type: 2}
   baseReactions:
@@ -28,12 +27,11 @@ MonoBehaviour:
   skills:
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
   reactions:
   - {fileID: 0}
-  currentHp: 0
-  currentBuildup: 0
-  currentPosture: 0
+  currentHp: 21
+  currentBuildup: 42
+  currentPosture: 37.5
   ATK: 1
   DEF: 1
   AGI: 1

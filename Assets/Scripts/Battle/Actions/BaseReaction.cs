@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using static Assets.BaseActorBattler;
@@ -16,21 +17,16 @@ namespace Assets.Scripts.Actions
         public float postureModifier;
         private Vector2 direction;
 
-        public void React(BaseActorBattler actor, Action onReactionComplete)
+        public void React(BaseAction incomingSkill, BaseActorBattler actor, Action onReactionComplete)
         {
             switch (ReactionType)
             {
                 case REACTIONTYPE.Dodge:
-                    var target = direction.normalized;
-                    var camera = Camera.main;
-                    var forward = camera.transform.forward; forward.y = 0;
-                    var right = camera.transform.right; right.y = 0;
-                    forward.Normalize(); right.Normalize();
-
-                    var desiredMoveDirection = forward * target.y + right * target.x;
+                    var desiredMoveDirection = GetRelativeToCamera(StickValue);
                     actor.PlayAnimation("Step");
 
                     actor.rigidbody.AddForce(desiredMoveDirection.normalized * 100 * 2);
+                    actor.currentState = MoveState.Knockback;
 
                     //actor.MoveToPosition(desiredMoveDirection * 6 + actor.transform.position, MoveState.Sliding, () =>
                     //{
@@ -41,10 +37,11 @@ namespace Assets.Scripts.Actions
                 case REACTIONTYPE.Block:
                     actor.isBlocking = true;
                     actor.PlayAnimation("Block");
-                    onReactionComplete();
+                    //addstate for blocking
+                    //onReactionComplete();
                     break;
                 case REACTIONTYPE.NONE:
-                    onReactionComplete();
+                    //onReactionComplete();
                     break;
                 default:
                     break;
@@ -93,6 +90,17 @@ namespace Assets.Scripts.Actions
         }
 
         public enum REACTIONTYPE { NONE, Dodge, Block }
+
+        private Vector3 GetRelativeToCamera(Vector2 direction)
+        {
+            var camera = Camera.main;
+            var forward = camera.transform.forward; forward.y = 0;
+            var right = camera.transform.right; right.y = 0;
+            forward.Normalize(); right.Normalize();
+
+            var desiredMoveDirection = forward * direction.y + right * direction.x;
+            return desiredMoveDirection;
+        }
 
     }
 }

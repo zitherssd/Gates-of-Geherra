@@ -17,14 +17,18 @@ MonoBehaviour:
   cooldownTurns: 1
   TotalUses: 0
   remainingUses: 0
+  BuildupCost: 0
+  BuildupGain: 6
   Speed: 0
+  SliderValue: 0
+  StickValue: {x: 0, y: 0}
   currentCooldownTurns: 0
   AnimationType: 1
   SkillType: 0
   TargetOption: 1
-  Tags: 
-  Range: 2
-  Damage: 3
-  PostureDamage: 4
+  Tags: 0c000000
+  Range: 1
+  Damage: 1
+  PostureDamage: 1
   KnockbackForce: 1
-  SelfForce: 1
+  SelfForce: 0.8

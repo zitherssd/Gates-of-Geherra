@@ -12,24 +12,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e110cd302acb85459812d80addcbd30, type: 3}
   m_Name: MC
   m_EditorClassIdentifier: 
-  Name: MC
-  baseHP: 50
-  baseBuildup: 0
-  basePosture: 25
+  Name: Player
+  maxHp: 50
+  maxBuildup: 100
+  maxPosture: 50
   Controllable: 1
   mainColor: {r: 1, g: 1, b: 1, a: 0}
   secondaryColor: {r: 0, g: 0, b: 0, a: 1}
-  baseSkills:
+  baseActions:
+  - {fileID: 11400000, guid: f931b69ae9e3a26468a97a337c927f76, type: 2}
   - {fileID: 11400000, guid: 9cc21a5b1be74d54c92d4a9df41fe25b, type: 2}
+  - {fileID: 11400000, guid: 1a758131c89d1434a8171a21ef1a94f7, type: 2}
   - {fileID: 11400000, guid: 369a53d3c0b8136438ffa364125fd5f6, type: 2}
-  - {fileID: 11400000, guid: 744fcc040a82dd341afc7f704b4fc8b2, type: 2}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: 716ac04c24ac9da4f92d9533472c7539, type: 2}
+  - {fileID: 11400000, guid: 7e10097270ac6470ab0430ee315d4a55, type: 2}
   baseReactions:
-  - {fileID: 11400000, guid: f272d4950a245d34d9c22f8bc60d7882, type: 2}
-  - {fileID: 11400000, guid: e1de275c6a1741e4091bfa7141119117, type: 2}
   - {fileID: 11400000, guid: fb0edb5316194b4469a5c02751a9673a, type: 2}
+  - {fileID: 11400000, guid: e1de275c6a1741e4091bfa7141119117, type: 2}
   skills:
   - {fileID: 0}
   - {fileID: 0}
@@ -40,10 +39,9 @@ MonoBehaviour:
   reactions:
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
-  currentHp: 23.000002
-  currentBuildup: 0
-  currentPosture: 25
+  currentHp: 50
+  currentBuildup: 10
+  currentPosture: 62.5
   ATK: 1
   DEF: 1
   AGI: 2

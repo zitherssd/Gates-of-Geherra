@@ -14,15 +14,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: 'Omae wa mou '
   Rarity: 0
+  cooldownTurns: 0
   TotalUses: 0
   remainingUses: 0
   Speed: 0
+  SliderValue: 0
+  StickValue: {x: 0, y: 0}
+  currentCooldownTurns: 0
   AnimationType: 6
   SkillType: 3
   TargetOption: 0
-  Tags: 07000000
+  Tags: 070000000d000000
   Range: 0
   Damage: 0
   PostureDamage: 0
   KnockbackForce: 0
   SelfForce: 0
+  KnobValue: 0

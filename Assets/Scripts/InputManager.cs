@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.OnScreen;
 
 namespace Assets
 {
@@ -14,6 +15,9 @@ namespace Assets
         private Action<BaseActorBattler> onTargetSelected = null;
         private Action<Vector2> onSwipeGot = null;
         private Action<Vector3> onTargetPointSelected = null;
+        public OnScreenStick onScreenStick;
+        public float SliderValue = 1f;
+        public Vector2 StickValue = Vector2.zero;
 
         private void Awake()
         {
@@ -25,26 +29,41 @@ namespace Assets
             battleManager = BattleManager.GetInstance();   
         }
 
+        public void SetSliderValue(System.Single value)
+        {
+            SliderValue = value;
+        }
+        public void SetStickValue(Vector2 value)
+        {
+            StickValue = value;
+        }
+
 
         public void WaitForTurn(Action onTurnEnd)
         {
             InputHandler.instance.enabled = false;
             InputHandler.instance.enabled = true;
-            InputHandler.instance.OnSwipe += MoveActor;
-            InputHandler.instance.OnHold += EndTurn;
+
+            //InputHandler.instance.OnSwipe += MoveActor;
+            //InputHandler.instance.OnHold += EndTurn;
 
             this.onTurnEnd = onTurnEnd;
-            var skillsToDraw = battleManager.GetActiveActor().GetValidStartComboSkills();
+            var skillsToDraw = battleManager.GetActiveActor().GetValidContinueComboSkills();
+            if (skillsToDraw.Count > 0)
+                Time.timeScale = 0f;
 
-            UIManager.GetInstance().DrawSkillsAndWaitForSelectionOrNull(skillsToDraw, selectedSkill =>    //one shot option for the skill
+            UIManager.GetInstance().DrawActionsAndWaitForSelectionOrNull(skillsToDraw, selectedSkill =>    //one shot option for the skill
             {
                 InputHandler.instance.OnSwipe -= MoveActor;
                 InputHandler.instance.OnHold -= EndTurn;
 
                 if (selectedSkill == null)
+                {
+                    Time.timeScale = 1f;
                     onTurnEnd();
+                }
                 else
-                    battleManager.GetActiveActor().StartCombo(selectedSkill, onTurnEnd);
+                    battleManager.GetActiveActor().UseAction(selectedSkill, onTurnEnd);
             });
         }
         private void MoveActor(Vector2 delta)
@@ -55,19 +74,19 @@ namespace Assets
 
             battleManager.GetActiveActor().MoveRelativeToCamera(delta.normalized, () =>
             {
-                InputHandler.instance.OnHold += EndTurn;
+                //InputHandler.instance.OnHold += EndTurn;
 
                 if  (battleManager.GetActiveActor().GetValidStartComboSkills().Count == 0) { EndTurn(Vector2.zero); return; }; //Automatically end turn if no valid skills
 
                 var skillsToDraw = battleManager.GetActiveActor().GetValidStartComboSkills();
-                UIManager.GetInstance().DrawSkillsAndWaitForSelectionOrNull(skillsToDraw, selectedSkill =>    //one shot option for the skill
+                UIManager.GetInstance().DrawActionsAndWaitForSelectionOrNull(skillsToDraw, selectedSkill =>    //one shot option for the skill
                 {
                     InputHandler.instance.OnHold -= EndTurn;
 
                     if (selectedSkill == null)
                         onTurnEnd();
                     else
-                        battleManager.GetActiveActor().StartCombo(selectedSkill, onTurnEnd);
+                        battleManager.GetActiveActor().UseAction(selectedSkill, onTurnEnd);
                 });
             });
         }
@@ -139,5 +158,7 @@ namespace Assets
                 onTargetPointSelected?.Invoke(raycastHit.point);
             }
         }
+
+
     }
 }

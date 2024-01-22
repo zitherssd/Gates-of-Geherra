@@ -19,24 +19,36 @@ namespace Assets
         [Range(1, 15)]
         [SerializeField]
         private float BackDistance;
+        private Camera camera;
         public bool Override = false;
+
+        private Transform leftObj;
+        private Transform rightObj;
 
         // Use this for initialization
         void Start()
         {
             battleManager = BattleManager.GetInstance();
+            leftObj = battleManager.PlayerActors[0].transform;
+            rightObj = battleManager.EnemyActors[0].transform;
+            camera = gameObject.GetComponent<Camera>();
         }
 
         // Update is called once per frame
         void Update()
         {
             Vector3 targetpos;
-            var player = battleManager.PlayerActors[0].transform.position;
-            var enemy = battleManager.EnemyActors[0].transform.position;
 
-            var distvector = (enemy + player) / 2; //start point
+            var leftobjpoint = camera.WorldToScreenPoint(leftObj.position);
+            var rightobpoint = camera.WorldToScreenPoint(rightObj.position);
+            if(leftobjpoint.x > rightobpoint.x)
+            {
+                Switch();
+            }
+
+            var distvector = (rightObj.position + leftObj.position) / 2; //start point
             distvector = new Vector3(distvector.x, 0, distvector.z);
-            var directionvector = (enemy - player) / 2;
+            var directionvector = (rightObj.position - leftObj.position) / 2;
             directionvector = new Vector3(directionvector.x, 0, directionvector.z);
 
             if(!Override)
@@ -46,6 +58,7 @@ namespace Assets
                 BackDistance = LinearMap(input, 3, 40, 5, 20);
             }
 
+            directionvector = Vector3.ProjectOnPlane(directionvector, Vector3.up).normalized;
             var blue = Vector3.Cross(directionvector, Vector3.up).normalized;
             var newposition = distvector + Vector3.up * UpDistance + -blue * BackDistance;
 
@@ -64,6 +77,11 @@ namespace Assets
 
         }
 
+        public void LateUpdate()
+        {
+            
+        }
+
         float LinearMap(float input, float inputMin, float inputMax, float outputMin, float outputMax)
         {
             return outputMin + (outputMax - outputMin) * ((input - inputMin) / (inputMax - inputMin));
@@ -73,6 +91,13 @@ namespace Assets
         {
             shakeDuration = duration;
             shakeMagnitude = magnitude;
+        }
+
+        private void Switch()
+        {
+            var aux = rightObj;
+            rightObj = leftObj;
+            leftObj = aux;
         }
     }
 }

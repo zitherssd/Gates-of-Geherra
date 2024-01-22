@@ -23,8 +23,9 @@ MonoBehaviour:
   SkillType: 0
   TargetOption: 1
   Tags: 
-  Range: 2.5
+  Range: 1.6
   Damage: 4
   PostureDamage: 6
   KnockbackForce: 5
-  SelfForce: 2
+  SelfForce: 1.8
+  KnobValue: 0

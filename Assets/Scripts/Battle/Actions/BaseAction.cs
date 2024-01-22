@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Assets.Scripts.Actions;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets
@@ -14,8 +16,18 @@ namespace Assets
         //public int Range;
         //public SpriteRenderer sprite;
         public int remainingUses;
+        public int BuildupCost;
+        public int BuildupGain;
         public int Speed;
+        public List<TAG> Tags;
+        public float SliderValue;
+        public Vector2 StickValue;
         [HideInInspector] public int currentCooldownTurns = 0;
+
+        public virtual void Perform(BaseActorBattler casterActor, Action onPerformEnd)
+        {
+
+        }
 
         public virtual void UpdateCooldown()
         {
@@ -51,7 +63,12 @@ namespace Assets
             return true;
         }
 
-        public virtual bool IsValid(BaseActorBattler caster)
+        public virtual bool IsValid()
+        {
+            return true;
+        }
+
+        public virtual bool IsValidAndInRange(BaseActorBattler caster)
         {
             return true;
         }
@@ -66,7 +83,9 @@ namespace Assets
 
 
 
-
+    public enum TAG { MOVE_NEAR_ENEMY_BEFORE_ATTACK, PROJECTILE, KNOCKBACK_AIR, KNOCKBACK_BACK, KNOCKBACK_FRONT, MOVE_OFFSET_BEHIND, MOVE_OFFSET_INFRONT, NO_REACTION, REPEAT_TURN, STARTER, FINISHER, COUNTER, USESLIDER, USEKNOB,
+        APPLYROOTMOTION
+    }
 
     public enum RARITY { COMMON, UNCOMMON, RARE, EPIC, LEGENDARY };
 }

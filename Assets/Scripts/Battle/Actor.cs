@@ -1,7 +1,6 @@
 using Assets;
 using Assets.Scripts.Actions;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,17 +12,17 @@ public class Actor : ScriptableObject
 
 
     public string Name;
-    public float baseHP;
-    public float baseBuildup;
-    public float basePosture;
+    public float maxHp;
+    public float maxBuildup;
+    public float maxPosture;
     public bool Controllable;
     [HideInInspector] public Color mainColor;
     [HideInInspector] public Color secondaryColor;
 
-    public List<BaseSkill> baseSkills;
+    public List<BaseAction> baseActions;
     public List<BaseReaction> baseReactions;
 
-    [HideInInspector] public List<BaseSkill> skills;
+    [HideInInspector] public List<Assets.BaseAction> skills;
     [HideInInspector] public List<BaseReaction> reactions;
 
     public float currentHp;
@@ -43,15 +42,13 @@ public class Actor : ScriptableObject
 
     private void Awake()
     {
-        currentHp = baseHP;
-        currentBuildup = baseBuildup;
-        currentPosture = basePosture;
+        currentHp = maxHp;
+        currentBuildup = 0;
+        currentPosture = maxPosture;
     }
 
     public void DealDamage(float damage)
     {
-        OnDamageDealt?.Invoke(damage);
-
         currentHp -= damage;
         
         if( currentHp <= 0)
@@ -60,22 +57,6 @@ public class Actor : ScriptableObject
             currentPosture = 0;
             currentHp = 0;
         }
-    }
-
-    public bool DealPostureDamage(float postureDamage)
-    {
-        OnPostureDamage?.Invoke(postureDamage);
-
-        currentPosture -= postureDamage;
-        
-        if (currentPosture <= 0)
-        {
-            if (currentHp == 0) { currentPosture = 0; return false; }
-
-            onPostureBroken?.Invoke(this);
-            return true;
-        }
-        else return false;
     }
 
     public float GetCurrentHP()
@@ -96,10 +77,10 @@ public class Actor : ScriptableObject
 
     public void Reset()
     {
-        currentHp = baseHP;
-        currentBuildup = baseBuildup;
-        currentPosture = basePosture;
-        baseSkills.RemoveAll(item => item == null);
+        currentHp = maxHp;
+        currentBuildup = 0;
+        currentPosture = maxPosture;
+        baseActions.RemoveAll(item => item == null);
         Initialize();
     }
 
@@ -107,7 +88,7 @@ public class Actor : ScriptableObject
     {
         skills.Clear();
         reactions.Clear();
-        foreach (var skill in baseSkills)
+        foreach (var skill in baseActions)
         {
             var clone = Instantiate(skill);
             clone.remainingUses = clone.TotalUses;

@@ -14,17 +14,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: High Kick
   Rarity: 0
-  cooldownTurns: 1
-  TotalUses: 1
-  remainingUses: 1
+  cooldownTurns: 6
+  TotalUses: 0
+  remainingUses: 0
+  BuildupCost: 20
+  BuildupGain: 0
   Speed: 0
+  SliderValue: 0
+  StickValue: {x: 0, y: 0}
   currentCooldownTurns: 0
   AnimationType: 4
   SkillType: 0
   TargetOption: 1
-  Tags: 0200000003000000
-  Range: 1.5
+  Tags: 02000000030000000c000000
+  Range: 1.4
   Damage: 10
   PostureDamage: 9
-  KnockbackForce: 5
+  KnockbackForce: 3
   SelfForce: 1

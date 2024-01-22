@@ -7,6 +7,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.InputSystem.EnhancedTouch;
 using UnityEngine.InputSystem.LowLevel;
+using UnityEngine.InputSystem.OnScreen;
 
 [DefaultExecutionOrder(-1)]
 public class InputHandler : MonoBehaviour
@@ -22,6 +23,7 @@ public class InputHandler : MonoBehaviour
     public event SwipeEvent OnSwipe;
     public event ClickEvent OnClick;
     public event HoldEvent OnHold;
+    public OnScreenStick onScreenStick;
 
     private Vector2 startPos;
     private Vector2 endPos;
@@ -75,5 +77,11 @@ public class InputHandler : MonoBehaviour
         Debug.Log("HOLD PERFOREMD");
         var pos = touchPosition.action.ReadValue<Vector2>();
         OnHold(pos);
+    }
+
+    public void OnPointerUp()
+    {
+        //Vector2 stickPosition = onScreenStick.control.r;
+        // Now you can use stickPosition
     }
 }

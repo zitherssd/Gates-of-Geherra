@@ -14,17 +14,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Right Hook
   Rarity: 0
-  cooldownTurns: 1
-  TotalUses: 2
+  cooldownTurns: 3
+  TotalUses: 0
   remainingUses: 0
+  BuildupCost: 0
+  BuildupGain: 9
   Speed: 0
+  SliderValue: 0
+  StickValue: {x: 0, y: 0}
   currentCooldownTurns: 0
   AnimationType: 1
   SkillType: 0
   TargetOption: 1
-  Tags: 0000000003000000
-  Range: 1.5
+  Tags: 03000000
+  Range: 0.8
   Damage: 4
   PostureDamage: 5
-  KnockbackForce: 2.5
-  SelfForce: 0
+  KnockbackForce: 1.2
+  SelfForce: 0.1
