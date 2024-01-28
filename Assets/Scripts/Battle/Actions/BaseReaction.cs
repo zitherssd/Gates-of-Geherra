@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.Battle.States;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -17,26 +18,27 @@ namespace Assets.Scripts.Actions
         public float postureModifier;
         private Vector2 direction;
 
-        public void React(BaseAction incomingSkill, BaseActorBattler actor, Action onReactionComplete)
+        public override void Perform(BaseActorBattler actor, Action onReactionComplete)
         {
+            UpdateReaminingUses();
+            ResetCooldown();
+
             switch (ReactionType)
             {
                 case REACTIONTYPE.Dodge:
                     var desiredMoveDirection = GetRelativeToCamera(StickValue);
                     actor.PlayAnimation("Step");
 
-                    actor.rigidbody.AddForce(desiredMoveDirection.normalized * 100 * 2);
-                    actor.currentState = MoveState.Knockback;
+                    actor.GetComponent<Rigidbody>().AddForce(desiredMoveDirection.normalized * 100 * 2);
 
                     //actor.MoveToPosition(desiredMoveDirection * 6 + actor.transform.position, MoveState.Sliding, () =>
                     //{
-                        onReactionComplete();
                     //    actor.PlayAnimation("Idle"); 
                     //});
                     break;
                 case REACTIONTYPE.Block:
-                    actor.isBlocking = true;
                     actor.PlayAnimation("Block");
+                    actor.activeStates.Add(new Block(actor));
                     //addstate for blocking
                     //onReactionComplete();
                     break;
@@ -78,17 +80,6 @@ namespace Assets.Scripts.Actions
             //Show skill name,
             //Certain special effects
         }
-        public override bool IsValid(BaseActorBattler caster, out string InvalidReason)
-        {
-            InvalidReason = "";
-            if (IsSkillOnCooldown())
-            {
-                InvalidReason = $"usable in {currentCooldownTurns}";
-                return false;
-            }
-            return true;
-        }
-
         public enum REACTIONTYPE { NONE, Dodge, Block }
 
         private Vector3 GetRelativeToCamera(Vector2 direction)

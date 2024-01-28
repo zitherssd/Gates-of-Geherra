@@ -23,15 +23,18 @@ namespace Assets
         public bool Override = false;
 
         private Transform leftObj;
+        private SpriteRenderer leftSObj;
         private Transform rightObj;
+        private SpriteRenderer rightSObj;
 
         // Use this for initialization
         void Start()
         {
-            battleManager = BattleManager.GetInstance();
+            battleManager = BattleManager.instance;
             leftObj = battleManager.PlayerActors[0].transform;
             rightObj = battleManager.EnemyActors[0].transform;
             camera = gameObject.GetComponent<Camera>();
+
         }
 
         // Update is called once per frame
@@ -77,6 +80,14 @@ namespace Assets
 
         }
 
+        private void UpdateOrientation(Transform gameobject)
+        {
+            Vector3 cameraRight = transform.right;
+            float dotProduct = Vector3.Dot(gameobject.transform.forward, cameraRight.normalized);
+            if(dotProduct > 0f) gameObject.GetComponentInChildren<SpriteRenderer>().flipX = true;
+            else gameObject.GetComponentInChildren<SpriteRenderer>().flipX = false;
+        }
+
         public void LateUpdate()
         {
             
@@ -98,6 +109,15 @@ namespace Assets
             var aux = rightObj;
             rightObj = leftObj;
             leftObj = aux;
+
+            var leftSObj = leftObj.GetComponentInChildren<SpriteRenderer>();
+            var rightSObj = rightObj.GetComponentInChildren<SpriteRenderer>();
+
+            if (leftSObj.flipX == true) leftSObj.flipX = false;
+            else leftSObj.flipX = true;
+
+            if (rightSObj.flipX == true) rightSObj.flipX = false;
+            else rightSObj.flipX = true;
         }
     }
 }

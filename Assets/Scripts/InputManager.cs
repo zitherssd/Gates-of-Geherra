@@ -26,7 +26,7 @@ namespace Assets
         }
         private void Start()
         {
-            battleManager = BattleManager.GetInstance();   
+            battleManager = BattleManager.instance;   
         }
 
         public void SetSliderValue(System.Single value)

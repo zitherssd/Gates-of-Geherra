@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class ActionSlot : MonoBehaviour, IDropHandler
+public class ActionSlot : MonoBehaviour
 {
     public GameObject skill { get
         {
@@ -15,30 +15,45 @@ public class ActionSlot : MonoBehaviour, IDropHandler
         }
     }
 
-    public void OnDrop(PointerEventData eventData)
+    public void OnDrop()
     {
-        Debug.Log("SOMETHIND DROPPED");
         if (!skill)
         {
-            GameObject dropped = eventData.pointerDrag;
-            ButtonHandler draggableItem = dropped.GetComponent<ButtonHandler>();
-            draggableItem.parentafterDrag = transform;
-            ExecuteEvents.ExecuteHierarchy<IHasChanged>(gameObject, null, (x, y) => x.HasChanged());
+            UIManager.GetInstance().Slider.SetActive(false);
+            UIManager.GetInstance().Knob.SetActive(false);
+        }
+        else
+        {
+            GameObject dropped = skill.gameObject;
+            var handler = skill.GetComponent<ButtonHandler>();
+            if (handler.referencedAction != null)
+            {
+                if (handler.referencedAction.Tags.Contains(Assets.TAG.USESLIDER))
+                    UIManager.GetInstance().Slider.SetActive(true);
+                else
+                    UIManager.GetInstance().Slider.SetActive(false);
 
-            if(draggableItem.referencedAction != null)
-            {
-                if (draggableItem.referencedAction.Tags.Contains(Assets.TAG.USESLIDER))
-                    UIManager.GetInstance().Slider.SetActive(true);
-                if (draggableItem.referencedAction.Tags.Contains(Assets.TAG.USEKNOB))
+                if (handler.referencedAction.Tags.Contains(Assets.TAG.USEKNOB))
                     UIManager.GetInstance().Knob.SetActive(true);
+                else
+                    UIManager.GetInstance().Knob.SetActive(false);
+
             }
-            if (draggableItem.referencedReaction != null)
+            if (handler.referencedReaction != null)
             {
-                if (draggableItem.referencedReaction.Tags.Contains(Assets.TAG.USESLIDER))
+                if (handler.referencedReaction.Tags.Contains(Assets.TAG.USESLIDER))
                     UIManager.GetInstance().Slider.SetActive(true);
-                if (draggableItem.referencedReaction.Tags.Contains(Assets.TAG.USEKNOB))
+                else
+                    UIManager.GetInstance().Slider.SetActive(false);
+
+                if (handler.referencedReaction.Tags.Contains(Assets.TAG.USEKNOB))
                     UIManager.GetInstance().Knob.SetActive(true);
+                else
+                    UIManager.GetInstance().Knob.SetActive(false);
+
             }
         }
+        ExecuteEvents.ExecuteHierarchy<IHasChanged>(gameObject, null, (x, y) => x.HasChanged());
+
     }
 }

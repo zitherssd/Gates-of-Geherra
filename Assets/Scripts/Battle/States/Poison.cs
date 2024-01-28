@@ -5,14 +5,19 @@ namespace Assets.Scripts.Battle.States
 {
     public class Poison : BaseStatus
     {
-        public override void ApplyEffects()
+        public Poison(BaseActorBattler owner) : base(owner)
         {
-            owner.onDamageRecieved += ModifyDamage;
+
+        }
+        public override void Apply()
+        {
+            owner.ApplyDamageModifiers += ModifyDamage;
         }
 
-        public void ModifyDamage(float damage)
+        public float ModifyDamage(float damage)
         {
-
+            float modifiedDamage = damage * 0.5f;
+            return modifiedDamage;
         }
     }
 }

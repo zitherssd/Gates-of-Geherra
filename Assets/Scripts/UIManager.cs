@@ -31,6 +31,8 @@ public class UIManager : MonoBehaviour
     private float timer = 0f;
     private bool waitingForAction = false;
     private Action onActionSelected;
+    public GameObject OriginPoint;
+    public GameObject ActionsHolder;
     public GameObject ActionSlot;
     public GameObject EndButton;
     public GameObject Slider;
@@ -50,6 +52,8 @@ public class UIManager : MonoBehaviour
 
     public void Start()
     {
+        OriginPoint = GameObject.FindGameObjectWithTag("OriginPoint");
+
         EndButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(delegate ()
         {
             if (ActionSlot.transform.childCount > 0)
@@ -73,31 +77,7 @@ public class UIManager : MonoBehaviour
             ActionSlot.SetActive(false);
             Slider.SetActive(false);
             Knob.SetActive(false);
-        });
-
-        EndButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(delegate ()
-        {
-            if (ActionSlot.transform.childCount > 0)
-            {
-                if(OnReactionSelected != null)
-                {
-                    OnReactionSelected(ActionSlot.GetComponentInChildren<ButtonHandler>().referencedReaction);
-                    OnReactionSelected = null; 
-                }
-            }
-            else
-            {
-                if(OnReactionSelected != null)
-                {
-                    OnReactionSelected(BaseReaction.NoReaction);
-                    OnReactionSelected = null;
-                }
-            }
-            ButtonHandler.KillAll();
-            EndButton.SetActive(false);
-            ActionSlot.SetActive(false);
-            Slider.SetActive(false);
-            Knob.SetActive(false);
+            LeanTween.scale(ActionsHolder, new Vector3(1, 0, 1), 0.1f).setEaseOutCubic().setIgnoreTimeScale(true);
         });
     }
 
@@ -115,6 +95,7 @@ public class UIManager : MonoBehaviour
 
     public List<ButtonHandler> DrawActionsRadiallyOnScreenPoint(List<Assets.BaseAction> actions)
     {
+        LeanTween.scale(ActionsHolder, Vector3.one, 0.2f).setEaseOutCubic().setIgnoreTimeScale(true);
         float radius = 100f;
         var handlers = new List<ButtonHandler>();
 
@@ -127,7 +108,7 @@ public class UIManager : MonoBehaviour
             Vector2 position = new Vector2(x, y);
 
             GameObject UISkill = Instantiate(buttonPrefab, position, Quaternion.identity);
-            UISkill.transform.SetParent(GameObject.FindGameObjectWithTag("OriginPoint").transform);
+            UISkill.transform.SetParent(ActionsHolder.transform);
             UISkill.GetComponent<RectTransform>().localPosition = position;
             var handler = UISkill.GetComponent<ButtonHandler>();
             handler.referencedAction = actions[i];
@@ -153,7 +134,7 @@ public class UIManager : MonoBehaviour
     {
 
         List<Assets.BaseAction> fakeActions = new List<Assets.BaseAction>();
-            var activeChar = BattleManager.GetInstance().GetActiveActor();
+            var activeChar = BattleManager.instance.GetActiveActor();
             var skills = activeChar.GetBaseActor().skills;
 
             foreach (var skill in skills)
@@ -196,6 +177,27 @@ public class UIManager : MonoBehaviour
             this.waitingForAction = true;
         }
     }
+    
+
+
+    internal void DrawActionAboveHead(BaseActorBattler actor, BaseAction action)
+    {
+            GameObject drawnSkill = Instantiate(buttonPrefab, actor.transform.position, Quaternion.identity);
+            drawnSkill.transform.SetParent(actor.originPointInUI.transform);
+            drawnSkill.transform.localPosition = Vector3.zero;
+            drawnSkill.GetComponent<RectTransform>().localPosition = Vector3.zero;
+            var handler = drawnSkill.GetComponent<ButtonHandler>();
+            handler.referencedAction = action;
+            handler.Init();
+            handler.SetDraggable(false);
+            LeanTween.scale(actor.originPointInUI.transform.gameObject, new Vector3(1, 1, 1), 0.3f).setEaseOutBack().setIgnoreTimeScale(true);
+    }
+
+    internal void KillActionAboveHead(BaseActorBattler actor)
+    {
+        var obj = actor.originPointInUI.transform;
+        LeanTween.scale(obj.gameObject, new Vector3(1,0,1), 0.3f).setEaseOutBack().setIgnoreTimeScale(true).setOnComplete(() => { Destroy(obj.GetChild(0).gameObject); });
+    }
 
     public void DrawAllActorReactionsAboveSpeed(BaseActorBattler actor, int minimumSpeed, Action onReactionSelected)
     {
@@ -231,38 +233,6 @@ public class UIManager : MonoBehaviour
         {
             buttonHandlers[i].referencedAction = ActionsToDraw[i];
         }
-    }
-
-    public void DrawReactionsAndWaitForSelectionOrNull(List<BaseReaction> ReactionsToDraw, Action<BaseReaction> onReactionSelected)
-    {
-        List<Assets.BaseAction> fakeActions = new List<Assets.BaseAction>();
-        this.OnReactionSelected = onReactionSelected;
-        var reactions = ReactionsToDraw;
-
-        foreach (var reaction in reactions)
-        {
-            fakeActions.Add(reaction);
-        }
-
-        var buttonHandlers = DrawActionsRadiallyOnScreenPoint(fakeActions);
-
-        for (int i = 0; i < reactions.Count; i++)
-        {
-            buttonHandlers[i].referencedReaction = reactions[i];
-            buttonHandlers[i].referencedAction = null;
-        }
-        //
-
-        //foreach (var buttonHandler in buttonHandlers)
-        //{
-        //    buttonHandler.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(delegate ()
-        //    {
-        //        this.OnReactionSelected(buttonHandler.referencedReaction);
-        //        ButtonHandler.KillAll();
-        //        InputHandler.instance.OnHold -= ReturnNullSkill;
-        //    });
-        //}
-        //InputHandler.instance.OnHold += ReturnNullSkill;
     }
 
 
@@ -333,24 +303,24 @@ public class UIManager : MonoBehaviour
 
     public IEnumerator Fade(bool fadeIn, Action onFadeComplete)
     {
-        var imgColor = fadeImage.color;
-        float startAlpha = imgColor.a;
-        float targetAlpha = fadeIn ? 1.0f : 0.0f;
+        //var imgColor = fadeImage.color;
+        //float startAlpha = imgColor.a;
+        //float targetAlpha = fadeIn ? 1.0f : 0.0f;
 
-        float elapsedTime = 0f;
+        //float elapsedTime = 0f;
 
-        while (elapsedTime < fadeSpeed)
-        {
-            float t = elapsedTime / fadeSpeed;
-            imgColor.a = Mathf.Lerp(startAlpha, targetAlpha, t);
-            fadeImage.color = imgColor;
+        //while (elapsedTime < fadeSpeed)
+        //{
+        //    float t = elapsedTime / fadeSpeed;
+        //    imgColor.a = Mathf.Lerp(startAlpha, targetAlpha, t);
+        //    fadeImage.color = imgColor;
 
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
+        //    elapsedTime += Time.deltaTime;
+        yield return null;
+        //}
 
-        imgColor.a = targetAlpha;
-        fadeImage.color = imgColor;
+        //imgColor.a = targetAlpha;
+        //fadeImage.color = imgColor;
 
         onFadeComplete?.Invoke();
     }

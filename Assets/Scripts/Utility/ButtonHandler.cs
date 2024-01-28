@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ButtonHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class ButtonHandler : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI skillName;
     [SerializeField] private TextMeshProUGUI remainingUses;
@@ -18,9 +18,13 @@ public class ButtonHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     [SerializeField] private TextMeshProUGUI postureDamage;
     [SerializeField] private TextMeshProUGUI knockback;
     [SerializeField] private TextMeshProUGUI tags;
-    [HideInInspector] public Transform parentafterDrag;
+    private static BaseActorBattler player;
+    private static GameObject actionHolder;
+    private static GameObject actionSlot;
+    private static ActionSlot actionSlotScript;
     public Image image;
 
+    private Transform home;
     public BaseAction referencedAction;
     public BaseSkill referencedSkill;
     public BaseReaction referencedReaction;
@@ -30,38 +34,45 @@ public class ButtonHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public void SetDraggable(bool draggable)
     {
         isDraggable = draggable;
-        var x = GetComponentsInChildren<Image>();
 
         if (isDraggable)
         {
-            foreach (var y in x)
-            {
-                y.color = new Color(1, 1, 1, 1);
-            }
-            skillName.color = Color.black;
             remainingUses.color = Color.gray;
             buildupCost.color = Color.yellow;
         }
         else
         {
-            foreach (var y in x)
-            {
-                y.color = new Color(0.05f, 0.05f, 0.05f, 0.1f);
-            }
-            skillName.color = new Color(skillName.color.r, skillName.color.g, skillName.color.b, 0.1f);
             remainingUses.color = new Color(remainingUses.color.r, remainingUses.color.g, remainingUses.color.b, 0.1f);
-            buildupCost.color = new Color(buildupCost.color.r, buildupCost.color.g, buildupCost.color.b, 0.1f);
+            buildupCost.color = new Color(buildupCost.color.r, buildupCost.color.g, buildupCost.color.b, 0.06f);
         }
-
+        gameObject.GetComponent<Button>().interactable = draggable;
     }
 
     public static void KillAll()
     {
-        var skillButtons = GameObject.FindGameObjectsWithTag("SkillButton");
-        foreach (var button in skillButtons)
+        int childCount = actionHolder.transform.childCount;
+
+        for (int i = childCount - 1; i >= 0; i--)
         {
-            Destroy(button);
+            Transform child = actionHolder.transform.GetChild(i);
+            Destroy(child.gameObject);
         }
+        if(actionSlot.transform.childCount > 0)
+        Destroy(actionSlot.transform.GetChild(0).gameObject);
+    }
+
+    private void Awake()
+    {
+        if (player == null) player = BattleManager.instance.PlayerActors[0];
+        if (actionHolder == null) actionHolder = GameObject.Find("ActionHolder");
+        if (actionSlot == null) actionSlot = GameObject.Find("ActionSlot");
+        if (actionSlotScript == null) actionSlotScript = actionSlot.GetComponent<ActionSlot>();
+    }
+
+    private void Start()
+    {
+        home = transform.parent;
+        LeanTween.scale(gameObject, Vector3.one, 0.4f).setEaseOutBack().setIgnoreTimeScale(true);
     }
 
     public void Init()
@@ -69,33 +80,23 @@ public class ButtonHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         if (referencedAction != null)
         {
             SetUIFromAction(referencedAction);
-            SetDraggable(referencedAction.IsValid());
-        }
-        if (referencedSkill != null)
-        {
-            SetUIFromAction(referencedSkill);
-            SetDraggable(referencedSkill.IsValid());
-        }
-        if (referencedReaction != null)
-        {
-            SetUIFromAction(referencedReaction);
-            SetDraggable(referencedReaction.IsValid());
+            SetDraggable(referencedAction.IsValid(BattleManager.instance.PlayerActors[0], out _));
         }
     }
 
     public void InitCard()
     {
-        skillName.text = referencedSkill.Name;
-        buildupCost.text = referencedSkill.BuildupCost != 0 ? referencedSkill.BuildupCost.ToString() : string.Empty;
+        //skillName.text = referencedSkill.Name;
+        //buildupCost.text = referencedSkill.BuildupCost != 0 ? referencedSkill.BuildupCost.ToString() : string.Empty;
 
-        string plusSymbol = "+";
-        remainingUses.text = referencedSkill.TotalUses != 0 ? ConcatWithPlus(plusSymbol, referencedSkill.TotalUses) : string.Empty;
-        speed.text += referencedSkill.Speed;
-        range.text += referencedSkill.Range;
-        damage.text += referencedSkill.Damage;
-        postureDamage.text += referencedSkill.PostureDamage;
-        knockback.text += referencedSkill.KnockbackForce;
-        tags.text = GenerateTagString(referencedSkill.Tags);
+        //string plusSymbol = "+";
+        //remainingUses.text = referencedSkill.TotalUses != 0 ? ConcatWithPlus(plusSymbol, referencedSkill.TotalUses) : string.Empty;
+        //speed.text += referencedSkill.Speed;
+        //range.text += referencedSkill.Range;
+        //damage.text += referencedSkill.Damage;
+        //postureDamage.text += referencedSkill.PostureDamage;
+        //knockback.text += referencedSkill.KnockbackForce;
+        //tags.text = GenerateTagString(referencedSkill.Tags);
     }
 
     private string GenerateTagString(List<TAG> tags)
@@ -132,7 +133,7 @@ public class ButtonHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         return tagString;
     }
 
-    private void SetUIFromAction(Assets.BaseAction action)
+    public void SetUIFromAction(Assets.BaseAction action)
     {
         if (action != null)
         {
@@ -141,7 +142,6 @@ public class ButtonHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             remainingUses.text = action.TotalUses != 0 ? ConcatWithPlus(plusSymbol, action.remainingUses) : string.Empty;
             buildupCost.text = action.BuildupCost != 0 ? action.BuildupCost.ToString() : string.Empty;
             SetButtonInteractable(action);
-            SetDraggable(action.IsValid() && BattleManager.GetInstance().GetActiveActor().Actor.currentBuildup >= action.BuildupCost);
         }
     }
 
@@ -157,8 +157,7 @@ public class ButtonHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     private void SetButtonInteractable(Assets.BaseAction action)
     {
-        GetComponent<UnityEngine.UI.Button>().interactable = action.HasUsesLeft();
-
+        GetComponent<UnityEngine.UI.Button>().interactable = false;
     }
 
     public void SetButtonInteractable(bool interactable)
@@ -166,37 +165,62 @@ public class ButtonHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         GetComponent<UnityEngine.UI.Button>().interactable = interactable;
     }
 
-    private void Update()
+    public void SetActive()
     {
-        transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one, 0.1f);
+        if (actionSlot.transform.childCount > 0)
+        {
+            var actionInSlot = actionSlot.transform.GetChild(0);
+
+            if (actionInSlot == gameObject.transform) //this skill is already in the slot
+            {
+                gameObject.transform.SetParent(home.transform);
+            }
+            else
+            {
+                actionInSlot.SetParent(actionInSlot.GetComponent<ButtonHandler>().home.transform); //move action in slot back to home position
+                gameObject.transform.SetParent(actionSlot.transform); //move this action inside the slot
+                gameObject.transform.localScale = Vector3.zero;
+                LeanTween.scale(gameObject, Vector3.one, 0.4f).setEaseOutBack().setIgnoreTimeScale(true);
+            }
+        }
+        else
+        {
+            gameObject.transform.SetParent(actionSlot.transform);
+            gameObject.transform.localScale = Vector3.zero;
+            LeanTween.scale(gameObject, Vector3.one, 0.4f).setEaseOutBack().setIgnoreTimeScale(true);
+        }
+        actionSlotScript.OnDrop();
+        //if actionslot is empty move to actionslot
+        //if actionslot is full
+        //  if this is already in actionslot move back to startingplace
+        //  else replace action in actionslot with this one. move action in actionslot back home.
     }
 
-    public void OnBeginDrag(PointerEventData eventData)
-    {
-        if (!isDraggable) return;
 
-        parentafterDrag = transform.parent;
-        transform.SetParent(transform.root);
-        transform.SetAsLastSibling();
-        image.raycastTarget = false;
-        GetComponent<CanvasGroup>().blocksRaycasts = false;
-    }
+    //public void OnBeginDrag(PointerEventData eventData)
+    //{
+    //    if (!isDraggable) return;
 
-    public void OnDrag(PointerEventData eventData)
-    {
-        if (!isDraggable) return;
+    //    parentafterDrag = transform.parent;
+    //    transform.SetParent(transform.root);
+    //    transform.SetAsLastSibling();
+    //    image.raycastTarget = false;
+    //    GetComponent<CanvasGroup>().blocksRaycasts = false;
+    //}
+    //public void OnDrag(PointerEventData eventData)
+    //{
+    //    if (!isDraggable) return;
 
-        transform.position = eventData.position;
-    }
+    //    transform.position = eventData.position;
+    //}
+    //public void OnEndDrag(PointerEventData eventData)
+    //{
+    //    if (!isDraggable) return;
 
-    public void OnEndDrag(PointerEventData eventData)
-    {
-        if (!isDraggable) return;
-
-        transform.SetParent(parentafterDrag);
-        transform.position = Vector3.zero;
-        image.raycastTarget = true;
-        GetComponent<CanvasGroup>().blocksRaycasts = true;
-        ExecuteEvents.ExecuteHierarchy<IHasChanged>(gameObject, null, (x, y) => x.HasChanged());
-    }
+    //    transform.SetParent(parentafterDrag);
+    //    transform.position = Vector3.zero;
+    //    image.raycastTarget = true;
+    //    GetComponent<CanvasGroup>().blocksRaycasts = true;
+    //    ExecuteEvents.ExecuteHierarchy<IHasChanged>(gameObject, null, (x, y) => x.HasChanged());
+    //}
 }

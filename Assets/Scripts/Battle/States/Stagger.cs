@@ -6,17 +6,15 @@ namespace Assets.Scripts.Battle.States
 {
     public class Stagger : BaseStatus
     {
-        public Stagger(BaseActorBattler owner)
+        public Stagger(BaseActorBattler owner) : base(owner)
         {
-            this.owner = owner;
-            ApplyEffects();
         }
 
         ~Stagger()
         {
             owner.onKnockbackRecieved -= ModifyKnockback;
         }
-        public override void ApplyEffects()
+        public override void Apply()
         {
             if(owner.activeStates.OfType<Stagger>().Any())
             {

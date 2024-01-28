@@ -35,7 +35,7 @@ public class FloorManager : MonoBehaviour
             var line = lines[Random.Range(0, lines.Length)];
             line = line.Replace("{numberth}", GetOrdinal(currentFloor));
 
-            var bm = BattleManager.GetInstance();
+            var bm = BattleManager.instance;
             bm.PlayerActors[0].transform.position = Vector3.zero;
             bm.EnemyActors[0].transform.position = Vector3.right * 10;
             bm.EnemyActors[0].PlayAnimation("Idle");

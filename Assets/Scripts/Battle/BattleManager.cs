@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Actions;
+using Assets.Scripts.Battle.Actions;
 using Assets.Scripts.Utility;
 using System;
 using System.Collections;
@@ -11,13 +12,11 @@ namespace Assets
 
     public class BattleManager : MonoBehaviour
     {
+        public static BattleManager instance = null;
+
+
         public enum State { WaitingForPlayer, Busy }
-        private static BattleManager instance;
         public State state;
-        public static BattleManager GetInstance()
-        {
-            return instance;
-        }
         [SerializeField] public List<BaseActorBattler> PlayerActors;
         [SerializeField] public List<BaseActorBattler> EnemyActors;
         public Queue<BaseActorBattler> turnQueue = new Queue<BaseActorBattler>();
@@ -28,13 +27,16 @@ namespace Assets
 
         private void Awake()
         {
-            instance = this;
+            if (instance == null) instance = this;
 
             BaseReaction.NoReaction = ScriptableObject.CreateInstance<BaseReaction>();
             BaseReaction.NoReaction.Name = "Nothing";
             BaseReaction.NoReaction.knockbackModifier = 1;
             BaseReaction.NoReaction.damageModifier = 1;
             BaseReaction.NoReaction.postureModifier = 1;
+            MoveSkill.instance = ScriptableObject.CreateInstance<MoveSkill>();
+            MoveSkill.instance.Name = "Move";
+
         }
         void Start()
         {
@@ -228,7 +230,7 @@ namespace Assets
 
                 foreach (var actor in PlayerActors.Concat(EnemyActors))
                 {
-                    if (actor.rigidbody.velocity.magnitude > Mathf.Epsilon)
+                    if (actor.GetComponent<Rigidbody>().velocity.magnitude > Mathf.Epsilon)
                     {
                         allActorsIdle = false;
                         break; // At least one actor is still moving, exit the loop

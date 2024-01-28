@@ -55,16 +55,22 @@ namespace Assets
         public virtual bool IsValid(BaseActorBattler caster, out string InvalidReason)
         {
             InvalidReason = "";
+
+            if (!HasUsesLeft())
+            {
+                return false;
+                InvalidReason = "No uses left!";
+            }
             if (IsSkillOnCooldown())
             {
                 InvalidReason = $"usable in {currentCooldownTurns}";
                 return false;
             }
-            return true;
-        }
-
-        public virtual bool IsValid()
-        {
+            if (caster.Actor.currentBuildup < BuildupCost)
+            {
+                return false;
+                InvalidReason = "Not enough Buildup!";
+            }
             return true;
         }
 
@@ -83,8 +89,9 @@ namespace Assets
 
 
 
-    public enum TAG { MOVE_NEAR_ENEMY_BEFORE_ATTACK, PROJECTILE, KNOCKBACK_AIR, KNOCKBACK_BACK, KNOCKBACK_FRONT, MOVE_OFFSET_BEHIND, MOVE_OFFSET_INFRONT, NO_REACTION, REPEAT_TURN, STARTER, FINISHER, COUNTER, USESLIDER, USEKNOB,
-        APPLYROOTMOTION
+    public enum TAG { MOVE_NEAR_ENEMY_BEFORE_ATTACK, PROJECTILE, KNOCKBACK_AIR, KNOCKBACK_FRONT, KNOCKBACK_BACK, MOVE_OFFSET_BEHIND, MOVE_OFFSET_INFRONT, NO_REACTION, REPEAT_TURN, STARTER, FINISHER, COUNTER, USESLIDER, USEKNOB,
+        APPLYROOTMOTION,
+        KILLMOMENTUM
     }
 
     public enum RARITY { COMMON, UNCOMMON, RARE, EPIC, LEGENDARY };

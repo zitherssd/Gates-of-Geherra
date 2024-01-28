@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Actions;
+using Assets.Scripts.Battle.Actions;
 using Assets.Scripts.Battle.States;
 using Assets.Scripts.Utility;
 using System;
@@ -12,29 +13,41 @@ namespace Assets
 {
     public class BaseActorBattler : MonoBehaviour
     {
-        [SerializeField]
-        public Actor Actor;
-        public MoveState currentState;
-        private GameObject selectionCircle;
+        [SerializeField] public Actor Actor;
+
+        // Movement and Animation
+        private MoveState currentState;
         private Vector3 slideTargetPosition;
         private Action onMoveComplete;
         private Action onAnimationHitComplete;
         private Action onReactionCheck;
         private Action onAnimationComplete;
         private Animator animator;
-        public Rigidbody rigidbody;
+        private Rigidbody rigidbody;
         private float lastSqrMag;
-        private bool cancelMoveCallback;
+
+        // Audio
         private AudioSource audioSource;
-        internal bool isBlocking;
+
+        // Collision
         internal bool collisionOccured;
+
+        // Prefabs and Objects
         public GameObject damagePopupPrefab;
         public GameObject posturePopupPrefab;
         public LayerMask layer;
+
+        // States and Actions
         public List<BaseStatus> activeStates;
         public UnityAction<float> onDamageRecieved;
         public UnityAction<float> onPostureRecieved;
         public UnityAction<Vector3, float> onKnockbackRecieved;
+        public delegate float DamageModifier(float damage);
+        public event DamageModifier ApplyDamageModifiers;
+
+        // UI
+        public OriginPointHandler originPointInUI;
+        public GameObject selectionCircle;
 
 
 
@@ -47,7 +60,6 @@ namespace Assets
             currentState = MoveState.Idle;
             activeStates = new List<BaseStatus>();
 
-            onDamageRecieved += DoDamageRecievedEffects;
             onPostureRecieved += DoPostureRecievedEffects;
             onKnockbackRecieved += DoKnockbackRecievedEffects;
             //var cc = GetComponentInChildren<ColorController>();
@@ -115,16 +127,13 @@ namespace Assets
                     {
                         rigidbody.velocity = Vector3.zero;
                         currentState = MoveState.Idle;
-                        if (!cancelMoveCallback)
-                            onMoveComplete();
-                        else return;
+                        onMoveComplete();
                     }
 
                     lastSqrMag = sqrMag;
                     break;
             }
         }
-
         public void Initialize()
         {
             var actor = GetBaseActor();
@@ -135,7 +144,7 @@ namespace Assets
 
         internal void Act(Action onActorActionFinished)
         {
-            var bm = BattleManager.GetInstance();
+            var bm = BattleManager.instance;
             var im = InputManager.instance;
             var um = UIManager.GetInstance();
 
@@ -169,7 +178,9 @@ namespace Assets
                 var chosenSkill = ChooseValidSkillInRangeOrReturnNull();
                 if (chosenSkill == null)
                 {
-                    Move((bm.PlayerActors[0].transform.position - transform.position).normalized, onActorActionFinished);
+                    var movedirection = (bm.PlayerActors[0].transform.position - transform.position).normalized;
+                    MoveSkill.instance.StickValue = new Vector2(movedirection.x, movedirection.z);
+                    UseAction(MoveSkill.instance, onActorActionFinished);
                 }
                 else
                 {
@@ -180,33 +191,39 @@ namespace Assets
 
             }
         }
-
         public void UseAction(BaseAction action, Action onSkillComplete)
         {
-            UIManager.GetInstance().SetTextThenFade($"{this.GetBaseActor().Name} uses {action.Name}!", 0.5f);
-            action.UpdateReaminingUses();
-            action.ResetCooldown();
-            action.Perform(this, onSkillComplete);
-            var bm = BattleManager.GetInstance();
+            var bm = BattleManager.instance;
 
             //Hack
             bm.PlayerActors[0].transform.rotation = Quaternion.LookRotation(bm.EnemyActors[0].transform.position - bm.PlayerActors[0].transform.position, Vector3.up);
             bm.EnemyActors[0].transform.rotation = Quaternion.LookRotation(bm.PlayerActors[0].transform.position - bm.EnemyActors[0].transform.position, Vector3.up);
+
+            //UI draw action above head
+            UIManager.GetInstance().DrawActionAboveHead(this, action);
+
+
+            UIManager.GetInstance().SetTextThenFade($"{this.GetBaseActor().Name} uses {action.Name}!", 0.5f);
+            action.UpdateReaminingUses();
+            action.ResetCooldown();
+            action.Perform(this, () => { UIManager.GetInstance().KillActionAboveHead(this); onSkillComplete(); });
         }
+
+
 
 
 
         public List<BaseAction> GetValidContinueComboSkills()
         {
-            return Actor.skills.Where(skill => skill.IsValid() && !skill.Tags.Contains(TAG.STARTER)).ToList();
+            return Actor.skills.Where(skill => skill.IsValid(this, out _) && !skill.Tags.Contains(TAG.STARTER)).ToList();
         }
         public List<BaseAction> GetValidStartComboSkills()
         {
-            return Actor.skills.Where(skill => skill.IsValid()).ToList();
+            return Actor.skills.Where(skill => skill.IsValid(this, out _)).ToList();
         }
         public List<BaseReaction> GetValidReactionsForSkill()
         {
-            return Actor.reactions.Where(reaction => reaction.IsValid()).ToList();
+            return Actor.reactions.Where(reaction => reaction.IsValid(this, out _)).ToList();
         }
 
 
@@ -216,14 +233,14 @@ namespace Assets
             if (force > 0)
             {
                 //Animation
-                if (!isBlocking)
-                {
-                    if (direction.y > 0.1)
-                        animator.Play("HurtAir");
-                    else
-                        animator.Play("HurtGround");
-                    currentState = MoveState.Knockback;
-                }
+                //if (!isBlocking)
+                //{
+                //    if (direction.y > 0.1)
+                //        animator.Play("HurtAir");
+                //    else
+                //        animator.Play("HurtGround");
+                //    currentState = MoveState.Knockback;
+                //}
 
                 rigidbody.AddForce(direction * 100 * force);
 
@@ -232,8 +249,6 @@ namespace Assets
                 //GetComponentInChildren<ParticleSystem>().Play();
             }
         }
-
-
         public void MoveToPosition(Vector3 TargetPosition, MoveState state, Action onMoveComplete)
         {
             if (state == MoveState.Sliding)
@@ -246,7 +261,6 @@ namespace Assets
         }
         public void Move(Vector3 direction, Action onMoveComplete)
         {
-            UIManager.GetInstance().AddToStoneSlab($"{Actor.Name} moves");
             PlayAudio("Move2");
 
             this.slideTargetPosition = transform.position + (direction * Actor.AGI);
@@ -254,8 +268,6 @@ namespace Assets
             this.currentState = MoveState.Move;
             lastSqrMag = Mathf.Infinity;
         }
-
-
         public void MoveRelativeToCamera(Vector2 direction, Action onMoveComplete)
         {
             var camera = Camera.main;
@@ -277,51 +289,19 @@ namespace Assets
             animator.Play(AnimationName, -1, 0);
             this.onAnimationHitComplete = onAnimationHitComplete;
         }
-
         public void SetRootMotion(bool applyRootMotion)
         {
             animator.applyRootMotion = applyRootMotion;
         }
-
         public void PlayAnimation(string AnimationName)
         {
             animator.Play(AnimationName, -1, 0);
         }
-
-
-        private void PerformSkillFlow(BaseAction skill, BaseActorBattler targetActor, BaseReaction targetReaction, Action onSkillComplete)
-        {
-            //skill.WarmUp(this, targetActor, () =>
-            //{
-            //    skill.PerformTarget(this, targetActor, targetReaction, () =>
-            //    {
-            //        WaitForAnimation(onSkillComplete);
-            //    });
-            //});
-        }
-
-
-
-
         public BaseAction ChooseValidSkillInRangeOrReturnNull()
         {
             List<BaseAction> validskills = new List<BaseAction>();
 
             validskills = Actor.skills.Where(skills => skills.IsValidAndInRange(this)).ToList();
-
-            if (validskills.Count == 0) return null;
-
-            var random = new System.Random();
-            var index = random.Next(validskills.Count);
-
-            return validskills[index];
-        }
-
-        public BaseAction ChooseValidSkillAtRandomOrReturnNull()
-        {
-            List<BaseAction> validskills = new List<BaseAction>();
-
-            validskills = Actor.skills.Where(skills => skills.IsValid()).ToList();
 
             if (validskills.Count == 0) return null;
 
@@ -369,9 +349,8 @@ namespace Assets
             }
             else
             {
-                Actor.currentPosture += Actor.maxPosture / 8;
+                ApplyPosture(-Actor.maxPosture / 8);
             }
-            Actor.currentBuildup += 5f;
             //if has posture restore all
             //else restore 1/10 of max
         }
@@ -381,11 +360,6 @@ namespace Assets
         }
         public Actor GetBaseActor()
         {
-            return Actor;
-        }
-        public Actor SetBaseActor(Actor actor)
-        {
-            Actor = actor;
             return Actor;
         }
         private void OnCollisionEnter(Collision collision)
@@ -465,12 +439,6 @@ namespace Assets
 
             this.onAnimationComplete = onAnimationEnd;
         }
-        private void OnDestroy()
-        {
-            GetBaseActor().OnDamageDealt -= ShowDamagePopup;
-            GetBaseActor().OnPostureDamage -= ShowPosturePopup;
-        }
-
         public void ApplyPosture(float postureDamage)
         {
             Actor.currentPosture -= postureDamage;
@@ -483,13 +451,25 @@ namespace Assets
 
             if (Actor.currentPosture <= 0)
             {
+                //Fall?
             }
+            if (Actor.currentPosture > Actor.maxPosture) Actor.currentPosture = Actor.maxPosture;
         }
 
-        public void DoDamageRecievedEffects(float damage)
+        public void ApplyDamage(float preMitigationDamage)
         {
-            GetBaseActor().DealDamage(damage);
-            ShowDamagePopup(damage);
+            float postMitgationDamage = preMitigationDamage;
+            Debug.Log("PreMitigationDamage is " + postMitgationDamage);
+
+            if (ApplyDamageModifiers != null)
+            {
+                postMitgationDamage = ApplyDamageModifiers(preMitigationDamage);
+            }
+
+            Debug.Log("PostMitigationDamage is " + postMitgationDamage);
+            GetBaseActor().DealDamage(postMitgationDamage);
+            GetBaseActor().DealDamage(postMitgationDamage);
+            ShowDamagePopup(postMitgationDamage);
             PlayAudio("Blow1");
         }
 
