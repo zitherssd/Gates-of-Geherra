@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ae56926c7d98db48bd49445d781e66d, type: 3}
   m_Name: Low Kick
   m_EditorClassIdentifier: 
-  Name: Left Hook
+  Name: Low Kick
   Rarity: 0
   cooldownTurns: 2
   TotalUses: 2
@@ -25,7 +25,6 @@ MonoBehaviour:
   StickValue: {x: 0, y: 0}
   currentCooldownTurns: 0
   AnimationType: 2
-  SkillType: 0
   Range: 1.6
   Damage: 3
   PostureDamage: 6

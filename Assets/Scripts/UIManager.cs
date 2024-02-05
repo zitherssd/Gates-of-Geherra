@@ -135,7 +135,7 @@ public class UIManager : MonoBehaviour
 
         List<Assets.BaseAction> fakeActions = new List<Assets.BaseAction>();
             var activeChar = BattleManager.instance.GetActiveActor();
-            var skills = activeChar.GetBaseActor().skills;
+            var skills = activeChar.Actor.skills;
 
             foreach (var skill in skills)
             {
@@ -160,7 +160,7 @@ public class UIManager : MonoBehaviour
         if (!waitingForAction)
         {
             List<Assets.BaseAction> fakeReactions = new List<Assets.BaseAction>();
-            var reactions = actor.GetBaseActor().reactions;
+            var reactions = actor.Actor.reactions;
 
             foreach (var reaction in reactions)
             {
@@ -196,7 +196,12 @@ public class UIManager : MonoBehaviour
     internal void KillActionAboveHead(BaseActorBattler actor)
     {
         var obj = actor.originPointInUI.transform;
-        LeanTween.scale(obj.gameObject, new Vector3(1,0,1), 0.3f).setEaseOutBack().setIgnoreTimeScale(true).setOnComplete(() => { Destroy(obj.GetChild(0).gameObject); });
+        if (obj.childCount > 0)
+        {
+            LeanTween.scale(obj.gameObject, new Vector3(1, 0, 1), 0.3f).setEaseOutBack().setIgnoreTimeScale(true).setOnComplete(() => { Destroy(obj.GetChild(0).gameObject); });
+        }
+        else
+            LeanTween.scale(obj.gameObject, new Vector3(1, 0, 1), 0.3f).setEaseOutBack().setIgnoreTimeScale(true);
     }
 
     public void DrawAllActorReactionsAboveSpeed(BaseActorBattler actor, int minimumSpeed, Action onReactionSelected)
@@ -204,7 +209,7 @@ public class UIManager : MonoBehaviour
 
         List<Assets.BaseAction> fakeReactions = new List<Assets.BaseAction>();
             List<BaseReaction> chosenReactions = new List<BaseReaction>();
-            var reactions = actor.GetBaseActor().reactions;
+            var reactions = actor.Actor.reactions;
 
 
             foreach (var reaction in reactions)

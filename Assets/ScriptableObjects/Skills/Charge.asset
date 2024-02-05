@@ -14,12 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Charge
   Rarity: 0
-  cooldownTurns: 6
+  cooldownTurns: 2
   TotalUses: 0
   remainingUses: 0
   BuildupCost: 0
   BuildupGain: 10
   Speed: 0
+  Tags: 
   SliderValue: 0
   StickValue: {x: 0, y: 0}
   currentCooldownTurns: 0

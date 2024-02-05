@@ -20,35 +20,30 @@ namespace Assets
         private Vector3 slideTargetPosition;
         private Action onMoveComplete;
         private Action onAnimationHitComplete;
+        private Action onAnimationEndComplete;
         private Action onReactionCheck;
-        private Action onAnimationComplete;
         private Animator animator;
-        private Rigidbody rigidbody;
+        private new Rigidbody rigidbody;
         private float lastSqrMag;
-
         // Audio
         private AudioSource audioSource;
-
         // Collision
         internal bool collisionOccured;
-
         // Prefabs and Objects
         public GameObject damagePopupPrefab;
         public GameObject posturePopupPrefab;
         public LayerMask layer;
-
         // States and Actions
         public List<BaseStatus> activeStates;
-        public UnityAction<float> onDamageRecieved;
-        public UnityAction<float> onPostureRecieved;
-        public UnityAction<Vector3, float> onKnockbackRecieved;
         public delegate float DamageModifier(float damage);
+        public delegate float PostureModifier(float damage);
+        public delegate float KnockbackModifier(float force, Vector3 direction);
         public event DamageModifier ApplyDamageModifiers;
-
+        public event PostureModifier ApplyPostureModifiers;
+        public event KnockbackModifier ApplyKnockbackModifiers;
         // UI
         public OriginPointHandler originPointInUI;
         public GameObject selectionCircle;
-
 
 
         private void Awake()
@@ -60,22 +55,9 @@ namespace Assets
             currentState = MoveState.Idle;
             activeStates = new List<BaseStatus>();
 
-            onPostureRecieved += DoPostureRecievedEffects;
-            onKnockbackRecieved += DoKnockbackRecievedEffects;
             //var cc = GetComponentInChildren<ColorController>();
             //cc.mainColor = baseActor.mainColor;
             //cc.secondaryColor = baseActor.secondaryColor;
-        }
-        private void Update()
-        {
-            if (animator.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
-            {
-                if (onAnimationComplete != null)
-                {
-                    onAnimationComplete();
-                    onAnimationComplete = null;
-                }
-            }
         }
         private void FixedUpdate()
         {
@@ -84,7 +66,7 @@ namespace Assets
                 case MoveState.Idle:
                     break;
                 case MoveState.Sliding:
-                    if (rigidbody.velocity.magnitude < Mathf.Epsilon) ;
+                    if (rigidbody.velocity.magnitude < Mathf.Epsilon)
                     {
                         if (onMoveComplete != null)
                         {
@@ -134,16 +116,15 @@ namespace Assets
                     break;
             }
         }
-        public void Initialize()
-        {
-            var actor = GetBaseActor();
-            //actor.OnDamageDealt += ShowDamagePopup;
-            //actor.OnPostureDamage += ShowPosturePopup;
-        }
 
 
-        internal void Act(Action onActorActionFinished)
+        public void Act(Action onActorActionFinished)
         {
+            //if flying in midair do a check to 
+
+
+
+
             var bm = BattleManager.instance;
             var im = InputManager.instance;
             var um = UIManager.GetInstance();
@@ -158,7 +139,8 @@ namespace Assets
                     if (selectedSkill == null)
                     {
                         Time.timeScale = 1f;
-                        onActorActionFinished();
+
+                        StartCoroutine(WaitForOneFrame(onActorActionFinished));
                     }
                     else
                     {
@@ -168,7 +150,7 @@ namespace Assets
                             selectedSkill.StickValue = InputManager.instance.StickValue;
 
                         Time.timeScale = 1f;
-                        UseAction(selectedSkill, onActorActionFinished);
+                        UseAction(selectedSkill, () => { onActorActionFinished(); Debug.Log("Player finished turn, going back to battlemanager"); });
                     }
                 });
             }
@@ -186,7 +168,7 @@ namespace Assets
                 {
                     chosenSkill.SliderValue = 1f;
                     chosenSkill.StickValue = Vector2.zero;
-                    UseAction(chosenSkill, onActorActionFinished);
+                    UseAction(chosenSkill, () => { onActorActionFinished(); Debug.Log("Enemy finished turn, going back to bm"); });
                 }
 
             }
@@ -203,14 +185,10 @@ namespace Assets
             UIManager.GetInstance().DrawActionAboveHead(this, action);
 
 
-            UIManager.GetInstance().SetTextThenFade($"{this.GetBaseActor().Name} uses {action.Name}!", 0.5f);
-            action.UpdateReaminingUses();
-            action.ResetCooldown();
+            UIManager.GetInstance().SetTextThenFade($"{Actor.Name} uses {action.Name}!", 0.5f);
+
             action.Perform(this, () => { UIManager.GetInstance().KillActionAboveHead(this); onSkillComplete(); });
         }
-
-
-
 
 
         public List<BaseAction> GetValidContinueComboSkills()
@@ -223,79 +201,8 @@ namespace Assets
         }
         public List<BaseReaction> GetValidReactionsForSkill()
         {
-            return Actor.reactions.Where(reaction => reaction.IsValid(this, out _)).ToList();
-        }
-
-
-        public void ApplyKnockback(Vector3 direction, float force)
-        {
-            var animator = this.GetComponent<Animator>();
-            if (force > 0)
-            {
-                //Animation
-                //if (!isBlocking)
-                //{
-                //    if (direction.y > 0.1)
-                //        animator.Play("HurtAir");
-                //    else
-                //        animator.Play("HurtGround");
-                //    currentState = MoveState.Knockback;
-                //}
-
-                rigidbody.AddForce(direction * 100 * force);
-
-                //this.MoveToPosition(transform.position + direction.normalized * force, MoveState.Sliding, () => { animator.Play("Idle"); onKnockbackFinished(); });
-                //Blood particles
-                //GetComponentInChildren<ParticleSystem>().Play();
-            }
-        }
-        public void MoveToPosition(Vector3 TargetPosition, MoveState state, Action onMoveComplete)
-        {
-            if (state == MoveState.Sliding)
-                rigidbody.velocity = (TargetPosition - transform.position);
-
-            lastSqrMag = Mathf.Infinity;
-            this.slideTargetPosition = TargetPosition;
-            this.onMoveComplete = onMoveComplete;
-            this.currentState = state;
-        }
-        public void Move(Vector3 direction, Action onMoveComplete)
-        {
-            PlayAudio("Move2");
-
-            this.slideTargetPosition = transform.position + (direction * Actor.AGI);
-            this.onMoveComplete = onMoveComplete;
-            this.currentState = MoveState.Move;
-            lastSqrMag = Mathf.Infinity;
-        }
-        public void MoveRelativeToCamera(Vector2 direction, Action onMoveComplete)
-        {
-            var camera = Camera.main;
-            var forward = camera.transform.forward; forward.y = 0;
-            var right = camera.transform.right; right.y = 0;
-            forward.Normalize(); right.Normalize();
-
-            var desiredMoveDirection = forward * direction.y + right * direction.x;
-            Move(desiredMoveDirection, onMoveComplete);
-        }
-        public void PlayAnimation(string AnimationName, Action onAnimationHitComplete, Action onReactionCheck)
-        {
-            animator.Play(AnimationName, -1, 0);
-            this.onReactionCheck = onReactionCheck;
-            this.onAnimationHitComplete = onAnimationHitComplete;
-        }
-        public void PlayAnimation(string AnimationName, Action onAnimationHitComplete )
-        {
-            animator.Play(AnimationName, -1, 0);
-            this.onAnimationHitComplete = onAnimationHitComplete;
-        }
-        public void SetRootMotion(bool applyRootMotion)
-        {
-            animator.applyRootMotion = applyRootMotion;
-        }
-        public void PlayAnimation(string AnimationName)
-        {
-            animator.Play(AnimationName, -1, 0);
+            var reactions = Actor.reactions.Where(reaction => reaction.IsValid(this, out _)).ToList();
+            return reactions;
         }
         public BaseAction ChooseValidSkillInRangeOrReturnNull()
         {
@@ -310,26 +217,121 @@ namespace Assets
 
             return validskills[index];
         }
-        public void PlayAudio(string clipName)
+
+
+        public void ApplyPosture(float postureDamage)
         {
-            var clip = SoundManager.instance.GetAudioClipByName(clipName);
-            audioSource.clip = clip;
-            audioSource.Play();
+            float postMitigationDamage = postureDamage;
+            if (ApplyPostureModifiers != null)
+            {
+                postMitigationDamage = ApplyPostureModifiers(postureDamage);
+            }
+
+            Actor.DealPostureDamage(postMitigationDamage);
+            ShowPosturePopup(postMitigationDamage);
+
+            if (Actor.currentPosture <= Actor.maxPosture / 2)
+            {
+                var stagger = new Stagger(this);
+                activeStates.Add(stagger);
+            }
         }
-        public void ShowSelectionCircle()
+        public void ApplyDamage(float preMitigationDamage)
         {
-            selectionCircle.GetComponent<SelectionCircle>().target = this.transform;
+            float postMitgationDamage = preMitigationDamage;
+            if (ApplyDamageModifiers != null)
+            {
+                postMitgationDamage = ApplyDamageModifiers(preMitigationDamage);
+            }
+            Actor.DealDamage(postMitgationDamage);
+
+            ShowDamagePopup(postMitgationDamage);
+
+            PlayAudio("Blow1");
         }
-        public void AnimationHit()
+        public void ApplyKnockback(Vector3 direction, float force)
         {
-            onAnimationHitComplete();
+            var animator = this.GetComponent<Animator>();
+            if (force > 0)
+            {
+                float postMitigationForce = force;
+                Debug.Log("preMitigationForce is " + postMitigationForce);
+                Debug.Log("preMitigationDirection is " + direction);
+
+                if (ApplyKnockbackModifiers != null)
+                {
+                    postMitigationForce = ApplyKnockbackModifiers(force, direction);
+                }
+
+                Debug.Log("postMitigationForce is " + postMitigationForce);
+                Debug.Log("postMitigationDirection is " + direction);
+
+                rigidbody.AddForce(direction * 100 * postMitigationForce);
+
+
+                //this.MoveToPosition(transform.position + direction.normalized * force, MoveState.Sliding, () => { animator.Play("Idle"); onKnockbackFinished(); });
+                //Blood particles
+                //GetComponentInChildren<ParticleSystem>().Play();
+            }
         }
-        public void ReactionCheck()
+
+
+        public void Move(Vector3 direction, Action onMoveComplete)
         {
-            onReactionCheck();
-            onReactionCheck = null;
+            PlayAudio("Move2");
+
+            this.slideTargetPosition = transform.position + (direction * Actor.AGI);
+            this.onMoveComplete = onMoveComplete;
+            this.currentState = MoveState.Move;
+            lastSqrMag = Mathf.Infinity;
         }
-        public void ResetFlags()
+        public void MoveToPosition(Vector3 TargetPosition, MoveState state, Action onMoveComplete)
+        {
+            if (state == MoveState.Sliding)
+                rigidbody.velocity = (TargetPosition - transform.position);
+
+            lastSqrMag = Mathf.Infinity;
+            this.slideTargetPosition = TargetPosition;
+            this.onMoveComplete = onMoveComplete;
+            this.currentState = state;
+        }
+        public void MoveRelativeToCamera(Vector2 direction, Action onMoveComplete)
+        {
+            var camera = Camera.main;
+            var forward = camera.transform.forward; forward.y = 0;
+            var right = camera.transform.right; right.y = 0;
+            forward.Normalize(); right.Normalize();
+
+            var desiredMoveDirection = forward * direction.y + right * direction.x;
+            Move(desiredMoveDirection, onMoveComplete);
+        }
+
+
+        public void PlayAnimation(string AnimationName, Action onAnimationHit, Action onReactionCheck, Action onAnimationEnd)
+        {
+            animator.Play(AnimationName, -1, 0);
+            this.onReactionCheck = onReactionCheck;
+            this.onAnimationHitComplete = onAnimationHit;
+            this.onAnimationEndComplete = onAnimationEnd;
+        }
+        public void PlayAnimation(string AnimationName, Action onAnimationHit, Action onAnimationEnd)
+        {
+            animator.Play(AnimationName, -1, 0);
+            this.onAnimationHitComplete = onAnimationHit;
+            this.onAnimationEndComplete = onAnimationEnd;
+        }
+        public void PlayAnimation(string AnimationName)
+        {
+            animator.Play(AnimationName, -1, 0);
+        }
+
+        public void KillAnimationEndEvent()
+        {
+            this.onAnimationEndComplete = null;
+        }
+
+
+        public void ProcNextTurnEffects()
         {
             collisionOccured = false;
             foreach (var skill in Actor.skills)
@@ -341,31 +343,63 @@ namespace Assets
                 reaction.UpdateCooldown();
             }
 
-            if(activeStates.OfType<Stagger>().Any())
+            if (activeStates.OfType<Stagger>().Any())
             {
                 Debug.Log("Remove Stagger - Set Posture to max");
-                activeStates.Remove(activeStates.OfType<Stagger>().First());
+                activeStates.OfType<Stagger>().First().Remove();
                 Actor.currentPosture = Actor.maxPosture;
+                PlayAnimation("Idle");
             }
-            else
-            {
-                ApplyPosture(-Actor.maxPosture / 8);
-            }
-            //if has posture restore all
-            //else restore 1/10 of max
         }
         public bool isControllable()
         {
             return Actor.Controllable;
         }
-        public Actor GetBaseActor()
+
+
+
+        //Do not touch
+        public void AnimationHit()
         {
-            return Actor;
+            if(onAnimationHitComplete != null)
+            {
+                onAnimationHitComplete();
+                onAnimationHitComplete = null;
+            }
+        }
+        public void AnimationEnd()
+        {
+            if (onAnimationEndComplete != null)
+            {
+                onAnimationEndComplete();
+                onAnimationEndComplete = null;
+            }
+        }
+        public void ReactionCheck()
+        {
+            onReactionCheck();
+            onReactionCheck = null;
+        }
+        public void PlayAudio(string clipName)
+        {
+            var clip = SoundManager.instance.GetAudioClipByName(clipName);
+            audioSource.clip = clip;
+            audioSource.Play();
+        }
+        public void ShowSelectionCircle()
+        {
+            selectionCircle.GetComponent<SelectionCircle>().target = this.transform;
+        }
+        public System.Collections.IEnumerator WaitForOneFrame(Action action)
+        {
+            // This will wait for one frame
+            yield return new WaitForSeconds(0.15f);
+
+            // Code here will be executed on the frame after the wait
+            action.Invoke();
         }
         private void OnCollisionEnter(Collision collision)
         {
-            var velocityThreshold = 1;
-
             // Check if collided object has the "Level" tag
             if (collisionOccured) return;
 
@@ -374,7 +408,7 @@ namespace Assets
                 Debug.Log($"Velocity on collision is {rigidbody.velocity.magnitude}");
 
                 UIManager.GetInstance().AddToStoneSlab($"{Actor.Name} hits a wall!");
-                onPostureRecieved.Invoke(5f);
+                ApplyPosture(5f);
                 collisionOccured = true;
 
                 // Check if velocity magnitude is greater than the threshold
@@ -388,7 +422,7 @@ namespace Assets
                 }
             }
         }
-        public void TriggerHitstop(float duration)
+        private void TriggerHitstop(float duration)
         {
             Time.timeScale = 0.0f; // Pause the game
             StartCoroutine(ResumeTimeScale(duration));
@@ -398,16 +432,7 @@ namespace Assets
             yield return new WaitForSecondsRealtime(duration);
             Time.timeScale = 1f; // Restore the original time scale
         }
-        public void HandlePostureBreak()
-        {
-            PlayAnimation("PostureBroken");
-            PlayAudio("Attack1");
-        }
-        public void HandleOnDeath(Actor actor)
-        {
-            //PlayAnimation("Down");
-        }
-        public void ShowDamagePopup(float damageAmount)
+        private void ShowDamagePopup(float damageAmount)
         {
             // Instantiate the damage popup prefab
             GameObject popup = Instantiate(damagePopupPrefab, transform.position, Quaternion.identity);
@@ -415,7 +440,7 @@ namespace Assets
             popup.GetComponentInChildren<DamagePopup>().Initialize(damageAmount);
 
         }
-        public void ShowPosturePopup(float damageAmount)
+        private void ShowPosturePopup(float damageAmount)
         {
             // Instantiate the damage popup prefab
             GameObject popup = Instantiate(posturePopupPrefab, transform.position, Quaternion.identity);
@@ -430,71 +455,17 @@ namespace Assets
             var index = random.Next(count);
             return index;
         }
-        public void WaitForAnimation(Action onAnimationEnd)
-        {
-            //Time.timeScale = 1f;
-            //animator.Play(AnimationName, -1, 0);
-            //this.onAnimationHitComplete = onAnimationHitComplete;
-
-
-            this.onAnimationComplete = onAnimationEnd;
-        }
-        public void ApplyPosture(float postureDamage)
-        {
-            Actor.currentPosture -= postureDamage;
-
-            if (Actor.currentPosture <= Actor.maxPosture / 2)
-            {
-                var stagger = new Stagger(this);
-                activeStates.Add(stagger);
-            }
-
-            if (Actor.currentPosture <= 0)
-            {
-                //Fall?
-            }
-            if (Actor.currentPosture > Actor.maxPosture) Actor.currentPosture = Actor.maxPosture;
-        }
-
-        public void ApplyDamage(float preMitigationDamage)
-        {
-            float postMitgationDamage = preMitigationDamage;
-            Debug.Log("PreMitigationDamage is " + postMitgationDamage);
-
-            if (ApplyDamageModifiers != null)
-            {
-                postMitgationDamage = ApplyDamageModifiers(preMitigationDamage);
-            }
-
-            Debug.Log("PostMitigationDamage is " + postMitgationDamage);
-            GetBaseActor().DealDamage(postMitgationDamage);
-            GetBaseActor().DealDamage(postMitgationDamage);
-            ShowDamagePopup(postMitgationDamage);
-            PlayAudio("Blow1");
-        }
-
-        public void DoPostureRecievedEffects(float damage)
-        {
-                ApplyPosture(damage);
-                ShowPosturePopup(damage);
-        }
-
-        public void DoKnockbackRecievedEffects(Vector3 direction, float force)
-        {
-            ApplyKnockback(direction, force);
-        }
-
-
     }
 
     public enum MoveState
     {
         Idle,
+        Midair,
         Knockback,
         Sliding,
         Move,
         Busy,
-        Slerp
+        Slerp,
     }
 
 }

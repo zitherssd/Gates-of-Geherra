@@ -26,8 +26,14 @@ namespace Assets
 
         public virtual void Perform(BaseActorBattler casterActor, Action onPerformEnd)
         {
-
+            UpdateReaminingUses();
+            ResetCooldown();
+            casterActor.Actor.ChangeBuildup(BuildupGain);
+            casterActor.Actor.ChangeBuildup(-BuildupCost);
+            PerformSpecific(casterActor, onPerformEnd);
         }
+
+        protected virtual void PerformSpecific(BaseActorBattler casterActor, Action onPerformEnd) { }
 
         public virtual void UpdateCooldown()
         {
@@ -58,8 +64,8 @@ namespace Assets
 
             if (!HasUsesLeft())
             {
-                return false;
                 InvalidReason = "No uses left!";
+                return false;
             }
             if (IsSkillOnCooldown())
             {
@@ -68,8 +74,8 @@ namespace Assets
             }
             if (caster.Actor.currentBuildup < BuildupCost)
             {
-                return false;
                 InvalidReason = "Not enough Buildup!";
+                return false;
             }
             return true;
         }

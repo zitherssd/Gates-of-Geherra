@@ -14,14 +14,26 @@ namespace Assets.Scripts.Battle.States
         public override void Apply()
         {
             owner.ApplyDamageModifiers += ModifyDamage;
+            owner.ApplyKnockbackModifiers += ModifyKnockback;
+        }
+
+        public override void Remove()
+        {
+            base.Remove();
+            owner.ApplyDamageModifiers -= ModifyDamage;
+            owner.ApplyKnockbackModifiers -= ModifyKnockback;
         }
 
         public float ModifyDamage(float damage)
         {
             float modifiedDamage = damage * 0.5f;
-            owner.activeStates.Remove(this);
-            owner.ApplyDamageModifiers -= ModifyDamage;
             return modifiedDamage;
+        }
+
+        public float ModifyKnockback(float knockback, Vector3 direction)
+        {
+            Remove();
+            return knockback * 0.5f;
         }
     }
 }

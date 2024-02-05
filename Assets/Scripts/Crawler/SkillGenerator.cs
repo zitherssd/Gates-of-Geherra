@@ -81,7 +81,7 @@ public class SkillGenerator : MonoBehaviour
     void onClickCardHandler(BaseAction skill)
     {
         ButtonHandler.KillAll();
-        BattleManager.instance.PlayerActors[0].GetBaseActor().baseActions.Add(skill);
+        BattleManager.instance.PlayerActors[0].Actor.baseActions.Add(skill);
     }
 
     void ModifyFloats(ref float field1, ref float field2, ref float field3)

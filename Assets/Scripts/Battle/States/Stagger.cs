@@ -8,12 +8,9 @@ namespace Assets.Scripts.Battle.States
     {
         public Stagger(BaseActorBattler owner) : base(owner)
         {
+
         }
 
-        ~Stagger()
-        {
-            owner.onKnockbackRecieved -= ModifyKnockback;
-        }
         public override void Apply()
         {
             if(owner.activeStates.OfType<Stagger>().Any())
@@ -22,14 +19,22 @@ namespace Assets.Scripts.Battle.States
             }
             else
             {
-                owner.onKnockbackRecieved += ModifyKnockback;
-                owner.HandlePostureBreak();
+                owner.ApplyKnockbackModifiers += ModifyKnockback;
+                owner.PlayAnimation("PostureBroken");
+                owner.PlayAudio("Attack1");
             }
         }
-
-        public override void ModifyKnockback(Vector3 direction, float force)
+        public override void Remove()
         {
-            force = force * 2;
+            base.Remove();
+            owner.ApplyKnockbackModifiers -= ModifyKnockback;
         }
+
+        private float ModifyKnockback(float force, Vector3 direction)
+        {
+            return force = force * 2;
+        }
+
+
     }
 }

@@ -34,10 +34,6 @@ public class Actor : ScriptableObject
     public int AGI;
 
     public event Action<Actor> onDeath;
-    public event Action<Actor> onPostureBroken;
-
-    public event Action<float> OnDamageDealt;
-    public event Action<float> OnPostureDamage;
 
 
     private void Awake()
@@ -57,6 +53,18 @@ public class Actor : ScriptableObject
             currentPosture = 0;
             currentHp = 0;
         }
+    }
+
+    public void DealPostureDamage(float damage)
+    {
+        currentPosture -= damage;
+        Mathf.Clamp(currentPosture, 0, maxPosture);
+    }
+
+    public void ChangeBuildup(float value)
+    {
+        currentBuildup += value;
+        Mathf.Clamp(currentBuildup, 0, maxBuildup);
     }
 
     public float GetCurrentHP()

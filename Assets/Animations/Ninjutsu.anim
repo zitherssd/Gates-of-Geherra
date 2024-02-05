@@ -23,7 +23,7 @@ AnimationClip:
       value: {fileID: -1053371171, guid: dbed9846e9655f9489c37ed23450fffa, type: 3}
     - time: 0.11666667
       value: {fileID: 2108091084, guid: dbed9846e9655f9489c37ed23450fffa, type: 3}
-    - time: 0.75
+    - time: 0.6666667
       value: {fileID: 2108091084, guid: dbed9846e9655f9489c37ed23450fffa, type: 3}
     attribute: m_Sprite
     path: Graphic
@@ -52,7 +52,7 @@ AnimationClip:
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 0.76666665
+    m_StopTime: 0.68333334
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
@@ -81,6 +81,13 @@ AnimationClip:
     messageOptions: 0
   - time: 0.13333334
     functionName: Play_TpEffect
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.6666667
+    functionName: AnimationEnd
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

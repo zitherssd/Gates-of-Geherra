@@ -10,7 +10,7 @@ public class OriginPointHandler : MonoBehaviour
     private RectTransform rtransform;
     public float padding = 100f;
     public bool Override;
-    private Camera camera;
+    private new Camera camera;
 
     void Start()
     {

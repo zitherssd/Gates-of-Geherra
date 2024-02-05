@@ -35,7 +35,7 @@ namespace Assets.Scripts.Actions
         }
     }
 
-    public enum ANIMATIONTYPE { NONE, Punch, Kick, Shuriken, Highkick, PalmStrike, Ninjutsu, ForwardPunch }
+    public enum ANIMATIONTYPE { NONE, Punch, Kick, Shuriken, Highkick, PalmStrike, Ninjutsu, ForwardPunch, ThrowStar }
     public enum SKILLTYPE { Attack, Projectile, Taunt, Teleport }
     public enum TARGETINGOPTION { SELF, ENEMY }
 }

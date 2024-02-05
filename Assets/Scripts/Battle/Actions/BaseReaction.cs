@@ -18,10 +18,12 @@ namespace Assets.Scripts.Actions
         public float postureModifier;
         private Vector2 direction;
 
-        public override void Perform(BaseActorBattler actor, Action onReactionComplete)
+        //refactor
+        protected override void PerformSpecific(BaseActorBattler actor, Action onReactionComplete)
         {
             UpdateReaminingUses();
             ResetCooldown();
+            actor.KillAnimationEndEvent();
 
             switch (ReactionType)
             {

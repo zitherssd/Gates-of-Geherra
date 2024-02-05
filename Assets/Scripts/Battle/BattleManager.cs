@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Actions;
 using Assets.Scripts.Battle.Actions;
+using Assets.Scripts.Battle.States;
 using Assets.Scripts.Utility;
 using System;
 using System.Collections;
@@ -41,7 +42,7 @@ namespace Assets
         void Start()
         {
             uiManager = UIManager.GetInstance();
-            StartCoroutine(uiManager.TypeTextMiddleLetterByLetter($"{PlayerActors[0].GetBaseActor().Name} vs {EnemyActors[0].GetBaseActor().Name}", () =>
+            StartCoroutine(uiManager.TypeTextMiddleLetterByLetter($"{PlayerActors[0].Actor.Name} vs {EnemyActors[0].Actor.Name}", () =>
             {
                 SoundManager.instance.PlayMusic(null);
                 StartCoroutine(uiManager.FadeMiddleText(1));
@@ -71,8 +72,7 @@ namespace Assets
 
             foreach (var actor in allActors)
             {
-                actor.GetBaseActor().Reset();
-                actor.Initialize();
+                actor.Actor.Reset();
                 turnQueue.Enqueue(actor);
             }
         }
@@ -114,11 +114,11 @@ namespace Assets
 
         public bool TestBattleOver()
         {
-            if (PlayerActors.TrueForAll(actor => actor.GetBaseActor().GetCurrentHP() == 0))
+            if (PlayerActors.TrueForAll(actor => actor.Actor.GetCurrentHP() == 0))
             {
                 return true;
             }
-            if (EnemyActors.TrueForAll(actor => actor.GetBaseActor().GetCurrentHP() == 0))
+            if (EnemyActors.TrueForAll(actor => actor.Actor.GetCurrentHP() == 0))
             {
                 return true;
             }
@@ -196,7 +196,6 @@ namespace Assets
                 End();
                 return;
             }
-
             ProcTurnChangeEffects();
 
             activeBattler = GetNextActorInTurn();
@@ -215,25 +214,21 @@ namespace Assets
 
             foreach (var actor in allActors)
             {
-                actor.ResetFlags();
+                actor.ProcNextTurnEffects();
                 turnQueue.Enqueue(actor);
             }
         }
 
-        public void WaitForMovementCompletion(Action onMovementComplete)
+        public IEnumerator WaitForMovementCompletion(Action onMovementComplete)
         {
-            bool allActorsIdle = false;
-
-            while (!allActorsIdle)
+            var allACtors = PlayerActors.Concat(EnemyActors);
+            foreach (var actor in allACtors)
             {
-                allActorsIdle = true;
-
-                foreach (var actor in PlayerActors.Concat(EnemyActors))
+                if (actor.activeStates.OfType<Midair>().Any()) //if mid air
                 {
                     if (actor.GetComponent<Rigidbody>().velocity.magnitude > Mathf.Epsilon)
                     {
-                        allActorsIdle = false;
-                        break; // At least one actor is still moving, exit the loop
+                        yield return null; //wait for next frame
                     }
                 }
             }
@@ -241,7 +236,6 @@ namespace Assets
             // All actors are now idle (no movement)
             // Proceed with further actions or logic
             onMovementComplete?.Invoke();
-
         }
 
         public BaseActorBattler GetNextActorInTurn()
@@ -256,14 +250,14 @@ namespace Assets
 
         private void End()
         {
-            if (PlayerActors.TrueForAll(actor => actor.GetBaseActor().GetCurrentHP() == 0))
+            if (PlayerActors.TrueForAll(actor => actor.Actor.GetCurrentHP() == 0))
             {
                 EnemyActors[0].PlayAnimation("Victory");
                 PlayerActors[0].PlayAnimation("Down");
                 UIManager.GetInstance().ChangeStatus("YOU LOSE");
                 SoundManager.instance.PlaySingle(SoundManager.instance.GetAudioClipByName("Curse2"));
             }
-            if (EnemyActors.TrueForAll(actor => actor.GetBaseActor().GetCurrentHP() == 0))
+            if (EnemyActors.TrueForAll(actor => actor.Actor.GetCurrentHP() == 0))
             {
                 EnemyActors[0].PlayAnimation("Down");
                 PlayerActors[0].PlayAnimation("Victory");

@@ -8,7 +8,7 @@ namespace Assets.Scripts.Battle.Actions
     {
         public static MoveSkill instance;
 
-        public override void Perform(BaseActorBattler casterActor, Action onPerformEnd)
+        protected override void PerformSpecific(BaseActorBattler casterActor, Action onPerformEnd)
         {
             if(casterActor.isControllable())
             {

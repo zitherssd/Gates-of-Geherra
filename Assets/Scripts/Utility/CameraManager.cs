@@ -14,12 +14,12 @@ namespace Assets
 
         private BattleManager battleManager;
         [SerializeField]
-        [Range(1, 15)]
+        [Range(-1, 15)]
         private float UpDistance;
         [Range(1, 15)]
         [SerializeField]
         private float BackDistance;
-        private Camera camera;
+        private new Camera camera;
         public bool Override = false;
 
         private Transform leftObj;

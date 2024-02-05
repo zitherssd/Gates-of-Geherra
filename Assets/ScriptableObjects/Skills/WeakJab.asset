@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Weak Jab
   Rarity: 0
-  cooldownTurns: 1
+  cooldownTurns: 0
   TotalUses: 0
   remainingUses: 0
   BuildupCost: 0

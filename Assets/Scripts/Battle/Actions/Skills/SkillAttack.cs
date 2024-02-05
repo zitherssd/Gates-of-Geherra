@@ -18,7 +18,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
         public float KnockbackForce;
         public float SelfForce;
 
-        public override void  Perform(BaseActorBattler casterActor, Action onPerformEnd)
+        protected override void PerformSpecific(BaseActorBattler casterActor, Action onPerformEnd)
         {
             var targetActor = GetTarget(casterActor);
 
@@ -42,10 +42,10 @@ namespace Assets.Scripts.Battle.Actions.Skills
                 }
                 else
                 {
-                    Debug.Log("Didn't Hit Something with sphere cast");
-                    onPerformEnd();
+                    Debug.Log($"{casterActor.Actor.name} missed performing {this.Name}!");
                 }
             }, () => {
+                if (targetActor.activeStates.OfType<Stagger>().Any()) return;
                 var validReactions = targetActor.GetValidReactionsForSkill();
                 if (targetActor.isControllable())
                 {
@@ -67,38 +67,40 @@ namespace Assets.Scripts.Battle.Actions.Skills
                 }
                 else
                 {
-                    var selectedReaction = validReactions[RandomFromList(validReactions.Count)];
-                    selectedReaction.Perform(targetActor, null);
+                    if(validReactions.Count > 0)
+                    {
+                        var selectedReaction = validReactions[RandomFromList(validReactions.Count)];
+                        selectedReaction.Perform(targetActor, null);
+                    }
                 }
-            });
+            }, onPerformEnd);
         }
         public void ApplyDamageEffects(BaseActorBattler casterActor, BaseActorBattler targetActor, BaseReaction targetReaction, Action onDamageEffectsApplied)
         {
             // Apply Damage
-            var damage = Damage + casterActor.GetBaseActor().ATK - targetActor.GetBaseActor().DEF;
+            var damage = Damage + casterActor.Actor.ATK - targetActor.Actor.DEF;
             if (damage > 0)
             {
                 targetActor.ApplyDamage(damage);
             };
 
+            // Apply Knockback
+            if (KnockbackForce > 0)
+            {
+                var direction = (targetActor.transform.position - casterActor.transform.position).normalized;
+                if (this.Tags.Contains(TAG.KNOCKBACK_BACK)) direction += Vector3.Cross(direction, -Vector3.up);
+                if (this.Tags.Contains(TAG.KNOCKBACK_FRONT)) direction += Vector3.Cross(direction, Vector3.up);
+                if (this.Tags.Contains(TAG.KNOCKBACK_AIR)) { direction = (direction + Vector3.up).normalized; targetActor.activeStates.Add(new Midair(targetActor)); }
+                targetActor.ApplyKnockback(direction, KnockbackForce);
+            }
+
             //Apply posture
             if (PostureDamage > 0)
             {
-                if (targetActor.Actor.currentPosture - PostureDamage <= targetActor.Actor.maxPosture / 2)
-                {
-                }
-
-                targetActor.onPostureRecieved.Invoke(PostureDamage);
+                targetActor.ApplyPosture(PostureDamage);
             }
 
-            // Apply Knockback
-            var direction = (targetActor.transform.position - casterActor.transform.position).normalized;
-            if (this.Tags.Contains(TAG.KNOCKBACK_BACK)) direction += Vector3.Cross(direction, -Vector3.up);
-            if (this.Tags.Contains(TAG.KNOCKBACK_FRONT)) direction += Vector3.Cross(direction, Vector3.up);
-            if (this.Tags.Contains(TAG.KNOCKBACK_AIR)) direction = (direction + Vector3.up).normalized;
-            targetActor.onKnockbackRecieved.Invoke(direction, KnockbackForce);
             casterActor.Actor.currentBuildup += BuildupGain;
-
 
             // Wait for 1 frame before exit
             casterActor.StartCoroutine(WaitForOneFrame(() =>
