@@ -17,12 +17,14 @@ MonoBehaviour:
   cooldownTurns: 0
   TotalUses: 2
   remainingUses: 0
+  BuildupCost: 0
+  BuildupGain: 0
   Speed: 0
+  Tags: 
   SliderValue: 0
   StickValue: {x: 0, y: 0}
   currentCooldownTurns: 0
   ReactionType: 1
-  Tags: 01000000
   knockbackModifier: 0
   damageModifier: 0
   postureModifier: 0

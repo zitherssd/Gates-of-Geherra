@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Sidestep
   Rarity: 0
-  cooldownTurns: 0
-  TotalUses: 1
+  cooldownTurns: 4
+  TotalUses: 0
   remainingUses: 0
   BuildupCost: 0
   BuildupGain: 0

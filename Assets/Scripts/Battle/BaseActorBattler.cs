@@ -61,6 +61,7 @@ namespace Assets
         }
         private void FixedUpdate()
         {
+            if (IsGrounded()) activeStates.RemoveAll(state => state is Midair);
             switch (currentState)
             {
                 case MoveState.Idle:
@@ -230,7 +231,7 @@ namespace Assets
             Actor.DealPostureDamage(postMitigationDamage);
             ShowPosturePopup(postMitigationDamage);
 
-            if (Actor.currentPosture <= Actor.maxPosture / 2)
+            if (Actor.currentPosture <= Actor.maxPosture / 2 && !activeStates.Any(state => state is Stagger))
             {
                 var stagger = new Stagger(this);
                 activeStates.Add(stagger);
@@ -454,6 +455,20 @@ namespace Assets
             var random = new System.Random();
             var index = random.Next(count);
             return index;
+        }
+
+        private bool IsGrounded()
+        {
+            // Perform a raycast from the object's position downward
+            Ray ray = new Ray(transform.position, Vector3.down);
+
+            // Check if the ray hits something within the specified distance
+            if (Physics.Raycast(ray, 0.01f))
+            {
+                return true; // The object is grounded
+            }
+
+            return false; // The object is not grounded
         }
     }
 

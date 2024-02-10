@@ -21,8 +21,6 @@ namespace Assets.Scripts.Actions
         //refactor
         protected override void PerformSpecific(BaseActorBattler actor, Action onReactionComplete)
         {
-            UpdateReaminingUses();
-            ResetCooldown();
             actor.KillAnimationEndEvent();
 
             switch (ReactionType)

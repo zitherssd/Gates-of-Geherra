@@ -17,7 +17,7 @@ MonoBehaviour:
   cooldownTurns: 7
   TotalUses: 0
   remainingUses: 0
-  BuildupCost: 20
+  BuildupCost: 0
   BuildupGain: 0
   Speed: 0
   Tags: 020000000c000000
@@ -25,7 +25,6 @@ MonoBehaviour:
   StickValue: {x: 0, y: 0}
   currentCooldownTurns: 0
   AnimationType: 4
-  SkillType: 0
   Range: 1.2
   Damage: 10
   PostureDamage: 9

@@ -14,17 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Block
   Rarity: 0
-  cooldownTurns: 0
+  cooldownTurns: 3
   TotalUses: 2
   remainingUses: 2
   BuildupCost: 0
   BuildupGain: 10
   Speed: 0
+  Tags: 0e000000
   SliderValue: 0
   StickValue: {x: 0, y: 0}
   currentCooldownTurns: 0
   ReactionType: 2
-  Tags: 
   knockbackModifier: 0.75
   damageModifier: 0.6
   postureModifier: 1

@@ -37,6 +37,7 @@ namespace Assets
             BaseReaction.NoReaction.postureModifier = 1;
             MoveSkill.instance = ScriptableObject.CreateInstance<MoveSkill>();
             MoveSkill.instance.Name = "Move";
+            MoveSkill.instance.Tags = new List<TAG>();
 
         }
         void Start()
@@ -196,11 +197,15 @@ namespace Assets
                 End();
                 return;
             }
-            ProcTurnChangeEffects();
 
-            activeBattler = GetNextActorInTurn();
-            SetActiveCharacterBattle(activeBattler);
-            activeBattler.Act(SwitchToNextActor);
+            // Delay turn switch until actors no longer have the Midair state
+            StartCoroutine(WaitForMovementCompletion(() =>
+            {
+                ProcTurnChangeEffects();
+                activeBattler = GetNextActorInTurn();
+                SetActiveCharacterBattle(activeBattler);
+                activeBattler.Act(SwitchToNextActor);
+            }));
         }
 
         private void ProcTurnChangeEffects()
@@ -210,7 +215,7 @@ namespace Assets
             turnQueue.Clear();
             List<BaseActorBattler> allActors = new List<BaseActorBattler>();
             allActors.AddRange(PlayerActors); allActors.AddRange(EnemyActors);
-            allActors.OrderBy(x => x.Actor.AGI);
+            allActors = allActors.OrderBy(x => x.Actor.AGI).ToList();
 
             foreach (var actor in allActors)
             {
@@ -221,20 +226,14 @@ namespace Assets
 
         public IEnumerator WaitForMovementCompletion(Action onMovementComplete)
         {
-            var allACtors = PlayerActors.Concat(EnemyActors);
-            foreach (var actor in allACtors)
+            var allActors = PlayerActors.Concat(EnemyActors);
+
+            while (allActors.Any(actor => actor.activeStates.OfType<Midair>().Any()))
             {
-                if (actor.activeStates.OfType<Midair>().Any()) //if mid air
-                {
-                    if (actor.GetComponent<Rigidbody>().velocity.magnitude > Mathf.Epsilon)
-                    {
-                        yield return null; //wait for next frame
-                    }
-                }
+                yield return null; // Wait for the next frame
             }
 
-            // All actors are now idle (no movement)
-            // Proceed with further actions or logic
+            // Midair state is removed for all actors, proceed with turn switch
             onMovementComplete?.Invoke();
         }
 

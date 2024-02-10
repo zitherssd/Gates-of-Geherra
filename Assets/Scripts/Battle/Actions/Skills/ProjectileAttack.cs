@@ -44,48 +44,6 @@ namespace Assets.Scripts.Battle.Actions.Skills
             }, onPerformEnd);
         }
 
-        public void ApplyDamageEffects(BaseActorBattler casterActor, BaseActorBattler targetActor, BaseReaction targetReaction, Action onDamageEffectsApplied)
-        {
-            // Apply Damage
-            var damage = Damage + casterActor.Actor.ATK - targetActor.Actor.DEF;
-            if (damage > 0)
-            {
-                targetActor.ApplyDamage(damage);
-            };
-
-            //Apply posture
-            if (PostureDamage > 0)
-            {
-                targetActor.ApplyPosture(PostureDamage);
-            }
-
-            // Apply Knockback
-            if(KnockbackForce > 0)
-            {
-            var direction = (targetActor.transform.position - casterActor.transform.position).normalized;
-            if (this.Tags.Contains(TAG.KNOCKBACK_BACK)) direction += Vector3.Cross(direction, -Vector3.up);
-            if (this.Tags.Contains(TAG.KNOCKBACK_FRONT)) direction += Vector3.Cross(direction, Vector3.up);
-            if (this.Tags.Contains(TAG.KNOCKBACK_AIR)) direction = (direction + Vector3.up).normalized;
-                targetActor.ApplyKnockback(direction, KnockbackForce);
-            }
-
-            // Buildup gain
-            casterActor.Actor.currentBuildup += BuildupGain;
-
-
-            // Wait for 1 frame before exit
-            casterActor.StartCoroutine(WaitForOneFrame(() =>
-            {
-                //if enemy is staggered act again
-                if (targetActor.activeStates.OfType<Stagger>().Any())
-                {
-                    casterActor.Act(onDamageEffectsApplied);
-                    return;
-                }
-                onDamageEffectsApplied();
-            }));
-        }
-
         public override bool IsValidAndInRange(BaseActorBattler caster)
         {
             if (!HasUsesLeft()) return false;
@@ -107,6 +65,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
                 return false;
             }
         }
+
         public BaseActorBattler GetTarget(BaseActorBattler caster)
         {
             if (caster.isControllable())

@@ -107,10 +107,11 @@ namespace Assets.Scripts.Battle.Actions.Skills
             {
                 if (targetActor.activeStates.OfType<Stagger>().Any())
                 {
+                    casterActor.KillAnimationEndEvent();
                     casterActor.Act(onDamageEffectsApplied);
                     return;
                 }
-                onDamageEffectsApplied();
+                //onDamageEffectsApplied();
             }));
         }
         public override bool IsValidAndInRange(BaseActorBattler caster)

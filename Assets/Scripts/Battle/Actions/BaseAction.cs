@@ -26,7 +26,7 @@ namespace Assets
 
         public virtual void Perform(BaseActorBattler casterActor, Action onPerformEnd)
         {
-            UpdateReaminingUses();
+            UpdateRemainingUses();
             ResetCooldown();
             casterActor.Actor.ChangeBuildup(BuildupGain);
             casterActor.Actor.ChangeBuildup(-BuildupCost);
@@ -39,16 +39,34 @@ namespace Assets
         {
             if (currentCooldownTurns > 0)
                 currentCooldownTurns--;
+
+            if (Tags.Contains(TAG.RECHARGE_USES) && remainingUses < TotalUses)
+            {
+                if (currentCooldownTurns == 0)
+                {
+                    remainingUses++;
+                    currentCooldownTurns = cooldownTurns;
+                }
+            }
         }
 
         public bool IsSkillOnCooldown()
         {
+            if (Tags.Contains(TAG.RECHARGE_USES)) return false;
             return currentCooldownTurns > 0;
         }
 
+        //
         public void ResetCooldown()
         {
+            if(Tags.Contains(TAG.RECHARGE_USES))
+                {
+
+                }
+            else
+
             currentCooldownTurns = cooldownTurns;
+
         }
         
         public virtual bool HasUsesLeft()
@@ -85,8 +103,14 @@ namespace Assets
             return true;
         }
 
-        public void UpdateReaminingUses()
+        public void UpdateRemainingUses()
         {
+            if(remainingUses == TotalUses && Tags.Contains(TAG.RECHARGE_USES))
+            {
+                remainingUses -= 1;
+                currentCooldownTurns = cooldownTurns;
+            }
+            else 
             if (TotalUses != 0)
                 remainingUses -= 1;
         }
@@ -95,7 +119,7 @@ namespace Assets
 
 
 
-    public enum TAG { MOVE_NEAR_ENEMY_BEFORE_ATTACK, PROJECTILE, KNOCKBACK_AIR, KNOCKBACK_FRONT, KNOCKBACK_BACK, MOVE_OFFSET_BEHIND, MOVE_OFFSET_INFRONT, NO_REACTION, REPEAT_TURN, STARTER, FINISHER, COUNTER, USESLIDER, USEKNOB,
+    public enum TAG { MOVE_NEAR_ENEMY_BEFORE_ATTACK, PROJECTILE, KNOCKBACK_AIR, KNOCKBACK_FRONT, KNOCKBACK_BACK, MOVE_OFFSET_BEHIND, MOVE_OFFSET_INFRONT, NO_REACTION, REPEAT_TURN, STARTER, FINISHER, COUNTER, USESLIDER, USEKNOB, RECHARGE_USES,
         APPLYROOTMOTION,
         KILLMOMENTUM
     }

@@ -28,5 +28,5 @@ MonoBehaviour:
   Range: 1.6
   Damage: 4
   PostureDamage: 5
-  KnockbackForce: 6
+  KnockbackForce: 4
   SelfForce: -1
