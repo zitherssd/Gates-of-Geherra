@@ -15,7 +15,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI TopTextbox;
     [SerializeField] private TextMeshProUGUI MiddleTextbox;
     [SerializeField] private TextMeshProUGUI StoneSlab;
-    [SerializeField] public UnityEngine.UI.Image fadeImage;
+    [SerializeField] private TextMeshProUGUI TurnText;
+    [SerializeField] private UnityEngine.UI.Image fadeImage;
     [Range(0, 1)] public float letterPause = 0.1f;
     [Range(0, 1)] public float fadeSpeed;
     public AudioClip typeSound1;
@@ -25,14 +26,20 @@ public class UIManager : MonoBehaviour
     [HideInInspector] public BaseAction selectedAction;
     [HideInInspector] public BaseSkill selectedSkill;
 
-
     private static UIManager instance;
-    private float fadeduration = 9999f;
+    private float fadeduration = 1;
     private float timer = 0f;
     private bool waitingForAction = false;
     private Action onActionSelected;
+    public GameObject OriginPoint;
+    public GameObject ActionsHolder;
+    public GameObject ActionSlot;
+    public GameObject EndButton;
+    public GameObject Slider;
+    public GameObject Knob;
 
-
+    public Action<Assets.BaseAction> OnActionSelected { get; private set; }
+    public Action<BaseReaction> OnReactionSelected { get; private set; }
 
     public static UIManager GetInstance()
     {
@@ -41,6 +48,37 @@ public class UIManager : MonoBehaviour
     public void Awake()
     {
         instance = this;
+    }
+
+    public void Start()
+    {
+        OriginPoint = GameObject.FindGameObjectWithTag("OriginPoint");
+
+        EndButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(delegate ()
+        {
+            if (ActionSlot.transform.childCount > 0)
+            {
+                if(OnActionSelected != null)
+                {
+                    OnActionSelected(ActionSlot.GetComponentInChildren<ButtonHandler>().referencedAction);
+                    OnActionSelected = null;
+                }
+            }
+            else
+            {
+                if(OnActionSelected != null)
+                {
+                    OnActionSelected(null);
+                    OnActionSelected = null;
+                }
+            }
+            ButtonHandler.KillAll();
+            EndButton.SetActive(false);
+            ActionSlot.SetActive(false);
+            Slider.SetActive(false);
+            Knob.SetActive(false);
+            LeanTween.scale(ActionsHolder, new Vector3(1, 0, 1), 0.1f).setEaseOutCubic().setIgnoreTimeScale(true);
+        });
     }
 
     public void ChangeStatus(string status)
@@ -55,22 +93,9 @@ public class UIManager : MonoBehaviour
         StoneSlab.text += previous;
     }
 
-    private void Update()
+    public List<ButtonHandler> DrawActionsRadiallyOnScreenPoint(List<Assets.BaseAction> actions)
     {
-        if (selectedSkill != null)
-            onActionSelected();
-    }
-
-    private void FadeOutText()
-    {
-        Color currentColor = TopTextbox.color;
-        //float alpha = Mathf.Pow(1f - (timer / fadeduration), 2);
-        float alpha = Mathf.Lerp(1f, 0f, (timer - fadeduration) / fadeduration);
-        TopTextbox.color = new Color(currentColor.r, currentColor.g, currentColor.b, alpha);
-    }
-
-    public List<ButtonHandler> DrawActionsRadiallyOnScreenPoint(List<BaseAction> actions)
-    {
+        LeanTween.scale(ActionsHolder, Vector3.one, 0.2f).setEaseOutCubic().setIgnoreTimeScale(true);
         float radius = 100f;
         var handlers = new List<ButtonHandler>();
 
@@ -83,13 +108,15 @@ public class UIManager : MonoBehaviour
             Vector2 position = new Vector2(x, y);
 
             GameObject UISkill = Instantiate(buttonPrefab, position, Quaternion.identity);
-            UISkill.transform.SetParent(GameObject.FindGameObjectWithTag("OriginPoint").transform);
+            UISkill.transform.SetParent(ActionsHolder.transform);
             UISkill.GetComponent<RectTransform>().localPosition = position;
             var handler = UISkill.GetComponent<ButtonHandler>();
             handler.referencedAction = actions[i];
             handler.Init();
             handlers.Add(handler);
         }
+        EndButton.SetActive(true);
+        ActionSlot.SetActive(true);
         return handlers;
     }
 
@@ -105,11 +132,10 @@ public class UIManager : MonoBehaviour
 
     public void DrawActiveActorSkills(Action onSkillSelected)
     {
-        if (!waitingForAction)
-        {
-            List<BaseAction> fakeActions = new List<BaseAction>();
-            var activeChar = BattleManager.GetInstance().GetActiveActor();
-            var skills = activeChar.GetBaseActor().skills;
+
+        List<Assets.BaseAction> fakeActions = new List<Assets.BaseAction>();
+            var activeChar = BattleManager.instance.GetActiveActor();
+            var skills = activeChar.Actor.skills;
 
             foreach (var skill in skills)
             {
@@ -121,22 +147,20 @@ public class UIManager : MonoBehaviour
             {
                 var invalidReason = "";
 
-                buttonHandlers[i].referencedSkill = skills[i];
                 buttonHandlers[i].referencedAction = null;
                 buttonHandlers[i].SetButtonInteractable(skills[i].IsValid(activeChar, out invalidReason));
                 if (invalidReason != string.Empty) buttonHandlers[i].SetRemainingUsesText(invalidReason);
             }
             this.onActionSelected = onSkillSelected;
             this.waitingForAction = true;
-        }
     }
 
     public void DrawAllActorReactions(BaseActorBattler actor, Action onReactionSelected)
     {
         if (!waitingForAction)
         {
-            List<BaseAction> fakeReactions = new List<BaseAction>();
-            var reactions = actor.GetBaseActor().reactions;
+            List<Assets.BaseAction> fakeReactions = new List<Assets.BaseAction>();
+            var reactions = actor.Actor.reactions;
 
             foreach (var reaction in reactions)
             {
@@ -153,14 +177,39 @@ public class UIManager : MonoBehaviour
             this.waitingForAction = true;
         }
     }
+    
+
+
+    internal void DrawActionAboveHead(BaseActorBattler actor, BaseAction action)
+    {
+            GameObject drawnSkill = Instantiate(buttonPrefab, actor.transform.position, Quaternion.identity);
+            drawnSkill.transform.SetParent(actor.originPointInUI.transform);
+            drawnSkill.transform.localPosition = Vector3.zero;
+            drawnSkill.GetComponent<RectTransform>().localPosition = Vector3.zero;
+            var handler = drawnSkill.GetComponent<ButtonHandler>();
+            handler.referencedAction = action;
+            handler.Init();
+            handler.SetDraggable(false);
+            LeanTween.scale(actor.originPointInUI.transform.gameObject, new Vector3(1, 1, 1), 0.3f).setEaseOutBack().setIgnoreTimeScale(true);
+    }
+
+    internal void KillActionAboveHead(BaseActorBattler actor)
+    {
+        var obj = actor.originPointInUI.transform;
+        if (obj.childCount > 0)
+        {
+            LeanTween.scale(obj.gameObject, new Vector3(1, 0, 1), 0.3f).setEaseOutBack().setIgnoreTimeScale(true).setOnComplete(() => { Destroy(obj.GetChild(0).gameObject); });
+        }
+        else
+            LeanTween.scale(obj.gameObject, new Vector3(1, 0, 1), 0.3f).setEaseOutBack().setIgnoreTimeScale(true);
+    }
 
     public void DrawAllActorReactionsAboveSpeed(BaseActorBattler actor, int minimumSpeed, Action onReactionSelected)
     {
-        if (!waitingForAction)
-        {
-            List<BaseAction> fakeReactions = new List<BaseAction>();
+
+        List<Assets.BaseAction> fakeReactions = new List<Assets.BaseAction>();
             List<BaseReaction> chosenReactions = new List<BaseReaction>();
-            var reactions = actor.GetBaseActor().reactions;
+            var reactions = actor.Actor.reactions;
 
 
             foreach (var reaction in reactions)
@@ -178,32 +227,25 @@ public class UIManager : MonoBehaviour
             }
             this.onActionSelected = onReactionSelected;
             this.waitingForAction = true;
+    }
+
+    public void DrawActionsAndWaitForSelectionOrNull(List<Assets.BaseAction> ActionsToDraw, Action<Assets.BaseAction> onActionSelected)
+    {
+        this.OnActionSelected = onActionSelected;
+        var buttonHandlers = DrawActionsRadiallyOnScreenPoint(ActionsToDraw);
+        
+        for (int i = 0; i < ActionsToDraw.Count; i++)
+        {
+            buttonHandlers[i].referencedAction = ActionsToDraw[i];
         }
     }
 
 
-
-
-
-    public BaseSkill GetSelectedSkill()
+    public void ReturnNullSkill(Vector2 position)
     {
-        var selTarget = selectedSkill;
-        selectedSkill = null;
+        InputHandler.instance.OnHold -= ReturnNullSkill;
         ButtonHandler.KillAll();
-        this.waitingForAction = false;
-        return selTarget;
-    }
-    public BaseReaction GetSelectedReaction()
-    {
-        var selTarget = selectedReaction;
-        selectedReaction = null;
-        ButtonHandler.KillAll();
-        this.waitingForAction = false;
-        return selTarget;
-    }
-    public void CallbackActionSelected()
-    {
-        onActionSelected();
+        this.OnActionSelected(null);
     }
 
 
@@ -233,6 +275,7 @@ public class UIManager : MonoBehaviour
 
     public IEnumerator TypeTextMiddleLetterByLetter(string text, Action onTypingComplete)
     {
+        MiddleTextbox.color = new Color(MiddleTextbox.color.r, MiddleTextbox.color.g, MiddleTextbox.color.b, 1);
         foreach (char letter in text.ToCharArray())
         {
             MiddleTextbox.text += letter;
@@ -260,24 +303,36 @@ public class UIManager : MonoBehaviour
 
         // Ensure the target color is reached
         MiddleTextbox.color = targetColor;
+        MiddleTextbox.text = string.Empty;
     }
 
     public IEnumerator Fade(bool fadeIn, Action onFadeComplete)
     {
-        var imgColor = fadeImage.color;
-        float targetAlpha = fadeIn ? 1.0f : 0.0f;
+        //var imgColor = fadeImage.color;
+        //float startAlpha = imgColor.a;
+        //float targetAlpha = fadeIn ? 1.0f : 0.0f;
 
-        while (Mathf.Abs(imgColor.a - targetAlpha) > 0.01f)
-        {
-            imgColor.a = Mathf.Lerp(imgColor.a, targetAlpha, fadeSpeed * Time.deltaTime);
-            fadeImage.color = imgColor;
-            yield return null;
-        }
+        //float elapsedTime = 0f;
 
-        imgColor.a = targetAlpha;
-        fadeImage.color = imgColor;
+        //while (elapsedTime < fadeSpeed)
+        //{
+        //    float t = elapsedTime / fadeSpeed;
+        //    imgColor.a = Mathf.Lerp(startAlpha, targetAlpha, t);
+        //    fadeImage.color = imgColor;
 
-        onFadeComplete();
+        //    elapsedTime += Time.deltaTime;
+        yield return null;
+        //}
+
+        //imgColor.a = targetAlpha;
+        //fadeImage.color = imgColor;
+
+        onFadeComplete?.Invoke();
+    }
+
+    public void SetTurn(uint turn)
+    {
+        TurnText.text = "Turn " + turn.ToString();
     }
 
 

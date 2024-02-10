@@ -1,166 +1,164 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.OnScreen;
 
 namespace Assets
 {
     public class InputManager : MonoBehaviour
     {
-        private static InputManager instance;
-        [SerializeField] private InputActionReference StartPos;
-        [SerializeField] private InputActionReference EndPos;
-        [SerializeField] private InputActionReference DoubleTap;
+        public static InputManager instance = null;
 
         private BattleManager battleManager;
         private Action onTurnEnd = null;
-        private Action onTargetSelected = null;
-        private Action onSwipeEnded = null;
-        private bool inputEnabled = false;
-
-        [SerializeField] private bool waitingForTurn = false;
-        [SerializeField] private bool waitingForTarget = false;
-        [SerializeField] private bool waitingForSwipe = false;
-
-        private BaseActorBattler selectedTarget;
-        private Vector2 selectedSwipeDirection;
-
-        public static InputManager GetInstance()
-        {
-            return instance;
-        }
+        private Action<BaseActorBattler> onTargetSelected = null;
+        private Action<Vector2> onSwipeGot = null;
+        private Action<Vector3> onTargetPointSelected = null;
+        public OnScreenStick onScreenStick;
+        public float SliderValue = 1f;
+        public Vector2 StickValue = Vector2.zero;
 
         private void Awake()
         {
-            instance = this;
+            if (instance == null)
+                instance = this;
         }
-
         private void Start()
         {
-            battleManager = BattleManager.GetInstance();
+            battleManager = BattleManager.instance;   
         }
 
-        private void Update()
+        public void SetSliderValue(System.Single value)
         {
-            if (!inputEnabled)
-                return;
-
-            var startpos = StartPos.action.ReadValue<Vector2>();
-            var endpos = EndPos.action.ReadValue<Vector2>();
-            var moveVector = endpos - startpos;
-
-            if (waitingForTarget)
-                CheckForTarget(startpos);
-
-            if (waitingForTurn)
-                CheckForTurn(moveVector);
-
-            if (waitingForSwipe)
-                CheckForSwipe(moveVector);
+            SliderValue = value;
         }
-
-        private void CheckForTarget(Vector2 startpos)
+        public void SetStickValue(Vector2 value)
         {
-            Ray raycast = Camera.main.ScreenPointToRay(startpos);
-            if (Physics.Raycast(raycast, out RaycastHit raycastHit) && raycastHit.collider.name == "Enemy")
-            {
-                selectedTarget = raycastHit.collider.GetComponentInChildren<BaseActorBattler>();
-                DisableInput();
-                waitingForTarget = false;
-                onTargetSelected?.Invoke();
-            }
+            StickValue = value;
         }
 
-        private void CheckForTurn(Vector2 moveVector)
-        {
-            if (moveVector.magnitude > 100)
-            {
-                DisableInput();
-                waitingForTurn = false;
-                var activeChar = battleManager.GetActiveActor();
-                UIManager.GetInstance().CancelAll();
-
-                var target = moveVector.normalized;
-                var camera = Camera.main;
-                var forward = camera.transform.forward; forward.y = 0;
-                var right = camera.transform.right; right.y = 0;
-                forward.Normalize(); right.Normalize();
-
-                var desiredMoveDirection = forward * target.y + right * target.x;
-                activeChar.Move(desiredMoveDirection, onTurnEnd);
-            }
-
-        }
-
-        private void CheckForSwipe(Vector2 moveVector)
-        {
-            if (moveVector.magnitude > 100)
-            {
-                DisableInput();
-                waitingForSwipe = false;
-                selectedSwipeDirection = moveVector;
-                onSwipeEnded?.Invoke();
-            }
-        }
-
-        public void EnableInput()
-        {
-            inputEnabled = true;
-        }
-
-        public void DisableInput()
-        {
-            inputEnabled = false;
-        }
 
         public void WaitForTurn(Action onTurnEnd)
         {
+            InputHandler.instance.enabled = false;
+            InputHandler.instance.enabled = true;
+
+            //InputHandler.instance.OnSwipe += MoveActor;
+            //InputHandler.instance.OnHold += EndTurn;
+
             this.onTurnEnd = onTurnEnd;
-            waitingForTurn = true;
-            EnableInput();
-            UIManager.GetInstance().DrawActiveActorSkills(() =>
+            var skillsToDraw = battleManager.GetActiveActor().GetValidContinueComboSkills();
+            if (skillsToDraw.Count > 0)
+                Time.timeScale = 0f;
+
+            UIManager.GetInstance().DrawActionsAndWaitForSelectionOrNull(skillsToDraw, selectedSkill =>    //one shot option for the skill
             {
-                waitingForTurn = false;
-                battleManager.GetActiveActor().UseSkill(UIManager.GetInstance().GetSelectedSkill(), onTurnEnd);
+                InputHandler.instance.OnSwipe -= MoveActor;
+                InputHandler.instance.OnHold -= EndTurn;
+
+                if (selectedSkill == null)
+                {
+                    Time.timeScale = 1f;
+                    onTurnEnd();
+                }
+                else
+                    battleManager.GetActiveActor().UseAction(selectedSkill, onTurnEnd);
             });
         }
-
-        public void WaitForSwipe(Action onSwipeEnded)
+        private void MoveActor(Vector2 delta)
         {
+            InputHandler.instance.OnSwipe -= MoveActor;
+            InputHandler.instance.OnHold -= EndTurn;
+            ButtonHandler.KillAll();
+
+            battleManager.GetActiveActor().MoveRelativeToCamera(delta.normalized, () =>
+            {
+                //InputHandler.instance.OnHold += EndTurn;
+
+                if  (battleManager.GetActiveActor().GetValidStartComboSkills().Count == 0) { EndTurn(Vector2.zero); return; }; //Automatically end turn if no valid skills
+
+                var skillsToDraw = battleManager.GetActiveActor().GetValidStartComboSkills();
+                UIManager.GetInstance().DrawActionsAndWaitForSelectionOrNull(skillsToDraw, selectedSkill =>    //one shot option for the skill
+                {
+                    InputHandler.instance.OnHold -= EndTurn;
+
+                    if (selectedSkill == null)
+                        onTurnEnd();
+                    else
+                        battleManager.GetActiveActor().UseAction(selectedSkill, onTurnEnd);
+                });
+            });
+        }
+        private void EndTurn(Vector2 delta)
+        {
+            InputHandler.instance.OnHold -= EndTurn;
+            ButtonHandler.KillAll();
+            onTurnEnd.Invoke();
+        }
+
+
+        public void WaitForSwipe(Action<Vector2> onSwipeGot)
+        {
+            Time.timeScale = 0f;
             UIManager.GetInstance().ChangeStatus("SWIPE TO CHOOSE DIRECTION");
-            EnableInput();
-            this.onSwipeEnded = onSwipeEnded;
-            waitingForSwipe = true;
+            this.onSwipeGot = onSwipeGot;
+            InputHandler.instance.OnSwipe += OnSwipeRecieved;
         }
-
-        public void WaitForTarget(Action onTargetSelected)
-        {
-            UIManager.GetInstance().ChangeStatus("SELECT TARGET");
-            if (battleManager.GetActiveActor().isControllable())
-            {
-                EnableInput();
-                this.onTargetSelected = onTargetSelected;
-                waitingForTarget = true;
-            }
-
-            if (battleManager.EnemyActors.Count == 1)
-            {
-                selectedTarget = battleManager.EnemyActors[0];
-                waitingForTarget = false;
-                onTargetSelected?.Invoke();
-            }
-        }
-
-        public BaseActorBattler GetSelectedTarget()
+        private void OnSwipeRecieved(Vector2 direction)
         {
             UIManager.GetInstance().ChangeStatus(string.Empty);
-            var selTarget = selectedTarget;
-            selectedTarget = null;
-            return selTarget;
+            InputHandler.instance.OnSwipe -= OnSwipeRecieved;
+            Time.timeScale = 1f;
+            onSwipeGot?.Invoke(direction);
         }
 
-        public Vector2 GetSwipeDirection()
+
+        public void WaitForTargetActor(Action<BaseActorBattler> onTargetSelected)
         {
-            return selectedSwipeDirection;
+            UIManager.GetInstance().ChangeStatus("SELECT TARGET");
+
+            //If there's only one enemy actor automatically select it as target
+            if (battleManager.EnemyActors.Count == 1)
+            {
+                var target = battleManager.EnemyActors[0];
+                onTargetSelected?.Invoke(target);
+                return;
+            }
+
+            this.onTargetSelected = onTargetSelected;
+            InputHandler.instance.OnClick += OnTargetRecieved;
         }
+        private void OnTargetRecieved(Vector2 clickPosition)
+        {
+            Ray raycast = Camera.main.ScreenPointToRay(clickPosition);
+            if (Physics.Raycast(raycast, out RaycastHit raycastHit) && raycastHit.collider.name == "EnemyBattler")
+            {
+                UIManager.GetInstance().ChangeStatus(string.Empty);
+                var target = raycastHit.collider.GetComponentInChildren<BaseActorBattler>();
+                InputHandler.instance.OnClick -= OnTargetRecieved;
+                onTargetSelected?.Invoke(target);
+            }
+        }
+
+
+        public void WaitForTargetPoint(Action<Vector3> onTargetPointSelected)
+        {
+            UIManager.GetInstance().ChangeStatus("SELECT TARGET POINT");
+            this.onTargetPointSelected = onTargetPointSelected;
+            InputHandler.instance.OnClick += OnTargetRecieved;
+        }
+        private void OnTargetPointRecieved(Vector2 clickPosition)
+        {
+            UIManager.GetInstance().ChangeStatus(string.Empty);
+            Ray raycast = Camera.main.ScreenPointToRay(clickPosition);
+            if (Physics.Raycast(raycast, out RaycastHit raycastHit))
+            {
+                InputHandler.instance.OnClick -= OnTargetPointRecieved;
+                onTargetPointSelected?.Invoke(raycastHit.point);
+            }
+        }
+
+
     }
 }

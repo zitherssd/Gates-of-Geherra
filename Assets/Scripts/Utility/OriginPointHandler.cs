@@ -10,25 +10,24 @@ public class OriginPointHandler : MonoBehaviour
     private RectTransform rtransform;
     public float padding = 100f;
     public bool Override;
-    private BattleManager bm;
+    private new Camera camera;
 
     void Start()
     {
+        target.gameObject.GetComponent<BaseActorBattler>().originPointInUI = this;
         rtransform = GetComponent<RectTransform>();
-        bm = BattleManager.GetInstance();
+        camera = Camera.main;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(!Override)
-        transform.position = Camera.main.WorldToScreenPoint(target.position + Vector3.up * 0.5f);
+        var targetpoint = camera.WorldToScreenPoint(target.transform.position + Vector3.up * 1.5f);
+        rtransform.position = targetpoint;
 
-        if (rtransform.localPosition.x < -Screen.width / 2 + padding) rtransform.localPosition = new Vector3(-Screen.width / 2 + padding, rtransform.localPosition.y);
-        if (rtransform.localPosition.x >  Screen.width / 2 - padding) rtransform.localPosition = new Vector3(Screen.width / 2 - padding, rtransform.localPosition.y);
-        if (rtransform.localPosition.y >  Screen.height / 2 - padding) rtransform.localPosition = new Vector3(rtransform.localPosition.x, Screen.height / 2 - padding);
-        if (rtransform.localPosition.y < -Screen.height / 2 + padding) rtransform.localPosition = new Vector3(rtransform.localPosition.x, -Screen.height / 2 + padding);
-
-
+        //if (rtransform.localPosition.x < -Screen.width / 2 + padding) rtransform.localPosition = new Vector3(-Screen.width / 2 + padding, rtransform.localPosition.y);
+        //if (rtransform.localPosition.x >  Screen.width / 2 - padding) rtransform.localPosition = new Vector3(Screen.width / 2 - padding, rtransform.localPosition.y);
+        //if (rtransform.localPosition.y >  Screen.height / 2 - padding) rtransform.localPosition = new Vector3(rtransform.localPosition.x, Screen.height / 2 - padding);
+        //if (rtransform.localPosition.y < -Screen.height / 2 + padding) rtransform.localPosition = new Vector3(rtransform.localPosition.x, -Screen.height / 2 + padding);
     }
 }

@@ -9,18 +9,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d0c263cb04d7f3408086e343db9bc31, type: 3}
+  m_Script: {fileID: 11500000, guid: 7ae56926c7d98db48bd49445d781e66d, type: 3}
   m_Name: High Kick
   m_EditorClassIdentifier: 
   Name: High Kick
   Rarity: 0
-  TotalUses: 1
-  remainingUses: 1
+  cooldownTurns: 7
+  TotalUses: 0
+  remainingUses: 0
+  BuildupCost: 0
+  BuildupGain: 0
+  Speed: 0
+  Tags: 020000000c000000
+  SliderValue: 0
+  StickValue: {x: 0, y: 0}
+  currentCooldownTurns: 0
   AnimationType: 4
-  AttackType: 0
-  TargetOption: 1
-  Tags: 0000000002000000
-  Range: 2
+  Range: 1.2
   Damage: 10
-  PostureDamage: 8
-  KnockbackForce: 7
+  PostureDamage: 9
+  KnockbackForce: 3
+  SelfForce: 1

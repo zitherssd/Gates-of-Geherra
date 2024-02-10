@@ -1,21 +1,35 @@
 ﻿using System.Collections;
+using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Assets.Scripts.Utility
 {
-    public class CanvasHandler : MonoBehaviour
+    public class CanvasHandler : MonoBehaviour, IHasChanged
     {
+        public GameObject EndButton;
+        public GameObject ActionSlot;
 
-        // Use this for initialization
-        void Start()
+        void Start ()
         {
-
+            HasChanged();
         }
 
-        // Update is called once per frame
-        void Update()
+        public void HasChanged()
         {
+            if (ActionSlot.transform.childCount > 0)
+                EndButton.GetComponentInChildren<TextMeshProUGUI>().text = "ACT";
+            else
+                EndButton.GetComponentInChildren<TextMeshProUGUI>().text = "SKIP";
 
         }
+    }
+}
+
+namespace UnityEngine.EventSystems
+{
+    public interface IHasChanged : IEventSystemHandler
+    {
+        void HasChanged();
     }
 }
