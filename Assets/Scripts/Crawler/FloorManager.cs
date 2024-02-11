@@ -29,7 +29,7 @@ public class FloorManager : MonoBehaviour
     public void ProgressToNextFloor()
     {
         currentFloor++;
-        StartCoroutine(uiManager.Fade(true, () =>
+        uiManager.Fade(true, () =>
         {
             var random = new System.Random();
             var line = lines[Random.Range(0, lines.Length)];
@@ -45,16 +45,15 @@ public class FloorManager : MonoBehaviour
                 StartCoroutine(uiManager.TypeTextMiddleLetterByLetter(line, () =>
                 {
                     StartCoroutine(uiManager.FadeMiddleText(1));
-                    StartCoroutine(uiManager.Fade(false, () =>
-                    {
-                        bm.SetupBattleWithEnemy(GetCurrentFloorActor());
-                    }));
+                    bm.SetupBattleWithEnemy(GetActorForFloor());
+
+
                 }));
             });
-        }));
+        });
     }
 
-    public Actor GetCurrentFloorActor()
+    public Actor GetActorForFloor()
     {
         if (currentFloor == 2)
             return secondFloorEnemies[Random.Range(0, secondFloorEnemies.Count)];

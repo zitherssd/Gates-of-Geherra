@@ -13,17 +13,18 @@ MonoBehaviour:
   m_Name: Outcast
   m_EditorClassIdentifier: 
   Name: Outcast
-  baseHP: 20
-  baseBuildup: 0
-  basePosture: 15
+  maxHp: 25
+  maxBuildup: 0
+  maxPosture: 25
   Controllable: 0
   mainColor: {r: 0, g: 0, b: 0, a: 0}
   secondaryColor: {r: 0, g: 0, b: 0, a: 0}
-  baseSkills:
-  - {fileID: 11400000, guid: 9cc21a5b1be74d54c92d4a9df41fe25b, type: 2}
-  - {fileID: 11400000, guid: 8498923809869424b99fa2cdc3be152d, type: 2}
-  - {fileID: 11400000, guid: 83e30c38186e1604ebbc68bcceaeb2e6, type: 2}
+  baseActions:
+  - {fileID: 11400000, guid: a4c0133a020371348be580fea15e3763, type: 2}
+  - {fileID: 11400000, guid: a4f0a380567dcfc4ea9e34f543be0ca6, type: 2}
+  - {fileID: 11400000, guid: 0a73fca1a44c1ea45a64e272d163ab96, type: 2}
   baseReactions:
+  - {fileID: 11400000, guid: e1de275c6a1741e4091bfa7141119117, type: 2}
   - {fileID: 11400000, guid: e1de275c6a1741e4091bfa7141119117, type: 2}
   skills:
   - {fileID: 0}

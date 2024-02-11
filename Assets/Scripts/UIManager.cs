@@ -135,7 +135,7 @@ public class UIManager : MonoBehaviour
 
         List<Assets.BaseAction> fakeActions = new List<Assets.BaseAction>();
             var activeChar = BattleManager.instance.GetActiveActor();
-            var skills = activeChar.Actor.skills;
+            var skills = activeChar.Actor.actions;
 
             foreach (var skill in skills)
             {
@@ -306,28 +306,12 @@ public class UIManager : MonoBehaviour
         MiddleTextbox.text = string.Empty;
     }
 
-    public IEnumerator Fade(bool fadeIn, Action onFadeComplete)
+    public void Fade(bool fadeIn, Action onFadeComplete)
     {
-        //var imgColor = fadeImage.color;
-        //float startAlpha = imgColor.a;
-        //float targetAlpha = fadeIn ? 1.0f : 0.0f;
-
-        //float elapsedTime = 0f;
-
-        //while (elapsedTime < fadeSpeed)
-        //{
-        //    float t = elapsedTime / fadeSpeed;
-        //    imgColor.a = Mathf.Lerp(startAlpha, targetAlpha, t);
-        //    fadeImage.color = imgColor;
-
-        //    elapsedTime += Time.deltaTime;
-        yield return null;
-        //}
-
-        //imgColor.a = targetAlpha;
-        //fadeImage.color = imgColor;
-
-        onFadeComplete?.Invoke();
+        if (!fadeIn)
+            LeanTween.alpha(fadeImage.rectTransform, 0f, 0.5f).setOnComplete(onFadeComplete);
+        else
+            LeanTween.alpha(fadeImage.rectTransform, 1f, 0.5f).setOnComplete(onFadeComplete);
     }
 
     public void SetTurn(uint turn)

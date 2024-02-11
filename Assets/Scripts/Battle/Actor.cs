@@ -22,7 +22,7 @@ public class Actor : ScriptableObject
     public List<BaseAction> baseActions;
     public List<BaseReaction> baseReactions;
 
-    [HideInInspector] public List<Assets.BaseAction> skills;
+    [HideInInspector] public List<Assets.BaseAction> actions;
     [HideInInspector] public List<BaseReaction> reactions;
 
     public float currentHp;
@@ -92,15 +92,21 @@ public class Actor : ScriptableObject
         Initialize();
     }
 
+    public void Refresh()
+    {
+        currentBuildup = 0;
+        currentPosture = maxPosture;
+    }
+
     public void Initialize()
     {
-        skills.Clear();
+        actions.Clear();
         reactions.Clear();
         foreach (var skill in baseActions)
         {
             var clone = Instantiate(skill);
             clone.remainingUses = clone.TotalUses;
-            skills.Add(clone);
+            actions.Add(clone);
         }
         foreach (var reaction in baseReactions)
         {

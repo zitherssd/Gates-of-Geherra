@@ -47,14 +47,14 @@ namespace Assets
             {
                 SoundManager.instance.PlayMusic(null);
                 StartCoroutine(uiManager.FadeMiddleText(1));
-                StartCoroutine(uiManager.Fade(false, () =>
+                uiManager.Fade(false, () =>
                 {
                     StartCoroutine(WaitForSeconds(0.5f, () =>
                     {
                         SetupBattle();
                         SwitchToNextTurn();
                     }));
-                }));
+                });
             }));
         }
 
@@ -80,10 +80,16 @@ namespace Assets
 
         public void SetupBattleWithEnemy(Actor enemy)
         {
-            //EnemyActors[0].SetBaseActor(enemy);
-            //EnemyActors[0].GetBaseActor().Reset();
-            //EnemyActors[0].PlayAnimation("Idle");
-            //PlayerActors[0].PlayAnimation("Idle");
+            uiManager.Fade(false, () =>
+            {
+                EnemyActors[0].Actor = enemy;
+                EnemyActors[0].Actor.Reset();
+                EnemyActors[0].PlayAnimation("Idle");
+                PlayerActors[0].Actor.Refresh();
+                currentTurn = 0;
+                SwitchToNextTurn();
+            });
+          
             //PlayerActors[0].GetBaseActor().currentPosture = PlayerActors[0].GetBaseActor().basePosture;
 
             //uiManager = UIManager.GetInstance();
@@ -215,7 +221,7 @@ namespace Assets
             turnQueue.Clear();
             List<BaseActorBattler> allActors = new List<BaseActorBattler>();
             allActors.AddRange(PlayerActors); allActors.AddRange(EnemyActors);
-            allActors = allActors.OrderBy(x => x.Actor.AGI).ToList();
+            allActors = allActors.OrderByDescending(x => x.Actor.AGI).ToList();
 
             foreach (var actor in allActors)
             {

@@ -15,7 +15,7 @@ MonoBehaviour:
   Name: Shuriken Throw
   Rarity: 0
   cooldownTurns: 0
-  TotalUses: 4
+  TotalUses: 2
   remainingUses: 0
   BuildupCost: 0
   BuildupGain: 2

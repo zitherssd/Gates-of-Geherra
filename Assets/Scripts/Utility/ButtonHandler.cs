@@ -1,5 +1,6 @@
 using Assets;
 using Assets.Scripts.Actions;
+using Assets.Scripts.Battle.Actions.Skills;
 using System;
 using System.Collections.Generic;
 using TMPro;
@@ -86,17 +87,22 @@ public class ButtonHandler : MonoBehaviour
 
     public void InitCard()
     {
-        //skillName.text = referencedSkill.Name;
-        //buildupCost.text = referencedSkill.BuildupCost != 0 ? referencedSkill.BuildupCost.ToString() : string.Empty;
+        skillName.text = referencedAction.Name;
+        buildupCost.text = referencedAction.BuildupCost != 0 ? referencedAction.BuildupCost.ToString() : string.Empty;
 
-        //string plusSymbol = "+";
-        //remainingUses.text = referencedSkill.TotalUses != 0 ? ConcatWithPlus(plusSymbol, referencedSkill.TotalUses) : string.Empty;
-        //speed.text += referencedSkill.Speed;
-        //range.text += referencedSkill.Range;
-        //damage.text += referencedSkill.Damage;
-        //postureDamage.text += referencedSkill.PostureDamage;
-        //knockback.text += referencedSkill.KnockbackForce;
-        //tags.text = GenerateTagString(referencedSkill.Tags);
+        string plusSymbol = "+";
+        remainingUses.text = referencedAction.TotalUses != 0 ? ConcatWithPlus(plusSymbol, referencedAction.TotalUses) : string.Empty;
+        if(referencedAction is SkillAttack)
+        {
+            var skill = referencedAction as SkillAttack;
+            speed.text += skill.Speed;
+            range.text += skill.Range;
+            damage.text += skill.Damage;
+            postureDamage.text += skill.PostureDamage;
+            knockback.text += skill.KnockbackForce;
+            if(referencedAction.Tags != null && referencedAction.Tags.Count > 0)
+            tags.text = GenerateTagString(referencedAction.Tags);
+        }
     }
 
     private string GenerateTagString(List<TAG> tags)

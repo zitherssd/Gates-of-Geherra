@@ -13,25 +13,27 @@ MonoBehaviour:
   m_Name: Enemy
   m_EditorClassIdentifier: 
   Name: Bad Guy
-  baseHP: 15
-  baseBuildup: 0
-  basePosture: 10
+  maxHp: 24
+  maxBuildup: 0
+  maxPosture: 23
   Controllable: 0
   mainColor: {r: 0.6415094, g: 0.24510503, b: 0.24510503, a: 1}
   secondaryColor: {r: 0.23763604, g: 0.5660378, b: 0, a: 1}
-  baseSkills:
-  - {fileID: 11400000, guid: 9cc21a5b1be74d54c92d4a9df41fe25b, type: 2}
-  - {fileID: 11400000, guid: 83e30c38186e1604ebbc68bcceaeb2e6, type: 2}
+  baseActions:
+  - {fileID: 11400000, guid: 0a73fca1a44c1ea45a64e272d163ab96, type: 2}
+  - {fileID: 11400000, guid: d03e86e1cd71da9438e18892caba4ed6, type: 2}
+  - {fileID: 11400000, guid: d03e86e1cd71da9438e18892caba4ed6, type: 2}
   baseReactions:
   - {fileID: 11400000, guid: e1de275c6a1741e4091bfa7141119117, type: 2}
   skills:
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
   reactions:
   - {fileID: 0}
-  currentHp: 0
+  currentHp: 24
   currentBuildup: 0
-  currentPosture: 0
+  currentPosture: 23
   ATK: 2
   DEF: 1
   AGI: 2

@@ -133,7 +133,7 @@ namespace Assets
             UIManager.GetInstance().ChangeStatus(Actor.Name + " TO ACT");
             if (isControllable())
             {
-                var AvaliableSkills = Actor.skills;
+                var AvaliableSkills = Actor.actions;
                 Time.timeScale = 0f;
                 um.DrawActionsAndWaitForSelectionOrNull(AvaliableSkills, selectedSkill =>
                 {
@@ -194,11 +194,11 @@ namespace Assets
 
         public List<BaseAction> GetValidContinueComboSkills()
         {
-            return Actor.skills.Where(skill => skill.IsValid(this, out _) && !skill.Tags.Contains(TAG.STARTER)).ToList();
+            return Actor.actions.Where(skill => skill.IsValid(this, out _) && !skill.Tags.Contains(TAG.STARTER)).ToList();
         }
         public List<BaseAction> GetValidStartComboSkills()
         {
-            return Actor.skills.Where(skill => skill.IsValid(this, out _)).ToList();
+            return Actor.actions.Where(skill => skill.IsValid(this, out _)).ToList();
         }
         public List<BaseReaction> GetValidReactionsForSkill()
         {
@@ -209,7 +209,7 @@ namespace Assets
         {
             List<BaseAction> validskills = new List<BaseAction>();
 
-            validskills = Actor.skills.Where(skills => skills.IsValidAndInRange(this)).ToList();
+            validskills = Actor.actions.Where(skills => skills.IsValidAndInRange(this)).ToList();
 
             if (validskills.Count == 0) return null;
 
@@ -335,7 +335,7 @@ namespace Assets
         public void ProcNextTurnEffects()
         {
             collisionOccured = false;
-            foreach (var skill in Actor.skills)
+            foreach (var skill in Actor.actions)
             {
                 skill.UpdateCooldown();
             }
