@@ -91,9 +91,12 @@ public class SkillGenerator : MonoBehaviour
         //muhahaha
     }
 
-    void onClickCardHandler(BaseAction skill)
+    void onClickCardHandler(BaseAction action)
     {
-        BattleManager.instance.PlayerActors[0].Actor.actions.Add(skill);
+        if (action is BaseReaction)
+            BattleManager.instance.PlayerActors[0].Actor.reactions.Add(action as BaseReaction);
+        else
+            BattleManager.instance.PlayerActors[0].Actor.actions.Add(action);
     }
 
     void ModifyFloats(ref float field1, ref float field2, ref float field3)

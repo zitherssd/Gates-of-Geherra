@@ -15,7 +15,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
 
     public class ProjectileAttack : BaseSkill
     {
-        public ANIMATIONTYPE AnimationType;
+        public ANIMATION Animation;
         public GameObject projectilePrefab;
         public float Range;
         public float Damage;
@@ -34,7 +34,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
 
             casterActor.GetComponent<Rigidbody>().AddForce(casterToTarget * 100 * SelfForce);
 
-            casterActor.PlayAnimation(this.AnimationType.ToString(), () => {
+            casterActor.PlayAnimation(this.Animation.ToString(), () => {
                 var projectile = Instantiate(projectilePrefab, casterActor.transform.position + casterActor.transform.forward + 0.6f * Vector3.up, Quaternion.identity);
                 projectile.GetComponent<Rigidbody>().AddForce((targetActor.transform.position + 0.6f * Vector3.up - projectile.transform.position).normalized * 200f);
                 var handler = projectile.GetComponent<ProjectileHandler>();
@@ -77,5 +77,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
     }
 
     public enum PROJECTILETYPE { Shuriken }
+    public enum ANIMATION { NONE, Punch, Kick, Shuriken, Highkick, PalmStrike, Ninjutsu, ForwardPunch, ThrowStar }
+
 
 }

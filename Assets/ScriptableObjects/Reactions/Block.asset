@@ -9,22 +9,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a17dd5c91c8ab94792f1477de4a33e3, type: 3}
+  m_Script: {fileID: 11500000, guid: 4ab9538cf5b653e48aa37b2dea64c00c, type: 3}
   m_Name: Block
   m_EditorClassIdentifier: 
   Name: Block
   Rarity: 0
-  cooldownTurns: 3
+  cooldownTurns: 4
   TotalUses: 2
-  remainingUses: 2
   BuildupCost: 0
-  BuildupGain: 10
+  BuildupGain: 0
   Speed: 0
   Tags: 0e000000
   SliderValue: 0
   StickValue: {x: 0, y: 0}
   currentCooldownTurns: 0
-  ReactionType: 2
-  knockbackModifier: 0.75
-  damageModifier: 0.6
-  postureModifier: 1
+  remainingUses: 0
+  DamageModifier: 0.5
+  PostureModifier: 0.4
+  KnockbackModifier: 1

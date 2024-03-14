@@ -5792,6 +5792,7 @@ MonoBehaviour:
   buildupBar: {fileID: 5980523080225069752}
   buildupBarEase: {fileID: 4106532230846254051}
   buildupBarText: {fileID: 0}
+  statesText: {fileID: 0}
 --- !u!114 &5937342269193354466
 MonoBehaviour:
   m_ObjectHideFlags: 0

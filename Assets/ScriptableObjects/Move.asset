@@ -16,7 +16,6 @@ MonoBehaviour:
   Rarity: 0
   cooldownTurns: 0
   TotalUses: 0
-  remainingUses: 0
   BuildupCost: 0
   BuildupGain: 0
   Speed: 0
@@ -24,3 +23,4 @@ MonoBehaviour:
   SliderValue: 0
   StickValue: {x: 0, y: 0}
   currentCooldownTurns: 0
+  remainingUses: 0

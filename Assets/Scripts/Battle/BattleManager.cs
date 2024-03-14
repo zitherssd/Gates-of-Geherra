@@ -32,9 +32,6 @@ namespace Assets
 
             BaseReaction.NoReaction = ScriptableObject.CreateInstance<BaseReaction>();
             BaseReaction.NoReaction.Name = "Nothing";
-            BaseReaction.NoReaction.knockbackModifier = 1;
-            BaseReaction.NoReaction.damageModifier = 1;
-            BaseReaction.NoReaction.postureModifier = 1;
             MoveSkill.instance = ScriptableObject.CreateInstance<MoveSkill>();
             MoveSkill.instance.Name = "Move";
             MoveSkill.instance.Tags = new List<TAG>();
@@ -85,6 +82,7 @@ namespace Assets
                 EnemyActors[0].Actor = enemy;
                 EnemyActors[0].Actor.Reset();
                 EnemyActors[0].PlayAnimation("Idle");
+                PlayerActors[0].PlayAnimation("Idle");
                 PlayerActors[0].Actor.Refresh();
                 currentTurn = 0;
                 SwitchToNextTurn();
@@ -187,13 +185,16 @@ namespace Assets
                 End();
                 return;
             }
-            var nextActor = GetNextActorInTurn();
-            if (nextActor == null) SwitchToNextTurn();
-            else
+            StartCoroutine(WaitForMovementCompletion(() =>
             {
-                SetActiveCharacterBattle(nextActor);
-                nextActor.Act(SwitchToNextActor);
-            }
+                var nextActor = GetNextActorInTurn();
+                if (nextActor == null) SwitchToNextTurn();
+                else
+                {
+                    SetActiveCharacterBattle(nextActor);
+                    nextActor.Act(SwitchToNextActor);
+                }
+            }));
         }
         private void SwitchToNextTurn()
         {

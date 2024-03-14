@@ -6,7 +6,6 @@ using UnityEngine;
 
 namespace Assets.Scripts.Actions
 {
-    [CreateAssetMenu(fileName = "Skill", menuName = "ScriptableObjects/Skill", order = 1)]
     public class BaseSkill : BaseAction
     {
         public System.Collections.IEnumerator WaitForOneFrame(Action action)
@@ -35,7 +34,4 @@ namespace Assets.Scripts.Actions
         }
     }
 
-    public enum ANIMATIONTYPE { NONE, Punch, Kick, Shuriken, Highkick, PalmStrike, Ninjutsu, ForwardPunch, ThrowStar }
-    public enum SKILLTYPE { Attack, Projectile, Taunt, Teleport }
-    public enum TARGETINGOPTION { SELF, ENEMY }
 }

@@ -430,8 +430,8 @@ TextureImporter:
         y: 192
         width: 64
         height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
+      alignment: 9
+      pivot: {x: 0.56, y: 0.18}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -706,7 +706,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Sprite-0001-Sheet_18: -446835194
+      Sprite-0001-Sheet_21: -1053371171
       Sprite-0001-Sheet_14: -1009268391
       Sprite-0001-Sheet_5: -1144189026
       Sprite-0001-Sheet_22: -71755199
@@ -732,7 +732,7 @@ TextureImporter:
       Sprite-0001-Sheet_11: 139973117
       Sprite-0001-Sheet_15: 323385835
       Sprite-0001-Sheet_1: -55048981
-      Sprite-0001-Sheet_21: -1053371171
+      Sprite-0001-Sheet_18: -446835194
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

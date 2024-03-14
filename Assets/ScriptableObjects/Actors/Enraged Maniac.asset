@@ -15,19 +15,21 @@ MonoBehaviour:
   Name: Enraged Maniac
   maxHp: 25
   maxBuildup: 5
-  maxPosture: 0
+  maxPosture: 18
   Controllable: 0
   mainColor: {r: 0, g: 0, b: 0, a: 0}
   secondaryColor: {r: 0, g: 0, b: 0, a: 0}
   baseActions:
-  - {fileID: 11400000, guid: a4f0a380567dcfc4ea9e34f543be0ca6, type: 2}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: 3a2fead6c4e4bd14e975cc8e422006e4, type: 2}
+  - {fileID: 11400000, guid: 3aa89802a1ec30d48b32f497ba10ce82, type: 2}
+  - {fileID: 11400000, guid: 6b798446413f4794088292db8b471646, type: 2}
   baseReactions:
-  - {fileID: 11400000, guid: e2b281185e8f8af4383f8a6ed1304fa8, type: 2}
+  - {fileID: 11400000, guid: e1dd5f1ba77a8a147ada505d02ffc4f1, type: 2}
+  - {fileID: 11400000, guid: 9415c826e0093e347a29d999aab6be1b, type: 2}
   actions: []
   reactions:
   - {fileID: 0}
-  currentHp: 0
+  currentHp: 25
   currentBuildup: 0
   currentPosture: 0
   ATK: 2

@@ -9,14 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a17dd5c91c8ab94792f1477de4a33e3, type: 3}
+  m_Script: {fileID: 11500000, guid: 94ee0db516bd2344ebc0a36825941aa7, type: 3}
   m_Name: Sidestep
   m_EditorClassIdentifier: 
   Name: Sidestep
   Rarity: 0
   cooldownTurns: 4
   TotalUses: 0
-  remainingUses: 0
   BuildupCost: 0
   BuildupGain: 0
   Speed: 0
@@ -24,7 +23,6 @@ MonoBehaviour:
   SliderValue: 0
   StickValue: {x: 0, y: 0}
   currentCooldownTurns: 0
-  ReactionType: 1
-  knockbackModifier: 0
-  damageModifier: 0
-  postureModifier: 0.5
+  remainingUses: 0
+  force: 1
+  Animation: 0

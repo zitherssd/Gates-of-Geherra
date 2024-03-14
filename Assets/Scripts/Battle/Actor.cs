@@ -86,16 +86,18 @@ public class Actor : ScriptableObject
     public void Reset()
     {
         currentHp = maxHp;
-        currentBuildup = 0;
-        currentPosture = maxPosture;
-        baseActions.RemoveAll(item => item == null);
         Initialize();
+        Refresh();
     }
 
     public void Refresh()
     {
         currentBuildup = 0;
         currentPosture = maxPosture;
+        foreach (var action in actions)
+            action.Refresh();
+        foreach (var reaction in reactions)
+            reaction.Refresh();
     }
 
     public void Initialize()
@@ -105,13 +107,11 @@ public class Actor : ScriptableObject
         foreach (var skill in baseActions)
         {
             var clone = Instantiate(skill);
-            clone.remainingUses = clone.TotalUses;
             actions.Add(clone);
         }
         foreach (var reaction in baseReactions)
         {
             var clone = Instantiate(reaction);
-            clone.remainingUses = clone.TotalUses;
             reactions.Add(clone);
         }
     }

@@ -13,23 +13,18 @@ MonoBehaviour:
   m_Name: Malnourished Individual
   m_EditorClassIdentifier: 
   Name: Malnourished Individual
-  maxHp: 35
+  maxHp: 25
   maxBuildup: 0
-  maxPosture: 9
+  maxPosture: 20
   Controllable: 0
   mainColor: {r: 0, g: 0, b: 0, a: 0}
   secondaryColor: {r: 0, g: 0, b: 0, a: 0}
   baseActions:
-  - {fileID: 11400000, guid: 23ada104ac205164cab9a705d2e17a15, type: 2}
-  - {fileID: 11400000, guid: 89526a3a69692d843ab6ddaaed5cb5ec, type: 2}
-  - {fileID: 11400000, guid: a4c0133a020371348be580fea15e3763, type: 2}
+  - {fileID: 11400000, guid: 3f869f152f955e64e9475dcf2c667237, type: 2}
+  - {fileID: 11400000, guid: 6b798446413f4794088292db8b471646, type: 2}
   baseReactions:
-  - {fileID: 11400000, guid: fb0edb5316194b4469a5c02751a9673a, type: 2}
-  - {fileID: 11400000, guid: fb0edb5316194b4469a5c02751a9673a, type: 2}
-  skills:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: d4852d63a398314488e810be1c412698, type: 2}
+  actions: []
   reactions:
   - {fileID: 0}
   - {fileID: 0}

@@ -92,9 +92,9 @@ public class ButtonHandler : MonoBehaviour
 
         string plusSymbol = "+";
         remainingUses.text = referencedAction.TotalUses != 0 ? ConcatWithPlus(plusSymbol, referencedAction.TotalUses) : string.Empty;
-        if(referencedAction is SkillAttack)
+        if(referencedAction is AttackSkill)
         {
-            var skill = referencedAction as SkillAttack;
+            var skill = referencedAction as AttackSkill;
             speed.text += skill.Speed;
             range.text += skill.Range;
             damage.text += skill.Damage;

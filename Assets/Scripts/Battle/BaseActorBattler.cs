@@ -30,8 +30,8 @@ namespace Assets
         // Collision
         internal bool collisionOccured;
         // Prefabs and Objects
-        public GameObject damagePopupPrefab;
-        public GameObject posturePopupPrefab;
+        private static GameObject damagePopupPrefab;
+        private static GameObject posturePopupPrefab;
         public LayerMask layer;
         // States and Actions
         public List<BaseStatus> activeStates;
@@ -54,7 +54,10 @@ namespace Assets
             selectionCircle = GameObject.FindGameObjectWithTag("SelectionCircle");
             currentState = MoveState.Idle;
             activeStates = new List<BaseStatus>();
-
+            if(damagePopupPrefab == null)
+                damagePopupPrefab = Resources.Load<GameObject>("HpPopup");
+            if (posturePopupPrefab == null)
+                posturePopupPrefab = Resources.Load<GameObject>("PosturePopup");
             //var cc = GetComponentInChildren<ColorController>();
             //cc.mainColor = baseActor.mainColor;
             //cc.secondaryColor = baseActor.secondaryColor;

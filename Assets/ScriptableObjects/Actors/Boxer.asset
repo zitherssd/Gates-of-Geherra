@@ -13,37 +13,28 @@ MonoBehaviour:
   m_Name: Boxer
   m_EditorClassIdentifier: 
   Name: Boxer
-  baseHP: 25
-  baseBuildup: 0
-  basePosture: 20
+  maxHp: 30
+  maxBuildup: 30
+  maxPosture: 0
   Controllable: 0
   mainColor: {r: 0, g: 0, b: 0, a: 0}
   secondaryColor: {r: 0, g: 0, b: 0, a: 0}
-  baseSkills:
-  - {fileID: 11400000, guid: 744fcc040a82dd341afc7f704b4fc8b2, type: 2}
-  - {fileID: 11400000, guid: 9cc21a5b1be74d54c92d4a9df41fe25b, type: 2}
-  - {fileID: 11400000, guid: 8498923809869424b99fa2cdc3be152d, type: 2}
-  - {fileID: 11400000, guid: 744fcc040a82dd341afc7f704b4fc8b2, type: 2}
-  - {fileID: 11400000, guid: 744fcc040a82dd341afc7f704b4fc8b2, type: 2}
-  - {fileID: 11400000, guid: 8498923809869424b99fa2cdc3be152d, type: 2}
+  baseActions:
+  - {fileID: 11400000, guid: 3a2fead6c4e4bd14e975cc8e422006e4, type: 2}
+  - {fileID: 11400000, guid: 32aec34b3154f8d4f911f18b56484c67, type: 2}
+  - {fileID: 11400000, guid: 3f869f152f955e64e9475dcf2c667237, type: 2}
+  - {fileID: 11400000, guid: 3aa89802a1ec30d48b32f497ba10ce82, type: 2}
   baseReactions:
-  - {fileID: 11400000, guid: e1de275c6a1741e4091bfa7141119117, type: 2}
-  - {fileID: 11400000, guid: fb0edb5316194b4469a5c02751a9673a, type: 2}
-  - {fileID: 11400000, guid: f9a7e891c0fdc3e43bf2cb7abeb13a05, type: 2}
-  skills:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: a3d5aec8050957e42b3e18c6b34a017a, type: 2}
+  - {fileID: 11400000, guid: e1dd5f1ba77a8a147ada505d02ffc4f1, type: 2}
+  actions: []
   reactions:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  currentHp: 15.68
+  currentHp: 0
   currentBuildup: 0
-  currentPosture: -12.599999
+  currentPosture: 0
   ATK: 2
   DEF: 2
   AGI: 4
