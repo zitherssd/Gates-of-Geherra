@@ -24,13 +24,12 @@ namespace Assets.Scripts.Battle.Actions.Skills
         public float SelfForce;
 
         
-        protected override void PerformSpecific(BaseActorBattler casterActor, Action onPerformEnd)
+        protected override void PerformSpecific(Actor casterActor, Action onPerformEnd)
         {
             var targetActor = GetTarget(casterActor);
 
             var casterToTarget = (targetActor.transform.position - casterActor.transform.position).normalized;
 
-            if (Tags.Contains(TAG.KILLMOMENTUM)) casterActor.GetComponent<Rigidbody>().velocity = Vector3.zero;
 
             casterActor.GetComponent<Rigidbody>().AddForce(casterToTarget * 100 * SelfForce);
 
@@ -44,13 +43,13 @@ namespace Assets.Scripts.Battle.Actions.Skills
             }, onPerformEnd);
         }
 
-        public override bool IsValidAndInRange(BaseActorBattler caster)
+        public override bool IsValidAndInRange(Actor caster)
         {
             if (!HasUsesLeft()) return false;
 
             if (IsSkillOnCooldown()) return false;
 
-            var potentialTargets = new List<BaseActorBattler>();
+            var potentialTargets = new List<Actor>();
 
             //Get all active
             if (caster.isControllable())
@@ -66,7 +65,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
             }
         }
 
-        public BaseActorBattler GetTarget(BaseActorBattler caster)
+        public Actor GetTarget(Actor caster)
         {
             if (caster.isControllable())
                 return BattleManager.instance.EnemyActors[0];

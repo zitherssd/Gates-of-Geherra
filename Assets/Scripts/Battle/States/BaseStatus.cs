@@ -5,9 +5,9 @@ namespace Assets.Scripts.Battle.States
 {
     public abstract class BaseStatus
     {
-        public BaseActorBattler owner;
+        public Actor owner;
 
-        public BaseStatus(BaseActorBattler owner)
+        public BaseStatus(Actor owner)
         {
             this.owner = owner;
             Apply();

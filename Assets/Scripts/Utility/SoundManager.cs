@@ -31,7 +31,7 @@ namespace Assets.Scripts.Utility
         {
 			System.Random random = new System.Random();
 			int randomIndex = random.Next(music.Count);
-			musicSource.volume = 0.5f; // Reset volume to 1.0f before playing
+			//musicSource.volume = 0.5f; // Reset volume to 1.0f before playing
 			musicSource.clip = music[randomIndex];
 			musicSource.Play();
         }

@@ -7,12 +7,14 @@ namespace Assets.Scripts.Utility
     {
         private ParticleSystem tp_effect;
         private ParticleSystem run_effect;
-
+        private ParticleSystem guide;
+        private Transform holder;
 
         private void Start()
         {
-            tp_effect = gameObject.transform.Find("Tp effect").GetComponent<ParticleSystem>();
-            run_effect = gameObject.transform.Find("Run effect").GetComponent<ParticleSystem>();
+            holder = gameObject.transform.Find("Effects");
+            tp_effect = holder.Find("Tp effect").GetComponent<ParticleSystem>();
+            run_effect = holder.Find("Run effect").GetComponent<ParticleSystem>();
         }
         // Update is called once per frame
         public void Play_TpEffect()

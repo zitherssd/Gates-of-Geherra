@@ -13,7 +13,7 @@ namespace Assets.Scripts.Battle.Actions.Reactions
         public float force;
         public ANIMATION Animation;
 
-        protected override void PerformSpecific(BaseActorBattler actor, Action onReactionComplete)
+        protected override void PerformSpecific(Actor actor, Action onReactionComplete)
         {
             actor.KillAnimationEndEvent();
             if(actor.isControllable())

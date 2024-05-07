@@ -4,11 +4,11 @@ using UnityEngine;
 namespace Assets.Scripts.Battle.Actions
 {
     [CreateAssetMenu(fileName = "Move", menuName = "ScriptableObjects/Action/Move", order = 1)]
-    public class MoveSkill : BaseAction
+    public class MoveAction : BaseAction
     {
-        public static MoveSkill instance;
+        public static MoveAction instance;
 
-        protected override void PerformSpecific(BaseActorBattler casterActor, Action onPerformEnd)
+        protected override void PerformSpecific(Actor casterActor, Action onPerformEnd)
         {
             if(casterActor.isControllable())
             {
@@ -29,6 +29,11 @@ namespace Assets.Scripts.Battle.Actions
 
             var desiredMoveDirection = forward * direction.y + right * direction.x;
             return desiredMoveDirection;
+        }
+
+        private void Awake()
+        {
+            StickMult = 4f;
         }
     }
 }

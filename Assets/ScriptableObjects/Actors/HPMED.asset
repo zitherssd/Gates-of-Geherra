@@ -9,18 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3d2c66b39a75e8e4c810a8e1f12fbd1b, type: 3}
-  m_Name: Move
+  m_Script: {fileID: 11500000, guid: cc1fc7a1ac76d6f42841406faf2a9802, type: 3}
+  m_Name: HPMED
   m_EditorClassIdentifier: 
-  Name: 
-  Rarity: 0
-  cooldownTurns: 0
-  TotalUses: 0
-  BuildupCost: 0
-  BuildupGain: 0
-  Speed: 0
-  Tags: 
-  SliderValue: 0
-  StickValue: {x: 0, y: 0}
-  currentCooldownTurns: 0
-  remainingUses: 0
+  Name: MED
+  maxHp: 10
+  alive: 1

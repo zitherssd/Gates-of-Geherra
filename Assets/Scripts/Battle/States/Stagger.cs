@@ -6,7 +6,7 @@ namespace Assets.Scripts.Battle.States
 {
     public class Stagger : BaseStatus
     {
-        public Stagger(BaseActorBattler owner) : base(owner)
+        public Stagger(Actor owner) : base(owner)
         {
 
         }
@@ -19,7 +19,7 @@ namespace Assets.Scripts.Battle.States
             }
             else
             {
-                owner.ApplyKnockbackModifiers += ModifyKnockback;
+                owner.KnockbackDealt += ModifyKnockback;
                 owner.PlayAnimation("PostureBroken");
                 owner.PlayAudio("Attack1");
             }
@@ -27,7 +27,7 @@ namespace Assets.Scripts.Battle.States
         public override void Remove()
         {
             base.Remove();
-            owner.ApplyKnockbackModifiers -= ModifyKnockback;
+            owner.KnockbackDealt -= ModifyKnockback;
         }
 
         private float ModifyKnockback(float force, Vector3 direction)

@@ -33,7 +33,7 @@ public class ActionSlot : MonoBehaviour
                 else
                     UIManager.GetInstance().Slider.SetActive(false);
 
-                if (handler.referencedAction.Tags.Contains(Assets.TAG.USEKNOB))
+                if (handler.referencedAction.Tags.Contains(Assets.TAG.USESTICK))
                     UIManager.GetInstance().Knob.SetActive(true);
                 else
                     UIManager.GetInstance().Knob.SetActive(false);
@@ -46,7 +46,7 @@ public class ActionSlot : MonoBehaviour
                 else
                     UIManager.GetInstance().Slider.SetActive(false);
 
-                if (handler.referencedReaction.Tags.Contains(Assets.TAG.USEKNOB))
+                if (handler.referencedReaction.Tags.Contains(Assets.TAG.USESTICK))
                     UIManager.GetInstance().Knob.SetActive(true);
                 else
                     UIManager.GetInstance().Knob.SetActive(false);

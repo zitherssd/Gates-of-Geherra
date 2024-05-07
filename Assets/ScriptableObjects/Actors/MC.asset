@@ -16,6 +16,7 @@ MonoBehaviour:
   maxHp: 30
   maxBuildup: 100
   maxPosture: 25
+  maxStamina: 100
   Controllable: 1
   mainColor: {r: 1, g: 1, b: 1, a: 0}
   secondaryColor: {r: 0, g: 0, b: 0, a: 1}
@@ -25,9 +26,16 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8944dff4634e45d4bbb0765034e3c880, type: 2}
   - {fileID: 11400000, guid: 3aa89802a1ec30d48b32f497ba10ce82, type: 2}
   - {fileID: 11400000, guid: 3a2fead6c4e4bd14e975cc8e422006e4, type: 2}
+  - {fileID: 11400000, guid: 6b798446413f4794088292db8b471646, type: 2}
   baseReactions:
   - {fileID: 11400000, guid: d4852d63a398314488e810be1c412698, type: 2}
+  - {fileID: 11400000, guid: e1dd5f1ba77a8a147ada505d02ffc4f1, type: 2}
+  - {fileID: 11400000, guid: 84039c0611ba36841b126f1d365eb783, type: 2}
+  baseHpBars:
+  - {fileID: 11400000, guid: 844423a2bec91434bb166f8390aa80f8, type: 2}
+  - {fileID: 11400000, guid: f273e92b83c897a48b992d9fefe2c87e, type: 2}
   actions:
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -35,9 +43,15 @@ MonoBehaviour:
   - {fileID: 0}
   reactions:
   - {fileID: 0}
-  currentHp: 24.5
-  currentBuildup: 6
-  currentPosture: 17
+  - {fileID: 0}
+  - {fileID: 0}
+  hpBars:
+  - {fileID: 11400000, guid: 844423a2bec91434bb166f8390aa80f8, type: 2}
+  - {fileID: 11400000, guid: f273e92b83c897a48b992d9fefe2c87e, type: 2}
+  currentHp: 30
+  currentBuildup: 10
+  currentPosture: 25
+  currentStamina: 107.5
   ATK: 1
   DEF: 1
   AGI: 2

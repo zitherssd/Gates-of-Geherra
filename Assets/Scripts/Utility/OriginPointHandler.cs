@@ -14,7 +14,7 @@ public class OriginPointHandler : MonoBehaviour
 
     void Start()
     {
-        target.gameObject.GetComponent<BaseActorBattler>().originPointInUI = this;
+        target.gameObject.GetComponent<Actor>().originPointInUI = this;
         rtransform = GetComponent<RectTransform>();
         camera = Camera.main;
     }

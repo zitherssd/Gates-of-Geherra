@@ -7,12 +7,15 @@ namespace Assets.Scripts.Utility
 {
     public class CanvasHandler : MonoBehaviour, IHasChanged
     {
+        public static CanvasHandler instance = null;
+
         public GameObject EndButton;
         public GameObject ActionSlot;
 
         void Start ()
         {
             HasChanged();
+            if (instance == null) instance = this;
         }
 
         public void HasChanged()

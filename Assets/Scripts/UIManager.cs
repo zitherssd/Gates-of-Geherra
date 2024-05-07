@@ -17,7 +17,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI StoneSlab;
     [SerializeField] private TextMeshProUGUI TurnText;
     [SerializeField] private UnityEngine.UI.Image fadeImage;
-    [Range(0, 1)] public float letterPause = 0.1f;
+    [Range(0, 1)] public float letterPause = 0.01f;
     [Range(0, 1)] public float fadeSpeed;
     public AudioClip typeSound1;
     public AudioClip typeSound2;
@@ -135,7 +135,7 @@ public class UIManager : MonoBehaviour
 
         List<Assets.BaseAction> fakeActions = new List<Assets.BaseAction>();
             var activeChar = BattleManager.instance.GetActiveActor();
-            var skills = activeChar.Actor.actions;
+            var skills = activeChar.ActorData.actions;
 
             foreach (var skill in skills)
             {
@@ -155,12 +155,12 @@ public class UIManager : MonoBehaviour
             this.waitingForAction = true;
     }
 
-    public void DrawAllActorReactions(BaseActorBattler actor, Action onReactionSelected)
+    public void DrawAllActorReactions(Actor actor, Action onReactionSelected)
     {
         if (!waitingForAction)
         {
             List<Assets.BaseAction> fakeReactions = new List<Assets.BaseAction>();
-            var reactions = actor.Actor.reactions;
+            var reactions = actor.ActorData.reactions;
 
             foreach (var reaction in reactions)
             {
@@ -180,7 +180,7 @@ public class UIManager : MonoBehaviour
     
 
 
-    internal void DrawActionAboveHead(BaseActorBattler actor, BaseAction action)
+    internal void DrawActionAboveHead(Actor actor, BaseAction action)
     {
             GameObject drawnSkill = Instantiate(buttonPrefab, actor.transform.position, Quaternion.identity);
             drawnSkill.transform.SetParent(actor.originPointInUI.transform);
@@ -193,7 +193,7 @@ public class UIManager : MonoBehaviour
             LeanTween.scale(actor.originPointInUI.transform.gameObject, new Vector3(1, 1, 1), 0.3f).setEaseOutBack().setIgnoreTimeScale(true);
     }
 
-    internal void KillActionAboveHead(BaseActorBattler actor)
+    internal void KillActionAboveHead(Actor actor)
     {
         var obj = actor.originPointInUI.transform;
         if (obj.childCount > 0)
@@ -204,12 +204,12 @@ public class UIManager : MonoBehaviour
             LeanTween.scale(obj.gameObject, new Vector3(1, 0, 1), 0.3f).setEaseOutBack().setIgnoreTimeScale(true);
     }
 
-    public void DrawAllActorReactionsAboveSpeed(BaseActorBattler actor, int minimumSpeed, Action onReactionSelected)
+    public void DrawAllActorReactionsAboveSpeed(Actor actor, int minimumSpeed, Action onReactionSelected)
     {
 
         List<Assets.BaseAction> fakeReactions = new List<Assets.BaseAction>();
             List<BaseReaction> chosenReactions = new List<BaseReaction>();
-            var reactions = actor.Actor.reactions;
+            var reactions = actor.ActorData.reactions;
 
 
             foreach (var reaction in reactions)
@@ -229,14 +229,15 @@ public class UIManager : MonoBehaviour
             this.waitingForAction = true;
     }
 
-    public void DrawActionsAndWaitForSelectionOrNull(List<Assets.BaseAction> ActionsToDraw, Action<Assets.BaseAction> onActionSelected)
+    public void DrawActionsAndWaitForSelectionOrNull(List<Assets.BaseAction> ActionsToDraw, Action<BaseAction> onActionSelected)
     {
-        this.OnActionSelected = onActionSelected;
+        //this.OnActionSelected = onActionSelected;
         var buttonHandlers = DrawActionsRadiallyOnScreenPoint(ActionsToDraw);
         
         for (int i = 0; i < ActionsToDraw.Count; i++)
         {
             buttonHandlers[i].referencedAction = ActionsToDraw[i];
+            buttonHandlers[i].Click = onActionSelected;
         }
     }
 

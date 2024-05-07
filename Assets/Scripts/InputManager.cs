@@ -12,7 +12,7 @@ namespace Assets
 
         private BattleManager battleManager;
         private Action onTurnEnd = null;
-        private Action<BaseActorBattler> onTargetSelected = null;
+        private Action<Actor> onTargetSelected = null;
         private Action<Vector2> onSwipeGot = null;
         private Action<Vector3> onTargetPointSelected = null;
         public OnScreenStick onScreenStick;
@@ -114,7 +114,7 @@ namespace Assets
         }
 
 
-        public void WaitForTargetActor(Action<BaseActorBattler> onTargetSelected)
+        public void WaitForTargetActor(Action<Actor> onTargetSelected)
         {
             UIManager.GetInstance().ChangeStatus("SELECT TARGET");
 
@@ -135,7 +135,7 @@ namespace Assets
             if (Physics.Raycast(raycast, out RaycastHit raycastHit) && raycastHit.collider.name == "EnemyBattler")
             {
                 UIManager.GetInstance().ChangeStatus(string.Empty);
-                var target = raycastHit.collider.GetComponentInChildren<BaseActorBattler>();
+                var target = raycastHit.collider.GetComponentInChildren<Actor>();
                 InputHandler.instance.OnClick -= OnTargetRecieved;
                 onTargetSelected?.Invoke(target);
             }

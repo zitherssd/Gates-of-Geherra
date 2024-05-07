@@ -16,6 +16,7 @@ MonoBehaviour:
   maxHp: 25
   maxBuildup: 0
   maxPosture: 20
+  maxStamina: 0
   Controllable: 0
   mainColor: {r: 0, g: 0, b: 0, a: 0}
   secondaryColor: {r: 0, g: 0, b: 0, a: 0}
@@ -24,13 +25,19 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6b798446413f4794088292db8b471646, type: 2}
   baseReactions:
   - {fileID: 11400000, guid: d4852d63a398314488e810be1c412698, type: 2}
-  actions: []
+  baseHpBars:
+  - {fileID: 11400000, guid: 7480a64d72f259342898ac4956c7a727, type: 2}
+  actions:
+  - {fileID: 0}
+  - {fileID: 0}
   reactions:
   - {fileID: 0}
-  - {fileID: 0}
-  currentHp: 35
+  hpBars:
+  - {fileID: 11400000, guid: 7480a64d72f259342898ac4956c7a727, type: 2}
+  currentHp: 25
   currentBuildup: 0
-  currentPosture: 9
+  currentPosture: 20
+  currentStamina: 0
   ATK: 1
   DEF: 0
   AGI: 2

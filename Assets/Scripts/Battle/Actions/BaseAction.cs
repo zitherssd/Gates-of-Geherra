@@ -15,14 +15,17 @@ namespace Assets
         //public SpriteRenderer sprite;
         public int BuildupCost;
         public int BuildupGain;
+        public int StaminaCost;
         public int Speed;
         public List<TAG> Tags;
         [HideInInspector] public float SliderValue;
         [HideInInspector] public Vector2 StickValue;
         [HideInInspector] public int currentCooldownTurns = 0;
         [HideInInspector] public int remainingUses;
+        public float StickMult = 1;
 
-        public virtual void Perform(BaseActorBattler casterActor, Action onPerformEnd)
+
+        public virtual void Perform(Actor casterActor, Action onPerformEnd)
         {
             UpdateRemainingUses();
             ResetCooldown();
@@ -30,12 +33,13 @@ namespace Assets
             if (!Tags.Contains(TAG.USESLIDER)) SliderValue = 1f;
             if (Tags.Contains(TAG.KILLMOMENTUM)) casterActor.GetComponent<Rigidbody>().velocity = Vector3.zero;
 
-            casterActor.Actor.ChangeBuildup(BuildupGain);
-            casterActor.Actor.ChangeBuildup(-BuildupCost);
+            casterActor.ActorData.DealStaminaDamage(StaminaCost);
+            casterActor.ActorData.ChangeBuildup(BuildupGain);
+            casterActor.ActorData.ChangeBuildup(-BuildupCost);
             PerformSpecific(casterActor, onPerformEnd);
         }
 
-        protected virtual void PerformSpecific(BaseActorBattler casterActor, Action onPerformEnd) { }
+        protected virtual void PerformSpecific(Actor casterActor, Action onPerformEnd) { }
 
         public virtual void UpdateCooldown()
         {
@@ -83,7 +87,7 @@ namespace Assets
             currentCooldownTurns = 0;
         }
 
-        public virtual bool IsValid(BaseActorBattler caster, out string InvalidReason)
+        public virtual bool IsValid(Actor caster, out string InvalidReason)
         {
             InvalidReason = "";
 
@@ -97,15 +101,20 @@ namespace Assets
                 InvalidReason = $"usable in {currentCooldownTurns}";
                 return false;
             }
-            if (caster.Actor.currentBuildup < BuildupCost)
+            if (caster.ActorData.currentBuildup < BuildupCost)
             {
                 InvalidReason = "Not enough Buildup!";
+                return false;
+            }
+            if(caster.ActorData.currentStamina < StaminaCost)
+            {
+                InvalidReason = "Not enough Stamina!";
                 return false;
             }
             return true;
         }
 
-        public virtual bool IsValidAndInRange(BaseActorBattler caster)
+        public virtual bool IsValidAndInRange(Actor caster)
         {
             return true;
         }
@@ -124,7 +133,7 @@ namespace Assets
     }
 
 
-    public enum TAG { MOVE_NEAR_ENEMY_BEFORE_ATTACK, PROJECTILE, KNOCKBACK_AIR, KNOCKBACK_FRONT, KNOCKBACK_BACK, MOVE_OFFSET_BEHIND, MOVE_OFFSET_INFRONT, NO_REACTION, REPEAT_TURN, STARTER, FINISHER, COUNTER, USESLIDER, USEKNOB, RECHARGE_USES,
+    public enum TAG { MOVE_NEAR_ENEMY_BEFORE_ATTACK, PROJECTILE, KNOCKBACK_AIR, KNOCKBACK_FRONT, KNOCKBACK_BACK, MOVE_OFFSET_BEHIND, MOVE_OFFSET_INFRONT, NO_REACTION, REPEAT_TURN, STARTER, FINISHER, COUNTER, USESLIDER, USESTICK, RECHARGE_USES,
         APPLYROOTMOTION,
         KILLMOMENTUM
     }

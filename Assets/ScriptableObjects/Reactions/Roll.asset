@@ -18,11 +18,12 @@ MonoBehaviour:
   TotalUses: 0
   BuildupCost: 0
   BuildupGain: 0
+  StaminaCost: 14
   Speed: 0
   Tags: 0d000000
   SliderValue: 0
   StickValue: {x: 0, y: 0}
   currentCooldownTurns: 0
   remainingUses: 0
-  force: 2
+  force: 4
   Animation: 1

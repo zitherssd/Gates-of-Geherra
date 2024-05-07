@@ -6,14 +6,15 @@ namespace Assets.Scripts.Battle.Actions
     [CreateAssetMenu(fileName = "Charge", menuName = "ScriptableObjects/Action/Charge", order = 1)]
     public class Charge : BaseAction
     {
-        protected override void PerformSpecific(BaseActorBattler casterActor, Action onPerformEnd)
+        public float power;
+        protected override void PerformSpecific(Actor casterActor, Action onPerformEnd)
         {
             if (casterActor.isControllable())
             {
                 InputManager.instance.WaitForTargetActor(targetActor =>
                 {
                     var casterToTarget = (targetActor.transform.position - casterActor.transform.position).normalized;
-                    casterActor.GetComponent<Rigidbody>().AddForce(casterToTarget * 100 * 4);
+                    casterActor.GetComponent<Rigidbody>().AddForce(casterToTarget * 100 * power);
                     casterActor.PlayAnimation("Run", onPerformEnd, onPerformEnd);
                 });
 

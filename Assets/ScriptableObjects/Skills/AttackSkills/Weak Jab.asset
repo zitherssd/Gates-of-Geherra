@@ -18,6 +18,7 @@ MonoBehaviour:
   TotalUses: 0
   BuildupCost: 0
   BuildupGain: 1
+  StaminaCost: 8
   Speed: 0
   Tags: 0c000000
   SliderValue: 0
@@ -29,4 +30,5 @@ MonoBehaviour:
   Damage: 2
   PostureDamage: 2
   KnockbackForce: 0.8
-  SelfForce: 0.85
+  SelfForce: 1.6
+  Delay: 0.2

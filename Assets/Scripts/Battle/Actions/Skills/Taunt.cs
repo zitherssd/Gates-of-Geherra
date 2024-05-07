@@ -7,7 +7,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
     [CreateAssetMenu(fileName = "Taunt", menuName = "ScriptableObjects/Skills/Taunt")]
     public class Taunt : BaseSkill
     {
-        protected override void PerformSpecific(BaseActorBattler casterActor, Action onPerformEnd)
+        protected override void PerformSpecific(Actor casterActor, Action onPerformEnd)
         {
             casterActor.PlayAnimation("Taunt", () =>
             {

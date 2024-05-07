@@ -5,13 +5,13 @@ namespace Assets.Scripts.Battle.States
 {
     public class Poison : BaseStatus
     {
-        public Poison(BaseActorBattler owner) : base(owner)
+        public Poison(Actor owner) : base(owner)
         {
 
         }
         public override void Apply()
         {
-            owner.ApplyDamageModifiers += ModifyDamage;
+            owner.DamageDealt += ModifyDamage;
         }
 
         public float ModifyDamage(float damage)

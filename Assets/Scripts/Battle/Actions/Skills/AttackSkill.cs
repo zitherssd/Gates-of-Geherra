@@ -17,32 +17,41 @@ namespace Assets.Scripts.Battle.Actions.Skills
         public float PostureDamage;
         public float KnockbackForce;
         public float SelfForce;
+        public float Delay;
 
-        protected override void PerformSpecific(BaseActorBattler casterActor, Action onPerformEnd)
+        protected override void PerformSpecific(Actor casterActor, Action onPerformEnd)
         {
             var targetActor = GetTarget(casterActor);
+            var targetActorPositionInOneSecond = targetActor.rigidbody.position + targetActor.rigidbody.velocity * Delay;
+            
+            var casterVelocity = casterActor.rigidbody.velocity;
+            var casterActorPositionInOneSecond = casterActor.transform.position + casterVelocity * Delay;
 
             var casterToTarget = (targetActor.transform.position - casterActor.transform.position).normalized;
-            casterToTarget.y = 0;
+            var casterToTargetInOneSecond = (targetActorPositionInOneSecond - casterActor.transform.position).normalized;
 
-            if (Tags.Contains(TAG.KILLMOMENTUM)) casterActor.GetComponent<Rigidbody>().velocity = Vector3.zero;
+            var targetDirection = casterToTargetInOneSecond;
+            Debug.DrawRay(casterActor.transform.position + Vector3.up * 0.6f, targetDirection * Range, Color.green, 3f, false);
+            Debug.DrawRay(casterActor.transform.position + Vector3.up * 0.1f, targetDirection * Range, Color.green, 3f, false);
+            Debug.DrawRay(casterActor.transform.position + Vector3.up * 0.01f, targetDirection * Range, Color.green, 3f, false);
 
-            casterActor.GetComponent<Rigidbody>().AddForce(casterToTarget * 100 * SelfForce * SliderValue);
+            var desiredMoveDirection = GetRelativeToCamera(StickValue);
+            casterActor.GetComponent<Rigidbody>().AddForce(desiredMoveDirection * 100 * SelfForce);
 
             casterActor.PlayAnimation(Animation.ToString(), () => {
 
-                Debug.DrawRay(casterActor.transform.position + Vector3.up * 0.6f, casterToTarget * Range, Color.green, 0.3f);
+                Debug.DrawRay(casterActor.transform.position + Vector3.up * 0.6f, targetDirection * Range, Color.green, 2f, false);
 
                 RaycastHit hit;
 
-                if (Physics.SphereCast(casterActor.transform.position + Vector3.up * 0.6f, 0.1f, casterToTarget, out hit, Range))
+                if (Physics.SphereCast(casterActor.transform.position + Vector3.up * 0.6f, 0.1f, targetDirection, out hit, Range))
                 {
                     ApplyDamageEffects(casterActor, targetActor, BaseReaction.NoReaction, onPerformEnd);
                     return;
                 }
                 else
                 {
-                    Debug.Log($"{casterActor.Actor.name} missed performing {this.Name}!");
+                    Debug.Log($"{casterActor.ActorData.name} missed performing {this.Name}!");
                 }
             }, () => {
                 if (targetActor.activeStates.OfType<Stagger>().Any()) return;
@@ -57,10 +66,10 @@ namespace Assets.Scripts.Battle.Actions.Skills
                         Time.timeScale = 1f;
                         if (selectedReaction != null && selectedReaction != BaseReaction.NoReaction)
                         {
-                            if (selectedReaction.Tags.Contains(TAG.USESLIDER))
-                                selectedReaction.SliderValue = InputManager.instance.SliderValue;
-                            if (selectedReaction.Tags.Contains(TAG.USEKNOB))
-                                selectedReaction.StickValue = InputManager.instance.StickValue;
+                            //if (selectedReaction.Tags.Contains(TAG.USESLIDER))
+                                //selectedReaction.SliderValue = InputManager.instance.SliderValue;
+                            //if (selectedReaction.Tags.Contains(TAG.USEKNOB))
+                                //selectedReaction.StickValue = InputManager.instance.StickValue;
                             selectedReaction.Perform(targetActor, null);
                         }
                     });
@@ -75,10 +84,10 @@ namespace Assets.Scripts.Battle.Actions.Skills
                 }
             }, onPerformEnd);
         }
-        public void ApplyDamageEffects(BaseActorBattler casterActor, BaseActorBattler targetActor, BaseReaction targetReaction, Action onDamageEffectsApplied)
+        public void ApplyDamageEffects(Actor casterActor, Actor targetActor, BaseReaction targetReaction, Action onDamageEffectsApplied)
         {
             // Apply Damage
-            var damage = Damage + casterActor.Actor.ATK - targetActor.Actor.DEF;
+            var damage = Damage + casterActor.ActorData.ATK - targetActor.ActorData.DEF;
             if (damage > 0)
             {
                 targetActor.ApplyDamage(damage);
@@ -100,7 +109,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
                 targetActor.ApplyPosture(PostureDamage);
             }
 
-            casterActor.Actor.currentBuildup += BuildupGain;
+            casterActor.ActorData.currentBuildup += BuildupGain;
 
             // Wait for 1 frame before exit
             casterActor.StartCoroutine(WaitForOneFrame(() =>
@@ -114,13 +123,13 @@ namespace Assets.Scripts.Battle.Actions.Skills
                 //onDamageEffectsApplied();
             }));
         }
-        public override bool IsValidAndInRange(BaseActorBattler caster)
+        public override bool IsValidAndInRange(Actor caster)
         {
             if (!HasUsesLeft()) return false;
 
             if (IsSkillOnCooldown()) return false;
 
-            var potentialTargets = new List<BaseActorBattler>();
+            var potentialTargets = new List<Actor>();
 
             //Get all active
             if (caster.isControllable())
@@ -135,7 +144,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
                 return false;
             }
         }
-        public BaseActorBattler GetTarget(BaseActorBattler caster)
+        public Actor GetTarget(Actor caster)
         {
             if (caster.isControllable())
                     return BattleManager.instance.EnemyActors[0];

@@ -12,11 +12,11 @@ namespace Assets.Scripts.Battle.Actions.Reactions
         [Range(0, 2)] public float DamageModifier = 1f;
         [Range(0, 2)] public float PostureModifier = 1f;
         [Range(0, 2)] public float KnockbackModifier = 1f;
-        protected override void PerformSpecific(BaseActorBattler actor, Action onReactionComplete)
+        protected override void PerformSpecific(Actor actor, Action onReactionComplete)
         {
             actor.KillAnimationEndEvent();
             actor.PlayAnimation("Block");
-            actor.activeStates.Add(new BlockState(actor, DamageModifier, PostureModifier, KnockbackModifier));
+            actor.activeStates.Add(new BlockStatus(actor, DamageModifier, PostureModifier, KnockbackModifier));
         }
     }
 

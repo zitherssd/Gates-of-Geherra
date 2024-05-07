@@ -18,6 +18,7 @@ MonoBehaviour:
   TotalUses: 1
   BuildupCost: 0
   BuildupGain: 0
+  StaminaCost: 16
   Speed: 0
   Tags: 0c000000
   SliderValue: 0

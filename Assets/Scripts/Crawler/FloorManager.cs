@@ -7,9 +7,9 @@ public class FloorManager : MonoBehaviour
     public int currentFloor = 1;
     private UIManager uiManager;
 
-    public List<Actor> secondFloorEnemies;
-    public List<Actor> thirdFloorEnemies;
-    public List<Actor> fourthFloorEnemies;
+    public List<ActorData> secondFloorEnemies;
+    public List<ActorData> thirdFloorEnemies;
+    public List<ActorData> fourthFloorEnemies;
 
     private static FloorManager instance;
     public static FloorManager GetInstance()
@@ -53,7 +53,7 @@ public class FloorManager : MonoBehaviour
         });
     }
 
-    public Actor GetActorForFloor()
+    public ActorData GetActorForFloor()
     {
         if (currentFloor == 2)
             return secondFloorEnemies[Random.Range(0, secondFloorEnemies.Count)];

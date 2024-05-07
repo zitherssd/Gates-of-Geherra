@@ -11,6 +11,7 @@ namespace Assets
         private float shakeMagnitude = 0.7f;
         private float dampingSpeed = 1.0f;
 
+        public CameraType cameraType = CameraType.Main;
 
         private BattleManager battleManager;
         [SerializeField]
@@ -57,7 +58,7 @@ namespace Assets
             if(!Override)
             {
                 var input = Mathf.Clamp((directionvector * 2).magnitude, 3, 40);
-                UpDistance = LinearMap(input, 3, 40, 1, 6);
+                UpDistance = LinearMap(input, 3, 40, 2, 6);
                 BackDistance = LinearMap(input, 3, 40, 5, 20);
             }
 
@@ -75,7 +76,11 @@ namespace Assets
                 targetpos = newposition;
             }
 
-            transform.position = Vector3.Lerp(transform.position, targetpos, 0.1f);
+            if (cameraType == CameraType.Main)
+            {
+                transform.position = Vector3.Lerp(transform.position, targetpos, 0.1f);
+            }
+            else transform.position = targetpos;
             transform.LookAt(distvector + Vector3.up * 1.5f);
 
         }
@@ -118,6 +123,12 @@ namespace Assets
 
             if (rightSObj.flipX == true) rightSObj.flipX = false;
             else rightSObj.flipX = true;
+        }
+
+
+        public enum CameraType
+        {
+            Main, UI
         }
     }
 }

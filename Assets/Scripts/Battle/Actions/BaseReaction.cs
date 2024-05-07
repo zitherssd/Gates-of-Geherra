@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
-using static Assets.BaseActorBattler;
+using static Assets.Actor;
 
 namespace Assets.Scripts.Actions
 {

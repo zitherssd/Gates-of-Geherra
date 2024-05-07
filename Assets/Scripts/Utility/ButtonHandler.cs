@@ -1,6 +1,7 @@
 using Assets;
 using Assets.Scripts.Actions;
 using Assets.Scripts.Battle.Actions.Skills;
+using Assets.Scripts.Utility;
 using System;
 using System.Collections.Generic;
 using TMPro;
@@ -8,29 +9,20 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ButtonHandler : MonoBehaviour
+public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
-    [SerializeField] private TextMeshProUGUI skillName;
-    [SerializeField] private TextMeshProUGUI remainingUses;
-    [SerializeField] private TextMeshProUGUI buildupCost;
-    [SerializeField] private TextMeshProUGUI speed;
-    [SerializeField] private TextMeshProUGUI range;
-    [SerializeField] private TextMeshProUGUI damage;
-    [SerializeField] private TextMeshProUGUI postureDamage;
-    [SerializeField] private TextMeshProUGUI knockback;
-    [SerializeField] private TextMeshProUGUI tags;
-    private static BaseActorBattler player;
-    private static GameObject actionHolder;
-    private static GameObject actionSlot;
-    private static ActionSlot actionSlotScript;
+
+
     public Image image;
 
     private Transform home;
     public BaseAction referencedAction;
-    public BaseSkill referencedSkill;
-    public BaseReaction referencedReaction;
+    public BaseAction referencedReaction;
+    public Action<BaseAction> Click;
 
-    private bool isDraggable = true;
+    private Vector2 targetPos;
+
+
 
     public void SetDraggable(bool draggable)
     {
@@ -68,15 +60,50 @@ public class ButtonHandler : MonoBehaviour
         if (actionHolder == null) actionHolder = GameObject.Find("ActionHolder");
         if (actionSlot == null) actionSlot = GameObject.Find("ActionSlot");
         if (actionSlotScript == null) actionSlotScript = actionSlot.GetComponent<ActionSlot>();
+        if (guide == null) guide = GameObject.Find("PlacementGuide");
     }
 
     private void Start()
     {
+        rect = gameObject.GetComponent<RectTransform>();
         home = transform.parent;
         LeanTween.scale(gameObject, Vector3.one, 0.4f).setEaseOutBack().setIgnoreTimeScale(true);
     }
 
-    public void Init()
+    private void Update()
+    {
+        if (!isPressed) return;
+        // Check if the pointer is currently pressed down
+        if (Input.GetMouseButton(0) || Input.touchCount > 0)
+        {
+            Vector2 currentPointerPosition;
+
+            // Check if there is touch input
+            if (Input.touchCount > 0)
+            {
+                // Use the position of the first touch
+                currentPointerPosition = Input.GetTouch(0).position;
+            }
+            else
+            {
+                // Use the position of the mouse pointer
+                currentPointerPosition = (Vector2)Input.mousePosition;
+            }
+
+            Vector2 delta = currentPointerPosition - pointerDownPosition; // Calculate the movement delta
+            delta = Vector2.ClampMagnitude(delta,300);
+            referencedAction.StickValue.x = LinearMap(delta.x, 0,300,0,1);
+            referencedAction.StickValue.y = LinearMap(delta.y, 0, 300, 0, 1);
+            referencedAction.StickValue = Vector2.ClampMagnitude(referencedAction.StickValue, 1f);
+            rect.transform.position = Vector2.Lerp(rect.transform.position, targetPos + referencedAction.StickValue * 150f, 0.2f);
+            guide.transform.position = player.transform.position + GetRelativeToCamera(referencedAction.StickValue * referencedAction.StickMult);
+            //LeanTween.move(rect, CanvasHandler.instance.GetComponent<RectTransform>().anchoredPosition + referencedAction.StickValue * 100f, 0.15f).setEaseOutBack().setIgnoreTimeScale(true);
+
+            Debug.Log("Mouse/Touch movement delta: " + delta + " and stick value is " + referencedAction.StickValue);
+        }
+    }
+
+    public void Init() //This can be moved in Start probably
     {
         if (referencedAction != null)
         {
@@ -147,7 +174,7 @@ public class ButtonHandler : MonoBehaviour
             string plusSymbol = "+";
             remainingUses.text = action.TotalUses != 0 ? ConcatWithPlus(plusSymbol, action.remainingUses) : string.Empty;
             buildupCost.text = action.BuildupCost != 0 ? action.BuildupCost.ToString() : string.Empty;
-            SetButtonInteractable(action);
+            SetDraggable(action);
         }
     }
 
@@ -202,31 +229,91 @@ public class ButtonHandler : MonoBehaviour
         //  else replace action in actionslot with this one. move action in actionslot back home.
     }
 
+    private void MoveToCenter()
+    {
+        // Calculate the center position of the screen
+        Vector2 centerPosition = new Vector2(Screen.width / 2f, Screen.height / 2f);
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        targetPos = CanvasHandler.instance.GetComponent<RectTransform>().anchoredPosition;
+        //LeanTween.move(rect, CanvasHandler.instance.GetComponent<RectTransform>().anchoredPosition, 0.15f).setEaseOutBack().setIgnoreTimeScale(true);
+        LeanTween.scale(rect, Vector3.one * 1.5f, 1f).setEaseOutBack().setIgnoreTimeScale(true);
+        if(referencedAction.Tags.Contains(TAG.USESTICK))
+        guide.GetComponent<ParticleSystem>().Play();
+    }
 
-    //public void OnBeginDrag(PointerEventData eventData)
-    //{
-    //    if (!isDraggable) return;
+    private void MoveToHome()
+    {
+        LeanTween.cancel(rect);
+        LeanTween.move(rect, homePosition, 0.15f).setEaseOutCubic().setIgnoreTimeScale(true);
+        LeanTween.scale(rect, Vector3.one, 0.5f).setEaseOutCubic().setIgnoreTimeScale(true);
+        guide.GetComponent<ParticleSystem>().Stop();
 
-    //    parentafterDrag = transform.parent;
-    //    transform.SetParent(transform.root);
-    //    transform.SetAsLastSibling();
-    //    image.raycastTarget = false;
-    //    GetComponent<CanvasGroup>().blocksRaycasts = false;
-    //}
-    //public void OnDrag(PointerEventData eventData)
-    //{
-    //    if (!isDraggable) return;
+    }
 
-    //    transform.position = eventData.position;
-    //}
-    //public void OnEndDrag(PointerEventData eventData)
-    //{
-    //    if (!isDraggable) return;
+    public void OnPointerDown(PointerEventData pointerEventData)
+    {
+        if (isDraggable == false) return;
+        homePosition = gameObject.transform.localPosition;
+        MoveToCenter();
+        isPressed = true;
+        pointerDownPosition = Input.touchCount > 0 ? Input.GetTouch(0).position : (Vector2)Input.mousePosition;
+        //Output the name of the GameObject that is being clicked
+        Debug.Log(name + "Game Object Click in Progress");
+    }
 
-    //    transform.SetParent(parentafterDrag);
-    //    transform.position = Vector3.zero;
-    //    image.raycastTarget = true;
-    //    GetComponent<CanvasGroup>().blocksRaycasts = true;
-    //    ExecuteEvents.ExecuteHierarchy<IHasChanged>(gameObject, null, (x, y) => x.HasChanged());
-    //}
+    public void OnPointerUp(PointerEventData pointerEventData)
+    {
+        MoveToHome();
+        isPressed = false;
+        Debug.Log(name + "No longer being clicked");
+        if(referencedAction.StickValue.magnitude > 0.1f)
+        {
+            Click.Invoke(referencedAction);
+            KillAll();
+        }
+    }
+
+    float LinearMap(float input, float inputMin, float inputMax, float outputMin, float outputMax)
+    {
+        return outputMin + (outputMax - outputMin) * ((input - inputMin) / (inputMax - inputMin));
+    }
+
+    public Vector3 GetRelativeToCamera(Vector2 direction)
+    {
+        var camera = Camera.main;
+        var forward = camera.transform.forward; forward.y = 0;
+        var right = camera.transform.right; right.y = 0;
+        forward.Normalize(); right.Normalize();
+
+        var desiredMoveDirection = forward * direction.y + right * direction.x;
+        return desiredMoveDirection;
+    }
+
+    [SerializeField] private TextMeshProUGUI skillName;
+    [SerializeField] private TextMeshProUGUI remainingUses;
+    [SerializeField] private TextMeshProUGUI buildupCost;
+    [SerializeField] private TextMeshProUGUI speed;
+    [SerializeField] private TextMeshProUGUI range;
+    [SerializeField] private TextMeshProUGUI damage;
+    [SerializeField] private TextMeshProUGUI postureDamage;
+    [SerializeField] private TextMeshProUGUI knockback;
+    [SerializeField] private TextMeshProUGUI tags;
+    private static Actor player;
+    private static GameObject actionHolder;
+    private static GameObject actionSlot;
+    private static ActionSlot actionSlotScript;
+    private static GameObject guide;
+
+    private bool isDraggable = true;
+    private bool isPointerDown;
+    private RectTransform rect;
+    private Vector2 initialPosition;
+    private Vector2 initialoffset;
+    private float timeCount;
+    private Vector2 deltaValue = Vector2.zero;
+    private bool isPressed;
+    private Vector2 pointerDownPosition;
+    private Vector3 homePosition;
 }

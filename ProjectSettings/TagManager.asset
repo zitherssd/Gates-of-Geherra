@@ -16,7 +16,7 @@ TagManager:
   - Battler
   - Water
   - UI
-  - 
+  - Top
   - 
   - 
   - 
@@ -43,6 +43,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Top
+    uniqueID: 2884122059
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0

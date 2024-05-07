@@ -5,7 +5,7 @@ namespace Assets.Scripts.Battle.States
 {
     public class Midair : BaseStatus
     {
-        public Midair(BaseActorBattler owner) : base(owner)
+        public Midair(Actor owner) : base(owner)
         {
 
         }
