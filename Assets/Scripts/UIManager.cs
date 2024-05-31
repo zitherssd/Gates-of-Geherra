@@ -8,6 +8,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.UI;
+using Assets.Scripts.Battle;
 
 public class UIManager : MonoBehaviour
 {
@@ -34,7 +35,7 @@ public class UIManager : MonoBehaviour
     public GameObject OriginPoint;
     public GameObject ActionsHolder;
     public GameObject ActionSlot;
-    public GameObject EndButton;
+    public UnityEngine.UI.Button EndButton;
     public GameObject Slider;
     public GameObject Knob;
 
@@ -73,7 +74,7 @@ public class UIManager : MonoBehaviour
                 }
             }
             ButtonHandler.KillAll();
-            EndButton.SetActive(false);
+            EndButton.gameObject.SetActive(false);
             ActionSlot.SetActive(false);
             Slider.SetActive(false);
             Knob.SetActive(false);
@@ -115,7 +116,7 @@ public class UIManager : MonoBehaviour
             handler.Init();
             handlers.Add(handler);
         }
-        EndButton.SetActive(true);
+        EndButton.gameObject.SetActive(true);
         ActionSlot.SetActive(true);
         return handlers;
     }
@@ -231,7 +232,6 @@ public class UIManager : MonoBehaviour
 
     public void DrawActionsAndWaitForSelectionOrNull(List<Assets.BaseAction> ActionsToDraw, Action<BaseAction> onActionSelected)
     {
-        //this.OnActionSelected = onActionSelected;
         var buttonHandlers = DrawActionsRadiallyOnScreenPoint(ActionsToDraw);
         
         for (int i = 0; i < ActionsToDraw.Count; i++)
@@ -239,6 +239,12 @@ public class UIManager : MonoBehaviour
             buttonHandlers[i].referencedAction = ActionsToDraw[i];
             buttonHandlers[i].Click = onActionSelected;
         }
+        UIManager.instance.EndButton.onClick.RemoveAllListeners();
+        UIManager.instance.EndButton.onClick.AddListener(() =>
+        {
+            ButtonHandler.KillAll();
+            onActionSelected(null);
+        });
     }
 
 
@@ -320,7 +326,15 @@ public class UIManager : MonoBehaviour
         TurnText.text = "Turn " + turn.ToString();
     }
 
+    public  void HideUI()
+    {
+        ActionsHolder.transform.parent.gameObject.SetActive(false);
+    }
+    public  void ShowUI()
+    {
+        ActionsHolder.transform.parent.gameObject.SetActive(true);
 
+    }
 
     //1. Attack or Move or Skill // MoveWithingRange if able;
     //2. Reaction Check > Give control to the enemy. Allow him to chose from his reactions (Skill used for mitigation damage)

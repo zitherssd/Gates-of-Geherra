@@ -23,7 +23,8 @@ public class VelocityIndicator : MonoBehaviour
 
         // Always enable the LineRenderer
         arrowLineRenderer.enabled = true;
-        arrowLineRenderer.SetWidth(0.1f, 0.01f);
+        arrowLineRenderer.startWidth = 0.1f;
+        arrowLineRenderer.endWidth = 0.01f;
     }
 
     void LateUpdate()

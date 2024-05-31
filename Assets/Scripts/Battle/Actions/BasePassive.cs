@@ -1,4 +1,5 @@
 ﻿using Assets;
+using Assets.Scripts.Battle;
 using System;
 
 public class BasePassive : BaseAction

@@ -1,5 +1,5 @@
 ﻿using Assets.Scripts.Actions;
-using Assets.Scripts.Battle.States;
+using Assets.Scripts.Battle;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,7 +36,9 @@ namespace Assets.Scripts.Battle.Actions.Skills
             Debug.DrawRay(casterActor.transform.position + Vector3.up * 0.01f, targetDirection * Range, Color.green, 3f, false);
 
             var desiredMoveDirection = GetRelativeToCamera(StickValue);
-            casterActor.GetComponent<Rigidbody>().AddForce(desiredMoveDirection * 100 * SelfForce);
+            if (casterActor.isControllable())
+                casterActor.GetComponent<Rigidbody>().AddForce(desiredMoveDirection * 100 * SelfForce);
+            else casterActor.GetComponent<Rigidbody>().AddForce(new Vector3(StickValue.x,0,StickValue.y) * 100 * SelfForce);
 
             casterActor.PlayAnimation(Animation.ToString(), () => {
 
@@ -54,16 +56,16 @@ namespace Assets.Scripts.Battle.Actions.Skills
                     Debug.Log($"{casterActor.ActorData.name} missed performing {this.Name}!");
                 }
             }, () => {
-                if (targetActor.activeStates.OfType<Stagger>().Any()) return;
+                if (targetActor.ActorStateMachine.CurrentState == targetActor.ActorStateMachine.staggerState) return;
                 var validReactions = targetActor.GetValidReactionsForSkill();
                 if (targetActor.isControllable())
                 {
-                    Time.timeScale = 0f;
+                    Time.timeScale = 0f; UIManager.GetInstance().ShowUI();
                     var reactionsToDraw = new List<BaseAction>();
                     reactionsToDraw.AddRange(validReactions);
                     UIManager.GetInstance().DrawActionsAndWaitForSelectionOrNull(reactionsToDraw, selectedReaction =>
                     {
-                        Time.timeScale = 1f;
+                        Time.timeScale = 1f; UIManager.GetInstance().HideUI();
                         if (selectedReaction != null && selectedReaction != BaseReaction.NoReaction)
                         {
                             //if (selectedReaction.Tags.Contains(TAG.USESLIDER))
@@ -99,7 +101,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
                 var direction = (targetActor.transform.position - casterActor.transform.position).normalized;
                 if (this.Tags.Contains(TAG.KNOCKBACK_BACK)) direction += Vector3.Cross(direction, -Vector3.up);
                 if (this.Tags.Contains(TAG.KNOCKBACK_FRONT)) direction += Vector3.Cross(direction, Vector3.up);
-                if (this.Tags.Contains(TAG.KNOCKBACK_AIR)) { direction = (direction + Vector3.up).normalized; targetActor.activeStates.Add(new Midair(targetActor)); }
+                if (this.Tags.Contains(TAG.KNOCKBACK_AIR)) { direction = (direction + Vector3.up).normalized; }
                 targetActor.ApplyKnockback(direction, KnockbackForce);
             }
 
@@ -114,7 +116,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
             // Wait for 1 frame before exit
             casterActor.StartCoroutine(WaitForOneFrame(() =>
             {
-                if (targetActor.activeStates.OfType<Stagger>().Any())
+                if (targetActor.ActorStateMachine.CurrentState == targetActor.ActorStateMachine.staggerState)
                 {
                     casterActor.KillAnimationEndEvent();
                     casterActor.Act(onDamageEffectsApplied);

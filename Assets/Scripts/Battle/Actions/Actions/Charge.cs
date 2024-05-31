@@ -11,6 +11,7 @@ namespace Assets.Scripts.Battle.Actions
         {
             if (casterActor.isControllable())
             {
+                //needs to be reworked
                 InputManager.instance.WaitForTargetActor(targetActor =>
                 {
                     var casterToTarget = (targetActor.transform.position - casterActor.transform.position).normalized;

@@ -33,7 +33,7 @@ namespace Assets.Scripts.Battle.Actions
 
         private void Awake()
         {
-            StickMult = 4f;
+            //StickMult = 4f;
         }
     }
 }

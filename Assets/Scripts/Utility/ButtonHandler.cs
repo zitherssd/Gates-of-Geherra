@@ -1,5 +1,6 @@
 using Assets;
 using Assets.Scripts.Actions;
+using Assets.Scripts.Battle;
 using Assets.Scripts.Battle.Actions.Skills;
 using Assets.Scripts.Utility;
 using System;
@@ -99,7 +100,16 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
             guide.transform.position = player.transform.position + GetRelativeToCamera(referencedAction.StickValue * referencedAction.StickMult);
             //LeanTween.move(rect, CanvasHandler.instance.GetComponent<RectTransform>().anchoredPosition + referencedAction.StickValue * 100f, 0.15f).setEaseOutBack().setIgnoreTimeScale(true);
 
-            Debug.Log("Mouse/Touch movement delta: " + delta + " and stick value is " + referencedAction.StickValue);
+
+            if (referencedAction.StickValue.magnitude > 0.1f)
+            {
+                rect.transform.localScale = Vector3.Lerp(rect.transform.localScale, Vector3.one * LinearMap(referencedAction.StickValue.magnitude, 0.1f, 1, 1.0f, 1.5f), 0.1f);
+            }
+            else
+            {
+                rect.transform.localScale = Vector3.Lerp(rect.transform.localScale, Vector3.one * 0.66f, 0.1f);
+            }
+
         }
     }
 
@@ -260,14 +270,13 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
         isPressed = true;
         pointerDownPosition = Input.touchCount > 0 ? Input.GetTouch(0).position : (Vector2)Input.mousePosition;
         //Output the name of the GameObject that is being clicked
-        Debug.Log(name + "Game Object Click in Progress");
     }
 
     public void OnPointerUp(PointerEventData pointerEventData)
     {
+        if (isDraggable == false) return;
         MoveToHome();
         isPressed = false;
-        Debug.Log(name + "No longer being clicked");
         if(referencedAction.StickValue.magnitude > 0.1f)
         {
             Click.Invoke(referencedAction);

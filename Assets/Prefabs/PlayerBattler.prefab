@@ -293,7 +293,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 0}
   m_FillRect: {fileID: 7899857719561773038}
   m_HandleRect: {fileID: 0}
-  m_Direction: 2
+  m_Direction: 0
   m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 0
@@ -5349,12 +5349,12 @@ GameObject:
   - component: {fileID: 7899857719349980931}
   - component: {fileID: 7899857719349980930}
   - component: {fileID: 7899857719349980941}
-  - component: {fileID: 7899857719349980940}
   - component: {fileID: 7899857719349980929}
   - component: {fileID: 7899857719349980934}
   - component: {fileID: 7899857719349980935}
   - component: {fileID: 7899857719349980932}
   - component: {fileID: 7899857719349980933}
+  - component: {fileID: 3240682240543084486}
   m_Layer: 3
   m_Name: PlayerBattler
   m_TagString: Untagged
@@ -5431,25 +5431,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
---- !u!114 &7899857719349980940
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7899857719349980943}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f5cfec32a53ab743a7d333f0d533c44, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ActorData: {fileID: 0}
-  rigidbody: {fileID: 0}
-  layer:
-    serializedVersion: 2
-    m_Bits: 0
-  originPointInUI: {fileID: 0}
-  selectionCircle: {fileID: 0}
 --- !u!82 &7899857719349980929
 AudioSource:
   m_ObjectHideFlags: 0
@@ -5636,6 +5617,20 @@ SpriteShapeRenderer:
   m_LocalAABB:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 1048576, y: 1048576, z: 1048576}
+--- !u!114 &3240682240543084486
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7899857719349980943}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4915d9a2fbf625f4a80174075d70d1a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ActorData: {fileID: 11400000, guid: b8a7b1ce80f78164f9e1d2631a3c98fa, type: 2}
+  originPointInUI: {fileID: 0}
 --- !u!1 &7899857719385047091
 GameObject:
   m_ObjectHideFlags: 0
@@ -21185,8 +21180,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -18, y: -15.7}
-  m_SizeDelta: {x: 3.5, y: 35}
+  m_AnchoredPosition: {x: 0, y: -47.000004}
+  m_SizeDelta: {x: 20, y: 3.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &7899857720276547747
 GameObject:
@@ -26647,7 +26642,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -64}
+  m_AnchoredPosition: {x: 0, y: -70.8}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &7899857720915532009

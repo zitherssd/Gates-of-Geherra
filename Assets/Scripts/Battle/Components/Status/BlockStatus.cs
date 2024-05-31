@@ -1,7 +1,8 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-namespace Assets.Scripts.Battle.States
+namespace Assets.Scripts.Battle.Components.Status
+
 {
     public class BlockStatus : BaseStatus
     {
@@ -9,7 +10,7 @@ namespace Assets.Scripts.Battle.States
         private float postureModifier;
         private float knockbackModifier;
 
-        public BlockStatus(Actor owner, float damageModifier, float postureModifier, float knockbackModifier) : base(owner)
+        public BlockStatus(float damageModifier, float postureModifier, float knockbackModifier)
         {
             this.damageModifier = damageModifier;
             this.postureModifier = postureModifier;
@@ -18,15 +19,15 @@ namespace Assets.Scripts.Battle.States
 
         public override void Apply()
         {
-            owner.DamageDealt += ModifyDamage;
-            owner.KnockbackDealt += ModifyKnockback;
+            owner.DamageRecieved += ModifyDamage;
+            owner.KnockbackRecieved += ModifyKnockback;
         }
 
         public override void Remove()
         {
             base.Remove();
-            owner.DamageDealt -= ModifyDamage;
-            owner.KnockbackDealt -= ModifyKnockback;
+            owner.DamageRecieved -= ModifyDamage;
+            owner.KnockbackRecieved -= ModifyKnockback;
         }
 
         public float ModifyDamage(float damage)

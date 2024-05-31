@@ -1,4 +1,4 @@
-﻿using Assets.Scripts.Actions;
+﻿using Assets.Scripts.Battle;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,6 +9,7 @@ namespace Assets
     {
         public string Name;
         public RARITY Rarity;
+        private bool free { get; set; }
         public int cooldownTurns;
         public int TotalUses;
         //public int Range;
@@ -20,7 +21,7 @@ namespace Assets
         public List<TAG> Tags;
         [HideInInspector] public float SliderValue;
         [HideInInspector] public Vector2 StickValue;
-        [HideInInspector] public int currentCooldownTurns = 0;
+        public int currentCooldownTurns = 0;
         [HideInInspector] public int remainingUses;
         public float StickMult = 1;
 
@@ -36,7 +37,15 @@ namespace Assets
             casterActor.ActorData.DealStaminaDamage(StaminaCost);
             casterActor.ActorData.ChangeBuildup(BuildupGain);
             casterActor.ActorData.ChangeBuildup(-BuildupCost);
-            PerformSpecific(casterActor, onPerformEnd);
+
+            casterActor.ActorStateMachine.TransitionTo(casterActor.ActorStateMachine.actingState);
+
+            if (Tags.Contains(TAG.REPEAT_TURN))
+            {
+                PerformSpecific(casterActor, () => { casterActor.Act(onPerformEnd); });
+            }
+            else
+                PerformSpecific(casterActor, onPerformEnd); 
         }
 
         protected virtual void PerformSpecific(Actor casterActor, Action onPerformEnd) { }
@@ -64,16 +73,16 @@ namespace Assets
 
         public void ResetCooldown()
         {
-            if(Tags.Contains(TAG.RECHARGE_USES))
-                {
+            if (Tags.Contains(TAG.RECHARGE_USES))
+            {
 
-                }
+            }
             else
 
-            currentCooldownTurns = cooldownTurns;
+                currentCooldownTurns = cooldownTurns;
 
         }
-        
+
         public virtual bool HasUsesLeft()
         {
             if (TotalUses == 0) return true;
@@ -106,7 +115,7 @@ namespace Assets
                 InvalidReason = "Not enough Buildup!";
                 return false;
             }
-            if(caster.ActorData.currentStamina < StaminaCost)
+            if (caster.ActorData.currentStamina < StaminaCost)
             {
                 InvalidReason = "Not enough Stamina!";
                 return false;
@@ -116,24 +125,26 @@ namespace Assets
 
         public virtual bool IsValidAndInRange(Actor caster)
         {
-            return true;
+            return false;
         }
 
         public void UpdateRemainingUses()
         {
-            if(remainingUses == TotalUses && Tags.Contains(TAG.RECHARGE_USES))
+            if (remainingUses == TotalUses && Tags.Contains(TAG.RECHARGE_USES))
             {
                 remainingUses -= 1;
                 currentCooldownTurns = cooldownTurns;
             }
-            else 
+            else
             if (TotalUses != 0)
                 remainingUses -= 1;
         }
     }
 
 
-    public enum TAG { MOVE_NEAR_ENEMY_BEFORE_ATTACK, PROJECTILE, KNOCKBACK_AIR, KNOCKBACK_FRONT, KNOCKBACK_BACK, MOVE_OFFSET_BEHIND, MOVE_OFFSET_INFRONT, NO_REACTION, REPEAT_TURN, STARTER, FINISHER, COUNTER, USESLIDER, USESTICK, RECHARGE_USES,
+    public enum TAG
+    {
+        MOVE_NEAR_ENEMY_BEFORE_ATTACK, PROJECTILE, KNOCKBACK_AIR, KNOCKBACK_FRONT, KNOCKBACK_BACK, MOVE_OFFSET_BEHIND, MOVE_OFFSET_INFRONT, NO_REACTION, REPEAT_TURN, STARTER, FINISHER, COUNTER, USESLIDER, USESTICK, RECHARGE_USES,
         APPLYROOTMOTION,
         KILLMOMENTUM
     }

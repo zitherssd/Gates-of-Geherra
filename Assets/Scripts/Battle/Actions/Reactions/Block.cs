@@ -1,5 +1,5 @@
 ﻿using Assets.Scripts.Actions;
-using Assets.Scripts.Battle.States;
+using Assets.Scripts.Battle.Components.Status;
 using System;
 using UnityEngine;
 
@@ -16,7 +16,7 @@ namespace Assets.Scripts.Battle.Actions.Reactions
         {
             actor.KillAnimationEndEvent();
             actor.PlayAnimation("Block");
-            actor.activeStates.Add(new BlockStatus(actor, DamageModifier, PostureModifier, KnockbackModifier));
+            actor.statusManager.Add(new BlockStatus(DamageModifier, PostureModifier, KnockbackModifier));
         }
     }
 

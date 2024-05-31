@@ -14,21 +14,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Palm Strike
   Rarity: 0
-  cooldownTurns: 0
+  cooldownTurns: 2
   TotalUses: 0
-  BuildupCost: 10
+  BuildupCost: 15
   BuildupGain: 5
-  StaminaCost: 12
+  StaminaCost: 13
   Speed: 0
-  Tags: 0c000000
+  Tags: 0d000000
   SliderValue: 0
-  StickValue: {x: 0, y: 0}
-  currentCooldownTurns: 0
+  StickValue: {x: 0.9772877, y: 0.21191712}
+  currentCooldownTurns: 2
   remainingUses: 0
+  StickMult: 1.4
   Animation: 5
   Range: 1
-  Damage: 1
-  PostureDamage: 4
-  KnockbackForce: 4
-  SelfForce: 2
-  Delay: 0
+  Damage: 2.5
+  PostureDamage: 12
+  KnockbackForce: 1.4
+  SelfForce: 1.4
+  Delay: 0.2

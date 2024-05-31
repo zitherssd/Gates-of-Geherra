@@ -5453,9 +5453,9 @@ GameObject:
   - component: {fileID: 2098779824770817830}
   - component: {fileID: 2098779824770817831}
   - component: {fileID: 2098779824770817832}
-  - component: {fileID: 2098779824770817833}
   - component: {fileID: 3707727745461469949}
   - component: {fileID: 1207549373207025643}
+  - component: {fileID: 2587696508665963297}
   m_Layer: 0
   m_Name: Battler
   m_TagString: Untagged
@@ -5532,24 +5532,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
---- !u!114 &2098779824770817833
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2098779824770817834}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f5cfec32a53ab743a7d333f0d533c44, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Actor: {fileID: 11400000, guid: f37eb8c8a780f98419ee07350d193ef2, type: 2}
-  layer:
-    serializedVersion: 2
-    m_Bits: 0
-  originPointInUI: {fileID: 0}
-  selectionCircle: {fileID: 0}
 --- !u!82 &3707727745461469949
 AudioSource:
   m_ObjectHideFlags: 0
@@ -5663,6 +5645,20 @@ MonoBehaviour:
   velocityThreshold: 5
   startColor: {r: 0, g: 0, b: 0, a: 1}
   endColor: {r: 1, g: 0.036886618, b: 0, a: 1}
+--- !u!114 &2587696508665963297
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2098779824770817834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4915d9a2fbf625f4a80174075d70d1a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ActorData: {fileID: 11400000, guid: f37eb8c8a780f98419ee07350d193ef2, type: 2}
+  originPointInUI: {fileID: 0}
 --- !u!1 &2201109491587270952
 GameObject:
   m_ObjectHideFlags: 0

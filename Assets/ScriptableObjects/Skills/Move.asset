@@ -16,11 +16,13 @@ MonoBehaviour:
   Rarity: 0
   cooldownTurns: 0
   TotalUses: 0
-  remainingUses: 0
   BuildupCost: 0
   BuildupGain: 0
+  StaminaCost: 0
   Speed: 0
   Tags: 0d000000
-  SliderValue: 0
-  StickValue: {x: 0, y: 0}
+  SliderValue: 1
+  StickValue: {x: -0.10333333, y: -0.37}
   currentCooldownTurns: 0
+  remainingUses: 0
+  StickMult: 2

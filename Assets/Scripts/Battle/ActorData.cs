@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using Assets.Scripts.Battle;
+using Assets.Scripts.Utility;
 
 [CreateAssetMenu(fileName = "Actor", menuName = "ScriptableObjects/Actor", order = 1)]
 public class ActorData : ScriptableObject
@@ -57,6 +58,7 @@ public class ActorData : ScriptableObject
         var lastBar = hpBars.Where<HpBar>(item => item.alive).Last();
 
         //Deal damage
+        if (lastBar == null) return;
         lastBar.currentHp -= damage;
 
 
@@ -76,7 +78,7 @@ public class ActorData : ScriptableObject
     public void DealPostureDamage(float damage)
     {
         currentPosture -= damage;
-        Mathf.Clamp(currentPosture, 0, maxPosture);
+        currentPosture = Mathf.Clamp(currentPosture, 0, maxPosture);
     }
 
     public void DealStaminaDamage(float damage)
@@ -149,7 +151,7 @@ public class ActorData : ScriptableObject
         foreach (var skill in baseActions)
         {
             var clone = Instantiate(skill);
-            actions.Add(skill);
+            actions.Add(clone);
         }
         foreach (var reaction in baseReactions)
         {

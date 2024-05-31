@@ -1,6 +1,6 @@
 ﻿using Assets.Scripts.Actions;
+using Assets.Scripts.Battle;
 using Assets.Scripts.Battle.Actions;
-using Assets.Scripts.Battle.States;
 using Assets.Scripts.Utility;
 using System;
 using System.Collections;
@@ -13,9 +13,11 @@ namespace Assets
 
     public class BattleManager : MonoBehaviour
     {
+        public Action<uint> OnNewTurn;
         public static BattleManager instance = null;
         [SerializeField] public List<Actor> PlayerActors;
         [SerializeField] public List<Actor> EnemyActors;
+        public STATE state = STATE.READY;
 
         private Queue<Actor> turnQueue = new Queue<Actor>();
         private Actor activeBattler;
@@ -45,29 +47,51 @@ namespace Assets
                 {
                     StartCoroutine(WaitForSeconds(0.1f, () =>
                     {
-                        SetupBattle();
-                        SwitchToNextTurn();
+                        StartBattle();
                     }));
                 });
             }));
         }
 
-        void SetupBattle() //Turn 0 Setup
+        private void Update()
         {
-            //Assing the enemies. This is mostly done in the inspctor.
-            //Units are already spawned.
-            //chose dialogue
-            Debug.Log("Setting up battle...");
+            switch (state)
+            {
+                case STATE.READY:
+
+                    break;
+                case STATE.WAITING:
+                    if ((PlayerActors.Concat(EnemyActors).ToList().TrueForAll(x => x.ActorStateMachine.CurrentState == x.ActorStateMachine.idleState)))
+                    {
+                        state = STATE.READY;
+                    }
+                    break;
+            }
+        }
+
+
+        //Starts a battle with current PlayerActors and EnemyActors
+        void StartBattle()
+        {
             currentTurn = 0;
             uiManager.SetTurn(currentTurn);
             turnQueue.Clear();
-            List<Actor> allActors = new List<Actor>();
-            allActors.AddRange(PlayerActors); allActors.AddRange(EnemyActors);
-            allActors.OrderBy(x => x.ActorData.AGI);
+            foreach(var actor in PlayerActors.Concat(EnemyActors))
+            {
+                actor.ActorData.Reset();
+            }
+            EnqueAll();
+
+            //Launch
+            SwitchToNextTurn();
+        }
+
+        private void EnqueAll()
+        {
+            var allActors = PlayerActors.Concat(EnemyActors).ToList().OrderByDescending(x => x.ActorData.AGI);
 
             foreach (var actor in allActors)
             {
-                actor.ActorData.Reset();
                 turnQueue.Enqueue(actor);
             }
         }
@@ -78,13 +102,14 @@ namespace Assets
             {
                 EnemyActors[0].ActorData = enemy;
                 EnemyActors[0].ActorData.Reset();
+                EnemyActors[0].GetComponent<BarsHandler>().Reset();
                 EnemyActors[0].PlayAnimation("Idle");
                 PlayerActors[0].PlayAnimation("Idle");
                 PlayerActors[0].ActorData.Refresh();
                 currentTurn = 0;
                 SwitchToNextTurn();
             });
-          
+
             //PlayerActors[0].GetBaseActor().currentPosture = PlayerActors[0].GetBaseActor().basePosture;
 
             //uiManager = UIManager.GetInstance();
@@ -103,17 +128,6 @@ namespace Assets
             //}));
         }
 
-        private void SetActiveCharacterBattle(Actor battler)
-        {
-            if (activeBattler != null)
-            {
-                //HideCircle?
-            }
-
-            activeBattler = battler;
-            activeBattler.ShowSelectionCircle();
-        }
-
         private bool TestBattleOver()
         {
             if (PlayerActors.TrueForAll(actor => actor.ActorData.GetCurrentHP() == 0))
@@ -127,6 +141,7 @@ namespace Assets
             return false;
         }
 
+        //Legacy
         public Actor GetActiveActor()
         {
             return activeBattler;
@@ -137,23 +152,25 @@ namespace Assets
             yield return new WaitForSeconds(seconds);
             onFinishedWaiting();
         }
-        private void SwitchToNextActor()
+        
+        private void SwitchToNextActorInTurn()
         {
             if (TestBattleOver())
             {
                 End();
                 return;
             }
-            StartCoroutine(WaitForMovementCompletion(() =>
+
+            var nextActor = GetNextActorInTurn();
+            if (nextActor == null)
             {
-                var nextActor = GetNextActorInTurn();
-                if (nextActor == null) SwitchToNextTurn();
-                else
-                {
-                    SetActiveCharacterBattle(nextActor);
-                    nextActor.Act(SwitchToNextActor);
-                }
-            }));
+                ProcTurnChangeEffects();
+                SwitchToNextTurn();
+            }
+            else
+            {
+                nextActor.Act(SwitchToNextActorInTurn);
+            }
         }
         private void SwitchToNextTurn()
         {
@@ -164,36 +181,34 @@ namespace Assets
                 End();
                 return;
             }
+            
+            activeBattler = GetNextActorInTurn();
+            activeBattler.Act(SwitchToNextActorInTurn);
 
-            // Delay turn switch until actors no longer have the Midair state
-            StartCoroutine(WaitForMovementCompletion(() =>
-            {
-                ProcTurnChangeEffects();
-                activeBattler = GetNextActorInTurn();
-                SetActiveCharacterBattle(activeBattler);
-                activeBattler.Act(SwitchToNextActor);
-            }));
+            //// Delay turn switch until actors no longer have the Midair state
+            //StartCoroutine(WaitForMovementCompletion(() =>
+            //{
+            //    ProcTurnChangeEffects();
+            //    activeBattler = GetNextActorInTurn();
+            //    activeBattler.Act(SwitchToNextActorInTurn);
+            //}));
         }
         private void ProcTurnChangeEffects()
         {
             currentTurn++;
             uiManager.SetTurn(currentTurn);
-            turnQueue.Clear();
-            List<Actor> allActors = new List<Actor>();
-            allActors.AddRange(PlayerActors); allActors.AddRange(EnemyActors);
-            allActors = allActors.OrderByDescending(x => x.ActorData.AGI).ToList();
-
-            foreach (var actor in allActors)
+            //OnNewTurn.Invoke(currentTurn);
+            EnqueAll();
+            foreach(var actor in PlayerActors.Concat(EnemyActors))
             {
                 actor.ProcNextTurnEffects();
-                turnQueue.Enqueue(actor);
             }
         }
         private IEnumerator WaitForMovementCompletion(Action onMovementComplete)
         {
             var allActors = PlayerActors.Concat(EnemyActors);
 
-            while (allActors.Any(actor => actor.activeStates.OfType<Midair>().Any()))
+            while (!allActors.Any(actor => actor.ActorStateMachine.CurrentState == actor.ActorStateMachine.idleState))
             {
                 yield return null; // Wait for the next frame
             }
@@ -229,4 +244,6 @@ namespace Assets
             }
         }
     }
+
+    public enum STATE { READY, WAITING }
 }

@@ -1,99 +1,67 @@
 ﻿using Assets.Scripts.Actions;
 using Assets.Scripts.Battle.Actions;
-using Assets.Scripts.Battle.States;
-using Assets.Scripts.Utility;
+using Assets.Scripts.Battle.Components.Audio;
+using Assets.Scripts.Battle.Components.Effects;
+using Assets.Scripts.Battle.Components.State;
+using Assets.Scripts.Battle.Components.Status;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Events;
 
-namespace Assets
+namespace Assets.Scripts.Battle
 {
     public class Actor : MonoBehaviour
     {
+        //Data
         [SerializeField] public ActorData ActorData;
 
-        // Movement and Animation
-        private MoveState currentState;
-        private Vector3 slideTargetPosition;
-        private Action onMoveComplete;
+        //Components
+        public StateMachine ActorStateMachine;
+        public StatusManager statusManager; 
+        public new AudioManager audio;
+        public EffectManager effects;
+
+        //Events
+        public delegate float DamageValue(float damage);
+        public delegate float PostureValue(float damage);
+        public delegate float KnockbackValue(float force, Vector3 direction);
+
+        public event DamageValue DamageRecieved;
+        public event PostureValue PostureRecieved;
+        public event KnockbackValue KnockbackRecieved;
+
+        public event Action<float> DamageApplied;
+        public event Action<float> PostureApplied;
+        public event Action<float, Vector3> KnockbackApplied;
+
+        // UI
+        public OriginPointHandler originPointInUI;
+
+        // Private members
+        private bool collisionOccured;
+        private bool hitLastRound;
         private Action onAnimationHitComplete;
         private Action onAnimationEndComplete;
         private Action onReactionCheck;
         private Animator animator;
-        public new Rigidbody rigidbody;
-        private float lastSqrMag;
-        // Audio
-        private AudioSource audioSource;
-        // Collision
-        internal bool collisionOccured;
-        // Prefabs and Objects
-        private static GameObject damagePopupPrefab;
-        private static GameObject posturePopupPrefab;
-        public LayerMask layer;
-        // States and Actions
-        public List<BaseStatus> activeStates;
-        public event DamageModifier DamageDealt;
-        public delegate float DamageModifier(float damage);
-        public delegate float PostureModifier(float damage);
-        public delegate float KnockbackModifier(float force, Vector3 direction);
-        
-        public event PostureModifier PostureDamageDealt;
-        public event KnockbackModifier KnockbackDealt;
-        // UI
-        public OriginPointHandler originPointInUI;
-        public GameObject selectionCircle;
+        public new Rigidbody rigidbody { get; set; }
+
 
 
         private void Awake()
         {
-            audioSource = gameObject.GetComponent<AudioSource>();
             rigidbody = gameObject.GetComponent<Rigidbody>();
             animator = gameObject.GetComponent<Animator>();
-            selectionCircle = GameObject.FindGameObjectWithTag("SelectionCircle");
-            currentState = MoveState.Idle;
-            activeStates = new List<BaseStatus>();
-            if(damagePopupPrefab == null)
-                damagePopupPrefab = Resources.Load<GameObject>("HpPopup");
-            if (posturePopupPrefab == null)
-                posturePopupPrefab = Resources.Load<GameObject>("PosturePopup");
-            //var cc = GetComponentInChildren<ColorController>();
-            //cc.mainColor = baseActor.mainColor;
-            //cc.secondaryColor = baseActor.secondaryColor;
+
+
+
+            ActorStateMachine = new StateMachine(this);
+            audio = new AudioManager(this);
+            statusManager = new StatusManager(this);
+            effects = new EffectManager(this);
         }
-        private void FixedUpdate()
-        {
-            if (IsGrounded()) activeStates.RemoveAll(state => state is Midair);
-            switch (currentState)
-            {
-                case MoveState.Move:
-                    float moveSpeed = 2f;
-                    float minDistance = 0.1f; // Define a minimum distance threshold
-                    float sqrMag = (slideTargetPosition - transform.position).sqrMagnitude;
-
-                    if (sqrMag <= minDistance * minDistance || sqrMag > lastSqrMag)
-                    {
-                        // If already close to the target position or moving away, transition to Idle state
-                        currentState = MoveState.Idle;
-                        if (onMoveComplete != null)
-                        {
-                            onMoveComplete();
-                            onMoveComplete = null;
-                        }
-                    }
-                    else
-                    {
-                        rigidbody.velocity = (slideTargetPosition - transform.position).normalized * moveSpeed;
-                    }
-
-                    lastSqrMag = sqrMag;
-                    break;
-            }
-        }
-
-
         public void Act(Action onActorActionFinished) //Chose and perform an action
         {
             //if flying in midair do a check to 
@@ -105,13 +73,13 @@ namespace Assets
             if (isControllable())
             {
                 var AvaliableSkills = ActorData.actions;
-                Time.timeScale = 0f;
+                Time.timeScale = 0f; UIManager.GetInstance().ShowUI();
                 um.DrawActionsAndWaitForSelectionOrNull(AvaliableSkills, selectedSkill =>
                 {
                     if (selectedSkill == null)
                     {
-                        Time.timeScale = 1f;
-
+                        Time.timeScale = 1f; UIManager.GetInstance().HideUI();
+                        Debug.Log("Player skipped");
                         StartCoroutine(WaitForOneFrame(onActorActionFinished));
                     }
                     else
@@ -121,29 +89,43 @@ namespace Assets
                         //if (selectedSkill.Tags.Contains(TAG.USEKNOB))
                         //    selectedSkill.StickValue = InputManager.instance.StickValue;
 
-                        Time.timeScale = 1f;
+                        Time.timeScale = 1f; UIManager.GetInstance().HideUI();
+
                         UseAction(selectedSkill, () => { onActorActionFinished(); Debug.Log("Player finished turn, going back to battlemanager"); });
                     }
                 });
             }
             else
             {
-                onActorActionFinished();
-                return;
+
                 //Enemy AI here basically
                 var chosenSkill = ChooseValidSkillInRangeOrReturnNull();
                 if (chosenSkill == null)
                 {
                     Debug.Log("Enemy moving closer");
                     var movedirection = (bm.PlayerActors[0].transform.position - transform.position).normalized;
-                    MoveAction.instance.StickValue = new Vector2(movedirection.x, movedirection.z);
-                    UseAction(MoveAction.instance, onActorActionFinished);
+                    var moveSkill = ActorData.actions.OfType<MoveAction>().First();
+                    if (moveSkill)
+                    {
+                        moveSkill.StickValue = new Vector2(movedirection.x, movedirection.z);
+                        UseAction(moveSkill, onActorActionFinished);
+                        return;
+                    }
+                    else
+                    {
+                        onActorActionFinished.Invoke();
+                    }
+                    //UseAction(MoveAction.instance, () => { Debug.Log("Enemy finished moving, back to bm"); onActorActionFinished(); });
                 }
                 else
                 {
                     chosenSkill.SliderValue = 1f;
-                    chosenSkill.StickValue = Vector2.zero;
-                    UseAction(chosenSkill, () => { onActorActionFinished(); Debug.Log("Enemy finished turn, going back to bm"); });
+                    var direction = (bm.PlayerActors[0].transform.position - transform.position).normalized;
+                    var directionleft = Vector3.Cross(Vector3.up, direction).normalized;
+                    directionleft = directionleft * UnityEngine.Random.Range(-0.3f, 0.3f);
+                    var dirleftvector = new Vector3(directionleft.x, directionleft.z);
+                    chosenSkill.StickValue = new Vector3(direction.x, direction.z) + dirleftvector;
+                    UseAction(chosenSkill, () => { Debug.Log("Enemy finished turn, going back to bm"); onActorActionFinished(); });
                 }
 
             }
@@ -163,6 +145,10 @@ namespace Assets
             UIManager.GetInstance().SetTextThenFade($"{ActorData.Name} uses {action.Name}!", 0.5f);
 
             action.Perform(this, () => { UIManager.GetInstance().KillActionAboveHead(this); onSkillComplete(); });
+        }
+        public void Update()
+        {
+            ActorStateMachine.Update();
         }
 
 
@@ -197,30 +183,31 @@ namespace Assets
         public void ApplyPosture(float originalPostureDamage)
         {
             float postMitigationDamage = originalPostureDamage;
-            if (PostureDamageDealt != null)
+            if (PostureRecieved != null)
             {
-                postMitigationDamage = PostureDamageDealt(originalPostureDamage);
+                postMitigationDamage = PostureRecieved(originalPostureDamage);
             }
 
+            PostureApplied.Invoke(postMitigationDamage);
             ActorData.DealPostureDamage(postMitigationDamage);
-            ShowPosturePopup(postMitigationDamage);
 
-            if (ActorData.currentPosture <= ActorData.maxPosture / 2 && !activeStates.Any(state => state is Stagger))
+            if (ActorData.currentPosture <= ActorData.maxPosture / 2)
             {
-                var stagger = new Stagger(this);
-                activeStates.Add(stagger);
+                ActorStateMachine.TransitionTo(ActorStateMachine.staggerState);
             }
         }
         public void ApplyDamage(float originalDamage)
         {
             float postMitgationDamage = originalDamage;
-            if (DamageDealt != null)
+            if (DamageRecieved != null)
             {
-                postMitgationDamage = DamageDealt(originalDamage);
+                postMitgationDamage = DamageRecieved(originalDamage);
             }
+
+            DamageApplied?.Invoke(postMitgationDamage);
             ActorData.DealDamage(postMitgationDamage);
-            ShowDamagePopup(postMitgationDamage);
-            PlayAudio("Blow1");
+
+            hitLastRound = true;
         }
         public void ApplyKnockback(Vector3 direction, float force)
         {
@@ -231,15 +218,16 @@ namespace Assets
                 Debug.Log("preMitigationForce is " + postMitigationForce);
                 Debug.Log("preMitigationDirection is " + direction);
 
-                if (KnockbackDealt != null)
+                if (KnockbackRecieved != null)
                 {
-                    postMitigationForce = KnockbackDealt(force, direction);
+                    postMitigationForce = KnockbackRecieved(force, direction);
                 }
 
                 Debug.Log("postMitigationForce is " + postMitigationForce);
                 Debug.Log("postMitigationDirection is " + direction);
 
                 rigidbody.AddForce(direction * 100 * postMitigationForce);
+                KnockbackApplied?.Invoke(100 * postMitigationForce, direction);
 
 
                 //this.MoveToPosition(transform.position + direction.normalized * force, MoveState.Sliding, () => { animator.Play("Idle"); onKnockbackFinished(); });
@@ -251,33 +239,11 @@ namespace Assets
 
         public void Move(Vector3 direction, Action onMoveComplete)
         {
-            PlayAudio("Move2");
+            var TargetPosition = transform.position + (direction * ActorData.AGI);
 
-            this.slideTargetPosition = transform.position + (direction * ActorData.AGI);
-            this.onMoveComplete = onMoveComplete;
-            this.currentState = MoveState.Move;
-            lastSqrMag = Mathf.Infinity;
+            ActorStateMachine.TransitionTo(new MoveState(this, TargetPosition, onMoveComplete));
         }
-        public void MoveToPosition(Vector3 TargetPosition, MoveState state, Action onMoveComplete)
-        {
-            if (state == MoveState.Sliding)
-                rigidbody.velocity = (TargetPosition - transform.position);
 
-            lastSqrMag = Mathf.Infinity;
-            this.slideTargetPosition = TargetPosition;
-            this.onMoveComplete = onMoveComplete;
-            this.currentState = state;
-        }
-        public void MoveRelativeToCamera(Vector2 direction, Action onMoveComplete)
-        {
-            var camera = Camera.main;
-            var forward = camera.transform.forward; forward.y = 0;
-            var right = camera.transform.right; right.y = 0;
-            forward.Normalize(); right.Normalize();
-
-            var desiredMoveDirection = forward * direction.y + right * direction.x;
-            Move(desiredMoveDirection, onMoveComplete);
-        }
 
 
         public void PlayAnimation(string AnimationName, Action onAnimationHit, Action onReactionCheck, Action onAnimationEnd)
@@ -297,7 +263,6 @@ namespace Assets
         {
             animator.Play(AnimationName, -1, 0);
         }
-
         public void KillAnimationEndEvent()
         {
             this.onAnimationEndComplete = null;
@@ -306,6 +271,18 @@ namespace Assets
 
         public void ProcNextTurnEffects()
         {
+            if (ActorData.currentPosture <= ActorData.maxPosture / 2)
+            {
+                ActorData.currentPosture = ActorData.maxPosture;
+                hitLastRound = false;
+            }
+            else
+            {
+                if (hitLastRound)
+                    hitLastRound = false;
+                else
+                    ApplyPosture(-5f);
+            }
             collisionOccured = false;
             switch (ActorData.currentStamina / ActorData.maxStamina)
             {
@@ -318,7 +295,7 @@ namespace Assets
                     break;
 
                 case float n when (n >= 0.66 && n <= 1):
-                    ActorData.DealStaminaDamage(-7.5f);
+                    ActorData.DealStaminaDamage(-3f);
                     break;
             }
 
@@ -332,10 +309,10 @@ namespace Assets
                 reaction.UpdateCooldown();
             }
 
-            if (activeStates.OfType<Stagger>().Any())
+            if (ActorStateMachine.CurrentState == ActorStateMachine.staggerState)
             {
                 Debug.Log("Remove Stagger - Set Posture to max");
-                activeStates.OfType<Stagger>().First().Remove();
+                ActorStateMachine.TransitionTo(ActorStateMachine.idleState);
                 ActorData.currentPosture = ActorData.maxPosture;
                 PlayAnimation("Idle");
             }
@@ -350,7 +327,7 @@ namespace Assets
         //Do not touch
         public void AnimationHit()
         {
-            if(onAnimationHitComplete != null)
+            if (onAnimationHitComplete != null)
             {
                 onAnimationHitComplete();
                 onAnimationHitComplete = null;
@@ -369,16 +346,7 @@ namespace Assets
             onReactionCheck();
             onReactionCheck = null;
         }
-        public void PlayAudio(string clipName)
-        {
-            var clip = SoundManager.instance.GetAudioClipByName(clipName);
-            audioSource.clip = clip;
-            audioSource.Play();
-        }
-        public void ShowSelectionCircle()
-        {
-            selectionCircle.GetComponent<SelectionCircle>().target = this.transform;
-        }
+
         public System.Collections.IEnumerator WaitForOneFrame(Action action)
         {
             // This will wait for one frame
@@ -405,7 +373,7 @@ namespace Assets
                 {
                     // Calculate mirrored velocity (mirror along current velocity)
                     Vector3 mirroredVelocity = Vector3.Reflect(rigidbody.velocity, collision.GetContact(0).normal);
-                    var r = collision.relativeVelocity - 2 * Vector3.Dot(rigidbody.velocity,collision.GetContact(0).normal) * collision.contacts[0].normal;
+                    var r = collision.relativeVelocity - 2 * Vector3.Dot(rigidbody.velocity, collision.GetContact(0).normal) * collision.contacts[0].normal;
 
 
                     // Replace current velocity with the mirrored velocity
@@ -423,47 +391,21 @@ namespace Assets
             yield return new WaitForSecondsRealtime(duration);
             Time.timeScale = 1f; // Restore the original time scale
         }
-        private void ShowDamagePopup(float damageAmount)
-        {
-            // Instantiate the damage popup prefab
-            GameObject popup = Instantiate(damagePopupPrefab, transform.position, Quaternion.identity);
-
-            popup.GetComponentInChildren<DamagePopup>().Initialize(damageAmount);
-
-        }
-        private void ShowPosturePopup(float damageAmount)
-        {
-            // Instantiate the damage popup prefab
-            GameObject popup = Instantiate(posturePopupPrefab, transform.position, Quaternion.identity);
-
-            // Set the damage amount text
-            popup.GetComponentInChildren<DamagePopup>().Initialize(damageAmount);
-
-        }
         private bool IsGrounded()
         {
             // Perform a raycast from the object's position downward
-            Ray ray = new Ray(transform.position, Vector3.down);
+            Ray ray = new Ray(transform.position + Vector3.up * 0.01f, Vector3.down);
 
             // Check if the ray hits something within the specified distance
-            if (Physics.Raycast(ray, 0.01f))
+            if (Physics.Raycast(ray, 0.02f))
             {
                 return true; // The object is grounded
+                Debug.Log(ActorData.Name + " GROUNDED");
             }
-
+            Debug.Log(ActorData.Name + " NOT GROUNDED");
             return false; // The object is not grounded
         }
-    }
 
-    public enum MoveState
-    {
-        Idle,
-        Midair,
-        Knockback,
-        Sliding,
-        Move,
-        Busy,
-        Slerp,
+        public bool grounded { get { return IsGrounded(); } private set { } }
     }
-
 }

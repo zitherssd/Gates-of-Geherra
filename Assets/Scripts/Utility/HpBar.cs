@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-namespace Assets.Scripts.Battle
+namespace Assets.Scripts.Utility
 {
     [CreateAssetMenu(fileName = "HpBar", menuName = "ScriptableObjects/HpBar", order = 2)]
     public class HpBar : ScriptableObject

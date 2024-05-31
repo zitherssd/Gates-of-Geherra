@@ -47,7 +47,7 @@ namespace Assets
             var rightobpoint = camera.WorldToScreenPoint(rightObj.position);
             if(leftobjpoint.x > rightobpoint.x)
             {
-                Switch();
+               //Switch();
             }
 
             var distvector = (rightObj.position + leftObj.position) / 2; //start point

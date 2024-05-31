@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.Battle;
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -39,56 +40,29 @@ namespace Assets
         }
 
 
-        public void WaitForTurn(Action onTurnEnd)
-        {
-            InputHandler.instance.enabled = false;
-            InputHandler.instance.enabled = true;
-
-            //InputHandler.instance.OnSwipe += MoveActor;
-            //InputHandler.instance.OnHold += EndTurn;
-
-            this.onTurnEnd = onTurnEnd;
-            var skillsToDraw = battleManager.GetActiveActor().GetValidContinueComboSkills();
-            if (skillsToDraw.Count > 0)
-                Time.timeScale = 0f;
-
-            UIManager.GetInstance().DrawActionsAndWaitForSelectionOrNull(skillsToDraw, selectedSkill =>    //one shot option for the skill
-            {
-                InputHandler.instance.OnSwipe -= MoveActor;
-                InputHandler.instance.OnHold -= EndTurn;
-
-                if (selectedSkill == null)
-                {
-                    Time.timeScale = 1f;
-                    onTurnEnd();
-                }
-                else
-                    battleManager.GetActiveActor().UseAction(selectedSkill, onTurnEnd);
-            });
-        }
         private void MoveActor(Vector2 delta)
         {
             InputHandler.instance.OnSwipe -= MoveActor;
             InputHandler.instance.OnHold -= EndTurn;
             ButtonHandler.KillAll();
 
-            battleManager.GetActiveActor().MoveRelativeToCamera(delta.normalized, () =>
-            {
-                //InputHandler.instance.OnHold += EndTurn;
+            //battleManager.GetActiveActor().MoveRelativeToCamera(delta.normalized, () =>
+            //{
+            //    //InputHandler.instance.OnHold += EndTurn;
 
-                if  (battleManager.GetActiveActor().GetValidStartComboSkills().Count == 0) { EndTurn(Vector2.zero); return; }; //Automatically end turn if no valid skills
+            //    if  (battleManager.GetActiveActor().GetValidStartComboSkills().Count == 0) { EndTurn(Vector2.zero); return; }; //Automatically end turn if no valid skills
 
-                var skillsToDraw = battleManager.GetActiveActor().GetValidStartComboSkills();
-                UIManager.GetInstance().DrawActionsAndWaitForSelectionOrNull(skillsToDraw, selectedSkill =>    //one shot option for the skill
-                {
-                    InputHandler.instance.OnHold -= EndTurn;
+            //    var skillsToDraw = battleManager.GetActiveActor().GetValidStartComboSkills();
+            //    UIManager.GetInstance().DrawActionsAndWaitForSelectionOrNull(skillsToDraw, selectedSkill =>    //one shot option for the skill
+            //    {
+            //        InputHandler.instance.OnHold -= EndTurn;
 
-                    if (selectedSkill == null)
-                        onTurnEnd();
-                    else
-                        battleManager.GetActiveActor().UseAction(selectedSkill, onTurnEnd);
-                });
-            });
+            //        if (selectedSkill == null)
+            //            onTurnEnd();
+            //        else
+            //            battleManager.GetActiveActor().UseAction(selectedSkill, onTurnEnd);
+            //    });
+            //});
         }
         private void EndTurn(Vector2 delta)
         {
@@ -98,22 +72,9 @@ namespace Assets
         }
 
 
-        public void WaitForSwipe(Action<Vector2> onSwipeGot)
-        {
-            Time.timeScale = 0f;
-            UIManager.GetInstance().ChangeStatus("SWIPE TO CHOOSE DIRECTION");
-            this.onSwipeGot = onSwipeGot;
-            InputHandler.instance.OnSwipe += OnSwipeRecieved;
-        }
-        private void OnSwipeRecieved(Vector2 direction)
-        {
-            UIManager.GetInstance().ChangeStatus(string.Empty);
-            InputHandler.instance.OnSwipe -= OnSwipeRecieved;
-            Time.timeScale = 1f;
-            onSwipeGot?.Invoke(direction);
-        }
 
 
+        //Rework this
         public void WaitForTargetActor(Action<Actor> onTargetSelected)
         {
             UIManager.GetInstance().ChangeStatus("SELECT TARGET");

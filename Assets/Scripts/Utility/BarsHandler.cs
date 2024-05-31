@@ -1,5 +1,7 @@
 using Assets;
-using Assets.Scripts.Battle.States;
+using Assets.Scripts.Battle;
+using Assets.Scripts.Battle.Components.State;
+using Assets.Scripts.Battle.Components.Status;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -34,6 +36,7 @@ public class BarsHandler : MonoBehaviour
     {
         actor = gameObject.GetComponentInParent<Actor>();
         actorData = actor.ActorData;
+        actor.ActorStateMachine.stateChanged += OnStateChanged;
         lastStamina = actor.ActorData.currentStamina;
         staminaBar.value = lastStamina;
         staminaBarEase.value = lastStamina;
@@ -41,6 +44,15 @@ public class BarsHandler : MonoBehaviour
         {
             var bar = Instantiate(hpBarPrefab, hpBarsContainer);
             bar.GetComponent<HpBarHandler>().bar = hpBar;
+        }
+    }
+
+    private void OnStateChanged(IState state)
+    {
+        if (statesText != null)
+        {
+            var name = state.GetType().Name;
+            statesText.text = name;
         }
     }
 
@@ -69,6 +81,11 @@ public class BarsHandler : MonoBehaviour
         //lerp ease
         //wait a bit
         //dissapear
+    }
+
+    internal void Reset()
+    {
+        actorData = actor.ActorData;
     }
 
     void HealStamina()
@@ -115,7 +132,6 @@ public class BarsHandler : MonoBehaviour
 
 
 
-        statesText.text = WriteStatusTypes(actor.activeStates);
         //if (buildupBar.value != 0)
         //    buildupBarText.text = $"{ actorData.currentBuildup}/{actorData.maxBuildup}";
         //else
