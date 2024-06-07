@@ -18,7 +18,7 @@ namespace Assets.Scripts.Battle.Components.State
         {
             //Get closest opponent
             //var opponent = actor.isControllable() ? BattleManager.instance.EnemyActors[0] : BattleManager.instance.PlayerActors[0];
-
+            actor.PlayAnimation("Idle");
         }
 
         public void Exit()
@@ -26,9 +26,14 @@ namespace Assets.Scripts.Battle.Components.State
 
         }
 
+        public void OnCollisionEnter(Collision collision)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public void Update()
         {
-            if (!actor.grounded) actor.ActorStateMachine.TransitionTo(actor.ActorStateMachine.airStaggerState);
+            if (!actor.grounded) actor.state.TransitionTo(actor.state.airNeutralState);
         }
     }
 }

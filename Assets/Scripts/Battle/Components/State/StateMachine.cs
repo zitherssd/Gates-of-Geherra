@@ -15,14 +15,24 @@ namespace Assets.Scripts.Battle.Components.State
         public IdleState idleState;
         public StaggerState staggerState;
         public AirStaggerState airStaggerState;
+        public AirNeutralState airNeutralState;
+        public LandingState landingState;
         public ActingState actingState;
+        public RollState rollState;
+        public BlockState blockState;
+        public MoveState moveState;
 
-        public StateMachine(Battle.Actor actor)
+        public StateMachine(Actor actor)
         {
             this.idleState = new IdleState(actor);
             this.staggerState = new StaggerState(actor);
             this.airStaggerState = new AirStaggerState(actor);
+            this.landingState = new LandingState(actor);
+            this.airNeutralState = new AirNeutralState(actor);
             this.actingState = new ActingState(actor);
+            this.rollState = new RollState(actor);
+            this.blockState = new BlockState(actor);
+            this.moveState = new MoveState(actor);
             Initialize(idleState);
         }
 
@@ -48,6 +58,12 @@ namespace Assets.Scripts.Battle.Components.State
         {
             if (CurrentState != null)
                 CurrentState.Update();
+        }
+
+        internal void OnCollisionEnter(Collision collision)
+        {
+            if (CurrentState != null)
+                CurrentState.OnCollisionEnter(collision);
         }
     }
 }

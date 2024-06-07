@@ -1,20 +1,19 @@
-﻿using System.Collections;
+﻿using UnityEditor;
 using UnityEngine;
 
-namespace Assets.Scripts.Battle.Components.State
+namespace Assets.Scripts.Battle.Components.State.States
 {
-    public class AirStaggerState : IState
+    public class LandingState : IState
     {
-        private Battle.Actor actor;
+        private Actor actor;
 
-        public AirStaggerState(Battle.Actor actor)
+        public LandingState(Actor actor)
         {
             this.actor = actor;
         }
-
         public void Enter()
         {
-            actor.PlayAnimation("HurtAir");
+            actor.PlayAnimation("Landing");
         }
 
         public void Exit()
@@ -28,13 +27,8 @@ namespace Assets.Scripts.Battle.Components.State
 
         public void Update()
         {
-            if (actor.grounded)
-            {
-                actor.PlayAnimation("Down");
+            if (actor.rigidbody.velocity.sqrMagnitude < Mathf.Epsilon)
                 actor.state.TransitionTo(actor.state.idleState);
-            }
-
-            //transition to landing > idle
         }
     }
 }

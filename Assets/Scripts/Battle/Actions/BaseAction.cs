@@ -38,14 +38,14 @@ namespace Assets
             casterActor.ActorData.ChangeBuildup(BuildupGain);
             casterActor.ActorData.ChangeBuildup(-BuildupCost);
 
-            casterActor.ActorStateMachine.TransitionTo(casterActor.ActorStateMachine.actingState);
+            casterActor.state.TransitionTo(casterActor.state.actingState);
 
             if (Tags.Contains(TAG.REPEAT_TURN))
             {
-                PerformSpecific(casterActor, () => { casterActor.Act(onPerformEnd); });
+                PerformSpecific(casterActor, () => { casterActor.Act(() => { casterActor.state.TransitionTo(casterActor.state.idleState); onPerformEnd.Invoke(); }); });
             }
             else
-                PerformSpecific(casterActor, onPerformEnd); 
+                PerformSpecific(casterActor, () => { casterActor.state.TransitionTo(casterActor.state.idleState); onPerformEnd.Invoke(); }); 
         }
 
         protected virtual void PerformSpecific(Actor casterActor, Action onPerformEnd) { }

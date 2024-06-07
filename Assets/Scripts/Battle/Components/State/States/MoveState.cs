@@ -7,7 +7,7 @@ namespace Assets.Scripts.Battle.Components.State
     public class MoveState : IState
     {
         private Battle.Actor actor;
-        private Vector3 targetPosition;
+        private Vector3 destination;
         private Action onMoveComplete;
         private float sqrMag;
         private float lastSqrMag;
@@ -15,11 +15,16 @@ namespace Assets.Scripts.Battle.Components.State
         private float moveSpeed = 2f;
 
 
-        public MoveState(Battle.Actor actor, Vector3 targetPosition, Action onMoveComplete)
+        public MoveState(Actor actor)
         {
             this.actor = actor;
-            this.targetPosition = targetPosition;
+        }
+
+        public MoveState Set(Vector3 destination, Action onMoveComplete)
+        {
+            this.destination = destination;
             this.onMoveComplete = onMoveComplete;
+            return this;
         }
 
         public void Enter()
@@ -35,17 +40,22 @@ namespace Assets.Scripts.Battle.Components.State
             onMoveComplete();
         }
 
+        public void OnCollisionEnter(Collision collision)
+        {
+            actor.state.TransitionTo(actor.state.idleState);
+        }
+
         public void Update()
         {
-            sqrMag = (targetPosition - actor.transform.position).sqrMagnitude;
+            sqrMag = (destination - actor.transform.position).sqrMagnitude;
 
             if (sqrMag <= minDistance * minDistance || sqrMag > lastSqrMag)
             {
-                actor.ActorStateMachine.TransitionTo(actor.ActorStateMachine.idleState);
+                actor.state.TransitionTo(actor.state.idleState);
             }
             else
             {
-                actor.rigidbody.velocity = (targetPosition - actor.transform.position).normalized * moveSpeed;
+                actor.rigidbody.velocity = (destination - actor.transform.position).normalized * moveSpeed;
             }
             lastSqrMag = sqrMag;
         }

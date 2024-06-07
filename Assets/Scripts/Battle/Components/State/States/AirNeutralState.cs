@@ -1,20 +1,18 @@
-﻿using System.Collections;
-using UnityEngine;
-
-namespace Assets.Scripts.Battle.Components.State
+﻿using UnityEngine;
+namespace Assets.Scripts.Battle.Components.State.States
 {
-    public class AirStaggerState : IState
+    public class AirNeutralState : IState
     {
-        private Battle.Actor actor;
+        private Actor actor;
 
-        public AirStaggerState(Battle.Actor actor)
+        public AirNeutralState(Actor actor)
         {
             this.actor = actor;
         }
 
         public void Enter()
         {
-            actor.PlayAnimation("HurtAir");
+            actor.PlayAnimation("NeutralAir");
         }
 
         public void Exit()
@@ -30,7 +28,14 @@ namespace Assets.Scripts.Battle.Components.State
         {
             if (actor.grounded)
             {
-                actor.PlayAnimation("Down");
+                if(Mathf.Abs(actor.rigidbody.velocity.x) > 0.05f)
+                {
+                    actor.state.TransitionTo(actor.state.landingState);
+                }
+                else
+                {
+
+                }
                 actor.state.TransitionTo(actor.state.idleState);
             }
 

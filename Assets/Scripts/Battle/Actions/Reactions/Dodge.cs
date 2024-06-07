@@ -1,6 +1,5 @@
 ﻿using Assets.Scripts.Actions;
 using System;
-using System.Collections;
 using UnityEngine;
 
 namespace Assets.Scripts.Battle.Actions.Reactions
@@ -9,28 +8,53 @@ namespace Assets.Scripts.Battle.Actions.Reactions
 
     public class Dodge : BaseReaction
     {
-        [Range(0,10)]
+        [Range(0, 10)]
         public float force;
+        public float time;
         public ANIMATION Animation;
+        public TYPE Type;
+        private LTDescr moveTween;
+        private Actor actor;
 
         protected override void PerformSpecific(Actor actor, Action onReactionComplete)
         {
+            this.actor = actor;
             actor.KillAnimationEndEvent();
-            if(actor.isControllable())
+            if (actor.isControllable())
             {
                 var desiredMoveDirection = GetRelativeToCamera(StickValue);
                 actor.PlayAnimation(Animation.ToString());
-                actor.GetComponent<Rigidbody>().AddForce(desiredMoveDirection.normalized * 100 * force);
+                if (Type == TYPE.Normal)
+                {
+                    actor.GetComponent<Rigidbody>().AddForce(desiredMoveDirection.normalized * 100 * force);
+                }
+                else if (Type == TYPE.Fast)
+                {
+                    moveTween = LeanTween.move(actor.gameObject, actor.transform.position + desiredMoveDirection.normalized * force, time).setEaseOutExpo().setOnUpdate(OnTweenUpdate).setOnComplete(() => TransitionToIdle(actor));
+                }
             }
             else
             {
-                var aux = new Vector2(0, 1f);
-                if ((int)UnityEngine.Random.Range(0, 2) == 0)
-                    aux.y = -aux.y;
+                var sign = 0;
+                if ((int)UnityEngine.Random.Range(0, 2) == 0) { sign = -1; } else { sign = 1; };
 
-                var desiredMoveDIrection = GetRelativeToCamera(StickValue);
+                var aux = new Vector2(0, sign);
+                var desiredMoveDirection = GetRelativeToCamera(aux);
                 actor.PlayAnimation(Animation.ToString());
+                if (Type == TYPE.Normal)
+                {
+                    actor.GetComponent<Rigidbody>().AddForce(desiredMoveDirection.normalized * 100 * force);
+                }
+                else if (Type == TYPE.Fast)
+                {
+                    moveTween = LeanTween.move(actor.gameObject, actor.transform.position + desiredMoveDirection.normalized * force, time).setEaseOutExpo().setOnUpdate(OnTweenUpdate).setOnComplete(() => TransitionToIdle(actor));
+                }
             }
+        }
+
+        private void TransitionToIdle(Actor actor)
+        {
+            actor.state.TransitionTo(actor.state.idleState);
         }
 
         private Vector3 GetRelativeToCamera(Vector2 direction)
@@ -44,7 +68,17 @@ namespace Assets.Scripts.Battle.Actions.Reactions
             return desiredMoveDirection;
         }
 
-        public enum ANIMATION { Step, Roll }
-
+        private void OnTweenUpdate(float tweenValue)
+        {
+            if (actor.rigidbody.velocity.magnitude > 0.01f)
+            {
+                LeanTween.cancel(moveTween.uniqueId);
+                Debug.Log("Tween cancelled because the actor's velocity magnitude is greater than 0.1f.");
+            }
+        }
     }
+
+    public enum ANIMATION { Step, Roll }
+    public enum TYPE { Normal, Fast }
+
 }

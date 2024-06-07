@@ -8,6 +8,7 @@ namespace Assets.Scripts.Battle.Components.State
     {
         private Battle.Actor actor;
         private float idleTimer = 0f;
+        private bool collisionOccured;
 
         public StaggerState(Battle.Actor actor)
         {
@@ -16,6 +17,7 @@ namespace Assets.Scripts.Battle.Components.State
 
         public void Enter()
         {
+            Physics.IgnoreLayerCollision(3, 3, true);
             actor.KnockbackRecieved += ModifyKnockback;
             actor.DamageApplied += ChangeSpriteToDamaged;
             actor.PlayAnimation("PostureBroken");
@@ -34,6 +36,7 @@ namespace Assets.Scripts.Battle.Components.State
 
         public void Exit()
         {
+            Physics.IgnoreLayerCollision(3, 3, false);
             actor.KnockbackRecieved -= ModifyKnockback;
             actor.DamageApplied -= ChangeSpriteToDamaged;
         }
@@ -41,7 +44,7 @@ namespace Assets.Scripts.Battle.Components.State
         public void Update()
         {
             if (!actor.grounded)
-                actor.ActorStateMachine.TransitionTo(actor.ActorStateMachine.airStaggerState);
+                actor.state.TransitionTo(actor.state.airStaggerState);
             if (actor.rigidbody.velocity.magnitude > Mathf.Epsilon)
             {
                 idleTimer = 0f;
@@ -52,9 +55,39 @@ namespace Assets.Scripts.Battle.Components.State
                 idleTimer += Time.deltaTime;
 
                 // Transition to idleState if the idle timer exceeds 1 second
-                if (idleTimer > 1f)
+                if (idleTimer > 0.33f)
                 {
-                    actor.ActorStateMachine.TransitionTo(actor.ActorStateMachine.idleState);
+                    actor.state.TransitionTo(actor.state.idleState);
+                }
+            }
+        }
+
+        public void OnCollisionEnter(Collision collision)
+        {
+            if (collision.gameObject.CompareTag("Level"))
+            {
+                Debug.Log($"Velocity on collision is {actor.rigidbody.velocity.magnitude}");
+
+                if(collision.gameObject.name == "Trap")
+                {
+                    actor.ApplyDamage(10f);
+                    actor.ApplyPosture(5f);
+                }
+                else
+                {
+                    actor.ApplyPosture(5f);
+                }
+                collisionOccured = true;
+
+                // Check if velocity magnitude is greater than the threshold
+                if (collision.relativeVelocity.magnitude > 0.1f)
+                {
+                    // Calculate mirrored velocity (mirror along current velocity)
+                    Vector3 mirroredVelocity = Vector3.Reflect(actor.rigidbody.velocity, collision.GetContact(0).normal);
+                    var r = collision.relativeVelocity - 2 * Vector3.Dot(actor.rigidbody.velocity, collision.GetContact(0).normal) * collision.contacts[0].normal;
+
+                    // Replace current velocity with the mirrored velocity
+                    actor.rigidbody.velocity = r;
                 }
             }
         }

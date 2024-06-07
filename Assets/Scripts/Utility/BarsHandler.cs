@@ -36,7 +36,7 @@ public class BarsHandler : MonoBehaviour
     {
         actor = gameObject.GetComponentInParent<Actor>();
         actorData = actor.ActorData;
-        actor.ActorStateMachine.stateChanged += OnStateChanged;
+        actor.state.stateChanged += OnStateChanged;
         lastStamina = actor.ActorData.currentStamina;
         staminaBar.value = lastStamina;
         staminaBarEase.value = lastStamina;

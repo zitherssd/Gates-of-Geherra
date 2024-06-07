@@ -9,23 +9,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ab9538cf5b653e48aa37b2dea64c00c, type: 3}
-  m_Name: Eat it
+  m_Script: {fileID: 11500000, guid: 94ee0db516bd2344ebc0a36825941aa7, type: 3}
+  m_Name: Boxer Dodge
   m_EditorClassIdentifier: 
-  Name: Resist
-  Rarity: 0
-  cooldownTurns: 4
-  TotalUses: 2
+  Name: Quickstep
+  Rarity: 2
+  cooldownTurns: 0
+  TotalUses: 0
   BuildupCost: 0
-  BuildupGain: 0
-  StaminaCost: 5
+  BuildupGain: 2
+  StaminaCost: 10
   Speed: 0
-  Tags: 0e000000
+  Tags: 0d00000010000000
   SliderValue: 0
   StickValue: {x: 0, y: 0}
   currentCooldownTurns: 0
   remainingUses: 0
-  StickMult: 1
-  DamageModifier: 1
-  PostureModifier: 1.2
-  KnockbackModifier: 1.7
+  StickMult: 0.7
+  force: 0.7
+  time: 0.7
+  Animation: 0
+  Type: 1

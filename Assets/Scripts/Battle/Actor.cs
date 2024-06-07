@@ -18,7 +18,7 @@ namespace Assets.Scripts.Battle
         [SerializeField] public ActorData ActorData;
 
         //Components
-        public StateMachine ActorStateMachine;
+        public StateMachine state;
         public StatusManager statusManager; 
         public new AudioManager audio;
         public EffectManager effects;
@@ -40,7 +40,6 @@ namespace Assets.Scripts.Battle
         public OriginPointHandler originPointInUI;
 
         // Private members
-        private bool collisionOccured;
         private bool hitLastRound;
         private Action onAnimationHitComplete;
         private Action onAnimationEndComplete;
@@ -57,7 +56,7 @@ namespace Assets.Scripts.Battle
 
 
 
-            ActorStateMachine = new StateMachine(this);
+            state = new StateMachine(this);
             audio = new AudioManager(this);
             statusManager = new StatusManager(this);
             effects = new EffectManager(this);
@@ -148,7 +147,7 @@ namespace Assets.Scripts.Battle
         }
         public void Update()
         {
-            ActorStateMachine.Update();
+            state.Update();
         }
 
 
@@ -191,10 +190,19 @@ namespace Assets.Scripts.Battle
             PostureApplied.Invoke(postMitigationDamage);
             ActorData.DealPostureDamage(postMitigationDamage);
 
-            if (ActorData.currentPosture <= ActorData.maxPosture / 2)
+            if(state.CurrentState != state.staggerState)
             {
-                ActorStateMachine.TransitionTo(ActorStateMachine.staggerState);
+                if (ActorData.currentPosture <= ActorData.maxPosture / 2)
+                {
+                    state.TransitionTo(state.staggerState);
+                }
             }
+            else
+            {
+                //al;ready stagger state
+
+            }
+            
         }
         public void ApplyDamage(float originalDamage)
         {
@@ -241,13 +249,14 @@ namespace Assets.Scripts.Battle
         {
             var TargetPosition = transform.position + (direction * ActorData.AGI);
 
-            ActorStateMachine.TransitionTo(new MoveState(this, TargetPosition, onMoveComplete));
+            //state.TransitionTo(new MoveState(this, TargetPosition, onMoveComplete));
         }
 
 
 
         public void PlayAnimation(string AnimationName, Action onAnimationHit, Action onReactionCheck, Action onAnimationEnd)
-        {
+        { 
+             
             animator.Play(AnimationName, -1, 0);
             this.onReactionCheck = onReactionCheck;
             this.onAnimationHitComplete = onAnimationHit;
@@ -283,7 +292,6 @@ namespace Assets.Scripts.Battle
                 else
                     ApplyPosture(-5f);
             }
-            collisionOccured = false;
             switch (ActorData.currentStamina / ActorData.maxStamina)
             {
                 case float n when (n >= 0 && n < 0.33f):
@@ -309,10 +317,10 @@ namespace Assets.Scripts.Battle
                 reaction.UpdateCooldown();
             }
 
-            if (ActorStateMachine.CurrentState == ActorStateMachine.staggerState)
+            if (state.CurrentState == state.staggerState)
             {
                 Debug.Log("Remove Stagger - Set Posture to max");
-                ActorStateMachine.TransitionTo(ActorStateMachine.idleState);
+                state.TransitionTo(state.idleState);
                 ActorData.currentPosture = ActorData.maxPosture;
                 PlayAnimation("Idle");
             }
@@ -355,30 +363,19 @@ namespace Assets.Scripts.Battle
             // Code here will be executed on the frame after the wait
             action.Invoke();
         }
+        public System.Collections.IEnumerator WaitForTime(Action action, float seconds)
+        {
+            // This will wait for one frame
+            yield return new WaitForSeconds(seconds);
+
+            // Code here will be executed on the frame after the wait
+            action.Invoke();
+        }
         private void OnCollisionEnter(Collision collision)
         {
-            // Check if collided object has the "Level" tag
-            if (collisionOccured) return;
-
             if (collision.gameObject.CompareTag("Level"))
             {
-                Debug.Log($"Velocity on collision is {rigidbody.velocity.magnitude}");
-
-                UIManager.GetInstance().AddToStoneSlab($"{ActorData.Name} hits a wall!");
-                ApplyPosture(5f);
-                collisionOccured = true;
-
-                // Check if velocity magnitude is greater than the threshold
-                if (collision.relativeVelocity.magnitude > 0.1f)
-                {
-                    // Calculate mirrored velocity (mirror along current velocity)
-                    Vector3 mirroredVelocity = Vector3.Reflect(rigidbody.velocity, collision.GetContact(0).normal);
-                    var r = collision.relativeVelocity - 2 * Vector3.Dot(rigidbody.velocity, collision.GetContact(0).normal) * collision.contacts[0].normal;
-
-
-                    // Replace current velocity with the mirrored velocity
-                    rigidbody.velocity = r;
-                }
+                state.OnCollisionEnter(collision);
             }
         }
         private void TriggerHitstop(float duration)

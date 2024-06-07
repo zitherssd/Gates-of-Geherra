@@ -8,15 +8,50 @@ namespace Assets.Scripts.Battle.Actions
     {
         public static MoveAction instance;
 
+        public override void Perform(Actor casterActor, Action onPerformEnd)
+        {
+            UpdateRemainingUses();
+            ResetCooldown();
+
+            if (!Tags.Contains(TAG.USESLIDER)) SliderValue = 1f;
+            if (Tags.Contains(TAG.KILLMOMENTUM)) casterActor.GetComponent<Rigidbody>().velocity = Vector3.zero;
+
+            casterActor.ActorData.DealStaminaDamage(StaminaCost);
+            casterActor.ActorData.ChangeBuildup(BuildupGain);
+            casterActor.ActorData.ChangeBuildup(-BuildupCost);
+
+            casterActor.state.TransitionTo(casterActor.state.actingState);
+
+            if (Tags.Contains(TAG.REPEAT_TURN))
+            {
+                PerformSpecific(casterActor, () =>
+                {
+                    casterActor.Act(onPerformEnd);
+                });
+            }
+            else
+                PerformSpecific(casterActor, onPerformEnd);
+        }
+
         protected override void PerformSpecific(Actor casterActor, Action onPerformEnd)
         {
-            if(casterActor.isControllable())
+            if (casterActor.isControllable())
             {
-                casterActor.Move(GetRelativeToCamera(StickValue), onPerformEnd);
+                var move = GetRelativeToCamera(StickValue);
+                var TargetPosition = casterActor.transform.position + (move * casterActor.ActorData.AGI);
+
+                casterActor.state.TransitionTo(casterActor.state.moveState.Set(TargetPosition, onPerformEnd));
             }
             else
             {
-                casterActor.Move(new Vector3(StickValue.x, 0, StickValue.y), onPerformEnd);
+                //casterActor.Move(new Vector3(StickValue.x, 0, StickValue.y), onPerformEnd);
+
+
+
+                var move = new Vector3(StickValue.x, 0, StickValue.y);
+                var TargetPosition = casterActor.transform.position + (move * casterActor.ActorData.AGI);
+
+                casterActor.state.TransitionTo(casterActor.state.moveState.Set(TargetPosition, onPerformEnd));
             }
         }
 

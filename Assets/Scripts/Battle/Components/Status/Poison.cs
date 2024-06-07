@@ -17,9 +17,7 @@
 
         public override void Tick()
         {
-            //verific daca au trecut 5 runde
-
-            //
+            
             owner.statusManager.Remove(this);
         }
 

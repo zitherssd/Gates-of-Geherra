@@ -61,7 +61,7 @@ namespace Assets
 
                     break;
                 case STATE.WAITING:
-                    if ((PlayerActors.Concat(EnemyActors).ToList().TrueForAll(x => x.ActorStateMachine.CurrentState == x.ActorStateMachine.idleState)))
+                    if ((PlayerActors.Concat(EnemyActors).ToList().TrueForAll(x => x.state.CurrentState == x.state.idleState)))
                     {
                         state = STATE.READY;
                     }
@@ -181,9 +181,13 @@ namespace Assets
                 End();
                 return;
             }
-            
-            activeBattler = GetNextActorInTurn();
-            activeBattler.Act(SwitchToNextActorInTurn);
+
+            StartCoroutine(WaitForMovementCompletion(() =>
+            {
+                activeBattler = GetNextActorInTurn();
+                activeBattler.Act(SwitchToNextActorInTurn);
+            }));
+           
 
             //// Delay turn switch until actors no longer have the Midair state
             //StartCoroutine(WaitForMovementCompletion(() =>
@@ -208,7 +212,7 @@ namespace Assets
         {
             var allActors = PlayerActors.Concat(EnemyActors);
 
-            while (!allActors.Any(actor => actor.ActorStateMachine.CurrentState == actor.ActorStateMachine.idleState))
+            while (!allActors.All(actor => actor.state.CurrentState == actor.state.idleState))
             {
                 yield return null; // Wait for the next frame
             }

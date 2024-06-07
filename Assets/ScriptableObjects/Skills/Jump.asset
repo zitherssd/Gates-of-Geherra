@@ -9,23 +9,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ab9538cf5b653e48aa37b2dea64c00c, type: 3}
-  m_Name: Eat it
+  m_Script: {fileID: 11500000, guid: 3a4ce7f1f980a6e4f96fa76845c15ebe, type: 3}
+  m_Name: Jump
   m_EditorClassIdentifier: 
-  Name: Resist
+  Name: Jump
   Rarity: 0
-  cooldownTurns: 4
-  TotalUses: 2
+  cooldownTurns: 0
+  TotalUses: 0
   BuildupCost: 0
   BuildupGain: 0
-  StaminaCost: 5
+  StaminaCost: 0
   Speed: 0
-  Tags: 0e000000
+  Tags: 0d000000
   SliderValue: 0
   StickValue: {x: 0, y: 0}
   currentCooldownTurns: 0
   remainingUses: 0
   StickMult: 1
-  DamageModifier: 1
-  PostureModifier: 1.2
-  KnockbackModifier: 1.7
+  power: 2

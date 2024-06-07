@@ -56,7 +56,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
                     Debug.Log($"{casterActor.ActorData.name} missed performing {this.Name}!");
                 }
             }, () => {
-                if (targetActor.ActorStateMachine.CurrentState == targetActor.ActorStateMachine.staggerState) return;
+                if (targetActor.state.CurrentState == targetActor.state.staggerState) return;
                 var validReactions = targetActor.GetValidReactionsForSkill();
                 if (targetActor.isControllable())
                 {
@@ -116,7 +116,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
             // Wait for 1 frame before exit
             casterActor.StartCoroutine(WaitForOneFrame(() =>
             {
-                if (targetActor.ActorStateMachine.CurrentState == targetActor.ActorStateMachine.staggerState)
+                if (targetActor.state.CurrentState == targetActor.state.staggerState)
                 {
                     casterActor.KillAnimationEndEvent();
                     casterActor.Act(onDamageEffectsApplied);

@@ -8,5 +8,6 @@ namespace Assets.Scripts.Battle.Components.State
         public void Enter();
         public void Update();
         public void Exit();
+        public void OnCollisionEnter(Collision collision);
     }
 }
