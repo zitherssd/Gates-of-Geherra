@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3be3547e3e6f74e4bae902b75515650e, type: 3}
+  m_Name: Kick(Air)
+  m_EditorClassIdentifier: 
+  Name: Kick
+  Rarity: 0
+  Description: 
+  cooldownTurns: 0
+  TotalUses: 0
+  BuildupCost: 0
+  BuildupGain: 0
+  StaminaCost: 0
+  Speed: 0
+  Tags: 09000000
+  Direction: {x: 0, y: 0, z: 0}
+  currentCooldownTurns: 0
+  remainingUses: 0
+  StickMult: 1
+  Animation: 0
+  Range: 0
+  Damage: 0
+  PostureDamage: 0
+  KnockbackForce: 0
+  SelfForce: 0
+  Delay: 0
+  preciseattack: 1

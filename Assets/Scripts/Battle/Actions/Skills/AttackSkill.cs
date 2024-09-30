@@ -1,9 +1,7 @@
 ﻿using Assets.Scripts.Actions;
-using Assets.Scripts.Battle;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 
 namespace Assets.Scripts.Battle.Actions.Skills
@@ -19,11 +17,15 @@ namespace Assets.Scripts.Battle.Actions.Skills
         public float SelfForce;
         public float Delay;
 
+        public bool preciseattack = true;
+        private bool hit = false;
+
         protected override void PerformSpecific(Actor casterActor, Action onPerformEnd)
         {
-            var targetActor = GetTarget(casterActor);
+            hit = false;
+            var targetActor = casterActor.target.ClosestEnemy;
             var targetActorPositionInOneSecond = targetActor.rigidbody.position + targetActor.rigidbody.velocity * Delay;
-            
+
             var casterVelocity = casterActor.rigidbody.velocity;
             var casterActorPositionInOneSecond = casterActor.transform.position + casterVelocity * Delay;
 
@@ -31,67 +33,73 @@ namespace Assets.Scripts.Battle.Actions.Skills
             var casterToTargetInOneSecond = (targetActorPositionInOneSecond - casterActor.transform.position).normalized;
 
             var targetDirection = casterToTargetInOneSecond;
-            Debug.DrawRay(casterActor.transform.position + Vector3.up * 0.6f, targetDirection * Range, Color.green, 3f, false);
-            Debug.DrawRay(casterActor.transform.position + Vector3.up * 0.1f, targetDirection * Range, Color.green, 3f, false);
-            Debug.DrawRay(casterActor.transform.position + Vector3.up * 0.01f, targetDirection * Range, Color.green, 3f, false);
+            Debug.DrawRay(casterActor.transform.position + Vector3.up * 0.5f, targetDirection * Range, Color.red, 3f, false);
+            Debug.DrawRay(casterActor.transform.position + Vector3.up * 0.1f, targetDirection * Range, Color.red, 3f, false);
 
-            var desiredMoveDirection = GetRelativeToCamera(StickValue);
-            if (casterActor.isControllable())
-                casterActor.GetComponent<Rigidbody>().AddForce(desiredMoveDirection * 100 * SelfForce);
-            else casterActor.GetComponent<Rigidbody>().AddForce(new Vector3(StickValue.x,0,StickValue.y) * 100 * SelfForce);
+            //Apply selfForce
+            if (!Tags.Contains(TAG.USESTICK))
+                casterActor.GetComponent<Rigidbody>().AddForce(100 * SelfForce * casterActor.target.DirectionToClosestEnemy);
+            else
+                casterActor.GetComponent<Rigidbody>().AddForce(100 * SelfForce * new Vector3(Direction.x, 0, Direction.y));
 
-            casterActor.PlayAnimation(Animation.ToString(), () => {
-
-                Debug.DrawRay(casterActor.transform.position + Vector3.up * 0.6f, targetDirection * Range, Color.green, 2f, false);
-
+            casterActor.PlayAnimation(Animation.ToString(), () =>
+            {
+                if (this.hit) return;
                 RaycastHit hit;
-
-                if (Physics.SphereCast(casterActor.transform.position + Vector3.up * 0.6f, 0.1f, targetDirection, out hit, Range))
+                if (!preciseattack)
                 {
-                    ApplyDamageEffects(casterActor, targetActor, BaseReaction.NoReaction, onPerformEnd);
-                    return;
-                }
-                else
-                {
-                    Debug.Log($"{casterActor.ActorData.name} missed performing {this.Name}!");
-                }
-            }, () => {
-                if (targetActor.state.CurrentState == targetActor.state.staggerState) return;
-                var validReactions = targetActor.GetValidReactionsForSkill();
-                if (targetActor.isControllable())
-                {
-                    Time.timeScale = 0f; UIManager.GetInstance().ShowUI();
-                    var reactionsToDraw = new List<BaseAction>();
-                    reactionsToDraw.AddRange(validReactions);
-                    UIManager.GetInstance().DrawActionsAndWaitForSelectionOrNull(reactionsToDraw, selectedReaction =>
+                    Debug.DrawRay(casterActor.transform.position + Vector3.up * 0.6f, targetDirection * Range, Color.green, 1f, false);
+                    if (Physics.SphereCast(casterActor.transform.position + Vector3.up * 0.6f, 0.1f, targetDirection, out hit, Range))
                     {
-                        Time.timeScale = 1f; UIManager.GetInstance().HideUI();
-                        if (selectedReaction != null && selectedReaction != BaseReaction.NoReaction)
-                        {
-                            //if (selectedReaction.Tags.Contains(TAG.USESLIDER))
-                                //selectedReaction.SliderValue = InputManager.instance.SliderValue;
-                            //if (selectedReaction.Tags.Contains(TAG.USEKNOB))
-                                //selectedReaction.StickValue = InputManager.instance.StickValue;
-                            selectedReaction.Perform(targetActor, null);
-                        }
-                    });
-                }
-                else
-                {
-                    if(validReactions.Count > 0)
+                        ApplyDamageEffects(casterActor, targetActor, BaseReaction.NoReaction, onPerformEnd);
+                        return;
+                    }
+                    else
                     {
-                        var selectedReaction = validReactions[RandomFromList(validReactions.Count)];
-                        selectedReaction.Perform(targetActor, null);
+                        Debug.Log($"{casterActor.ActorData.name} missed performing {this.Name}!");
                     }
                 }
+                else
+                {
+                    Debug.DrawRay(casterActor.transform.position + Vector3.up * 0.6f, (targetActor.transform.position - casterActor.transform.position) * Range, Color.red, 1f, false);
+                    if (Physics.SphereCast(casterActor.transform.position + Vector3.up * 0.6f, 0.1f, targetActor.transform.position - casterActor.transform.position, out hit, Range))
+                    {
+                        ApplyDamageEffects(casterActor, targetActor, BaseReaction.NoReaction, onPerformEnd);
+                        return;
+                    }
+                    else
+                    {
+                        Debug.Log($"{casterActor.ActorData.name} missed performing {this.Name}!");
+                    }
+                }
+            }, () => //OnReaction
+            {
+                if (targetActor.state.CurrentState == targetActor.state.staggerState || targetActor.state.CurrentState == targetActor.state.airStaggerState) return;
+
+                targetActor.ai.ChooseReaction(chosenReaction =>
+                {
+                    targetActor.UseAction(chosenReaction, null);
+                    chosenReaction.Perform(targetActor,null);
+                }, this);
             }, onPerformEnd);
         }
+
+        public void OnHit()
+        {
+
+        }
+
+
         public void ApplyDamageEffects(Actor casterActor, Actor targetActor, BaseReaction targetReaction, Action onDamageEffectsApplied)
         {
+            Debug.Log(casterActor.rigidbody.velocity.magnitude);
+            this.hit = true;
             // Apply Damage
             var damage = Damage + casterActor.ActorData.ATK - targetActor.ActorData.DEF;
             if (damage > 0)
             {
+                var hitstop = LinearMap(damage, 0.2f, 15, 0.083f, 0.420f);
+                BattleManager.instance.ApplyHitstop(hitstop);
                 targetActor.ApplyDamage(damage);
             };
 
@@ -116,14 +124,17 @@ namespace Assets.Scripts.Battle.Actions.Skills
             // Wait for 1 frame before exit
             casterActor.StartCoroutine(WaitForOneFrame(() =>
             {
-                if (targetActor.state.CurrentState == targetActor.state.staggerState)
+                if (targetActor.state.CurrentState == targetActor.state.staggerState || targetActor.state.CurrentState == targetActor.state.airStaggerState)
                 {
-                    casterActor.KillAnimationEndEvent();
                     casterActor.Act(onDamageEffectsApplied);
                     return;
                 }
                 //onDamageEffectsApplied();
             }));
+        }
+        float LinearMap(float input, float inputMin, float inputMax, float outputMin, float outputMax)
+        {
+            return outputMin + (outputMax - outputMin) * ((input - inputMin) / (inputMax - inputMin));
         }
         public override bool IsValidAndInRange(Actor caster)
         {
@@ -146,14 +157,6 @@ namespace Assets.Scripts.Battle.Actions.Skills
                 return false;
             }
         }
-        public Actor GetTarget(Actor caster)
-        {
-            if (caster.isControllable())
-                    return BattleManager.instance.EnemyActors[0];
-            else
-                    return BattleManager.instance.PlayerActors[0];
-        }
-
-        public enum ANIMATION { NONE, Punch, Kick, Shuriken, Highkick, PalmStrike, Ninjutsu, ForwardPunch, ThrowStar }
+        public enum ANIMATION { NONE, Punch, Kick, Shuriken, Highkick, PalmStrike, Ninjutsu, ForwardPunch, ThrowStar, ForwardKick }
     }
 }

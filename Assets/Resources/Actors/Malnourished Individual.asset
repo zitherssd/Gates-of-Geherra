@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e110cd302acb85459812d80addcbd30, type: 3}
+  m_Name: Malnourished Individual
+  m_EditorClassIdentifier: 
+  Name: Malnourished Individual
+  maxHp: 25
+  maxBuildup: 20
+  maxPosture: 20
+  maxStamina: 0
+  Controllable: 0
+  mainColor: {r: 0, g: 0, b: 0, a: 0}
+  secondaryColor: {r: 0, g: 0, b: 0, a: 0}
+  baseActions:
+  - {fileID: 11400000, guid: 3f869f152f955e64e9475dcf2c667237, type: 2}
+  - {fileID: 11400000, guid: 6b798446413f4794088292db8b471646, type: 2}
+  - {fileID: 11400000, guid: 498ba4be69212c045ad9de12e867357c, type: 2}
+  baseReactions:
+  - {fileID: 11400000, guid: d4852d63a398314488e810be1c412698, type: 2}
+  basePassives: []
+  baseHpBars:
+  - {fileID: 11400000, guid: 7480a64d72f259342898ac4956c7a727, type: 2}
+  actions:
+  - {fileID: 0}
+  - {fileID: 0}
+  reactions:
+  - {fileID: 0}
+  hpBars:
+  - {fileID: 11400000, guid: 7480a64d72f259342898ac4956c7a727, type: 2}
+  currentHp: 25
+  currentBuildup: 0
+  currentPosture: 20
+  currentStamina: 0
+  ATK: 1
+  DEF: 0
+  AGI: 2
+  Spirit: 0

@@ -5,15 +5,13 @@ namespace Assets
 {
     public class CameraManager : MonoBehaviour
     {
-        private Vector3 targetPosition;
-        private Vector3 targetRotation;
+        public static CameraManager instance = null;
         private float shakeDuration = 0f;
         private float shakeMagnitude = 0.7f;
         private float dampingSpeed = 1.0f;
 
         public CameraType cameraType = CameraType.Main;
 
-        private BattleManager battleManager;
         [SerializeField]
         [Range(-1, 15)]
         private float UpDistance;
@@ -22,20 +20,34 @@ namespace Assets
         private float BackDistance;
         private new Camera camera;
         public bool Override = false;
+        public bool SlowTrack = false;
 
-        private Transform leftObj;
-        private SpriteRenderer leftSObj;
-        private Transform rightObj;
-        private SpriteRenderer rightSObj;
+        public Transform leftObj;
+        public Transform rightObj;
+
+
+        Vector3 distvector;
+        Vector3 directionvector;
+        Vector3 blue;
+        Vector3 newposition;
+
+        private void Awake()
+        {
+            if (instance == null) instance = this;
+        }
 
         // Use this for initialization
         void Start()
         {
-            battleManager = BattleManager.instance;
-            leftObj = battleManager.PlayerActors[0].transform;
-            rightObj = battleManager.EnemyActors[0].transform;
+            leftObj = BattleManager.instance.PlayerActors[0].transform;
+            rightObj = BattleManager.instance.EnemyActors[0].transform;
             camera = gameObject.GetComponent<Camera>();
 
+        }
+
+        public void ResetForNewBattle()
+        {
+            transform.position = new Vector3(3.68f, 2.4f, -5.17f);
         }
 
         // Update is called once per frame
@@ -47,12 +59,12 @@ namespace Assets
             var rightobpoint = camera.WorldToScreenPoint(rightObj.position);
             if(leftobjpoint.x > rightobpoint.x)
             {
-               //Switch();
+               Switch();
             }
 
-            var distvector = (rightObj.position + leftObj.position) / 2; //start point
+            distvector = (rightObj.position + leftObj.position) / 2; //start point
             distvector = new Vector3(distvector.x, 0, distvector.z);
-            var directionvector = (rightObj.position - leftObj.position) / 2;
+            directionvector = (rightObj.position - leftObj.position) / 2;
             directionvector = new Vector3(directionvector.x, 0, directionvector.z);
 
             if(!Override)
@@ -63,8 +75,9 @@ namespace Assets
             }
 
             directionvector = Vector3.ProjectOnPlane(directionvector, Vector3.up).normalized;
-            var blue = Vector3.Cross(directionvector, Vector3.up).normalized;
-            var newposition = distvector + Vector3.up * UpDistance + -blue * BackDistance;
+            if(!SlowTrack)
+            blue = Vector3.Cross(directionvector, Vector3.up).normalized;
+            newposition = distvector + Vector3.up * UpDistance + -blue * BackDistance;
 
             if (shakeDuration > 0)
             {
@@ -78,10 +91,31 @@ namespace Assets
 
             if (cameraType == CameraType.Main)
             {
-                transform.position = Vector3.Lerp(transform.position, targetpos, 0.1f);
+                if (!SlowTrack)
+                //if (Vector3.Distance(transform.position, targetpos) > 3f)
+                  //  {
+                        //transform.position = Vector3.MoveTowards(transform.position, targetpos, 4f * Time.unscaledDeltaTime);
+                   // }
+                //else
+                  //  {
+                  transform.position = Vector3.Lerp(transform.position, targetpos, 0.03f);
+                  //  }
+                else
+                    transform.position = Vector3.MoveTowards(transform.position, targetpos, 0.1f * Time.unscaledDeltaTime);
+
+
             }
             else transform.position = targetpos;
+            if(!SlowTrack)
             transform.LookAt(distvector + Vector3.up * 1.5f);
+            else
+            {
+                Vector3 targetRotation = (distvector + Vector3.up * 1.5f) - transform.position;
+                Quaternion endRotation = Quaternion.LookRotation(targetRotation);
+
+                // Smoothly rotate towards the target rotation
+                transform.rotation = Quaternion.Slerp(transform.rotation, endRotation, 0.1f);
+            }
 
         }
 
@@ -109,20 +143,17 @@ namespace Assets
             shakeMagnitude = magnitude;
         }
 
-        private void Switch()
+        public void Switch()
         {
             var aux = rightObj;
             rightObj = leftObj;
             leftObj = aux;
+            var leftSObj = leftObj.Find("Billboard");
+            var rightSObj = rightObj.Find("Billboard");
 
-            var leftSObj = leftObj.GetComponentInChildren<SpriteRenderer>();
-            var rightSObj = rightObj.GetComponentInChildren<SpriteRenderer>();
 
-            if (leftSObj.flipX == true) leftSObj.flipX = false;
-            else leftSObj.flipX = true;
-
-            if (rightSObj.flipX == true) rightSObj.flipX = false;
-            else rightSObj.flipX = true;
+            leftSObj.transform.localScale = new Vector3(1, 1, 1);
+            rightSObj.transform.localScale = new Vector3(-1, 1, 1);
         }
 
 

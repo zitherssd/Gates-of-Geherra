@@ -1,4 +1,6 @@
 ﻿using System.Collections;
+using Assets.Scripts.Pattern;
+
 using UnityEngine;
 
 namespace Assets.Scripts.Battle.Components.State
@@ -6,10 +8,12 @@ namespace Assets.Scripts.Battle.Components.State
     public class AirStaggerState : IState
     {
         private Battle.Actor actor;
+        private SpriteRenderer selectionCircleSR;
 
         public AirStaggerState(Battle.Actor actor)
         {
             this.actor = actor;
+            selectionCircleSR = actor.transform.Find("SelectionCircle").GetComponent<SpriteRenderer>();
         }
 
         public void Enter()
@@ -23,18 +27,54 @@ namespace Assets.Scripts.Battle.Components.State
 
         public void OnCollisionEnter(Collision collision)
         {
-            throw new System.NotImplementedException();
+            if (collision.gameObject.CompareTag("Level"))
+            {
+                Debug.Log($"Velocity on collision is {actor.rigidbody.velocity.magnitude}");
+                Debug.Log($"RelativeVel is {collision.relativeVelocity.magnitude}");
+
+
+                if (collision.gameObject.name == "Trap")
+                {
+                    Debug.Log($"{actor.ActorData.name} hit trap!");
+                    actor.ApplyDamage(10f);
+                    actor.ApplyPosture(5f);
+                }
+                else
+                {
+                    actor.ApplyPosture(5f);
+                }
+
+                // Check if velocity magnitude is greater than the threshold
+                if (collision.relativeVelocity.magnitude > 0.1f)
+                {
+                    // Calculate mirrored velocity (mirror along current velocity)
+                    Vector3 mirroredVelocity = Vector3.Reflect(actor.rigidbody.velocity, collision.GetContact(0).normal);
+                    var r = collision.relativeVelocity - 2 * Vector3.Dot(actor.rigidbody.velocity, collision.GetContact(0).normal) * collision.contacts[0].normal;
+
+                    // Replace current velocity with the mirrored velocity
+                    actor.rigidbody.velocity = 2 * r / 3;
+                }
+            }
         }
 
         public void Update()
         {
+            var alphaBasedOnHeight = LinearMap(actor.transform.position.y, 0, 3, 0.33f, 0f);
+            selectionCircleSR.color = new Color(selectionCircleSR.color.r, selectionCircleSR.color.g, selectionCircleSR.color.b, alphaBasedOnHeight);
+            selectionCircleSR.transform.position = new Vector3(selectionCircleSR.transform.position.x, 0.01f, selectionCircleSR.transform.position.z);
+
             if (actor.grounded)
             {
                 actor.PlayAnimation("Down");
-                actor.state.TransitionTo(actor.state.idleState);
+                actor.state.TransitionTo(actor.state.gettingUpState);
             }
 
             //transition to landing > idle
+        }
+
+        static float LinearMap(float input, float inputMin, float inputMax, float outputMin, float outputMax)
+        {
+            return outputMin + (outputMax - outputMin) * ((input - inputMin) / (inputMax - inputMin));
         }
     }
 }

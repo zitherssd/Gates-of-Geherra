@@ -7,26 +7,18 @@ namespace Assets.Scripts.Battle.Actions
     public class Charge : BaseAction
     {
         public float power;
+        private Vector3 chargeVector;
         protected override void PerformSpecific(Actor casterActor, Action onPerformEnd)
         {
-            if (casterActor.isControllable())
+            casterActor.PlayAnimation("Dash", () =>
             {
-                //needs to be reworked
-                InputManager.instance.WaitForTargetActor(targetActor =>
-                {
-                    var casterToTarget = (targetActor.transform.position - casterActor.transform.position).normalized;
-                    casterActor.GetComponent<Rigidbody>().AddForce(casterToTarget * 100 * power);
-                    casterActor.PlayAnimation("Run", onPerformEnd, onPerformEnd);
-                });
+                if (Tags.Contains(TAG.USESTICK))
+                    chargeVector = Direction * 100 * power;
+                else
+                    chargeVector = casterActor.target.DirectionToClosestEnemy * 100 * power;
+                casterActor.rigidbody.AddForce(chargeVector);
 
-            }
-            else
-            {
-                var targetActor = BattleManager.instance.PlayerActors[0];
-                var casterToTarget = (targetActor.transform.position - casterActor.transform.position).normalized;
-                casterActor.GetComponent<Rigidbody>().AddForce(casterToTarget * 100 * 4);
-                casterActor.PlayAnimation("Run", onPerformEnd, onPerformEnd);
-            }
+            }, onPerformEnd, true);
         }
     }
 }

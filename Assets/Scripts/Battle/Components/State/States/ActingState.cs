@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.Pattern;
+using System;
 using UnityEngine;
 
 namespace Assets.Scripts.Battle.Components.State.States
@@ -6,20 +7,35 @@ namespace Assets.Scripts.Battle.Components.State.States
     public class ActingState : IState
     {
         private readonly Actor owner;
-        private bool complete;
-        private Action onActionInterrupt;
-        private Action onActionComplete;
+        public bool completetest;
+        public Action onActionHit;
+        private bool interruptOnCollision;
+        public Action onActionInterrupt;
+        public Action onActionComplete;
+        public bool Locked = false;
 
         public ActingState(Actor owner)
         {
             this.owner = owner;
         }
 
-        public ActingState Set(Action onActionInterrupt, Action onActionComplete)
+        public ActingState Set(Action onActionInterrupt, Action onActionComplete, Action onActionHit)
         {
             this.onActionInterrupt = onActionInterrupt;
             this.onActionComplete = onActionComplete;
-            complete = false;
+            this.onActionHit = onActionHit;
+            interruptOnCollision = false;
+            completetest = false;
+            return this;
+        }
+
+        public ActingState Set(Action onActionInterrupt, Action onActionComplete, Action onActionHit, bool interruptOnCollision)
+        {
+            this.onActionInterrupt = onActionInterrupt;
+            this.onActionComplete = onActionComplete;
+            this.onActionHit = onActionHit;
+            this.interruptOnCollision = interruptOnCollision;
+            completetest = false;
             return this;
         }
 
@@ -29,19 +45,19 @@ namespace Assets.Scripts.Battle.Components.State.States
 
         public void Exit()
         {
-            if (complete)
-                onActionComplete?.Invoke();
-            else
+            if (!completetest)
                 onActionInterrupt?.Invoke();
         }
 
         public void OnCollisionEnter(Collision collision)
         {
-            throw new System.NotImplementedException();
+            if (interruptOnCollision)
+                Exit();
         }
 
         public void Update()
         {
-        }
+
+        } 
     }
 }

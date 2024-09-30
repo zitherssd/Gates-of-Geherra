@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 public class SkillGenerator : MonoBehaviour
 {
-    public List<BaseAction> ActionsPool;
+    //public List<BaseAction> ActionsPool;
     public GameObject CardPrefab;
     private static SkillGenerator instance;
     public static SkillGenerator GetInstance()
@@ -27,6 +27,9 @@ public class SkillGenerator : MonoBehaviour
         var floorManager = FloorManager.GetInstance();
         if (floorManager.currentFloor <= 5)
         {
+            var drops =  Resources.LoadAll<BaseAction>("Crawler/Droptables/1-5");
+            var ActionsPool = drops.ToList();
+
             int randomIndex = UnityEngine.Random.Range(0, ActionsPool.Count);
             var skill1 = ActionsPool[randomIndex];
             randomIndex = UnityEngine.Random.Range(0, ActionsPool.Count);

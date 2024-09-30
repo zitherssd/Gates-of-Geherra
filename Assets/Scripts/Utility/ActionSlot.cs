@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using static Assets.BaseAction;
 
 public class ActionSlot : MonoBehaviour
 {
@@ -28,25 +29,7 @@ public class ActionSlot : MonoBehaviour
             var handler = skill.GetComponent<ButtonHandler>();
             if (handler.referencedAction != null)
             {
-                if (handler.referencedAction.Tags.Contains(Assets.TAG.USESLIDER))
-                    UIManager.GetInstance().Slider.SetActive(true);
-                else
-                    UIManager.GetInstance().Slider.SetActive(false);
-
-                if (handler.referencedAction.Tags.Contains(Assets.TAG.USESTICK))
-                    UIManager.GetInstance().Knob.SetActive(true);
-                else
-                    UIManager.GetInstance().Knob.SetActive(false);
-
-            }
-            if (handler.referencedReaction != null)
-            {
-                if (handler.referencedReaction.Tags.Contains(Assets.TAG.USESLIDER))
-                    UIManager.GetInstance().Slider.SetActive(true);
-                else
-                    UIManager.GetInstance().Slider.SetActive(false);
-
-                if (handler.referencedReaction.Tags.Contains(Assets.TAG.USESTICK))
+                if (handler.referencedAction.Tags.Contains(TAG.USESTICK))
                     UIManager.GetInstance().Knob.SetActive(true);
                 else
                     UIManager.GetInstance().Knob.SetActive(false);

@@ -41,8 +41,8 @@ public class ActorData : ScriptableObject
     public int AGI;
     public int Spirit;
 
-    public event Action<ActorData> onDeath;
-    public event Action onHpBarLost;
+    public event Action OnDeath;
+    public event Action OnHpBarLost;
 
 
     private void Awake()
@@ -67,9 +67,9 @@ public class ActorData : ScriptableObject
         {
             if (lastBar.alive == false)
             {
-                onHpBarLost?.Invoke();
+                OnHpBarLost?.Invoke();
             }
-            onDeath?.Invoke(this);
+            OnDeath?.Invoke();
             currentPosture = 0;
             currentHp = 0;
         }

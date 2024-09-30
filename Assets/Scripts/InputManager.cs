@@ -14,7 +14,6 @@ namespace Assets
         private BattleManager battleManager;
         private Action onTurnEnd = null;
         private Action<Actor> onTargetSelected = null;
-        private Action<Vector2> onSwipeGot = null;
         private Action<Vector3> onTargetPointSelected = null;
         public OnScreenStick onScreenStick;
         public float SliderValue = 1f;

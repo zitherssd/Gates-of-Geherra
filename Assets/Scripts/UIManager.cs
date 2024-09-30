@@ -106,7 +106,7 @@ public class UIManager : MonoBehaviour
             float angle = i * anglestep;
             float x = radius * Mathf.Cos(Mathf.Deg2Rad * angle);
             float y = radius * Mathf.Sin(Mathf.Deg2Rad * angle);
-            Vector2 position = new Vector2(x, y);
+            Vector2 position = new(x, y);
 
             GameObject UISkill = Instantiate(buttonPrefab, position, Quaternion.identity);
             UISkill.transform.SetParent(ActionsHolder.transform);
@@ -131,85 +131,31 @@ public class UIManager : MonoBehaviour
         onActionSelected = null;
     }
 
-    public void DrawActiveActorSkills(Action onSkillSelected)
-    {
 
-        List<Assets.BaseAction> fakeActions = new List<Assets.BaseAction>();
-            var activeChar = BattleManager.instance.GetActiveActor();
-            var skills = activeChar.ActorData.actions;
-
-            foreach (var skill in skills)
-            {
-                fakeActions.Add(skill);
-            }
-
-            var buttonHandlers = DrawActionsRadiallyOnScreenPoint(fakeActions);
-            for (int i = 0; i < skills.Count; i++)
-            {
-                var invalidReason = "";
-
-                buttonHandlers[i].referencedAction = null;
-                buttonHandlers[i].SetButtonInteractable(skills[i].IsValid(activeChar, out invalidReason));
-                if (invalidReason != string.Empty) buttonHandlers[i].SetRemainingUsesText(invalidReason);
-            }
-            this.onActionSelected = onSkillSelected;
-            this.waitingForAction = true;
-    }
-
-    public void DrawAllActorReactions(Actor actor, Action onReactionSelected)
-    {
-        if (!waitingForAction)
-        {
-            List<Assets.BaseAction> fakeReactions = new List<Assets.BaseAction>();
-            var reactions = actor.ActorData.reactions;
-
-            foreach (var reaction in reactions)
-            {
-                fakeReactions.Add(reaction);
-            }
-
-            var buttonHandlers = DrawActionsRadiallyOnScreenPoint(fakeReactions);
-            for (int i = 0; i < reactions.Count; i++)
-            {
-                buttonHandlers[i].referencedReaction = reactions[i];
-                buttonHandlers[i].referencedAction = null;
-            }
-            this.onActionSelected = onReactionSelected;
-            this.waitingForAction = true;
-        }
-    }
     
 
 
     internal void DrawActionAboveHead(Actor actor, BaseAction action)
     {
-            GameObject drawnSkill = Instantiate(buttonPrefab, actor.transform.position, Quaternion.identity);
-            drawnSkill.transform.SetParent(actor.originPointInUI.transform);
-            drawnSkill.transform.localPosition = Vector3.zero;
-            drawnSkill.GetComponent<RectTransform>().localPosition = Vector3.zero;
-            var handler = drawnSkill.GetComponent<ButtonHandler>();
-            handler.referencedAction = action;
-            handler.Init();
-            handler.SetDraggable(false);
-            LeanTween.scale(actor.originPointInUI.transform.gameObject, new Vector3(1, 1, 1), 0.3f).setEaseOutBack().setIgnoreTimeScale(true);
+        var handler = actor.originPointInUI.transform.GetChild(0).GetComponent<ButtonHandler>();
+        handler.referencedAction = action;
+        handler.Init();
+        handler.SetDraggable(false);
+        LeanTween.cancel(actor.originPointInUI.transform.gameObject);
+        LeanTween.scale(actor.originPointInUI.transform.gameObject, Vector3.one, 1f).setEaseOutBack().setIgnoreTimeScale(true);
     }
 
     internal void KillActionAboveHead(Actor actor)
     {
-        var obj = actor.originPointInUI.transform;
-        if (obj.childCount > 0)
-        {
-            LeanTween.scale(obj.gameObject, new Vector3(1, 0, 1), 0.3f).setEaseOutBack().setIgnoreTimeScale(true).setOnComplete(() => { Destroy(obj.GetChild(0).gameObject); });
-        }
-        else
-            LeanTween.scale(obj.gameObject, new Vector3(1, 0, 1), 0.3f).setEaseOutBack().setIgnoreTimeScale(true);
+        LeanTween.cancel(actor.originPointInUI.transform.gameObject);
+        LeanTween.scale(actor.originPointInUI.transform.gameObject, Vector3.zero, 1f).setEaseOutBack().setIgnoreTimeScale(true);
     }
 
     public void DrawAllActorReactionsAboveSpeed(Actor actor, int minimumSpeed, Action onReactionSelected)
     {
 
-        List<Assets.BaseAction> fakeReactions = new List<Assets.BaseAction>();
-            List<BaseReaction> chosenReactions = new List<BaseReaction>();
+        List<Assets.BaseAction> fakeReactions = new();
+            List<BaseReaction> chosenReactions = new();
             var reactions = actor.ActorData.reactions;
 
 
@@ -223,7 +169,6 @@ public class UIManager : MonoBehaviour
             var buttonHandlers = DrawActionsRadiallyOnScreenPoint(fakeReactions);
             for (int i = 0; i < fakeReactions.Count; i++)
             {
-                buttonHandlers[i].referencedReaction = chosenReactions[i];
                 buttonHandlers[i].referencedAction = null;
             }
             this.onActionSelected = onReactionSelected;
@@ -297,7 +242,7 @@ public class UIManager : MonoBehaviour
     public IEnumerator FadeMiddleText(float fadeDuration)
     {
         Color originalColor = MiddleTextbox.color;
-        Color targetColor = new Color(originalColor.r, originalColor.g, originalColor.b, 0f); // Fade to transparent
+        Color targetColor = new(originalColor.r, originalColor.g, originalColor.b, 0f); // Fade to transparent
 
         float elapsedTime = 0f;
 

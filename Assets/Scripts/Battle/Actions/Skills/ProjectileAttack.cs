@@ -25,7 +25,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
         
         protected override void PerformSpecific(Actor casterActor, Action onPerformEnd)
         {
-            var targetActor = GetTarget(casterActor);
+            var targetActor = casterActor.target.ClosestEnemy;
 
             var casterToTarget = (targetActor.transform.position - casterActor.transform.position).normalized;
 
@@ -63,15 +63,6 @@ namespace Assets.Scripts.Battle.Actions.Skills
                 return false;
             }
         }
-
-        public Actor GetTarget(Actor caster)
-        {
-            if (caster.isControllable())
-                return BattleManager.instance.EnemyActors[0];
-            else
-                return BattleManager.instance.PlayerActors[0];
-        }
-
     }
 
     public enum PROJECTILETYPE { Shuriken }

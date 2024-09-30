@@ -12,9 +12,8 @@ namespace Assets.Scripts.Battle.Actions.Skills
             casterActor.PlayAnimation("Taunt", () =>
             {
                 casterActor.GetComponentInChildren<ParticleSystem>().Play(); //to b ereplace
-                casterActor.transform.position = casterActor.transform.position + GetRelativeToCamera(StickValue) * 10f;
+                casterActor.transform.position = casterActor.transform.position + GetRelativeToCamera(Direction) * 10f;
                 casterActor.GetComponentInChildren<ParticleSystem>().Play();
-                onPerformEnd();
             }, onPerformEnd);
             return;
         }

@@ -1,5 +1,8 @@
-﻿using System.Collections;
+﻿using Assets.Scripts.Pattern;
+using System.Collections;
 using UnityEngine;
+using Assets.Scripts.Pattern;
+
 
 namespace Assets.Scripts.Battle.Components.State
 {
@@ -16,9 +19,7 @@ namespace Assets.Scripts.Battle.Components.State
 
         public void Enter()
         {
-            //Get closest opponent
-            //var opponent = actor.isControllable() ? BattleManager.instance.EnemyActors[0] : BattleManager.instance.PlayerActors[0];
-            actor.PlayAnimation("Idle");
+
         }
 
         public void Exit()
@@ -28,12 +29,12 @@ namespace Assets.Scripts.Battle.Components.State
 
         public void OnCollisionEnter(Collision collision)
         {
-            throw new System.NotImplementedException();
+            //throw new System.NotImplementedException();
         }
 
         public void Update()
         {
-            if (!actor.grounded) actor.state.TransitionTo(actor.state.airNeutralState);
+            //
         }
     }
 }

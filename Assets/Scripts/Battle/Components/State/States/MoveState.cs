@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.Pattern;
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -37,12 +38,12 @@ namespace Assets.Scripts.Battle.Components.State
 
         public void Exit()
         {
-            onMoveComplete();
+            onMoveComplete = null;
         }
 
         public void OnCollisionEnter(Collision collision)
         {
-            actor.state.TransitionTo(actor.state.idleState);
+            onMoveComplete.Invoke();
         }
 
         public void Update()
@@ -51,7 +52,7 @@ namespace Assets.Scripts.Battle.Components.State
 
             if (sqrMag <= minDistance * minDistance || sqrMag > lastSqrMag)
             {
-                actor.state.TransitionTo(actor.state.idleState);
+                onMoveComplete.Invoke();
             }
             else
             {

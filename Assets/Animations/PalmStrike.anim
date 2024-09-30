@@ -30,7 +30,7 @@ AnimationClip:
     - time: 0.9166667
       value: {fileID: 1619807635, guid: dbed9846e9655f9489c37ed23450fffa, type: 3}
     attribute: m_Sprite
-    path: Graphic
+    path: Billboard/Graphic
     classID: 212
     script: {fileID: 0}
   m_SampleRate: 60
@@ -41,7 +41,7 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 3003628726
+      path: 1567700607
       attribute: 0
       script: {fileID: 0}
       typeID: 212
@@ -86,14 +86,14 @@ AnimationClip:
     intParameter: 0
     messageOptions: 0
   - time: 0.18333334
-    functionName: AnimationHit
+    functionName: AnimationHitCallback
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 0.9166667
-    functionName: AnimationEnd
+  - time: 0.9
+    functionName: AnimationEndCallback
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

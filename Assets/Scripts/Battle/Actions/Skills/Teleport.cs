@@ -7,18 +7,22 @@ namespace Assets.Scripts.Battle.Actions.Skills
     [CreateAssetMenu(fileName = "Teleport", menuName = "ScriptableObjects/Skills/Teleport")]
     public class Teleport : BaseSkill
     {
+        public ANIMATION type;
+        public float Distance;
         protected override void PerformSpecific(Actor casterActor, Action onPerformEnd)
         {
-            casterActor.PlayAnimation("Ninjutsu", () =>
+            casterActor.PlayAnimation(type.ToString(), () =>
             {
-                casterActor.transform.position = casterActor.transform.position + GetRelativeToCamera(StickValue) * 10f;
+                CameraManager.instance.SlowTrack = true;
+                casterActor.transform.position = casterActor.transform.position + Direction * Distance;
             }, onPerformEnd);
-            return;
         }
 
         private void Awake()
         {
-            StickMult = 10f;
+            StickMult = Distance;
         }
+
+        public enum ANIMATION { Ninjutsu, ShadowStep }
     }
 }

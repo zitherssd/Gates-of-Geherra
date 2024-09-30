@@ -1,5 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
+using Assets.Scripts.Pattern;
+using System;
 
 namespace Assets.Scripts.Battle.Components.State.States
 {
@@ -10,6 +12,7 @@ namespace Assets.Scripts.Battle.Components.State.States
         [Range(0, 2)] public float DamageModifier = 1f;
         [Range(0, 2)] public float PostureModifier = 1f;
         [Range(0, 2)] public float KnockbackModifier = 1f;
+        public Action onAnimationEnd;
 
         public BlockState(Actor owner)
         {
@@ -26,7 +29,6 @@ namespace Assets.Scripts.Battle.Components.State.States
 
         public void Enter()
         {
-            owner.KillAnimationEndEvent();
             owner.PlayAnimation("Block");
             owner.DamageRecieved += ModifyDamage;
             owner.KnockbackRecieved += ModifyKnockback;

@@ -11,11 +11,11 @@ namespace Assets.Scripts.Battle.Actions.Actions
 
         protected override void PerformSpecific(Actor casterActor, Action onPerformEnd)
         {
-            var direction = GetRelativeToCamera(StickValue);
-            direction.y = power/1.5f * StickValue.magnitude;
+            var direction = Direction * power;
+            direction.y = power/1.3f * Direction.magnitude;
             casterActor.rigidbody.AddForce(direction * 100);
             casterActor.transform.position = new Vector3(casterActor.transform.position.x, casterActor.transform.position.y + 0.011f, casterActor.transform.position.z);
-            float dotProduct = Vector3.Dot(Camera.main.transform.right, direction.normalized);
+            float dotProduct = Vector3.Dot(casterActor.transform.forward, direction.normalized);
             if (dotProduct > 0)
                 casterActor.state.TransitionTo(casterActor.state.airNeutralState);
             else

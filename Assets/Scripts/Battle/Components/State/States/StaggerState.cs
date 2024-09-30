@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
+using Assets.Scripts.Pattern;
+
 
 namespace Assets.Scripts.Battle.Components.State
 {
@@ -18,10 +20,12 @@ namespace Assets.Scripts.Battle.Components.State
         public void Enter()
         {
             Physics.IgnoreLayerCollision(3, 3, true);
-            actor.KnockbackRecieved += ModifyKnockback;
+            //actor.KnockbackRecieved += ModifyKnockback;
             actor.DamageApplied += ChangeSpriteToDamaged;
             actor.PlayAnimation("PostureBroken");
             actor.audio.PlayAudio("Attack1");
+            actor.rigidbody.drag = 0.15f;
+            collisionOccured = false;
         }
 
         private float ModifyKnockback(float force, Vector3 direction)
@@ -37,8 +41,10 @@ namespace Assets.Scripts.Battle.Components.State
         public void Exit()
         {
             Physics.IgnoreLayerCollision(3, 3, false);
-            actor.KnockbackRecieved -= ModifyKnockback;
+            //actor.KnockbackRecieved -= ModifyKnockback;
             actor.DamageApplied -= ChangeSpriteToDamaged;
+            actor.rigidbody.drag = 0.33f;
+
         }
 
         public void Update()
@@ -51,14 +57,16 @@ namespace Assets.Scripts.Battle.Components.State
             }
             else
             {
-                // Increment the idle timer if the actor's velocity is zero
-                idleTimer += Time.deltaTime;
+                actor.state.TransitionTo(actor.state.idleState);
 
-                // Transition to idleState if the idle timer exceeds 1 second
-                if (idleTimer > 0.33f)
-                {
-                    actor.state.TransitionTo(actor.state.idleState);
-                }
+                // Increment the idle timer if the actor's velocity is zero
+                //idleTimer += Time.deltaTime;
+
+                //// Transition to idleState if the idle timer exceeds 1 second
+                //if (idleTimer > 0.33f)
+                //{
+                //    actor.state.TransitionTo(actor.state.idleState);
+                //}
             }
         }
 
@@ -67,16 +75,21 @@ namespace Assets.Scripts.Battle.Components.State
             if (collision.gameObject.CompareTag("Level"))
             {
                 Debug.Log($"Velocity on collision is {actor.rigidbody.velocity.magnitude}");
+                Debug.Log($"RelativeVel is {collision.relativeVelocity.magnitude}");
+                if (collisionOccured == false)
+                {
+                    if (collision.gameObject.name == "Trap")
+                    {
+                        Debug.Log($"{actor.ActorData.name} hit trap!");
+                        actor.ApplyDamage(10f);
+                        actor.ApplyPosture(5f);
+                    }
+                    else
+                    {
+                        actor.ApplyPosture(5f);
+                    }
+                }
 
-                if(collision.gameObject.name == "Trap")
-                {
-                    actor.ApplyDamage(10f);
-                    actor.ApplyPosture(5f);
-                }
-                else
-                {
-                    actor.ApplyPosture(5f);
-                }
                 collisionOccured = true;
 
                 // Check if velocity magnitude is greater than the threshold
@@ -87,7 +100,7 @@ namespace Assets.Scripts.Battle.Components.State
                     var r = collision.relativeVelocity - 2 * Vector3.Dot(actor.rigidbody.velocity, collision.GetContact(0).normal) * collision.contacts[0].normal;
 
                     // Replace current velocity with the mirrored velocity
-                    actor.rigidbody.velocity = r;
+                    actor.rigidbody.velocity = 2*r/3;
                 }
             }
         }

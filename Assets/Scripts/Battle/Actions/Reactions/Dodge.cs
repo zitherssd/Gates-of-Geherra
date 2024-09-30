@@ -16,56 +16,40 @@ namespace Assets.Scripts.Battle.Actions.Reactions
         private LTDescr moveTween;
         private Actor actor;
 
-        protected override void PerformSpecific(Actor actor, Action onReactionComplete)
+        protected override void PerformSpecific(Actor actor, Action onActionComplete)
         {
+            CameraManager.instance.SlowTrack = true;
             this.actor = actor;
-            actor.KillAnimationEndEvent();
-            if (actor.isControllable())
+
+
+            if (Type == TYPE.Force)
             {
-                var desiredMoveDirection = GetRelativeToCamera(StickValue);
-                actor.PlayAnimation(Animation.ToString());
-                if (Type == TYPE.Normal)
-                {
-                    actor.GetComponent<Rigidbody>().AddForce(desiredMoveDirection.normalized * 100 * force);
-                }
-                else if (Type == TYPE.Fast)
-                {
-                    moveTween = LeanTween.move(actor.gameObject, actor.transform.position + desiredMoveDirection.normalized * force, time).setEaseOutExpo().setOnUpdate(OnTweenUpdate).setOnComplete(() => TransitionToIdle(actor));
-                }
+                actor.GetComponent<Rigidbody>().AddForce(100 * force * Direction.normalized);
+                actor.PlayAnimation(Animation.ToString(), onActionComplete);
             }
-            else
+            else if (Type == TYPE.Lerp)
             {
-                var sign = 0;
-                if ((int)UnityEngine.Random.Range(0, 2) == 0) { sign = -1; } else { sign = 1; };
-
-                var aux = new Vector2(0, sign);
-                var desiredMoveDirection = GetRelativeToCamera(aux);
-                actor.PlayAnimation(Animation.ToString());
-                if (Type == TYPE.Normal)
-                {
-                    actor.GetComponent<Rigidbody>().AddForce(desiredMoveDirection.normalized * 100 * force);
-                }
-                else if (Type == TYPE.Fast)
-                {
-                    moveTween = LeanTween.move(actor.gameObject, actor.transform.position + desiredMoveDirection.normalized * force, time).setEaseOutExpo().setOnUpdate(OnTweenUpdate).setOnComplete(() => TransitionToIdle(actor));
-                }
+                actor.PlayAnimation(Animation.ToString(), onActionComplete);
+                moveTween = LeanTween.move(actor.gameObject, actor.transform.position + Direction * force, time).setEaseOutExpo().setOnUpdate(OnTweenUpdate);
             }
-        }
 
-        private void TransitionToIdle(Actor actor)
-        {
-            actor.state.TransitionTo(actor.state.idleState);
-        }
 
-        private Vector3 GetRelativeToCamera(Vector2 direction)
-        {
-            var camera = Camera.main;
-            var forward = camera.transform.forward; forward.y = 0;
-            var right = camera.transform.right; right.y = 0;
-            forward.Normalize(); right.Normalize();
+            //IF AI
+            //var sign = 0;
+            //if ((int)UnityEngine.Random.Range(0, 2) == 0) { sign = -1; } else { sign = 1; };
 
-            var desiredMoveDirection = forward * direction.y + right * direction.x;
-            return desiredMoveDirection;
+            //var aux = new Vector2(0, sign);
+            //var desiredMoveDirection = GetRelativeToCamera(aux);
+            //if (Type == TYPE.Force)
+            //{
+            //    actor.GetComponent<Rigidbody>().AddForce(desiredMoveDirection.normalized * 100 * force);
+            //    actor.PlayAnimation(Animation.ToString(),onActionComplete);
+            //}
+            //else if (Type == TYPE.Lerp)
+            //{
+            //    actor.PlayAnimation(Animation.ToString(), onActionComplete);
+            //    moveTween = LeanTween.move(actor.gameObject, actor.transform.position + desiredMoveDirection.normalized * force, time).setEaseOutExpo().setOnUpdate(OnTweenUpdate);
+            //}
         }
 
         private void OnTweenUpdate(float tweenValue)
@@ -79,6 +63,6 @@ namespace Assets.Scripts.Battle.Actions.Reactions
     }
 
     public enum ANIMATION { Step, Roll }
-    public enum TYPE { Normal, Fast }
+    public enum TYPE { Force, Lerp }
 
 }

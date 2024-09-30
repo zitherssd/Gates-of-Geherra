@@ -2,6 +2,7 @@ using Assets;
 using Assets.Scripts.Battle;
 using Assets.Scripts.Battle.Components.State;
 using Assets.Scripts.Battle.Components.Status;
+using Assets.Scripts.Pattern;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -70,8 +71,8 @@ public class BarsHandler : MonoBehaviour
 
         LeanTween.value(staminaBarEase.value, staminaBar.value, 2f).setEaseOutCubic().setIgnoreTimeScale(true).setOnComplete(() =>
         {
-            LeanTween.alpha(staminaBarEase.fillRect, 0f, 0.8f).setEaseOutExpo().setIgnoreTimeScale(true);
-            LeanTween.alpha(staminaBar.fillRect, 0f, 0.8f).setEaseOutExpo().setIgnoreTimeScale(true);
+            LeanTween.alpha(staminaBarEase.fillRect, 0f, 10f).setEaseOutExpo().setIgnoreTimeScale(true);
+            LeanTween.alpha(staminaBar.fillRect, 0f, 10f).setEaseOutExpo().setIgnoreTimeScale(true);
         }).setOnUpdate((float val) =>
         {
             staminaBarEase.value = val;
@@ -90,6 +91,8 @@ public class BarsHandler : MonoBehaviour
 
     void HealStamina()
     {
+        LeanTween.cancel(staminaBar.fillRect);
+        LeanTween.cancel(staminaBarEase.fillRect);
         //Brings up the staminaBar in 0.1 seconds
         LeanTween.alpha(staminaBarEase.fillRect, 1f, 0.1f).setEaseOutCubic().setIgnoreTimeScale(true);
         LeanTween.alpha(staminaBar.fillRect, 1f, 0.1f).setEaseOutCubic().setIgnoreTimeScale(true);
@@ -98,6 +101,7 @@ public class BarsHandler : MonoBehaviour
         LeanTween.value(staminaBar.value, newvalue, 1f).setEaseOutCubic().setIgnoreTimeScale(true).setOnUpdate((float val) =>
         {
             staminaBar.value = val;
+            staminaBarEase.value = val;
         });
     }
 

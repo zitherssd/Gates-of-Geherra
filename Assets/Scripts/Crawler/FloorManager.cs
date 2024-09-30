@@ -55,12 +55,15 @@ public class FloorManager : MonoBehaviour
 
     public ActorData GetActorForFloor()
     {
+        ActorData result;
         if (currentFloor == 2)
-            return secondFloorEnemies[Random.Range(0, secondFloorEnemies.Count)];
+            result = secondFloorEnemies[Random.Range(0, secondFloorEnemies.Count)];
         else if (currentFloor == 3)
-            return thirdFloorEnemies[Random.Range(0, thirdFloorEnemies.Count)];
+            result = thirdFloorEnemies[Random.Range(0, thirdFloorEnemies.Count)];
         else
-            return fourthFloorEnemies[Random.Range(0, fourthFloorEnemies.Count)];
+            result = fourthFloorEnemies[Random.Range(0, fourthFloorEnemies.Count)];
+        result.Reset();
+        return result;
     }
 
 

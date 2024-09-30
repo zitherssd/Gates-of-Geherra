@@ -9,7 +9,7 @@ namespace Assets
     {
         public string Name;
         public RARITY Rarity;
-        private bool free { get; set; }
+        public string Description;
         public int cooldownTurns;
         public int TotalUses;
         //public int Range;
@@ -19,8 +19,7 @@ namespace Assets
         public int StaminaCost;
         public int Speed;
         public List<TAG> Tags;
-        [HideInInspector] public float SliderValue;
-        [HideInInspector] public Vector2 StickValue;
+        [HideInInspector] public Vector3 Direction;
         public int currentCooldownTurns = 0;
         [HideInInspector] public int remainingUses;
         public float StickMult = 1;
@@ -28,24 +27,22 @@ namespace Assets
 
         public virtual void Perform(Actor casterActor, Action onPerformEnd)
         {
-            UpdateRemainingUses();
-            ResetCooldown();
+            //UpdateRemainingUses();
+            //ResetCooldown();
 
-            if (!Tags.Contains(TAG.USESLIDER)) SliderValue = 1f;
             if (Tags.Contains(TAG.KILLMOMENTUM)) casterActor.GetComponent<Rigidbody>().velocity = Vector3.zero;
 
             casterActor.ActorData.DealStaminaDamage(StaminaCost);
             casterActor.ActorData.ChangeBuildup(BuildupGain);
             casterActor.ActorData.ChangeBuildup(-BuildupCost);
 
-            casterActor.state.TransitionTo(casterActor.state.actingState);
-
-            if (Tags.Contains(TAG.REPEAT_TURN))
+            if (Tags.Contains(TAG.FREE))
             {
                 PerformSpecific(casterActor, () => { casterActor.Act(() => { casterActor.state.TransitionTo(casterActor.state.idleState); onPerformEnd.Invoke(); }); });
             }
             else
-                PerformSpecific(casterActor, () => { casterActor.state.TransitionTo(casterActor.state.idleState); onPerformEnd.Invoke(); }); 
+                PerformSpecific(casterActor, () => { casterActor.state.TransitionTo(casterActor.state.idleState); onPerformEnd.Invoke(); });
+            //PerformSpecific(casterActor, onPerformEnd);
         }
 
         protected virtual void PerformSpecific(Actor casterActor, Action onPerformEnd) { }
@@ -55,7 +52,7 @@ namespace Assets
             if (currentCooldownTurns > 0)
                 currentCooldownTurns--;
 
-            if (Tags.Contains(TAG.RECHARGE_USES) && remainingUses < TotalUses)
+            if (Tags.Contains(TAG.RECHARGE_TOTAL_USES) && remainingUses < TotalUses)
             {
                 if (currentCooldownTurns == 0)
                 {
@@ -67,13 +64,13 @@ namespace Assets
 
         public bool IsSkillOnCooldown()
         {
-            if (Tags.Contains(TAG.RECHARGE_USES)) return false;
+            if (Tags.Contains(TAG.RECHARGE_TOTAL_USES)) return false;
             return currentCooldownTurns > 0;
         }
 
         public void ResetCooldown()
         {
-            if (Tags.Contains(TAG.RECHARGE_USES))
+            if (Tags.Contains(TAG.RECHARGE_TOTAL_USES))
             {
 
             }
@@ -130,7 +127,7 @@ namespace Assets
 
         public void UpdateRemainingUses()
         {
-            if (remainingUses == TotalUses && Tags.Contains(TAG.RECHARGE_USES))
+            if (remainingUses == TotalUses && Tags.Contains(TAG.RECHARGE_TOTAL_USES))
             {
                 remainingUses -= 1;
                 currentCooldownTurns = cooldownTurns;
@@ -139,15 +136,17 @@ namespace Assets
             if (TotalUses != 0)
                 remainingUses -= 1;
         }
+
+        public enum TAG
+        {
+            PROJECTILE, KNOCKBACK_AIR, KNOCKBACK_FRONT, KNOCKBACK_BACK, NO_REACTION, FREE, STARTER, FINISHER, COUNTER, USESTICK, RECHARGE_TOTAL_USES,
+            APPLYROOTMOTION,
+            KILLMOMENTUM, KILL_TRACKING
+        }
     }
 
 
-    public enum TAG
-    {
-        MOVE_NEAR_ENEMY_BEFORE_ATTACK, PROJECTILE, KNOCKBACK_AIR, KNOCKBACK_FRONT, KNOCKBACK_BACK, MOVE_OFFSET_BEHIND, MOVE_OFFSET_INFRONT, NO_REACTION, REPEAT_TURN, STARTER, FINISHER, COUNTER, USESLIDER, USESTICK, RECHARGE_USES,
-        APPLYROOTMOTION,
-        KILLMOMENTUM
-    }
+
 
 
     public enum RARITY { COMMON, UNCOMMON, RARE, EPIC, LEGENDARY };

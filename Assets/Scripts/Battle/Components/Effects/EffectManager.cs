@@ -6,7 +6,7 @@ namespace Assets.Scripts.Battle.Components.Effects
 {
     public class EffectManager
     {
-        private Actor owner;
+        private readonly Actor owner;
         public EffectManager(Actor owner)
         {
             this.owner = owner;

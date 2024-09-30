@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static Assets.BaseAction;
 
 namespace Assets
 {
@@ -24,7 +25,8 @@ namespace Assets
         private bool repeatTurn;
         private UIManager uiManager;
         private uint currentTurn;
-
+        private bool isHitstopActive = false;
+        private float originalTimeScale = 1.0f;
         private void Awake()
         {
             if (instance == null) instance = this;
@@ -38,6 +40,7 @@ namespace Assets
         }
         void Start()
         {
+            Physics.gravity = new Vector3(0, -6f, 0);
             uiManager = UIManager.GetInstance();
             StartCoroutine(uiManager.TypeTextMiddleLetterByLetter($"{PlayerActors[0].ActorData.Name} vs {EnemyActors[0].ActorData.Name}", () =>
             {
@@ -69,6 +72,25 @@ namespace Assets
             }
         }
 
+        public void ApplyHitstop(float duration)
+        {
+            if (!isHitstopActive)
+            {
+                StartCoroutine(HitstopCoroutine(duration));
+            }
+        }
+
+        private IEnumerator HitstopCoroutine(float duration)
+        {
+            isHitstopActive = true;
+            originalTimeScale = Time.timeScale;
+            Time.timeScale = 0.0f;
+
+            yield return new WaitForSecondsRealtime(duration);
+
+            Time.timeScale = originalTimeScale;
+            isHitstopActive = false;
+        }
 
         //Starts a battle with current PlayerActors and EnemyActors
         void StartBattle()
@@ -79,10 +101,10 @@ namespace Assets
             foreach(var actor in PlayerActors.Concat(EnemyActors))
             {
                 actor.ActorData.Reset();
+                actor.state.TransitionTo(actor.state.idleState);
             }
             EnqueAll();
 
-            //Launch
             SwitchToNextTurn();
         }
 
@@ -102,11 +124,15 @@ namespace Assets
             {
                 EnemyActors[0].ActorData = enemy;
                 EnemyActors[0].ActorData.Reset();
-                EnemyActors[0].GetComponent<BarsHandler>().Reset();
+                EnemyActors[0].transform.Find("UI Elements").GetComponent<BarsHandler>().Reset();
                 EnemyActors[0].PlayAnimation("Idle");
                 PlayerActors[0].PlayAnimation("Idle");
                 PlayerActors[0].ActorData.Refresh();
                 currentTurn = 0;
+                uiManager.SetTurn(currentTurn);
+                turnQueue.Clear();
+                CameraManager.instance.ResetForNewBattle();
+                EnqueAll();
                 SwitchToNextTurn();
             });
 
@@ -161,16 +187,20 @@ namespace Assets
                 return;
             }
 
-            var nextActor = GetNextActorInTurn();
-            if (nextActor == null)
+
+            StartCoroutine(WaitForMovementCompletion(() =>
             {
-                ProcTurnChangeEffects();
-                SwitchToNextTurn();
-            }
-            else
-            {
-                nextActor.Act(SwitchToNextActorInTurn);
-            }
+                var nextActor = GetNextActorInTurn();
+                if (nextActor == null)
+                {
+                    ProcTurnChangeEffects();
+                    SwitchToNextTurn();
+                }
+                else
+                {
+                    nextActor.Act(SwitchToNextActorInTurn);
+                }
+            }));
         }
         private void SwitchToNextTurn()
         {
@@ -183,7 +213,7 @@ namespace Assets
             }
 
             StartCoroutine(WaitForMovementCompletion(() =>
-            {
+            { 
                 activeBattler = GetNextActorInTurn();
                 activeBattler.Act(SwitchToNextActorInTurn);
             }));
@@ -201,7 +231,7 @@ namespace Assets
         {
             currentTurn++;
             uiManager.SetTurn(currentTurn);
-            //OnNewTurn.Invoke(currentTurn);
+            OnNewTurn?.Invoke(currentTurn);
             EnqueAll();
             foreach(var actor in PlayerActors.Concat(EnemyActors))
             {
@@ -212,7 +242,7 @@ namespace Assets
         {
             var allActors = PlayerActors.Concat(EnemyActors);
 
-            while (!allActors.All(actor => actor.state.CurrentState == actor.state.idleState))
+            while (!allActors.All(actor => actor.state.CurrentState == actor.state.idleState || actor.state.CurrentState == actor.state.blockState))
             {
                 yield return null; // Wait for the next frame
             }

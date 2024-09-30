@@ -9,6 +9,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static Assets.BaseAction;
 
 public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
@@ -18,7 +19,6 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
 
     private Transform home;
     public BaseAction referencedAction;
-    public BaseAction referencedReaction;
     public Action<BaseAction> Click;
 
     private Vector2 targetPos;
@@ -29,17 +29,13 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
     {
         isDraggable = draggable;
 
-        if (isDraggable)
-        {
-            remainingUses.color = Color.gray;
-            buildupCost.color = Color.yellow;
-        }
-        else
-        {
-            remainingUses.color = new Color(remainingUses.color.r, remainingUses.color.g, remainingUses.color.b, 0.1f);
-            buildupCost.color = new Color(buildupCost.color.r, buildupCost.color.g, buildupCost.color.b, 0.06f);
-        }
         gameObject.GetComponent<Button>().interactable = draggable;
+        //animation
+        if(gameObject.GetComponent<Button>().IsInteractable())
+        {
+
+        }
+
     }
 
     public static void KillAll()
@@ -57,7 +53,6 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
 
     private void Awake()
     {
-        if (player == null) player = BattleManager.instance.PlayerActors[0];
         if (actionHolder == null) actionHolder = GameObject.Find("ActionHolder");
         if (actionSlot == null) actionSlot = GameObject.Find("ActionSlot");
         if (actionSlotScript == null) actionSlotScript = actionSlot.GetComponent<ActionSlot>();
@@ -66,6 +61,7 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
 
     private void Start()
     {
+        if (player == null) player = BattleManager.instance.PlayerActors[0];
         rect = gameObject.GetComponent<RectTransform>();
         home = transform.parent;
         LeanTween.scale(gameObject, Vector3.one, 0.4f).setEaseOutBack().setIgnoreTimeScale(true);
@@ -92,18 +88,24 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
             }
 
             Vector2 delta = currentPointerPosition - pointerDownPosition; // Calculate the movement delta
+            if (delta.magnitude > 300) { pointerDownPosition += Vector2.ClampMagnitude(delta, delta.magnitude - 300); }
             delta = Vector2.ClampMagnitude(delta,300);
-            referencedAction.StickValue.x = LinearMap(delta.x, 0,300,0,1);
-            referencedAction.StickValue.y = LinearMap(delta.y, 0, 300, 0, 1);
-            referencedAction.StickValue = Vector2.ClampMagnitude(referencedAction.StickValue, 1f);
-            rect.transform.position = Vector2.Lerp(rect.transform.position, targetPos + referencedAction.StickValue * 150f, 0.2f);
-            guide.transform.position = player.transform.position + GetRelativeToCamera(referencedAction.StickValue * referencedAction.StickMult);
-            //LeanTween.move(rect, CanvasHandler.instance.GetComponent<RectTransform>().anchoredPosition + referencedAction.StickValue * 100f, 0.15f).setEaseOutBack().setIgnoreTimeScale(true);
-
-
-            if (referencedAction.StickValue.magnitude > 0.1f)
+            deltaScaled = new Vector2(LinearMap(delta.x, 0, 300, 0, 1), LinearMap(delta.y, 0, 300, 0, 1));
+            deltaScaled = Vector2.ClampMagnitude(deltaScaled, 1);
+            if (referencedAction.Tags.Contains(TAG.USESTICK))
             {
-                rect.transform.localScale = Vector3.Lerp(rect.transform.localScale, Vector3.one * LinearMap(referencedAction.StickValue.magnitude, 0.1f, 1, 1.0f, 1.5f), 0.1f);
+                //Show guide and store Direction in skill;
+                guide.transform.position = player.transform.position + GetRelativeToCamera(deltaScaled * referencedAction.StickMult);
+                referencedAction.Direction = GetRelativeToCamera(deltaScaled);
+            }
+
+            rect.transform.position = Vector2.Lerp(rect.transform.position, targetPos + deltaScaled * 150f, 0.2f);
+
+            Debug.Log(deltaScaled);
+
+            if (deltaScaled.magnitude > 0.1f)
+            {
+                rect.transform.localScale = Vector3.Lerp(rect.transform.localScale, Vector3.one * LinearMap(deltaScaled.magnitude, 0.1f, 1, 1.0f, 1.5f), 0.1f);
             }
             else
             {
@@ -149,25 +151,8 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
         {
             switch (tag)
             {
-                case TAG.MOVE_NEAR_ENEMY_BEFORE_ATTACK:
-                    tagString += "Moves Near Enemy" + Environment.NewLine;
-                    break;
-                case TAG.PROJECTILE:
-                    break;
-                case TAG.KNOCKBACK_AIR:
-                    tagString += "Launches in Air" + Environment.NewLine;
-                    break;
-                case TAG.MOVE_OFFSET_BEHIND:
-                    tagString += "Knock Towards Camera" + Environment.NewLine;
-                    break;
-                case TAG.MOVE_OFFSET_INFRONT:
-                    tagString += "Knock Away From Camera" + Environment.NewLine;
-                    break;
-                case TAG.NO_REACTION:
-                    tagString += "Enemy Cannot React" + Environment.NewLine;
-                    break;
-                case TAG.REPEAT_TURN:
-                    tagString += "Act Again On Completion" + Environment.NewLine;
+                case TAG.FREE:
+                    tagString += "[FREE]";
                     break;
                 default:
                     break;
@@ -184,6 +169,17 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
             string plusSymbol = "+";
             remainingUses.text = action.TotalUses != 0 ? ConcatWithPlus(plusSymbol, action.remainingUses) : string.Empty;
             buildupCost.text = action.BuildupCost != 0 ? action.BuildupCost.ToString() : string.Empty;
+            staminaCost.text = action.StaminaCost != 0 ? action.StaminaCost.ToString() : string.Empty;
+            tags.text = GenerateTagString(action.Tags);
+            if(description)
+            {
+                if (String.IsNullOrEmpty(action.Description))
+                {
+                    description.text = action.Description;
+                }
+            }
+
+                
             SetDraggable(action);
         }
     }
@@ -196,16 +192,6 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
     private string ConcatWithPlus(string symbol, int value)
     {
         return new string(symbol[0], value);
-    }
-
-    private void SetButtonInteractable(Assets.BaseAction action)
-    {
-        GetComponent<UnityEngine.UI.Button>().interactable = false;
-    }
-
-    public void SetButtonInteractable(bool interactable)
-    {
-        GetComponent<UnityEngine.UI.Button>().interactable = interactable;
     }
 
     public void SetActive()
@@ -242,7 +228,7 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
     private void MoveToCenter()
     {
         // Calculate the center position of the screen
-        Vector2 centerPosition = new Vector2(Screen.width / 2f, Screen.height / 2f);
+        Vector2 centerPosition = new(Screen.width / 2f, Screen.height / 2f);
         rect.anchorMin = new Vector2(0.5f, 0.5f);
         rect.anchorMax = new Vector2(0.5f, 0.5f);
         rect.pivot = new Vector2(0.5f, 0.5f);
@@ -264,6 +250,10 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
 
     public void OnPointerDown(PointerEventData pointerEventData)
     {
+        if(referencedAction is AttackSkill)
+        {
+            CameraManager.instance.SlowTrack = false;
+        }
         if (isDraggable == false) return;
         homePosition = gameObject.transform.localPosition;
         MoveToCenter();
@@ -277,7 +267,7 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
         if (isDraggable == false) return;
         MoveToHome();
         isPressed = false;
-        if(referencedAction.StickValue.magnitude > 0.1f)
+        if(deltaScaled.magnitude > 0.1f)
         {
             Click.Invoke(referencedAction);
             KillAll();
@@ -303,8 +293,10 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
     [SerializeField] private TextMeshProUGUI skillName;
     [SerializeField] private TextMeshProUGUI remainingUses;
     [SerializeField] private TextMeshProUGUI buildupCost;
+    [SerializeField] private TextMeshProUGUI staminaCost;
     [SerializeField] private TextMeshProUGUI speed;
     [SerializeField] private TextMeshProUGUI range;
+    [SerializeField] private TextMeshProUGUI description;
     [SerializeField] private TextMeshProUGUI damage;
     [SerializeField] private TextMeshProUGUI postureDamage;
     [SerializeField] private TextMeshProUGUI knockback;
@@ -316,13 +308,9 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
     private static GameObject guide;
 
     private bool isDraggable = true;
-    private bool isPointerDown;
     private RectTransform rect;
-    private Vector2 initialPosition;
-    private Vector2 initialoffset;
-    private float timeCount;
-    private Vector2 deltaValue = Vector2.zero;
     private bool isPressed;
     private Vector2 pointerDownPosition;
     private Vector3 homePosition;
+    private Vector2 deltaScaled;
 }

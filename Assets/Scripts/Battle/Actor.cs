@@ -1,27 +1,28 @@
-﻿using Assets.Scripts.Actions;
-using Assets.Scripts.Battle.Actions;
+﻿using Assets.Scripts.Battle.Components.AI;
 using Assets.Scripts.Battle.Components.Audio;
 using Assets.Scripts.Battle.Components.Effects;
 using Assets.Scripts.Battle.Components.State;
 using Assets.Scripts.Battle.Components.Status;
+using Assets.Scripts.Battle.Components.Target;
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
+using static Assets.BaseAction;
 
 namespace Assets.Scripts.Battle
 {
     public class Actor : MonoBehaviour
     {
         //Data
-        [SerializeField] public ActorData ActorData;
+        public ActorData ActorData;
 
         //Components
-        public StateMachine state;
-        public StatusManager statusManager; 
+        public ActorStateMachine state;
+        public StatusManager statusManager;
         public new AudioManager audio;
         public EffectManager effects;
+        public AIComponent ai;
+        public TargetingManager target;
 
         //Events
         public delegate float DamageValue(float damage);
@@ -35,18 +36,17 @@ namespace Assets.Scripts.Battle
         public event Action<float> DamageApplied;
         public event Action<float> PostureApplied;
         public event Action<float, Vector3> KnockbackApplied;
+        public event Action onAnimationEnd;
+        public event Action onAnimationHit;
 
         // UI
         public OriginPointHandler originPointInUI;
 
         // Private members
         private bool hitLastRound;
-        private Action onAnimationHitComplete;
-        private Action onAnimationEndComplete;
         private Action onReactionCheck;
         private Animator animator;
         public new Rigidbody rigidbody { get; set; }
-
 
 
         private void Awake()
@@ -54,130 +54,57 @@ namespace Assets.Scripts.Battle
             rigidbody = gameObject.GetComponent<Rigidbody>();
             animator = gameObject.GetComponent<Animator>();
 
-
-
-            state = new StateMachine(this);
+            state = new ActorStateMachine(this);
             audio = new AudioManager(this);
             statusManager = new StatusManager(this);
             effects = new EffectManager(this);
+            ai = new AIComponent(this);
+            target = new TargetingManager(this);
+
+            //ActorData.OnDeath += () => { state.TransitionTo(state.idleState); };
         }
         public void Act(Action onActorActionFinished) //Chose and perform an action
         {
-            //if flying in midair do a check to 
-            var bm = BattleManager.instance;
-            var im = InputManager.instance;
-            var um = UIManager.GetInstance();
-
-            Debug.Log(ActorData.Name + " TO ACT");
-            if (isControllable())
+            ai.ChooseAction(chosenAction =>
             {
-                var AvaliableSkills = ActorData.actions;
-                Time.timeScale = 0f; UIManager.GetInstance().ShowUI();
-                um.DrawActionsAndWaitForSelectionOrNull(AvaliableSkills, selectedSkill =>
+                if (chosenAction == null)
                 {
-                    if (selectedSkill == null)
-                    {
-                        Time.timeScale = 1f; UIManager.GetInstance().HideUI();
-                        Debug.Log("Player skipped");
-                        StartCoroutine(WaitForOneFrame(onActorActionFinished));
-                    }
-                    else
-                    {
-                        //if (selectedSkill.Tags.Contains(TAG.USESLIDER))
-                        //    selectedSkill.SliderValue = InputManager.instance.SliderValue;
-                        //if (selectedSkill.Tags.Contains(TAG.USEKNOB))
-                        //    selectedSkill.StickValue = InputManager.instance.StickValue;
-
-                        Time.timeScale = 1f; UIManager.GetInstance().HideUI();
-
-                        UseAction(selectedSkill, () => { onActorActionFinished(); Debug.Log("Player finished turn, going back to battlemanager"); });
-                    }
-                });
-            }
-            else
-            {
-
-                //Enemy AI here basically
-                var chosenSkill = ChooseValidSkillInRangeOrReturnNull();
-                if (chosenSkill == null)
-                {
-                    Debug.Log("Enemy moving closer");
-                    var movedirection = (bm.PlayerActors[0].transform.position - transform.position).normalized;
-                    var moveSkill = ActorData.actions.OfType<MoveAction>().First();
-                    if (moveSkill)
-                    {
-                        moveSkill.StickValue = new Vector2(movedirection.x, movedirection.z);
-                        UseAction(moveSkill, onActorActionFinished);
-                        return;
-                    }
-                    else
-                    {
-                        onActorActionFinished.Invoke();
-                    }
-                    //UseAction(MoveAction.instance, () => { Debug.Log("Enemy finished moving, back to bm"); onActorActionFinished(); });
+                    //state.TransitionTo(state.actingState.Set(null, null, null));
+                    StartCoroutine(WaitForTime(onActorActionFinished, 1f));
                 }
                 else
                 {
-                    chosenSkill.SliderValue = 1f;
-                    var direction = (bm.PlayerActors[0].transform.position - transform.position).normalized;
-                    var directionleft = Vector3.Cross(Vector3.up, direction).normalized;
-                    directionleft = directionleft * UnityEngine.Random.Range(-0.3f, 0.3f);
-                    var dirleftvector = new Vector3(directionleft.x, directionleft.z);
-                    chosenSkill.StickValue = new Vector3(direction.x, direction.z) + dirleftvector;
-                    UseAction(chosenSkill, () => { Debug.Log("Enemy finished turn, going back to bm"); onActorActionFinished(); });
+                    UseAction(chosenAction, onActorActionFinished);
+                    //if (chosenAction.Tags.Contains(TAG.FREE))
+                    //{
+                    //    UseAction(chosenAction, () => {
+                    //        //When the first action finishes
+                    //        Act(onActorActionFinished);
+                    //    });
+                    //}
+                    //else
+                    //{
+                    //    UseAction(chosenAction, onActorActionFinished);
+                    //}
                 }
-
-            }
+            });
         }
-        public void UseAction(BaseAction action, Action onSkillComplete) //Perform an action
+        public void UseAction(BaseAction action, Action onActionComplete) //Perform an action
         {
-            var bm = BattleManager.instance;
+            //Face the enemy
+            var lookrotation = target.DirectionToClosestEnemy;
+            lookrotation.y = 0;
+            transform.rotation = Quaternion.LookRotation(lookrotation, Vector3.up);
 
-            //Hack
-            bm.PlayerActors[0].transform.rotation = Quaternion.LookRotation(bm.EnemyActors[0].transform.position - bm.PlayerActors[0].transform.position, Vector3.up);
-            bm.EnemyActors[0].transform.rotation = Quaternion.LookRotation(bm.PlayerActors[0].transform.position - bm.EnemyActors[0].transform.position, Vector3.up);
-
-            //UI draw action above head
             UIManager.GetInstance().DrawActionAboveHead(this, action);
-
-
             UIManager.GetInstance().SetTextThenFade($"{ActorData.Name} uses {action.Name}!", 0.5f);
 
-            action.Perform(this, () => { UIManager.GetInstance().KillActionAboveHead(this); onSkillComplete(); });
+            action.Perform(this, () => { UIManager.GetInstance().KillActionAboveHead(this); onActionComplete.Invoke(); });
         }
         public void Update()
         {
             state.Update();
         }
-
-
-        public List<BaseAction> GetValidContinueComboSkills()
-        {
-            return ActorData.actions.Where(skill => skill.IsValid(this, out _) && !skill.Tags.Contains(TAG.STARTER)).ToList();
-        }
-        public List<BaseAction> GetValidStartComboSkills()
-        {
-            return ActorData.actions.Where(skill => skill.IsValid(this, out _)).ToList();
-        }
-        public List<BaseReaction> GetValidReactionsForSkill()
-        {
-            var reactions = ActorData.reactions.Where(reaction => reaction.IsValid(this, out _)).ToList();
-            return reactions;
-        }
-        public BaseAction ChooseValidSkillInRangeOrReturnNull()
-        {
-            List<BaseAction> validskills = new List<BaseAction>();
-
-            validskills = ActorData.actions.Where(skills => skills.IsValidAndInRange(this)).ToList();
-
-            if (validskills.Count == 0) return null;
-
-            var random = new System.Random();
-            var index = random.Next(validskills.Count);
-
-            return validskills[index];
-        }
-
 
         public void ApplyPosture(float originalPostureDamage)
         {
@@ -190,7 +117,7 @@ namespace Assets.Scripts.Battle
             PostureApplied.Invoke(postMitigationDamage);
             ActorData.DealPostureDamage(postMitigationDamage);
 
-            if(state.CurrentState != state.staggerState)
+            if (state.CurrentState != state.staggerState && state.CurrentState != state.airStaggerState)
             {
                 if (ActorData.currentPosture <= ActorData.maxPosture / 2)
                 {
@@ -202,7 +129,7 @@ namespace Assets.Scripts.Battle
                 //al;ready stagger state
 
             }
-            
+
         }
         public void ApplyDamage(float originalDamage)
         {
@@ -223,18 +150,13 @@ namespace Assets.Scripts.Battle
             if (force > 0)
             {
                 float postMitigationForce = force;
-                Debug.Log("preMitigationForce is " + postMitigationForce);
-                Debug.Log("preMitigationDirection is " + direction);
 
                 if (KnockbackRecieved != null)
                 {
                     postMitigationForce = KnockbackRecieved(force, direction);
                 }
 
-                Debug.Log("postMitigationForce is " + postMitigationForce);
-                Debug.Log("postMitigationDirection is " + direction);
-
-                rigidbody.AddForce(direction * 100 * postMitigationForce);
+                rigidbody.AddForce(100 * postMitigationForce * direction);
                 KnockbackApplied?.Invoke(100 * postMitigationForce, direction);
 
 
@@ -252,29 +174,35 @@ namespace Assets.Scripts.Battle
             //state.TransitionTo(new MoveState(this, TargetPosition, onMoveComplete));
         }
 
-
-
         public void PlayAnimation(string AnimationName, Action onAnimationHit, Action onReactionCheck, Action onAnimationEnd)
-        { 
-             
+        {
             animator.Play(AnimationName, -1, 0);
+            state.actingState.Locked = false;
+            state.TransitionTo(state.actingState.Set(onAnimationEnd, onAnimationEnd, onAnimationHit));
             this.onReactionCheck = onReactionCheck;
-            this.onAnimationHitComplete = onAnimationHit;
-            this.onAnimationEndComplete = onAnimationEnd;
         }
         public void PlayAnimation(string AnimationName, Action onAnimationHit, Action onAnimationEnd)
         {
+            state.actingState.Locked = false;
+            state.TransitionTo(state.actingState.Set(onAnimationEnd, onAnimationEnd, onAnimationHit));
             animator.Play(AnimationName, -1, 0);
-            this.onAnimationHitComplete = onAnimationHit;
-            this.onAnimationEndComplete = onAnimationEnd;
+        }
+        public void PlayAnimation(string AnimationName, Action onAnimationHit, Action onAnimationEnd, bool interruptOnCollision)
+        {
+            state.actingState.Locked = false;
+            state.TransitionTo(state.actingState.Set(onAnimationEnd, onAnimationEnd, onAnimationHit, interruptOnCollision));
+            animator.Play(AnimationName, -1, 0);
+        }
+
+        public void PlayAnimation(string AnimationName, Action onAnimationEnd)
+        {
+            state.actingState.Locked = false;
+            state.TransitionTo(state.actingState.Set(onAnimationEnd, onAnimationEnd, null));
+            animator.Play(AnimationName, -1, 0);
         }
         public void PlayAnimation(string AnimationName)
         {
-            animator.Play(AnimationName, -1, 0);
-        }
-        public void KillAnimationEndEvent()
-        {
-            this.onAnimationEndComplete = null;
+            animator.Play(AnimationName);
         }
 
 
@@ -333,21 +261,25 @@ namespace Assets.Scripts.Battle
 
 
         //Do not touch
-        public void AnimationHit()
+        public void AnimationHitCallback()
         {
-            if (onAnimationHitComplete != null)
-            {
-                onAnimationHitComplete();
-                onAnimationHitComplete = null;
-            }
+            state.AnimationHitCallback();
+
+            //if (onAnimationHitComplete != null)
+            //{
+            //    onAnimationHitComplete();
+            //    onAnimationHitComplete = null;
+            //}
         }
-        public void AnimationEnd()
+        public void AnimationEndCallback()
         {
-            if (onAnimationEndComplete != null)
-            {
-                onAnimationEndComplete();
-                onAnimationEndComplete = null;
-            }
+            state.AnimationEndCallback();
+
+            //if (onAnimationEndComplete != null)
+            //{
+            //    onAnimationEndComplete();
+            //    onAnimationEndComplete = null;
+            //}
         }
         public void ReactionCheck()
         {
@@ -373,33 +305,21 @@ namespace Assets.Scripts.Battle
         }
         private void OnCollisionEnter(Collision collision)
         {
-            if (collision.gameObject.CompareTag("Level"))
-            {
-                state.OnCollisionEnter(collision);
-            }
+            state.OnCollisionEnter(collision);
         }
-        private void TriggerHitstop(float duration)
-        {
-            Time.timeScale = 0.0f; // Pause the game
-            StartCoroutine(ResumeTimeScale(duration));
-        }
-        private IEnumerator ResumeTimeScale(float duration)
-        {
-            yield return new WaitForSecondsRealtime(duration);
-            Time.timeScale = 1f; // Restore the original time scale
-        }
+
         private bool IsGrounded()
         {
             // Perform a raycast from the object's position downward
-            Ray ray = new Ray(transform.position + Vector3.up * 0.01f, Vector3.down);
+            Ray ray = new(transform.position + Vector3.up * 0.01f, Vector3.down);
 
             // Check if the ray hits something within the specified distance
             if (Physics.Raycast(ray, 0.02f))
             {
                 return true; // The object is grounded
-                Debug.Log(ActorData.Name + " GROUNDED");
+                //Debug.Log(ActorData.Name + " GROUNDED");
             }
-            Debug.Log(ActorData.Name + " NOT GROUNDED");
+            //Debug.Log(ActorData.Name + " NOT GROUNDED");
             return false; // The object is not grounded
         }
 

@@ -14,6 +14,7 @@ namespace Assets.Scripts.Battle.Actions.Reactions
         [Range(0, 2)] public float KnockbackModifier = 1f;
         protected override void PerformSpecific(Actor actor, Action onReactionComplete)
         {
+            actor.PlayAnimation("Block", onReactionComplete);
             actor.state.TransitionTo(actor.state.blockState.Set(DamageModifier, PostureModifier, KnockbackModifier));
             //actor.KillAnimationEndEvent();
             //actor.PlayAnimation("Block");

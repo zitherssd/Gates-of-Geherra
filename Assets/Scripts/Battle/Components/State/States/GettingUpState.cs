@@ -1,0 +1,53 @@
+﻿using Assets.Scripts.Pattern;
+using UnityEngine;
+
+namespace Assets.Scripts.Battle.Components.State.States
+{
+    public class GettingUpState : IState
+    {
+        private Actor actor;
+        private CapsuleCollider cc;
+        private float elapsedTime;
+
+        public void Enter()
+        {
+            cc.height = 0.3f;
+            cc.center = new Vector3(0, 0.2f, 0);
+            elapsedTime = 0f; // Reset the timer when entering the state
+        }
+
+        public GettingUpState(Actor actor)
+        {
+            this.actor = actor;
+            cc = actor.GetComponent<CapsuleCollider>();
+        }
+
+        public void Exit()
+        {
+            cc.height = 1.2f;
+            cc.center = new Vector3(0, 0.6f, 0);
+        }
+
+        public void OnCollisionEnter(Collision collision)
+        {
+
+        }
+
+        public void Update()
+        {
+            elapsedTime += Time.deltaTime; // Increment the elapsed time by the time since the last frame
+            if (elapsedTime > 1.5f)
+                actor.state.TransitionTo(actor.state.idleState);
+            else if (elapsedTime > 1f)
+            {
+                actor.PlayAnimation("Idle"); // Play the "GetUp" animation
+
+            }
+            else if (elapsedTime > 0.5f)
+            {
+                actor.PlayAnimation("Getup"); // Play the "GetUp" animation
+
+            }
+        }
+    }
+}
