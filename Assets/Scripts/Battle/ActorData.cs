@@ -155,8 +155,12 @@ public class ActorData : ScriptableObject
         }
         foreach (var reaction in baseReactions)
         {
-            var clone = Instantiate(reaction);
-            reactions.Add(clone);
+            if(reaction)
+            {
+                var clone = Instantiate(reaction);
+                reactions.Add(clone);
+            }
+
         }
         foreach (var passive in basePassives)
         {

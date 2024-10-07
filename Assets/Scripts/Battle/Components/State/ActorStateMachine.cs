@@ -43,22 +43,37 @@ namespace Assets.Scripts.Battle.Components.State
                 CurrentState.OnCollisionEnter(collision);
         }
 
-        public void AnimationHitCallback()
+
+
+        public void OnEnd()
         {
-            if(CurrentState == actingState && actingState.Locked == false)
+            if(CurrentState == actingState)
             {
-                actingState.onActionHit?.Invoke();
+                actingState.OnEnd();
             }
         }
 
-        public void AnimationEndCallback()
+        public void OnHit()
         {
-            if (actor == BattleManager.instance.PlayerActors[0]) Debug.Log("ANIMATION END CALLBACK");
-            if(CurrentState == actingState && actingState.Locked == false)
+            if(CurrentState == actingState)
             {
-                actingState.completetest = true;
-                actingState.onActionInterrupt = null;
-                actingState.onActionComplete?.Invoke();
+                actingState.OnHit();
+            }
+        }
+
+        internal void EnterWindup()
+        {
+            if (CurrentState == actingState)
+            {
+                actingState.EnterWindup(actor.GetAnimator());
+            }
+        }
+
+        internal void EnterRecovery()
+        {
+            if (CurrentState == actingState)
+            {
+                actingState.EnterRecovery(actor.GetAnimator());
             }
         }
     }

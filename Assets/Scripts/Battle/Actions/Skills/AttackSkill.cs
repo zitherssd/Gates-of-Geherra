@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Actions;
+using Assets.Scripts.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,96 +10,46 @@ namespace Assets.Scripts.Battle.Actions.Skills
     [CreateAssetMenu(fileName = "AttackSkill", menuName = "ScriptableObjects/Skills/AttackSkill")]
     public class AttackSkill : BaseSkill
     {
-        public ANIMATION Animation;
         public float Range;
         public float Damage;
         public float PostureDamage;
         public float KnockbackForce;
-        public float SelfForce;
-        public float Delay;
+        public float tweenDistance;
+        public LeanTweenType tweenType;
+        public float tweenduration;
+        public float windupTimeMult = 1f;
+        public float recoveryTimeMult = 1f;
+        public STATE state = STATE.uninitialized;
 
-        public bool preciseattack = true;
-        private bool hit = false;
+        private Actor target;
+        private Actor casterActor;
+
 
         protected override void PerformSpecific(Actor casterActor, Action onPerformEnd)
         {
-            hit = false;
-            var targetActor = casterActor.target.ClosestEnemy;
-            var targetActorPositionInOneSecond = targetActor.rigidbody.position + targetActor.rigidbody.velocity * Delay;
+            //1. Get Target
+            //2. Continuously Rotate Incrementally so you are facing target //more work
+            //3. Move towards the Direction
 
-            var casterVelocity = casterActor.rigidbody.velocity;
-            var casterActorPositionInOneSecond = casterActor.transform.position + casterVelocity * Delay;
-
-            var casterToTarget = (targetActor.transform.position - casterActor.transform.position).normalized;
-            var casterToTargetInOneSecond = (targetActorPositionInOneSecond - casterActor.transform.position).normalized;
-
-            var targetDirection = casterToTargetInOneSecond;
-            Debug.DrawRay(casterActor.transform.position + Vector3.up * 0.5f, targetDirection * Range, Color.red, 3f, false);
-            Debug.DrawRay(casterActor.transform.position + Vector3.up * 0.1f, targetDirection * Range, Color.red, 3f, false);
-
-            //Apply selfForce
-            if (!Tags.Contains(TAG.USESTICK))
-                casterActor.GetComponent<Rigidbody>().AddForce(100 * SelfForce * casterActor.target.DirectionToClosestEnemy);
-            else
-                casterActor.GetComponent<Rigidbody>().AddForce(100 * SelfForce * new Vector3(Direction.x, 0, Direction.y));
-
-            casterActor.PlayAnimation(Animation.ToString(), () =>
-            {
-                if (this.hit) return;
-                RaycastHit hit;
-                if (!preciseattack)
-                {
-                    Debug.DrawRay(casterActor.transform.position + Vector3.up * 0.6f, targetDirection * Range, Color.green, 1f, false);
-                    if (Physics.SphereCast(casterActor.transform.position + Vector3.up * 0.6f, 0.1f, targetDirection, out hit, Range))
-                    {
-                        ApplyDamageEffects(casterActor, targetActor, BaseReaction.NoReaction, onPerformEnd);
-                        return;
-                    }
-                    else
-                    {
-                        Debug.Log($"{casterActor.ActorData.name} missed performing {this.Name}!");
-                    }
-                }
-                else
-                {
-                    Debug.DrawRay(casterActor.transform.position + Vector3.up * 0.6f, (targetActor.transform.position - casterActor.transform.position) * Range, Color.red, 1f, false);
-                    if (Physics.SphereCast(casterActor.transform.position + Vector3.up * 0.6f, 0.1f, targetActor.transform.position - casterActor.transform.position, out hit, Range))
-                    {
-                        ApplyDamageEffects(casterActor, targetActor, BaseReaction.NoReaction, onPerformEnd);
-                        return;
-                    }
-                    else
-                    {
-                        Debug.Log($"{casterActor.ActorData.name} missed performing {this.Name}!");
-                    }
-                }
-            }, () => //OnReaction
-            {
-                if (targetActor.state.CurrentState == targetActor.state.staggerState || targetActor.state.CurrentState == targetActor.state.airStaggerState) return;
-
-                targetActor.ai.ChooseReaction(chosenReaction =>
-                {
-                    targetActor.UseAction(chosenReaction, null);
-                    chosenReaction.Perform(targetActor,null);
-                }, this);
-            }, onPerformEnd);
+            this.casterActor = casterActor;
+            casterActor.state.TransitionTo(casterActor.state.actingState.Set(this, onPerformEnd));
+            casterActor.Move(casterActor.transform.position + Direction * StickMult, tweenduration, tweenType);
+            //var movetween = LeanTween.move(casterActor.gameObject, casterActor.transform.position + Direction * StickMult, tweenduration).setEase(tweenType);
+            target = casterActor.target.ClosestEnemy;
         }
-
-        public void OnHit()
-        {
-
-        }
-
-
         public void ApplyDamageEffects(Actor casterActor, Actor targetActor, BaseReaction targetReaction, Action onDamageEffectsApplied)
         {
-            Debug.Log(casterActor.rigidbody.velocity.magnitude);
-            this.hit = true;
+            //Apply posture
+            if (PostureDamage > 0)
+            {
+                targetActor.ApplyPosture(PostureDamage);
+            }
+
             // Apply Damage
             var damage = Damage + casterActor.ActorData.ATK - targetActor.ActorData.DEF;
             if (damage > 0)
             {
-                var hitstop = LinearMap(damage, 0.2f, 15, 0.083f, 0.420f);
+                var hitstop = StaticHelpers.LinearMap(damage, 0.2f, 15, 0.083f, 0.420f);
                 BattleManager.instance.ApplyHitstop(hitstop);
                 targetActor.ApplyDamage(damage);
             };
@@ -113,28 +64,9 @@ namespace Assets.Scripts.Battle.Actions.Skills
                 targetActor.ApplyKnockback(direction, KnockbackForce);
             }
 
-            //Apply posture
-            if (PostureDamage > 0)
-            {
-                targetActor.ApplyPosture(PostureDamage);
-            }
 
-            casterActor.ActorData.currentBuildup += BuildupGain;
 
-            // Wait for 1 frame before exit
-            casterActor.StartCoroutine(WaitForOneFrame(() =>
-            {
-                if (targetActor.state.CurrentState == targetActor.state.staggerState || targetActor.state.CurrentState == targetActor.state.airStaggerState)
-                {
-                    casterActor.Act(onDamageEffectsApplied);
-                    return;
-                }
-                //onDamageEffectsApplied();
-            }));
-        }
-        float LinearMap(float input, float inputMin, float inputMax, float outputMin, float outputMax)
-        {
-            return outputMin + (outputMax - outputMin) * ((input - inputMin) / (inputMax - inputMin));
+            onDamageEffectsApplied?.Invoke();
         }
         public override bool IsValidAndInRange(Actor caster)
         {
@@ -157,6 +89,42 @@ namespace Assets.Scripts.Battle.Actions.Skills
                 return false;
             }
         }
-        public enum ANIMATION { NONE, Punch, Kick, Shuriken, Highkick, PalmStrike, Ninjutsu, ForwardPunch, ThrowStar, ForwardKick }
+
+
+        public override void OnHit()
+        {
+            RaycastHit hit;
+            var targetDir = target.transform.position - casterActor.transform.position;
+            Debug.DrawRay(casterActor.transform.position + Vector3.up * 0.6f, targetDir * Range, Color.green, 1f, false);
+            if (Physics.SphereCast(casterActor.transform.position + Vector3.up * 0.6f, 0.1f, targetDir, out hit, Range))
+            {
+                ApplyDamageEffects(casterActor, target, BaseReaction.NoReaction, null);
+                return;
+            }
+            else
+            {
+                Debug.Log($"{casterActor.ActorData.name} missed performing {this.Name}!");
+            }
+        }
+
+        public override void OnEnterWindup(Animator animator)
+        {
+            CalculateDuration(animator);
+            animator.speed = windupTimeMult;
+            state = STATE.windup;
+        }
+
+        public override void OnEnterRecovery(Animator animator)
+        {
+            animator.speed = recoveryTimeMult;
+            state = STATE.recovery;
+        }
+
+        public void OnReaction(Animator animator)
+        {
+
+        }
+
+        public enum STATE { uninitialized, windup, recovery };
     }
 }

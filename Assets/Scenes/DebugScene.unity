@@ -609,7 +609,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &157675843
 RectTransform:
   m_ObjectHideFlags: 0
@@ -21123,6 +21123,10 @@ PrefabInstance:
       propertyPath: m_Color.a
       value: 0.33333334
       objectReference: {fileID: 0}
+    - target: {fileID: 3240682240543084486, guid: f166d0e2280a07b4bb8dc32f1fec3f50, type: 3}
+      propertyPath: frictionFactor
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 7899857719319319406, guid: f166d0e2280a07b4bb8dc32f1fec3f50, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -21137,7 +21141,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7899857719349980928, guid: f166d0e2280a07b4bb8dc32f1fec3f50, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3.18
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7899857719349980928, guid: f166d0e2280a07b4bb8dc32f1fec3f50, type: 3}
       propertyPath: m_LocalPosition.y
@@ -21178,6 +21182,10 @@ PrefabInstance:
     - target: {fileID: 7899857719349980929, guid: f166d0e2280a07b4bb8dc32f1fec3f50, type: 3}
       propertyPath: m_Volume
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7899857719349980930, guid: f166d0e2280a07b4bb8dc32f1fec3f50, type: 3}
+      propertyPath: m_IsKinematic
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7899857719349980940, guid: f166d0e2280a07b4bb8dc32f1fec3f50, type: 3}
       propertyPath: ActorData

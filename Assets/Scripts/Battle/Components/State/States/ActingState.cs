@@ -1,4 +1,6 @@
-﻿using Assets.Scripts.Pattern;
+﻿using Assets.Scripts.Actions;
+using Assets.Scripts.Battle.Actions.Skills;
+using Assets.Scripts.Pattern;
 using System;
 using UnityEngine;
 
@@ -6,36 +8,39 @@ namespace Assets.Scripts.Battle.Components.State.States
 {
     public class ActingState : IState
     {
-        private readonly Actor owner;
-        public bool completetest;
-        public Action onActionHit;
-        private bool interruptOnCollision;
-        public Action onActionInterrupt;
-        public Action onActionComplete;
-        public bool Locked = false;
+        public Action<Animator> onEnterWindup;
+        public Action<Animator> onEnterRecovery;
+        public Action onHit;
+        public Action onEnd;
+        public Action onInterrupt;
+
+        private Animator animator;
+        private bool ended;
+
+        private Action<Animator> windupHandler;
+        private Action<Animator> recoveryHandler;
+        private Action hitHandler;
+        private Action endHandler;
+        public BaseSkill action;
 
         public ActingState(Actor owner)
         {
-            this.owner = owner;
+            this.animator = owner.GetAnimator();
         }
 
-        public ActingState Set(Action onActionInterrupt, Action onActionComplete, Action onActionHit)
+        public ActingState Set(BaseSkill action, Action onEnd)
         {
-            this.onActionInterrupt = onActionInterrupt;
-            this.onActionComplete = onActionComplete;
-            this.onActionHit = onActionHit;
-            interruptOnCollision = false;
-            completetest = false;
-            return this;
-        }
+            this.action = action;
+            windupHandler = action.OnEnterWindup;
+            recoveryHandler = action.OnEnterRecovery;
+            hitHandler = action.OnHit;
+            endHandler = onEnd;
 
-        public ActingState Set(Action onActionInterrupt, Action onActionComplete, Action onActionHit, bool interruptOnCollision)
-        {
-            this.onActionInterrupt = onActionInterrupt;
-            this.onActionComplete = onActionComplete;
-            this.onActionHit = onActionHit;
-            this.interruptOnCollision = interruptOnCollision;
-            completetest = false;
+            this.onEnterWindup += windupHandler;
+            this.onEnterRecovery += recoveryHandler;
+            this.onHit += hitHandler;
+            this.onEnd += endHandler;
+            animator.Play(action.Animation.ToString(), -1, 0f);
             return this;
         }
 
@@ -45,19 +50,49 @@ namespace Assets.Scripts.Battle.Components.State.States
 
         public void Exit()
         {
-            if (!completetest)
-                onActionInterrupt?.Invoke();
+            animator.speed = 1f;
+
+            if (windupHandler != null)
+                onEnterWindup -= windupHandler;
+
+            if (recoveryHandler != null)
+                onEnterRecovery -= recoveryHandler;
+
+            if (hitHandler != null)
+                onHit -= hitHandler;
+
+            if (endHandler != null)
+                onEnd -= endHandler;
+
+            if (!ended) onInterrupt?.Invoke();
         }
 
-        public void OnCollisionEnter(Collision collision)
+        public void EnterWindup(Animator animator)
         {
-            if (interruptOnCollision)
-                Exit();
+            onEnterWindup?.Invoke(animator);
+        }
+        public void EnterRecovery(Animator animator)
+        {
+            onEnterRecovery?.Invoke(animator);
+        }
+
+        public void OnHit()
+        {
+            onHit?.Invoke();
+        }
+
+        public void OnEnd()
+        {
+            ended = true;
+            onEnd?.Invoke();
         }
 
         public void Update()
         {
+        }
 
-        } 
+        public void OnCollisionEnter(Collision collision)
+        {
+        }
     }
 }

@@ -53,13 +53,13 @@ namespace Assets.Scripts.Battle.Components.AI
                 switch (ruleset)
                 {
                     case AiRuleset.DEFAULT:
-                        onActionChosen.Invoke(EvaluateDefaultRuleset());
+                        EvaluateDefaultRuleset((obj) => onActionChosen.Invoke(obj));
                         break;
                     case AiRuleset.Boxer:
-                        onActionChosen.Invoke(EvaluateBoxerRuleset());
+                        //onActionChosen.Invoke(EvaluateBoxerRuleset());
                         break;
                     default:
-                        onActionChosen.Invoke(EvaluateDefaultRuleset());
+                        EvaluateDefaultRuleset((obj) => onActionChosen.Invoke(obj));
                         break;
                 }
             }
@@ -85,7 +85,6 @@ namespace Assets.Scripts.Battle.Components.AI
                         if (selectedReaction.Tags.Contains(TAG.KILL_TRACKING) && incomingAction is AttackSkill)
                         {
                             var attackskill = incomingAction as AttackSkill;
-                            attackskill.preciseattack = false;
                         }
 
                         onReactionChosen.Invoke(selectedReaction as BaseReaction);
@@ -108,7 +107,7 @@ namespace Assets.Scripts.Battle.Components.AI
             return null;
         }
 
-        public BaseAction EvaluateDefaultRuleset()
+        public void EvaluateDefaultRuleset(Action<BaseAction> action)
         {
             var chosenSkill = ChooseValidSkillInRangeOrReturnNull();
             if (chosenSkill == null)
@@ -116,16 +115,18 @@ namespace Assets.Scripts.Battle.Components.AI
                 //must move
                 var moveSkill = actor.ActorData.actions.OfType<MoveAction>().First();
                 moveSkill.Direction = actor.target.DirectionToClosestEnemy;
-                return moveSkill;
+                action.Invoke(moveSkill);
             }
             else
             {
-                var directionToEnemy = actor.target.DirectionToClosestEnemy;
-                var perpendicular = Vector3.Cross(Vector3.up, directionToEnemy).normalized;
-                perpendicular *= UnityEngine.Random.Range(-0.3f, 0.3f);
-                var dirleftvector = new Vector3(perpendicular.x, perpendicular.z);
-                chosenSkill.Direction = new Vector3(directionToEnemy.x, directionToEnemy.z) + dirleftvector;
-                return chosenSkill;
+                actor.StartCoroutine(actor.WaitForTime(() => {
+                    var directionToEnemy = actor.target.DirectionToClosestEnemy;
+                    var perpendicular = Vector3.Cross(Vector3.up, directionToEnemy).normalized;
+                    perpendicular *= UnityEngine.Random.Range(-0.3f, 0.3f);
+                    var dirleftvector = new Vector3(perpendicular.x, 0, perpendicular.z);
+                    chosenSkill.Direction = new Vector3(directionToEnemy.x, 0, directionToEnemy.z) + dirleftvector;
+                    action.Invoke(chosenSkill);
+                }, UnityEngine.Random.Range(0.2f, 1f)));
             }
         }
 

@@ -32,17 +32,11 @@ namespace Assets
 
             if (Tags.Contains(TAG.KILLMOMENTUM)) casterActor.GetComponent<Rigidbody>().velocity = Vector3.zero;
 
-            casterActor.ActorData.DealStaminaDamage(StaminaCost);
+            //casterActor.ActorData.DealStaminaDamage(StaminaCost);
             casterActor.ActorData.ChangeBuildup(BuildupGain);
             casterActor.ActorData.ChangeBuildup(-BuildupCost);
 
-            if (Tags.Contains(TAG.FREE))
-            {
-                PerformSpecific(casterActor, () => { casterActor.Act(() => { casterActor.state.TransitionTo(casterActor.state.idleState); onPerformEnd.Invoke(); }); });
-            }
-            else
-                PerformSpecific(casterActor, () => { casterActor.state.TransitionTo(casterActor.state.idleState); onPerformEnd.Invoke(); });
-            //PerformSpecific(casterActor, onPerformEnd);
+            PerformSpecific(casterActor, onPerformEnd);
         }
 
         protected virtual void PerformSpecific(Actor casterActor, Action onPerformEnd) { }
@@ -150,4 +144,6 @@ namespace Assets
 
 
     public enum RARITY { COMMON, UNCOMMON, RARE, EPIC, LEGENDARY };
+    public enum ANIMATION { NONE, Punch, Kick, Shuriken, Highkick, PalmStrike, Ninjutsu, ForwardPunch, ThrowStar, ForwardKick, ShadowStep, Taunt, Dash, Roll, Step }
+
 }

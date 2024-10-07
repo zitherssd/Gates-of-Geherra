@@ -11,8 +11,8 @@ namespace Assets.Scripts.Battle.Components.Effects
         {
             this.owner = owner;
 
-            owner.DamageApplied += ShowDamagePopup;
-            owner.PostureApplied += ShowPosturePopup;
+            owner.OnDamageApplied += ShowDamagePopup;
+            owner.OnPostureApplied += ShowPosturePopup;
         }
 
         private void ShowDamagePopup(float damageAmount)

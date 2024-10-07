@@ -25,12 +25,15 @@ MonoBehaviour:
   Direction: {x: 0, y: 0, z: 0}
   currentCooldownTurns: 2
   remainingUses: 0
-  StickMult: 0.8
+  StickMult: 0.45
   Animation: 1
   Range: 1
   Damage: 3
   PostureDamage: 4
   KnockbackForce: 1
-  SelfForce: 0.8
-  Delay: 0
-  preciseattack: 1
+  tweenDistance: 0
+  tweenType: 21
+  tweenduration: 0.5
+  windupTimeMult: 0.8
+  recoveryTimeMult: 0.5
+  state: 0

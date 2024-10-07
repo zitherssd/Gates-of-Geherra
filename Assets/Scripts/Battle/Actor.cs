@@ -1,13 +1,13 @@
-﻿using Assets.Scripts.Battle.Components.AI;
+﻿using Assets.Scripts.Battle.Actions.Skills;
+using Assets.Scripts.Battle.Components.AI;
 using Assets.Scripts.Battle.Components.Audio;
 using Assets.Scripts.Battle.Components.Effects;
 using Assets.Scripts.Battle.Components.State;
 using Assets.Scripts.Battle.Components.Status;
 using Assets.Scripts.Battle.Components.Target;
+using Assets.Scripts.Utility;
 using System;
-using System.Collections;
 using UnityEngine;
-using static Assets.BaseAction;
 
 namespace Assets.Scripts.Battle
 {
@@ -33,11 +33,13 @@ namespace Assets.Scripts.Battle
         public event PostureValue PostureRecieved;
         public event KnockbackValue KnockbackRecieved;
 
-        public event Action<float> DamageApplied;
-        public event Action<float> PostureApplied;
+        public event Action<float> OnDamageApplied;
+        public event Action<float> OnPostureApplied;
         public event Action<float, Vector3> KnockbackApplied;
         public event Action onAnimationEnd;
         public event Action onAnimationHit;
+
+        public Vector3 movementForce;
 
         // UI
         public OriginPointHandler originPointInUI;
@@ -46,6 +48,15 @@ namespace Assets.Scripts.Battle
         private bool hitLastRound;
         private Action onReactionCheck;
         private Animator animator;
+        private Vector3 startPosition;
+        private Vector3 targetPosition;
+        private float moveDuration;
+        private float elapsedTime;
+        private bool isMoving;
+        private LeanTweenType easeType;
+        private Action onMoveComplete;
+        public float frictionFactor = 3;
+
         public new Rigidbody rigidbody { get; set; }
 
 
@@ -95,15 +106,65 @@ namespace Assets.Scripts.Battle
             var lookrotation = target.DirectionToClosestEnemy;
             lookrotation.y = 0;
             transform.rotation = Quaternion.LookRotation(lookrotation, Vector3.up);
+            Time.timeScale = 1f;
 
             UIManager.GetInstance().DrawActionAboveHead(this, action);
             UIManager.GetInstance().SetTextThenFade($"{ActorData.Name} uses {action.Name}!", 0.5f);
 
             action.Perform(this, () => { UIManager.GetInstance().KillActionAboveHead(this); onActionComplete.Invoke(); });
         }
+
         public void Update()
         {
             state.Update();
+        }
+
+        private void FixedUpdate()
+        {
+            // Calculate the effective movement based on movementForce
+            movementForce = movementForce.normalized * Mathf.Max(0, movementForce.magnitude - frictionFactor * Time.fixedDeltaTime);
+
+            // Only apply force movement if not currently moving towards a target
+            if (!isMoving)
+            {
+                if (movementForce.sqrMagnitude > Mathf.Epsilon)
+                {
+                    // Move the Rigidbody with background movement
+                    rigidbody.MovePosition(rigidbody.position + movementForce * Time.fixedDeltaTime);
+                }
+            }
+            else // Handle easing movement
+            {
+                // Increment elapsed time by the fixed time step
+                elapsedTime += Time.fixedDeltaTime;
+
+                // Calculate the normalized time (0 to 1)
+                float t = Mathf.Clamp01(elapsedTime / moveDuration);
+
+                // Apply easing using LeanTween's easing function
+                float easedT = StaticHelpers.ApplyEasing(t, easeType);
+
+                // If this is the first frame of the movement, update startPosition
+                if (elapsedTime == Time.fixedDeltaTime) // Equivalent to checking if we're starting to move
+                {
+                    startPosition = rigidbody.position; // Set the start position to the current position
+                }
+
+                // Interpolate between the start position and target position using the eased value
+                Vector3 newPosition = Vector3.Lerp(startPosition, targetPosition, easedT);
+
+                // Move the Rigidbody using MovePosition, combining both movements
+                Vector3 combinedMovement = newPosition + movementForce * Time.fixedDeltaTime;
+                rigidbody.MovePosition(combinedMovement);
+
+                // If the elapsed time reaches the move duration, stop the movement
+                if (elapsedTime >= moveDuration)
+                {
+                    isMoving = false; // Stop movement
+                    elapsedTime = 0f; // Reset elapsed time for next movement
+                    onMoveComplete?.Invoke();
+                }
+            }
         }
 
         public void ApplyPosture(float originalPostureDamage)
@@ -114,8 +175,24 @@ namespace Assets.Scripts.Battle
                 postMitigationDamage = PostureRecieved(originalPostureDamage);
             }
 
-            PostureApplied.Invoke(postMitigationDamage);
+            OnPostureApplied.Invoke(postMitigationDamage);
+            var previousPosture = ActorData.currentPosture;
             ActorData.DealPostureDamage(postMitigationDamage);
+            var postureLostPercentage = ((previousPosture - ActorData.currentPosture) / ActorData.maxPosture) * 100;
+            if (postureLostPercentage > 10)
+                if (state.CurrentState == state.actingState)
+                {
+                    var action = state.actingState.action;
+                    if (action is AttackSkill skill)
+                    {
+                        if (skill.state == AttackSkill.STATE.windup)
+                        {
+                            float duration = StaticHelpers.LinearMap(postureLostPercentage, 10, 100, 0.3f, 1.5f);
+                            state.TransitionTo(state.staggerState.Set(duration));
+                        }
+                    }
+                }
+
 
             if (state.CurrentState != state.staggerState && state.CurrentState != state.airStaggerState)
             {
@@ -139,10 +216,9 @@ namespace Assets.Scripts.Battle
                 postMitgationDamage = DamageRecieved(originalDamage);
             }
 
-            DamageApplied?.Invoke(postMitgationDamage);
+            OnDamageApplied?.Invoke(postMitgationDamage);
             ActorData.DealDamage(postMitgationDamage);
 
-            hitLastRound = true;
         }
         public void ApplyKnockback(Vector3 direction, float force)
         {
@@ -167,39 +243,7 @@ namespace Assets.Scripts.Battle
         }
 
 
-        public void Move(Vector3 direction, Action onMoveComplete)
-        {
-            var TargetPosition = transform.position + (direction * ActorData.AGI);
 
-            //state.TransitionTo(new MoveState(this, TargetPosition, onMoveComplete));
-        }
-
-        public void PlayAnimation(string AnimationName, Action onAnimationHit, Action onReactionCheck, Action onAnimationEnd)
-        {
-            animator.Play(AnimationName, -1, 0);
-            state.actingState.Locked = false;
-            state.TransitionTo(state.actingState.Set(onAnimationEnd, onAnimationEnd, onAnimationHit));
-            this.onReactionCheck = onReactionCheck;
-        }
-        public void PlayAnimation(string AnimationName, Action onAnimationHit, Action onAnimationEnd)
-        {
-            state.actingState.Locked = false;
-            state.TransitionTo(state.actingState.Set(onAnimationEnd, onAnimationEnd, onAnimationHit));
-            animator.Play(AnimationName, -1, 0);
-        }
-        public void PlayAnimation(string AnimationName, Action onAnimationHit, Action onAnimationEnd, bool interruptOnCollision)
-        {
-            state.actingState.Locked = false;
-            state.TransitionTo(state.actingState.Set(onAnimationEnd, onAnimationEnd, onAnimationHit, interruptOnCollision));
-            animator.Play(AnimationName, -1, 0);
-        }
-
-        public void PlayAnimation(string AnimationName, Action onAnimationEnd)
-        {
-            state.actingState.Locked = false;
-            state.TransitionTo(state.actingState.Set(onAnimationEnd, onAnimationEnd, null));
-            animator.Play(AnimationName, -1, 0);
-        }
         public void PlayAnimation(string AnimationName)
         {
             animator.Play(AnimationName);
@@ -259,21 +303,36 @@ namespace Assets.Scripts.Battle
         }
 
 
+        public void Move(Vector3 targetPosition, float duration, LeanTweenType easeType, Action onMoveComplete = null)
+        {
+            // Initialize movement variables
+            movementForce = Vector3.zero;
+            this.startPosition = rigidbody.position; // Start position is the current position
+            this.targetPosition = targetPosition;    // The position to move to
+            this.moveDuration = duration;            // The duration of the movement
+            this.elapsedTime = 0f;                   // Reset elapsed time
+            this.isMoving = true;                    // Flag to start moving
+            this.easeType = easeType;                // The easing type for movement
+            this.onMoveComplete = onMoveComplete;
+        }
 
         //Do not touch
-        public void AnimationHitCallback()
+        public void OnHit()
         {
-            state.AnimationHitCallback();
+            state.OnHit();
 
-            //if (onAnimationHitComplete != null)
-            //{
-            //    onAnimationHitComplete();
-            //    onAnimationHitComplete = null;
-            //}
         }
-        public void AnimationEndCallback()
+        public void EnterWindup()
         {
-            state.AnimationEndCallback();
+            state.EnterWindup();
+        }
+        public void EnterRecovery()
+        {
+            state.EnterRecovery();
+        }
+        public void OnEnd()
+        {
+            state.OnEnd();
 
             //if (onAnimationEndComplete != null)
             //{
@@ -283,9 +342,9 @@ namespace Assets.Scripts.Battle
         }
         public void ReactionCheck()
         {
-            onReactionCheck();
-            onReactionCheck = null;
-        }
+            //onReactionCheck();
+            //onReactionCheck = null;
+        } //Rework so this is no longer needed.
 
         public System.Collections.IEnumerator WaitForOneFrame(Action action)
         {
@@ -324,5 +383,9 @@ namespace Assets.Scripts.Battle
         }
 
         public bool grounded { get { return IsGrounded(); } private set { } }
+        public Animator GetAnimator()
+        {
+            return animator;
+        }
     }
 }

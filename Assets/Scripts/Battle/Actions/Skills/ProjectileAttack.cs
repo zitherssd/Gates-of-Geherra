@@ -32,14 +32,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
 
             casterActor.GetComponent<Rigidbody>().AddForce(casterToTarget * 100 * SelfForce);
 
-            casterActor.PlayAnimation(this.Animation.ToString(), () => {
-                var projectile = Instantiate(projectilePrefab, casterActor.transform.position + casterActor.transform.forward + 0.6f * Vector3.up, Quaternion.identity);
-                projectile.GetComponent<Rigidbody>().AddForce((targetActor.transform.position + 0.6f * Vector3.up - projectile.transform.position).normalized * 200f);
-                var handler = projectile.GetComponent<ProjectileHandler>();
-                handler.Damage = Damage;
-                handler.KnockbackForce = KnockbackForce;
-                handler.PostureDamage = PostureDamage;
-            }, onPerformEnd);
+           
         }
 
         public override bool IsValidAndInRange(Actor caster)

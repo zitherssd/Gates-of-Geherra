@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using Assets.Scripts.Pattern;
 using UnityEngine;
-using Assets.Scripts.Pattern;
 
 
 namespace Assets.Scripts.Battle.Components.State
@@ -9,28 +7,30 @@ namespace Assets.Scripts.Battle.Components.State
     public class StaggerState : IState
     {
         private Battle.Actor actor;
-        private float idleTimer = 0f;
+        private float timer = 0f;
         private bool collisionOccured;
+        private float duration = 0f;
 
         public StaggerState(Battle.Actor actor)
         {
             this.actor = actor;
         }
 
+        public StaggerState Set(float duration)
+        {
+            this.duration = duration;
+            return this;
+        }
+
         public void Enter()
         {
             Physics.IgnoreLayerCollision(3, 3, true);
             //actor.KnockbackRecieved += ModifyKnockback;
-            actor.DamageApplied += ChangeSpriteToDamaged;
             actor.PlayAnimation("PostureBroken");
             actor.audio.PlayAudio("Attack1");
             actor.rigidbody.drag = 0.15f;
             collisionOccured = false;
-        }
-
-        private float ModifyKnockback(float force, Vector3 direction)
-        {
-            return force = force * 2;
+            timer = 0f;
         }
 
         private void ChangeSpriteToDamaged(float damage)
@@ -42,32 +42,18 @@ namespace Assets.Scripts.Battle.Components.State
         {
             Physics.IgnoreLayerCollision(3, 3, false);
             //actor.KnockbackRecieved -= ModifyKnockback;
-            actor.DamageApplied -= ChangeSpriteToDamaged;
+            actor.OnDamageApplied -= ChangeSpriteToDamaged;
             actor.rigidbody.drag = 0.33f;
+            timer = 0f;
+            actor.ActorData.currentPosture = actor.ActorData.maxPosture;
 
         }
 
         public void Update()
         {
-            if (!actor.grounded)
-                actor.state.TransitionTo(actor.state.airStaggerState);
-            if (actor.rigidbody.velocity.magnitude > Mathf.Epsilon)
-            {
-                idleTimer = 0f;
-            }
-            else
-            {
+            timer += Time.deltaTime;
+            if (timer > duration)
                 actor.state.TransitionTo(actor.state.idleState);
-
-                // Increment the idle timer if the actor's velocity is zero
-                //idleTimer += Time.deltaTime;
-
-                //// Transition to idleState if the idle timer exceeds 1 second
-                //if (idleTimer > 0.33f)
-                //{
-                //    actor.state.TransitionTo(actor.state.idleState);
-                //}
-            }
         }
 
         public void OnCollisionEnter(Collision collision)
@@ -100,7 +86,7 @@ namespace Assets.Scripts.Battle.Components.State
                     var r = collision.relativeVelocity - 2 * Vector3.Dot(actor.rigidbody.velocity, collision.GetContact(0).normal) * collision.contacts[0].normal;
 
                     // Replace current velocity with the mirrored velocity
-                    actor.rigidbody.velocity = 2*r/3;
+                    actor.rigidbody.velocity = 2 * r / 3;
                 }
             }
         }

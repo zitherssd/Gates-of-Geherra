@@ -48,16 +48,27 @@ namespace Assets.Scripts.Battle.Components.State
 
         public void Update()
         {
+            // Calculate the squared distance to the destination
             sqrMag = (destination - actor.transform.position).sqrMagnitude;
 
+            // Check if the actor has reached the destination or is moving away
             if (sqrMag <= minDistance * minDistance || sqrMag > lastSqrMag)
             {
                 onMoveComplete.Invoke();
             }
             else
             {
-                actor.rigidbody.velocity = (destination - actor.transform.position).normalized * moveSpeed;
+                // Calculate the direction towards the destination
+                Vector3 direction = (destination - actor.transform.position).normalized;
+
+                // Calculate the new position based on fixed speed
+                Vector3 newPosition = actor.transform.position + direction * moveSpeed * Time.deltaTime;
+
+                // Move the actor towards the new position using Rigidbody.MovePosition
+                actor.rigidbody.MovePosition(newPosition);
             }
+
+            // Update the last squared magnitude for future comparison
             lastSqrMag = sqrMag;
         }
     }

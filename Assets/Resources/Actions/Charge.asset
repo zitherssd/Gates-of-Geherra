@@ -21,9 +21,10 @@ MonoBehaviour:
   BuildupGain: 5
   StaminaCost: 0
   Speed: 5
-  Tags: 05000000
+  Tags: 09000000
   Direction: {x: 0, y: 0, z: 0}
   currentCooldownTurns: 2
   remainingUses: 0
-  StickMult: 1
-  power: 3.5
+  StickMult: 3
+  Animation: 12
+  power: 2

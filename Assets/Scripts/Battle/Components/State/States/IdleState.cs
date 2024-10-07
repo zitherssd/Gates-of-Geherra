@@ -1,7 +1,5 @@
 ﻿using Assets.Scripts.Pattern;
-using System.Collections;
 using UnityEngine;
-using Assets.Scripts.Pattern;
 
 
 namespace Assets.Scripts.Battle.Components.State
@@ -19,7 +17,7 @@ namespace Assets.Scripts.Battle.Components.State
 
         public void Enter()
         {
-
+            actor.ai.ChooseAction((chosenAction) => actor.UseAction(chosenAction, () => { actor.state.TransitionTo(actor.state.idleState); }));
         }
 
         public void Exit()
@@ -34,7 +32,15 @@ namespace Assets.Scripts.Battle.Components.State
 
         public void Update()
         {
-            //
+            if (actor.isControllable())
+                if (Input.GetKey(KeyCode.Space))
+                {
+                    Time.timeScale = 1f;
+                }
+                else
+                {
+                    Time.timeScale = 0f;
+                }
         }
     }
 }

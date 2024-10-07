@@ -116,7 +116,7 @@ public class UIManager : MonoBehaviour
             handler.Init();
             handlers.Add(handler);
         }
-        EndButton.gameObject.SetActive(true);
+        //EndButton.gameObject.SetActive(true);
         ActionSlot.SetActive(true);
         return handlers;
     }

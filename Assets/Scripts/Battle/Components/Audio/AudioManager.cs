@@ -13,7 +13,7 @@ namespace Assets.Scripts.Battle.Components.Audio
         {
             this.owner = owner;
             audioSource = owner.GetComponent<AudioSource>();
-            owner.DamageApplied += PlayDamagedSound;
+            owner.OnDamageApplied += PlayDamagedSound;
         }
         public void PlayAudio(string clipName)
         {

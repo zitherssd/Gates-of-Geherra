@@ -104,8 +104,8 @@ namespace Assets
                 actor.state.TransitionTo(actor.state.idleState);
             }
             EnqueAll();
-
-            SwitchToNextTurn();
+            Time.timeScale = 0f;
+            //SwitchToNextTurn();
         }
 
         private void EnqueAll()

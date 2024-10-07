@@ -6,12 +6,11 @@ namespace Assets.Scripts.Battle.Actions.Reactions
 {
     [CreateAssetMenu(fileName = "Dodge", menuName = "ScriptableObjects/Reaction/Dodge")]
 
-    public class Dodge : BaseReaction
+    public class Dodge : BaseSkill
     {
         [Range(0, 10)]
         public float force;
         public float time;
-        public ANIMATION Animation;
         public TYPE Type;
         private LTDescr moveTween;
         private Actor actor;
@@ -24,15 +23,18 @@ namespace Assets.Scripts.Battle.Actions.Reactions
 
             if (Type == TYPE.Force)
             {
-                actor.GetComponent<Rigidbody>().AddForce(100 * force * Direction.normalized);
-                actor.PlayAnimation(Animation.ToString(), onActionComplete);
+                var chargeVector = Direction.normalized * StickMult * force;
+
+                actor.movementForce = chargeVector;
+
+                actor.state.TransitionTo(actor.state.actingState.Set(this, onActionComplete));
+
             }
             else if (Type == TYPE.Lerp)
             {
-                actor.PlayAnimation(Animation.ToString(), onActionComplete);
-                moveTween = LeanTween.move(actor.gameObject, actor.transform.position + Direction * force, time).setEaseOutExpo().setOnUpdate(OnTweenUpdate);
+                actor.Move(actor.transform.position + Direction * StickMult, time, LeanTweenType.easeOutCirc);
+                actor.state.TransitionTo(actor.state.actingState.Set(this, onActionComplete));
             }
-
 
             //IF AI
             //var sign = 0;
@@ -61,8 +63,6 @@ namespace Assets.Scripts.Battle.Actions.Reactions
             }
         }
     }
-
-    public enum ANIMATION { Step, Roll }
     public enum TYPE { Force, Lerp }
 
 }

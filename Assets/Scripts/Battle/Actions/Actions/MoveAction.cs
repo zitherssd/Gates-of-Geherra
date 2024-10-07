@@ -15,7 +15,6 @@ namespace Assets.Scripts.Battle.Actions
             var TargetPosition = casterActor.transform.position + scaledStickMult;
 
             casterActor.state.TransitionTo(casterActor.state.moveState.Set(TargetPosition, onPerformEnd));
-
         }
     }
 }

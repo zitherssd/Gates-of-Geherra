@@ -26,5 +26,5 @@ MonoBehaviour:
   currentCooldownTurns: 0
   remainingUses: 0
   StickMult: 10
-  type: 0
+  Animation: 6
   Distance: 10
