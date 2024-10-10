@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Old Prisoner
   m_EditorClassIdentifier: 
   Name: Old Prisoner
-  maxHp: 20
+  maxHp: 60
   maxBuildup: 0
   maxPosture: 10
   maxStamina: 0
@@ -31,15 +31,14 @@ MonoBehaviour:
   actions:
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
   reactions:
   - {fileID: 0}
   hpBars:
   - {fileID: 11400000, guid: 7480a64d72f259342898ac4956c7a727, type: 2}
-  currentHp: 20
-  currentBuildup: 0
-  currentPosture: 10
-  currentStamina: -6
+  currentHp: 60
+  currentBuildup: 20
+  currentPosture: 7
+  currentStamina: 0
   ATK: 1
   DEF: 1
   AGI: 1

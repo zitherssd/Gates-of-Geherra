@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: HPLOW
   m_EditorClassIdentifier: 
   Name: LOW
-  maxHp: 30
+  maxHp: 20
   alive: 1

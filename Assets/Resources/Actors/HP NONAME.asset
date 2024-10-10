@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: HP NONAME
   m_EditorClassIdentifier: 
   Name: LOW
-  maxHp: 15
+  maxHp: 20
   alive: 1

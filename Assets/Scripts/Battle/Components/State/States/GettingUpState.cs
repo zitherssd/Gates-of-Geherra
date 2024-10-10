@@ -36,14 +36,15 @@ namespace Assets.Scripts.Battle.Components.State.States
         public void Update()
         {
             elapsedTime += Time.deltaTime; // Increment the elapsed time by the time since the last frame
-            if (elapsedTime > 1.5f)
-                actor.state.TransitionTo(actor.state.idleState);
-            else if (elapsedTime > 1f)
+
+            if (elapsedTime > 1.2f)
             {
+                actor.ActorData.currentPosture = actor.ActorData.maxPosture;
                 actor.PlayAnimation("Idle"); // Play the "GetUp" animation
+                actor.state.TransitionTo(actor.state.idleState);
 
             }
-            else if (elapsedTime > 0.5f)
+            else if (elapsedTime > 0.6f)
             {
                 actor.PlayAnimation("Getup"); // Play the "GetUp" animation
 

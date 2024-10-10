@@ -1,5 +1,4 @@
 using Assets;
-using Assets.Scripts.Actions;
 using Assets.Scripts.Battle;
 using Assets.Scripts.Battle.Actions.Skills;
 using Assets.Scripts.Utility;
@@ -16,6 +15,7 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
 
 
     public Image image;
+    public Image cooldownimage;
 
     private Transform home;
     public BaseAction referencedAction;
@@ -31,7 +31,7 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
 
         gameObject.GetComponent<Button>().interactable = draggable;
         //animation
-        if(gameObject.GetComponent<Button>().IsInteractable())
+        if (gameObject.GetComponent<Button>().IsInteractable())
         {
 
         }
@@ -47,8 +47,8 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
             Transform child = actionHolder.transform.GetChild(i);
             Destroy(child.gameObject);
         }
-        if(actionSlot.transform.childCount > 0)
-        Destroy(actionSlot.transform.GetChild(0).gameObject);
+        if (actionSlot.transform.childCount > 0)
+            Destroy(actionSlot.transform.GetChild(0).gameObject);
     }
 
     private void Awake()
@@ -69,6 +69,15 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
 
     private void Update()
     {
+        if (referencedAction)
+        {
+            if (referencedAction.CooldownTimer == 0)
+                cooldownimage.fillAmount = 0f;
+            else
+                cooldownimage.fillAmount = Mathf.Clamp(referencedAction.currentCooldownTimer / referencedAction.CooldownTimer, 0, 1);
+
+            if (cooldownimage.fillAmount == 0) SetDraggable(referencedAction.IsValid(BattleManager.instance.PlayerActors[0], out _));
+        }
         if (!isPressed) return;
         // Check if the pointer is currently pressed down
         if (Input.GetMouseButton(0) || Input.touchCount > 0)
@@ -89,7 +98,7 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
 
             Vector2 delta = currentPointerPosition - pointerDownPosition; // Calculate the movement delta
             if (delta.magnitude > 300) { pointerDownPosition += Vector2.ClampMagnitude(delta, delta.magnitude - 300); }
-            delta = Vector2.ClampMagnitude(delta,300);
+            delta = Vector2.ClampMagnitude(delta, 300);
             deltaScaled = new Vector2(LinearMap(delta.x, 0, 300, 0, 1), LinearMap(delta.y, 0, 300, 0, 1));
             deltaScaled = Vector2.ClampMagnitude(deltaScaled, 1);
             if (referencedAction.Tags.Contains(TAG.USESTICK))
@@ -101,7 +110,6 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
 
             rect.transform.position = Vector2.Lerp(rect.transform.position, targetPos + deltaScaled * 150f, 0.2f);
 
-            Debug.Log(deltaScaled);
 
             if (deltaScaled.magnitude > 0.1f)
             {
@@ -131,7 +139,7 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
 
         string plusSymbol = "+";
         remainingUses.text = referencedAction.TotalUses != 0 ? ConcatWithPlus(plusSymbol, referencedAction.TotalUses) : string.Empty;
-        if(referencedAction is AttackSkill)
+        if (referencedAction is AttackSkill)
         {
             var skill = referencedAction as AttackSkill;
             speed.text += skill.Speed;
@@ -139,8 +147,8 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
             damage.text += skill.Damage;
             postureDamage.text += skill.PostureDamage;
             knockback.text += skill.KnockbackForce;
-            if(referencedAction.Tags != null && referencedAction.Tags.Count > 0)
-            tags.text = GenerateTagString(referencedAction.Tags);
+            if (referencedAction.Tags != null && referencedAction.Tags.Count > 0)
+                tags.text = GenerateTagString(referencedAction.Tags);
         }
     }
 
@@ -171,7 +179,7 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
             buildupCost.text = action.BuildupCost != 0 ? action.BuildupCost.ToString() : string.Empty;
             staminaCost.text = action.StaminaCost != 0 ? action.StaminaCost.ToString() : string.Empty;
             tags.text = GenerateTagString(action.Tags);
-            if(description)
+            if (description)
             {
                 if (String.IsNullOrEmpty(action.Description))
                 {
@@ -179,7 +187,7 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
                 }
             }
 
-                
+
             SetDraggable(action);
         }
     }
@@ -235,8 +243,8 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
         targetPos = CanvasHandler.instance.GetComponent<RectTransform>().anchoredPosition;
         //LeanTween.move(rect, CanvasHandler.instance.GetComponent<RectTransform>().anchoredPosition, 0.15f).setEaseOutBack().setIgnoreTimeScale(true);
         LeanTween.scale(rect, Vector3.one * 1.5f, 1f).setEaseOutBack().setIgnoreTimeScale(true);
-        if(referencedAction.Tags.Contains(TAG.USESTICK))
-        guide.GetComponent<ParticleSystem>().Play();
+        if (referencedAction.Tags.Contains(TAG.USESTICK))
+            guide.GetComponent<ParticleSystem>().Play();
     }
 
     private void MoveToHome()
@@ -250,7 +258,7 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
 
     public void OnPointerDown(PointerEventData pointerEventData)
     {
-        if(referencedAction is AttackSkill)
+        if (referencedAction is AttackSkill)
         {
             CameraManager.instance.SlowTrack = false;
         }
@@ -267,7 +275,7 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
         if (isDraggable == false) return;
         MoveToHome();
         isPressed = false;
-        if(deltaScaled.magnitude > 0.1f)
+        if (deltaScaled.magnitude > 0.1f)
         {
             Click.Invoke(referencedAction);
             KillAll();

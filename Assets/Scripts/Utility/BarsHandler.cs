@@ -122,7 +122,7 @@ public class BarsHandler : MonoBehaviour
         }
         lastStamina = actor.ActorData.currentStamina;
 
-        hpBar.value = actorData.currentHp / actorData.maxHp;
+        hpBar.value = actorData.GetCurrentHP() / actorData.maxHp;
         hpBarEase.value = Mathf.Lerp(hpBarEase.value, hpBar.value, 0.01f);
         //hpBarText.text = $"{ actorData.currentHp}/{actorData.maxHp}";
 

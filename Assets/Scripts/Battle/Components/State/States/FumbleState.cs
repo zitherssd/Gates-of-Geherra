@@ -1,24 +1,24 @@
 ﻿using Assets.Scripts.Pattern;
 using UnityEngine;
 
-namespace Assets.Scripts.Battle.Components.State.States
+
+namespace Assets.Scripts.Battle.Components.State
 {
-    public class StaggerState : IState
+    public class FumbleState : IState
     {
         private Battle.Actor actor;
         private float timer = 0f;
         private bool collisionOccured;
         private float duration = 0f;
 
-        public StaggerState(Battle.Actor actor)
+        public FumbleState(Battle.Actor actor)
         {
             this.actor = actor;
         }
 
-        public StaggerState Set(float duration)
+        public FumbleState Set(float duration)
         {
-            if (duration > this.duration)
-                this.duration = duration;
+            this.duration = duration;
             return this;
         }
 
@@ -26,51 +26,25 @@ namespace Assets.Scripts.Battle.Components.State.States
         {
             Physics.IgnoreLayerCollision(3, 3, true);
             //actor.KnockbackRecieved += ModifyKnockback;
-            actor.PlayAnimation("HurtGround");
-            actor.audio.PlayAudio("Attack1");
-            actor.movement.SetFriction(0.33f);
-            actor.KnockbackRecieved += Actor_KnockbackApplied;
-            collisionOccured = false;
-            timer = 0f;
-        }
-
-        private float Actor_KnockbackApplied(float arg1, Vector3 arg2)
-        {
-            return arg1 * 2;
-        }
-
-        private void ChangeSpriteToDamaged(float damage)
-        {
-            actor.PlayAnimation("HurtGround");
+            actor.PlayAnimation("PostureBroken");
+            actor.audio.PlayAudio("Parry");
         }
 
         public void Exit()
         {
             Physics.IgnoreLayerCollision(3, 3, false);
-            //actor.KnockbackRecieved -= ModifyKnockback;
-            actor.OnDamageApplied -= ChangeSpriteToDamaged;
-            actor.KnockbackRecieved -= Actor_KnockbackApplied;
-            actor.movement.SetFriction();
+
         }
 
         public void Update()
         {
             if (!actor.grounded)
-            {
                 actor.state.TransitionTo(actor.state.airStaggerState);
-                return;
-            }
-
-            // Increment the timer by deltaTime
-            timer += Time.deltaTime;
-            Debug.Log($"Timer: {timer}, Duration: {duration}");
-
-            // Check if the total stagger duration has been reached
-            if (timer >= duration)
+            duration -= Time.deltaTime;
+            if (duration < 0)
             {
-                Debug.Log($"Timer reached duration: {timer}, Duration: {duration}");
-                actor.ActorData.currentPosture = actor.ActorData.maxPosture;
-                actor.state.TransitionTo(actor.state.idleState);  // Transition back to idle state
+                actor.state.TransitionTo(actor.state.idleState);
+                duration = 0;
             }
         }
 

@@ -113,9 +113,12 @@ namespace Assets.Scripts.Battle.Components.AI
             if (chosenSkill == null)
             {
                 //must move
-                var moveSkill = actor.ActorData.actions.OfType<MoveAction>().First();
-                moveSkill.Direction = actor.target.DirectionToClosestEnemy;
-                action.Invoke(moveSkill);
+                actor.StartCoroutine(actor.WaitForTime(() =>
+                {
+                    var moveSkill = actor.ActorData.actions.OfType<MoveAction>().First();
+                    moveSkill.Direction = actor.target.DirectionToClosestEnemy;
+                    action.Invoke(moveSkill);
+                }, UnityEngine.Random.Range(0.2f,0.5f)));
             }
             else
             {

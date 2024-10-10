@@ -17,6 +17,14 @@ namespace Assets.Scripts.Battle.Components.State
 
         public void Enter()
         {
+
+            //deathcheck
+            if(actor.ActorData.GetCurrentHP() == 0)
+            {
+                actor.state.TransitionTo(actor.state.deathState);
+                BattleManager.instance.End();
+                return;
+            }
             actor.ai.ChooseAction((chosenAction) => actor.UseAction(chosenAction, () => { actor.state.TransitionTo(actor.state.idleState); }));
         }
 

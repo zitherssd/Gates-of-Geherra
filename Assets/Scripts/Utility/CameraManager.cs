@@ -9,6 +9,7 @@ namespace Assets
         private float shakeDuration = 0f;
         private float shakeMagnitude = 0.7f;
         private float dampingSpeed = 1.0f;
+        private float CameraHeight;
 
         public CameraType cameraType = CameraType.Main;
 
@@ -70,8 +71,8 @@ namespace Assets
             if(!Override)
             {
                 var input = Mathf.Clamp((directionvector * 2).magnitude, 3, 40);
-                UpDistance = LinearMap(input, 3, 40, 2, 6);
-                BackDistance = LinearMap(input, 3, 40, 5, 20);
+                UpDistance = LinearMap(input, 3, 40, 1.5f, 6);
+                BackDistance = LinearMap(input, 3, 40, 4, 20);
             }
 
             directionvector = Vector3.ProjectOnPlane(directionvector, Vector3.up).normalized;
@@ -107,10 +108,10 @@ namespace Assets
             }
             else transform.position = targetpos;
             if(!SlowTrack)
-            transform.LookAt(distvector + Vector3.up * 1.5f);
+            transform.LookAt(distvector + Vector3.up * 0.5f);
             else
             {
-                Vector3 targetRotation = (distvector + Vector3.up * 1.5f) - transform.position;
+                Vector3 targetRotation = (distvector + Vector3.up * 0.5f) - transform.position;
                 Quaternion endRotation = Quaternion.LookRotation(targetRotation);
 
                 // Smoothly rotate towards the target rotation
@@ -160,6 +161,54 @@ namespace Assets
         public enum CameraType
         {
             Main, UI
+        }
+
+        public void SetCameraParameters(float distance, out float upDistance, out float backDistance, out float fov)
+        {
+            // Define the key points and corresponding values for upDistance, backDistance, and fov
+            float[] distances = { 0.8f, 3f, 5f, 10f };
+            float[] upDistances = { 1f, 1.4f, 2.2f, 3.4f };
+            float[] backDistances = { 3f, 3.5f, 4.5f, 6f };
+            float[] fovs = { 45f, 45f, 50f, 60f };
+
+            // If distance is below the first point, clamp to the first values
+            if (distance <= distances[0])
+            {
+                upDistance = upDistances[0];
+                backDistance = backDistances[0];
+                fov = fovs[0];
+                return;
+            }
+
+            // If distance is beyond the last point, clamp to the last values
+            if (distance >= distances[distances.Length - 1])
+            {
+                upDistance = upDistances[upDistances.Length - 1];
+                backDistance = backDistances[backDistances.Length - 1];
+                fov = fovs[fovs.Length - 1];
+                return;
+            }
+
+            // Find the two points between which the current distance lies
+            for (int i = 0; i < distances.Length - 1; i++)
+            {
+                if (distance >= distances[i] && distance <= distances[i + 1])
+                {
+                    // Interpolate upDistance, backDistance, and fov
+                    float t = (distance - distances[i]) / (distances[i + 1] - distances[i]); // Normalized interpolation factor
+
+                    upDistance = Mathf.Lerp(upDistances[i], upDistances[i + 1], t);
+                    backDistance = Mathf.Lerp(backDistances[i], backDistances[i + 1], t);
+                    fov = Mathf.Lerp(fovs[i], fovs[i + 1], t);
+
+                    return;
+                }
+            }
+
+            // Default case (should never hit)
+            upDistance = upDistances[0];
+            backDistance = backDistances[0];
+            fov = fovs[0];
         }
     }
 }

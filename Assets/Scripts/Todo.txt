@@ -1,0 +1,11 @@
+refactor posture regen -- done
+refactor stamina regen -- done
+refactor skill cd (keep skills always avaliable on screen) -- lets say done? not stable
+if you are in ready state you can select new skill from ui
+skills are always avaliable in ui etc
+contextual skills may appear based on where you stand
+underlord skills and upgrades
+new ui
+indicator for player facing.
+tie in player facing with camera
+BRAINSTORM MOVMEENT SOME MORE

@@ -25,15 +25,17 @@ public class ActorData : ScriptableObject
     public List<BasePassive> basePassives;
     public List<HpBar> baseHpBars;
 
-    [HideInInspector] public List<Assets.BaseAction> actions;
-    [HideInInspector] public List<BaseReaction> reactions;
-    [HideInInspector] public List<HpBar> hpBars;
+     public List<Assets.BaseAction> actions;
+     public List<BaseReaction> reactions;
+     public List<HpBar> hpBars;
 
 
-    public float currentHp;
     public float currentBuildup;
     public float currentPosture;
     public float currentStamina;
+
+    public float postureRegenRate = 1f;
+    public float staminaRegenRate = 1f;
 
 
     public int ATK;
@@ -47,7 +49,6 @@ public class ActorData : ScriptableObject
 
     private void Awake()
     {
-        currentHp = maxHp;
         currentBuildup = 0;
         currentPosture = maxPosture;
     }
@@ -61,6 +62,16 @@ public class ActorData : ScriptableObject
         if (lastBar == null) return;
         lastBar.currentHp -= damage;
 
+        //If no longer alive
+        if (lastBar.alive == false)
+        {
+            OnHpBarLost?.Invoke();
+        }
+
+        if(hpBars.Where<HpBar>(item => item.alive).Count() == 0)
+        {
+            OnDeath?.Invoke();
+        }
 
         //If no more bars are alive invoke onDeath
         if (!(hpBars.Where<HpBar>(item => item.alive).Count() > 0))
@@ -71,7 +82,6 @@ public class ActorData : ScriptableObject
             }
             OnDeath?.Invoke();
             currentPosture = 0;
-            currentHp = 0;
         }
     }
 

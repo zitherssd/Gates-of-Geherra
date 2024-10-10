@@ -15,7 +15,7 @@ MonoBehaviour:
   Name: Forward Kick
   Rarity: 0
   Description: 
-  cooldownTurns: 0
+  CooldownTimer: 5
   TotalUses: 0
   BuildupCost: 0
   BuildupGain: 0
@@ -23,7 +23,7 @@ MonoBehaviour:
   Speed: 0
   Tags: 
   Direction: {x: 0, y: 0, z: 0}
-  currentCooldownTurns: 0
+  currentCooldownTimer: 0
   remainingUses: 0
   StickMult: 1.5
   Animation: 9
@@ -31,6 +31,7 @@ MonoBehaviour:
   Damage: 7
   PostureDamage: 8
   KnockbackForce: 1.7
+  windupTimeMult: 1
+  recoveryTimeMult: 1
+  state: 0
   SelfForce: 2
-  Delay: 0
-  preciseattack: 1

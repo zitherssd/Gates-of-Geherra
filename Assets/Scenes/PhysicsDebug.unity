@@ -304,7 +304,7 @@ PrefabInstance:
     - target: {fileID: 7899857719349980931, guid: f166d0e2280a07b4bb8dc32f1fec3f50, type: 3}
       propertyPath: m_Material
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 13400000, guid: 4e50d5886d3fced41a4112cf0616b68a, type: 2}
     - target: {fileID: 7899857719349980933, guid: f166d0e2280a07b4bb8dc32f1fec3f50, type: 3}
       propertyPath: m_Enabled
       value: 1
@@ -357,6 +357,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8176262469437294627, guid: f166d0e2280a07b4bb8dc32f1fec3f50, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 1619807635, guid: dbed9846e9655f9489c37ed23450fffa, type: 3}
     - target: {fileID: 8461683330116668790, guid: f166d0e2280a07b4bb8dc32f1fec3f50, type: 3}
       propertyPath: mainColor.b
       value: 0
@@ -408,7 +412,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ad7901f817de9446b84f4081b3591a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  force: 3
+  force: 1
 --- !u!1001 &665598537
 PrefabInstance:
   m_ObjectHideFlags: 0

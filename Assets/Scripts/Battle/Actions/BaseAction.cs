@@ -10,7 +10,7 @@ namespace Assets
         public string Name;
         public RARITY Rarity;
         public string Description;
-        public int cooldownTurns;
+        public float CooldownTimer;
         public int TotalUses;
         //public int Range;
         //public SpriteRenderer sprite;
@@ -20,19 +20,19 @@ namespace Assets
         public int Speed;
         public List<TAG> Tags;
         [HideInInspector] public Vector3 Direction;
-        public int currentCooldownTurns = 0;
+        public float currentCooldownTimer = 0;
         [HideInInspector] public int remainingUses;
         public float StickMult = 1;
 
 
         public virtual void Perform(Actor casterActor, Action onPerformEnd)
         {
-            //UpdateRemainingUses();
+            UpdateRemainingUses();
             //ResetCooldown();
 
             if (Tags.Contains(TAG.KILLMOMENTUM)) casterActor.GetComponent<Rigidbody>().velocity = Vector3.zero;
 
-            //casterActor.ActorData.DealStaminaDamage(StaminaCost);
+            casterActor.ActorData.DealStaminaDamage(StaminaCost);
             casterActor.ActorData.ChangeBuildup(BuildupGain);
             casterActor.ActorData.ChangeBuildup(-BuildupCost);
 
@@ -43,15 +43,17 @@ namespace Assets
 
         public virtual void UpdateCooldown()
         {
-            if (currentCooldownTurns > 0)
-                currentCooldownTurns--;
+            if (currentCooldownTimer > 0)
+                currentCooldownTimer = currentCooldownTimer -= Time.deltaTime;
+            else
+                currentCooldownTimer = 0f;
 
             if (Tags.Contains(TAG.RECHARGE_TOTAL_USES) && remainingUses < TotalUses)
             {
-                if (currentCooldownTurns == 0)
+                if (currentCooldownTimer == 0)
                 {
                     remainingUses++;
-                    currentCooldownTurns = cooldownTurns;
+                    currentCooldownTimer = CooldownTimer;
                 }
             }
         }
@@ -59,18 +61,22 @@ namespace Assets
         public bool IsSkillOnCooldown()
         {
             if (Tags.Contains(TAG.RECHARGE_TOTAL_USES)) return false;
-            return currentCooldownTurns > 0;
+            return currentCooldownTimer > 0;
         }
 
         public void ResetCooldown()
         {
+            currentCooldownTimer = CooldownTimer;
             if (Tags.Contains(TAG.RECHARGE_TOTAL_USES))
             {
-
+                if(remainingUses < TotalUses)
+                {
+                    remainingUses++;
+                    currentCooldownTimer = CooldownTimer;
+                }    
             }
             else
-
-                currentCooldownTurns = cooldownTurns;
+                currentCooldownTimer = CooldownTimer;
 
         }
 
@@ -84,7 +90,7 @@ namespace Assets
         internal void Refresh()
         {
             remainingUses = TotalUses;
-            currentCooldownTurns = 0;
+            currentCooldownTimer = 0;
         }
 
         public virtual bool IsValid(Actor caster, out string InvalidReason)
@@ -98,7 +104,7 @@ namespace Assets
             }
             if (IsSkillOnCooldown())
             {
-                InvalidReason = $"usable in {currentCooldownTurns}";
+                InvalidReason = $"usable in {currentCooldownTimer}";
                 return false;
             }
             if (caster.ActorData.currentBuildup < BuildupCost)
@@ -121,13 +127,15 @@ namespace Assets
 
         public void UpdateRemainingUses()
         {
+            currentCooldownTimer = CooldownTimer;
+
             if (remainingUses == TotalUses && Tags.Contains(TAG.RECHARGE_TOTAL_USES))
             {
                 remainingUses -= 1;
-                currentCooldownTurns = cooldownTurns;
+                currentCooldownTimer = CooldownTimer;
             }
             else
-            if (TotalUses != 0)
+            if (remainingUses != 0)
                 remainingUses -= 1;
         }
 

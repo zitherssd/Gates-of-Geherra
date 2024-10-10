@@ -32,13 +32,17 @@ namespace Assets.Scripts.Battle.Components.State
         {
             Debug.Log(actor.ActorData.name + " entered MoveState");
             actor.audio.PlayAudio("Move2");
-            actor.PlayAnimation("Idle");
+            actor.PlayAnimation("Run");
             lastSqrMag = Mathf.Infinity;
+            actor.movement.ResetMomentum();
+            actor.movement.SetFriction(0);
+            actor.movement.AddForce((destination - actor.transform.position).normalized * actor.ActorData.AGI);
         }
 
         public void Exit()
         {
             onMoveComplete = null;
+            actor.movement.SetFriction();
         }
 
         public void OnCollisionEnter(Collision collision)
@@ -55,17 +59,6 @@ namespace Assets.Scripts.Battle.Components.State
             if (sqrMag <= minDistance * minDistance || sqrMag > lastSqrMag)
             {
                 onMoveComplete.Invoke();
-            }
-            else
-            {
-                // Calculate the direction towards the destination
-                Vector3 direction = (destination - actor.transform.position).normalized;
-
-                // Calculate the new position based on fixed speed
-                Vector3 newPosition = actor.transform.position + direction * moveSpeed * Time.deltaTime;
-
-                // Move the actor towards the new position using Rigidbody.MovePosition
-                actor.rigidbody.MovePosition(newPosition);
             }
 
             // Update the last squared magnitude for future comparison

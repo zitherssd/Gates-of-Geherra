@@ -45,7 +45,7 @@ public class FloorManager : MonoBehaviour
                 StartCoroutine(uiManager.TypeTextMiddleLetterByLetter(line, () =>
                 {
                     StartCoroutine(uiManager.FadeMiddleText(1));
-                    bm.SetupBattleWithEnemy(GetActorForFloor());
+                    bm.SetupBattleWithEnemies(GetActorsForFloor());
 
 
                 }));
@@ -53,16 +53,21 @@ public class FloorManager : MonoBehaviour
         });
     }
 
-    public ActorData GetActorForFloor()
+    public List<ActorData> GetActorsForFloor()
     {
-        ActorData result;
+        List<ActorData> result = new List<ActorData>();
         if (currentFloor == 2)
-            result = secondFloorEnemies[Random.Range(0, secondFloorEnemies.Count)];
+            result.Add(secondFloorEnemies[Random.Range(0, secondFloorEnemies.Count)]);
         else if (currentFloor == 3)
-            result = thirdFloorEnemies[Random.Range(0, thirdFloorEnemies.Count)];
+        {
+            result.Add(thirdFloorEnemies[Random.Range(0, thirdFloorEnemies.Count)]);
+            result.Add(thirdFloorEnemies[Random.Range(0, thirdFloorEnemies.Count)]);
+        }
         else
-            result = fourthFloorEnemies[Random.Range(0, fourthFloorEnemies.Count)];
-        result.Reset();
+        {
+            result.Add(fourthFloorEnemies[Random.Range(0, fourthFloorEnemies.Count)]);
+        }
+        result.ForEach(result => result.Reset());
         return result;
     }
 
@@ -105,7 +110,5 @@ public class FloorManager : MonoBehaviour
                 return number + "th";
         }
     }
-
-
 
 }

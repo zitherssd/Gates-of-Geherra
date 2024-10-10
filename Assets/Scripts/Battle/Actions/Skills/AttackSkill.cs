@@ -14,12 +14,10 @@ namespace Assets.Scripts.Battle.Actions.Skills
         public float Damage;
         public float PostureDamage;
         public float KnockbackForce;
-        public float tweenDistance;
-        public LeanTweenType tweenType;
-        public float tweenduration;
         public float windupTimeMult = 1f;
         public float recoveryTimeMult = 1f;
         public STATE state = STATE.uninitialized;
+        public float SelfForce;
 
         private Actor target;
         private Actor casterActor;
@@ -33,7 +31,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
 
             this.casterActor = casterActor;
             casterActor.state.TransitionTo(casterActor.state.actingState.Set(this, onPerformEnd));
-            casterActor.Move(casterActor.transform.position + Direction * StickMult, tweenduration, tweenType);
+            casterActor.movement.AddForce(Direction.normalized * SelfForce);
             //var movetween = LeanTween.move(casterActor.gameObject, casterActor.transform.position + Direction * StickMult, tweenduration).setEase(tweenType);
             target = casterActor.target.ClosestEnemy;
         }
@@ -58,8 +56,31 @@ namespace Assets.Scripts.Battle.Actions.Skills
             if (KnockbackForce > 0)
             {
                 var direction = (targetActor.transform.position - casterActor.transform.position).normalized;
-                if (this.Tags.Contains(TAG.KNOCKBACK_BACK)) direction += Vector3.Cross(direction, -Vector3.up);
-                if (this.Tags.Contains(TAG.KNOCKBACK_FRONT)) direction += Vector3.Cross(direction, Vector3.up);
+                if (this.Tags.Contains(TAG.KNOCKBACK_BACK))
+                {
+                    Vector3 cameraForward = Camera.main.transform.forward;
+                    Vector3 aux = Vector3.Cross(direction, -Vector3.up);
+
+                    if (Vector3.Dot(aux, cameraForward) < 0f) //if its oppsoite the camera
+                    {
+                        aux = -aux; //make it face the camera
+                    }
+                    direction += aux;
+                }
+
+                if (this.Tags.Contains(TAG.KNOCKBACK_FRONT))
+                {
+                    Vector3 cameraForward = Camera.main.transform.forward;
+                    Vector3 aux = Vector3.Cross(direction, Vector3.up);
+
+                    if (Vector3.Dot(aux, cameraForward) > 0f) //if it's the same as the camera
+                    {
+                        aux = -aux; //make it opposite
+                    }
+                    direction += aux;
+                }
+
+
                 if (this.Tags.Contains(TAG.KNOCKBACK_AIR)) { direction = (direction + Vector3.up).normalized; }
                 targetActor.ApplyKnockback(direction, KnockbackForce);
             }

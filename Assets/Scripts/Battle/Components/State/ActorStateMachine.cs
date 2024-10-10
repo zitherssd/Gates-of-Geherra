@@ -1,6 +1,5 @@
 ﻿using Assets.Scripts.Battle.Components.State.States;
 using Assets.Scripts.Pattern;
-using System;
 using UnityEngine;
 
 namespace Assets.Scripts.Battle.Components.State
@@ -9,7 +8,7 @@ namespace Assets.Scripts.Battle.Components.State
     {
         [SerializeField]
         public IdleState idleState;
-        public StaggerState staggerState;
+        public FumbleState fumbleState;
         public AirStaggerState airStaggerState;
         public AirNeutralState airNeutralState;
         public LandingState landingState;
@@ -18,12 +17,15 @@ namespace Assets.Scripts.Battle.Components.State
         public BlockState blockState;
         public MoveState moveState;
         public GettingUpState gettingUpState;
+        public StaggerState staggerState;
+        public DeathState deathState;
+        public bool locked;
         private Actor actor;
 
         public ActorStateMachine(Actor actor)
         {
             this.idleState = new IdleState(actor);
-            this.staggerState = new StaggerState(actor);
+            this.fumbleState = new FumbleState(actor);
             this.airStaggerState = new AirStaggerState(actor);
             this.landingState = new LandingState(actor);
             this.airNeutralState = new AirNeutralState(actor);
@@ -32,6 +34,9 @@ namespace Assets.Scripts.Battle.Components.State
             this.blockState = new BlockState(actor);
             this.moveState = new MoveState(actor);
             this.gettingUpState = new GettingUpState(actor);
+            this.staggerState = new StaggerState(actor);
+            this.deathState = new DeathState(actor);
+
             this.actor = actor;
             Initialize(actingState);
         }
@@ -47,7 +52,7 @@ namespace Assets.Scripts.Battle.Components.State
 
         public void OnEnd()
         {
-            if(CurrentState == actingState)
+            if (CurrentState == actingState)
             {
                 actingState.OnEnd();
             }
@@ -55,7 +60,7 @@ namespace Assets.Scripts.Battle.Components.State
 
         public void OnHit()
         {
-            if(CurrentState == actingState)
+            if (CurrentState == actingState)
             {
                 actingState.OnHit();
             }
@@ -67,6 +72,13 @@ namespace Assets.Scripts.Battle.Components.State
             {
                 actingState.EnterWindup(actor.GetAnimator());
             }
+        }
+
+        public bool IsStaggered()
+        {
+            if (CurrentState == staggerState || CurrentState == fumbleState || CurrentState == airStaggerState)
+                return true;
+            else return false;
         }
 
         internal void EnterRecovery()

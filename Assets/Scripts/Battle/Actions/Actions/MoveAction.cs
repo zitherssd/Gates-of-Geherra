@@ -11,7 +11,7 @@ namespace Assets.Scripts.Battle.Actions
         protected override void PerformSpecific(Actor casterActor, Action onPerformEnd)
         {
             StickMult = 1 + casterActor.ActorData.AGI / 3;
-            var scaledStickMult = Direction * (1 + casterActor.ActorData.AGI / 3);
+            var scaledStickMult = Direction * StickMult;
             var TargetPosition = casterActor.transform.position + scaledStickMult;
 
             casterActor.state.TransitionTo(casterActor.state.moveState.Set(TargetPosition, onPerformEnd));

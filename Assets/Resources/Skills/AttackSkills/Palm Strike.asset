@@ -15,7 +15,7 @@ MonoBehaviour:
   Name: Palm Strike
   Rarity: 0
   Description: 
-  cooldownTurns: 2
+  CooldownTimer: 5
   TotalUses: 0
   BuildupCost: 15
   BuildupGain: 5
@@ -23,17 +23,15 @@ MonoBehaviour:
   Speed: 0
   Tags: 09000000
   Direction: {x: 0, y: 0, z: 0}
-  currentCooldownTurns: 2
+  currentCooldownTimer: 0
   remainingUses: 0
-  StickMult: 1.3
+  StickMult: 2
   Animation: 5
   Range: 1
   Damage: 0
   PostureDamage: 12
   KnockbackForce: 1.7
-  tweenDistance: 0
-  tweenType: 21
-  tweenduration: 0
-  windupTimeMult: 1
-  recoveryTimeMult: 1
+  windupTimeMult: 0.7
+  recoveryTimeMult: 0.33
   state: 0
+  SelfForce: 2.5

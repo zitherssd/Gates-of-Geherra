@@ -96,9 +96,6 @@ public class SkillGenerator : MonoBehaviour
 
     void onClickCardHandler(BaseAction action)
     {
-        if (action is BaseReaction)
-            BattleManager.instance.PlayerActors[0].ActorData.reactions.Add(action as BaseReaction);
-        else
             BattleManager.instance.PlayerActors[0].ActorData.actions.Add(action);
     }
 

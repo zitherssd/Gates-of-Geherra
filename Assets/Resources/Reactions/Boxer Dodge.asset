@@ -25,8 +25,7 @@ MonoBehaviour:
   Direction: {x: 0, y: 0, z: 0}
   currentCooldownTurns: 0
   remainingUses: 0
-  StickMult: 0.85
+  StickMult: 1
   Animation: 14
-  force: 0
-  time: 0.7
-  Type: 1
+  force: 2.5
+  time: 0.2

@@ -27,7 +27,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3aa89802a1ec30d48b32f497ba10ce82, type: 2}
   - {fileID: 11400000, guid: 3a2fead6c4e4bd14e975cc8e422006e4, type: 2}
   - {fileID: 11400000, guid: 6b798446413f4794088292db8b471646, type: 2}
-  - {fileID: 11400000, guid: 25c16194e242f234a95100260c6fe954, type: 2}
+  - {fileID: 11400000, guid: 21251148802143a45bdab2343aff4141, type: 2}
   - {fileID: 11400000, guid: 9d9c158b6237a0a448650b815b5c2ea7, type: 2}
   - {fileID: 11400000, guid: bf008b48a128f684688ff3f50b917ee8, type: 2}
   - {fileID: 11400000, guid: e1dd5f1ba77a8a147ada505d02ffc4f1, type: 2}
@@ -58,9 +58,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 844423a2bec91434bb166f8390aa80f8, type: 2}
   - {fileID: 11400000, guid: f273e92b83c897a48b992d9fefe2c87e, type: 2}
   currentHp: 30
-  currentBuildup: 6
+  currentBuildup: 63
   currentPosture: 50
   currentStamina: 100
+  postureRegenRate: 1
+  staminaRegenRate: 1
   ATK: 1
   DEF: 1
   AGI: 2

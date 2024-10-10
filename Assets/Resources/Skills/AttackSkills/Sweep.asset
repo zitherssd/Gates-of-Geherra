@@ -15,22 +15,23 @@ MonoBehaviour:
   Name: Sweep
   Rarity: 0
   Description: 
-  cooldownTurns: 4
+  CooldownTimer: 4
   TotalUses: 2
   BuildupCost: 0
   BuildupGain: 7
   StaminaCost: 10
   Speed: 0
-  Tags: 0300000009000000
+  Tags: 0100000009000000
   Direction: {x: 0, y: 0, z: 0}
-  currentCooldownTurns: 2
+  currentCooldownTimer: 0
   remainingUses: 1
-  StickMult: 1
+  StickMult: 1.2
   Animation: 2
   Range: 1.5
   Damage: 3
-  PostureDamage: 7
-  KnockbackForce: 1
-  SelfForce: 1
-  Delay: 0.2
-  preciseattack: 1
+  PostureDamage: 5
+  KnockbackForce: 1.2
+  windupTimeMult: 0.5
+  recoveryTimeMult: 0.3
+  state: 0
+  SelfForce: 3

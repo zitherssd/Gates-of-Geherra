@@ -56,21 +56,6 @@ namespace Assets
             }));
         }
 
-        private void Update()
-        {
-            switch (state)
-            {
-                case STATE.READY:
-
-                    break;
-                case STATE.WAITING:
-                    if ((PlayerActors.Concat(EnemyActors).ToList().TrueForAll(x => x.state.CurrentState == x.state.idleState)))
-                    {
-                        state = STATE.READY;
-                    }
-                    break;
-            }
-        }
 
         public void ApplyHitstop(float duration)
         {
@@ -103,37 +88,26 @@ namespace Assets
                 actor.ActorData.Reset();
                 actor.state.TransitionTo(actor.state.idleState);
             }
-            EnqueAll();
             Time.timeScale = 0f;
             //SwitchToNextTurn();
         }
 
-        private void EnqueAll()
-        {
-            var allActors = PlayerActors.Concat(EnemyActors).ToList().OrderByDescending(x => x.ActorData.AGI);
 
-            foreach (var actor in allActors)
-            {
-                turnQueue.Enqueue(actor);
-            }
-        }
 
-        public void SetupBattleWithEnemy(ActorData enemy) //Floor 1,2 etc setup
+        public void SetupBattleWithEnemies(List<ActorData> enemy) //Floor 1,2 etc setup
         {
             uiManager.Fade(false, () =>
             {
-                EnemyActors[0].ActorData = enemy;
+
+                EnemyActors[0].ActorData = enemy[0];
                 EnemyActors[0].ActorData.Reset();
                 EnemyActors[0].transform.Find("UI Elements").GetComponent<BarsHandler>().Reset();
-                EnemyActors[0].PlayAnimation("Idle");
-                PlayerActors[0].PlayAnimation("Idle");
                 PlayerActors[0].ActorData.Refresh();
-                currentTurn = 0;
-                uiManager.SetTurn(currentTurn);
-                turnQueue.Clear();
                 CameraManager.instance.ResetForNewBattle();
-                EnqueAll();
-                SwitchToNextTurn();
+                foreach (var actor in PlayerActors.Concat(EnemyActors))
+                {
+                    actor.state.TransitionTo(actor.state.idleState);
+                }
             });
 
             //PlayerActors[0].GetBaseActor().currentPosture = PlayerActors[0].GetBaseActor().basePosture;
@@ -154,20 +128,6 @@ namespace Assets
             //}));
         }
 
-        private bool TestBattleOver()
-        {
-            if (PlayerActors.TrueForAll(actor => actor.ActorData.GetCurrentHP() == 0))
-            {
-                return true;
-            }
-            if (EnemyActors.TrueForAll(actor => actor.ActorData.GetCurrentHP() == 0))
-            {
-                return true;
-            }
-            return false;
-        }
-
-        //Legacy
         public Actor GetActiveActor()
         {
             return activeBattler;
@@ -179,101 +139,21 @@ namespace Assets
             onFinishedWaiting();
         }
         
-        private void SwitchToNextActorInTurn()
-        {
-            if (TestBattleOver())
-            {
-                End();
-                return;
-            }
-
-
-            StartCoroutine(WaitForMovementCompletion(() =>
-            {
-                var nextActor = GetNextActorInTurn();
-                if (nextActor == null)
-                {
-                    ProcTurnChangeEffects();
-                    SwitchToNextTurn();
-                }
-                else
-                {
-                    nextActor.Act(SwitchToNextActorInTurn);
-                }
-            }));
-        }
-        private void SwitchToNextTurn()
-        {
-            Debug.Log($"-------------TURN {currentTurn}------------");
-
-            if (TestBattleOver())
-            {
-                End();
-                return;
-            }
-
-            StartCoroutine(WaitForMovementCompletion(() =>
-            { 
-                activeBattler = GetNextActorInTurn();
-                activeBattler.Act(SwitchToNextActorInTurn);
-            }));
-           
-
-            //// Delay turn switch until actors no longer have the Midair state
-            //StartCoroutine(WaitForMovementCompletion(() =>
-            //{
-            //    ProcTurnChangeEffects();
-            //    activeBattler = GetNextActorInTurn();
-            //    activeBattler.Act(SwitchToNextActorInTurn);
-            //}));
-        }
-        private void ProcTurnChangeEffects()
-        {
-            currentTurn++;
-            uiManager.SetTurn(currentTurn);
-            OnNewTurn?.Invoke(currentTurn);
-            EnqueAll();
-            foreach(var actor in PlayerActors.Concat(EnemyActors))
-            {
-                actor.ProcNextTurnEffects();
-            }
-        }
-        private IEnumerator WaitForMovementCompletion(Action onMovementComplete)
-        {
-            var allActors = PlayerActors.Concat(EnemyActors);
-
-            while (!allActors.All(actor => actor.state.CurrentState == actor.state.idleState || actor.state.CurrentState == actor.state.blockState))
-            {
-                yield return null; // Wait for the next frame
-            }
-
-            // Midair state is removed for all actors, proceed with turn switch
-            onMovementComplete?.Invoke();
-        }
-        private Actor GetNextActorInTurn()
-        {
-            if (turnQueue.Count > 0)
-            {
-                return turnQueue.Dequeue();
-            }
-            else
-                return null;
-        }
-        private void End()
+        public void End()
         {
             if (PlayerActors.TrueForAll(actor => actor.ActorData.GetCurrentHP() == 0))
             {
                 EnemyActors[0].PlayAnimation("Victory");
-                PlayerActors[0].PlayAnimation("Down");
                 UIManager.GetInstance().ChangeStatus("YOU LOSE");
                 SoundManager.instance.PlaySingle(SoundManager.instance.GetAudioClipByName("Curse2"));
             }
             if (EnemyActors.TrueForAll(actor => actor.ActorData.GetCurrentHP() == 0))
             {
-                EnemyActors[0].PlayAnimation("Down");
+                PlayerActors[0].state.TransitionTo(PlayerActors[0].state.blockState);
                 PlayerActors[0].PlayAnimation("Victory");
                 //SoundManager.instance.PlaySingle(SoundManager.instance.GetAudioClipByName("Like"));
                 UIManager.GetInstance().ChangeStatus("YOU WIN!!");
+                ButtonHandler.KillAll();
                 FloorManager.GetInstance().ProgressToNextFloor();
             }
         }

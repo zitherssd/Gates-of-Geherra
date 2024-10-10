@@ -15,25 +15,23 @@ MonoBehaviour:
   Name: Right Hook
   Rarity: 0
   Description: 
-  cooldownTurns: 2
+  CooldownTimer: 3
   TotalUses: 0
   BuildupCost: 0
   BuildupGain: 4
   StaminaCost: 8
   Speed: 0
-  Tags: 0300000009000000
+  Tags: 0200000009000000
   Direction: {x: 0, y: 0, z: 0}
-  currentCooldownTurns: 2
+  currentCooldownTimer: 0
   remainingUses: 0
-  StickMult: 0.45
+  StickMult: 0.6
   Animation: 1
   Range: 1
   Damage: 3
   PostureDamage: 4
   KnockbackForce: 1
-  tweenDistance: 0
-  tweenType: 21
-  tweenduration: 0.5
   windupTimeMult: 0.8
   recoveryTimeMult: 0.5
   state: 0
+  SelfForce: 1.1

@@ -13,17 +13,20 @@ namespace Assets.Scripts.Battle.Actions
         protected override void PerformSpecific(Actor casterActor, Action onPerformEnd)
         {
             this.casterActor = casterActor;
-            casterActor.state.TransitionTo(casterActor.state.actingState.Set(this, onPerformEnd));
+            casterActor.state.TransitionTo(casterActor.state.actingState.Set(this, () => { casterActor.movement.SetFriction(); onPerformEnd?.Invoke(); }));
         }
 
         public override void OnHit()
         {
+            casterActor.movement.SetFriction(0);
             if (Tags.Contains(TAG.USESTICK))
-                chargeVector = Direction * StickMult;
+            {
+                casterActor.movement.AddForce(Direction * power * StickMult);
+            }
             else
-                chargeVector = casterActor.target.DirectionToClosestEnemy * StickMult;
-
-            casterActor.movementForce = chargeVector * power;
+            {
+                casterActor.movement.AddForce(casterActor.target.DirectionToClosestEnemy * power);
+            }
         }
 
     }

@@ -15,7 +15,7 @@ MonoBehaviour:
   Name: Charge
   Rarity: 0
   Description: 
-  cooldownTurns: 2
+  CooldownTimer: 10
   TotalUses: 0
   BuildupCost: 0
   BuildupGain: 5
@@ -23,7 +23,7 @@ MonoBehaviour:
   Speed: 5
   Tags: 09000000
   Direction: {x: 0, y: 0, z: 0}
-  currentCooldownTurns: 2
+  currentCooldownTimer: 0
   remainingUses: 0
   StickMult: 3
   Animation: 12

@@ -32,14 +32,13 @@ namespace Assets.Scripts.Battle.Components.State.States
             owner.PlayAnimation("Block");
             owner.DamageRecieved += ModifyDamage;
             owner.KnockbackRecieved += ModifyKnockback;
-            BattleManager.instance.OnNewTurn += Remove;
+            Time.timeScale = 1f;
         }
 
         public void Exit()
         {
             owner.DamageRecieved -= ModifyDamage;
             owner.KnockbackRecieved -= ModifyKnockback;
-            BattleManager.instance.OnNewTurn -= Remove;
         }
 
         public float ModifyDamage(float damage)
@@ -55,7 +54,6 @@ namespace Assets.Scripts.Battle.Components.State.States
 
         public void Remove(uint currentTurn)
         {
-            owner.state.TransitionTo(owner.state.idleState);
         }
 
         public void Update()

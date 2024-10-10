@@ -15,7 +15,7 @@ MonoBehaviour:
   Name: High Kick
   Rarity: 0
   Description: 
-  cooldownTurns: 5
+  CooldownTimer: 6
   TotalUses: 0
   BuildupCost: 0
   BuildupGain: 0
@@ -23,7 +23,7 @@ MonoBehaviour:
   Speed: 0
   Tags: 0100000009000000
   Direction: {x: 0, y: 0, z: 0}
-  currentCooldownTurns: 0
+  currentCooldownTimer: 0
   remainingUses: 0
   StickMult: 1.2
   Animation: 4
@@ -31,9 +31,7 @@ MonoBehaviour:
   Damage: 7
   PostureDamage: 8
   KnockbackForce: 1.5
-  tweenDistance: 0
-  tweenType: 15
-  tweenduration: 0.6
   windupTimeMult: 0.6
   recoveryTimeMult: 0.3
   state: 0
+  SelfForce: 2.2

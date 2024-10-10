@@ -18,6 +18,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI StoneSlab;
     [SerializeField] private TextMeshProUGUI TurnText;
     [SerializeField] private UnityEngine.UI.Image fadeImage;
+    [SerializeField] private CanvasGroup actionHolder;
+
     [Range(0, 1)] public float letterPause = 0.01f;
     [Range(0, 1)] public float fadeSpeed;
     public AudioClip typeSound1;
@@ -261,9 +263,15 @@ public class UIManager : MonoBehaviour
     public void Fade(bool fadeIn, Action onFadeComplete)
     {
         if (!fadeIn)
+        {
+            LeanTween.alphaCanvas(actionHolder, 1f, 0.5f);
             LeanTween.alpha(fadeImage.rectTransform, 0f, 0.5f).setOnComplete(onFadeComplete);
+        }
         else
+        {
+            LeanTween.alphaCanvas(actionHolder, 0f, 0.5f);
             LeanTween.alpha(fadeImage.rectTransform, 1f, 0.5f).setOnComplete(onFadeComplete);
+        }
     }
 
     public void SetTurn(uint turn)
