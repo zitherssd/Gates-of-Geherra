@@ -49,11 +49,22 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
         }
         if (actionSlot.transform.childCount > 0)
             Destroy(actionSlot.transform.GetChild(0).gameObject);
+
+        childCount = skillHolder.transform.childCount;
+
+        for (int i = childCount - 1; i >= 0; i--)
+        {
+            Transform child = skillHolder.transform.GetChild(i);
+            Destroy(child.gameObject);
+        }
+        if (actionSlot.transform.childCount > 0)
+            Destroy(actionSlot.transform.GetChild(0).gameObject);
     }
 
     private void Awake()
     {
         if (actionHolder == null) actionHolder = GameObject.Find("ActionHolder");
+        if (skillHolder == null) skillHolder = GameObject.Find("SkillHolder");
         if (actionSlot == null) actionSlot = GameObject.Find("ActionSlot");
         if (actionSlotScript == null) actionSlotScript = actionSlot.GetComponent<ActionSlot>();
         if (guide == null) guide = GameObject.Find("PlacementGuide");
@@ -311,6 +322,7 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
     [SerializeField] private TextMeshProUGUI tags;
     private static Actor player;
     private static GameObject actionHolder;
+    private static GameObject skillHolder;
     private static GameObject actionSlot;
     private static ActionSlot actionSlotScript;
     private static GameObject guide;

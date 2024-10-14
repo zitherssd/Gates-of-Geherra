@@ -89,6 +89,7 @@ namespace Assets.Scripts.Battle
         public void Update()
         {
             state.Update();
+            ai.Update();
             if (!state.IsStaggered() && CanRegenPosture)
             {
                 if (ActorData.currentPosture < ActorData.maxPosture)

@@ -9,3 +9,5 @@ new ui
 indicator for player facing.
 tie in player facing with camera
 BRAINSTORM MOVMEENT SOME MORE
+improve ai
+fix addforce so it doesn't work like that

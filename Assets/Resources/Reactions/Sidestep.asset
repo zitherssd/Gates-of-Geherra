@@ -15,17 +15,17 @@ MonoBehaviour:
   Name: Sidestep
   Rarity: 0
   Description: 
-  cooldownTurns: 4
+  CooldownTimer: 0
   TotalUses: 0
   BuildupCost: 0
   BuildupGain: 0
   StaminaCost: 7
   Speed: 0
-  Tags: 0d00000009000000
+  Tags: 0d000000090000000c000000
   Direction: {x: 0, y: 0, z: 0}
-  currentCooldownTurns: 0
+  currentCooldownTimer: 0
   remainingUses: 0
   StickMult: 1
   Animation: 14
-  force: 2
-  time: 0.4
+  force: 4
+  time: 2

@@ -13,17 +13,19 @@ namespace Assets.Scripts.Battle.Components.State.States
         [Range(0, 2)] public float PostureModifier = 1f;
         [Range(0, 2)] public float KnockbackModifier = 1f;
         public Action onAnimationEnd;
+        private float duration;
 
         public BlockState(Actor owner)
         {
             this.owner = owner;
         }
 
-        public BlockState Set(float DamageModifier, float PostureModifier, float KnockbackModifier)
+        public BlockState Set(float DamageModifier, float PostureModifier, float KnockbackModifier, float duration)
         {
             this.DamageModifier = DamageModifier;
             this.PostureModifier = PostureModifier;
             this.KnockbackModifier = KnockbackModifier;
+            this.duration = duration;
             return this;
         }
 
@@ -52,17 +54,19 @@ namespace Assets.Scripts.Battle.Components.State.States
             return knockback * KnockbackModifier;
         }
 
-        public void Remove(uint currentTurn)
-        {
-        }
-
         public void Update()
         {
+            duration -= Time.deltaTime;
+            if (duration < 0)
+            {
+                owner.state.TransitionTo(owner.state.idleState);
+                duration = 0;
+            }
         }
 
         public void OnCollisionEnter(Collision collision)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }

@@ -12,10 +12,15 @@ namespace Assets.Scripts.Battle.Actions.Reactions
         [Range(0, 2)] public float DamageModifier = 1f;
         [Range(0, 2)] public float PostureModifier = 1f;
         [Range(0, 2)] public float KnockbackModifier = 1f;
+        public float duration;
+        public float startupDelay;
         protected override void PerformSpecific(Actor actor, Action onReactionComplete)
         {
-            actor.PlayAnimation("Block");
-            actor.state.TransitionTo(actor.state.blockState.Set(DamageModifier, PostureModifier, KnockbackModifier));
+
+            Time.timeScale = 1f;
+            actor.StartCoroutine(actor.WaitForTime(() => { 
+            actor.state.TransitionTo(actor.state.blockState.Set(DamageModifier, PostureModifier, KnockbackModifier, duration));
+            }, startupDelay));
         }
     }
 

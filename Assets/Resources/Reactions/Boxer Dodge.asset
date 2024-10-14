@@ -15,17 +15,17 @@ MonoBehaviour:
   Name: Quickstep
   Rarity: 2
   Description: 
-  cooldownTurns: 0
+  CooldownTimer: 0
   TotalUses: 0
   BuildupCost: 0
   BuildupGain: 2
   StaminaCost: 10
   Speed: 0
-  Tags: 090000000c0000000d000000
+  Tags: 090000000c000000
   Direction: {x: 0, y: 0, z: 0}
-  currentCooldownTurns: 0
+  currentCooldownTimer: 0
   remainingUses: 0
   StickMult: 1
   Animation: 14
-  force: 2.5
-  time: 0.2
+  force: 5
+  time: 2.5

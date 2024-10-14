@@ -30,7 +30,7 @@ namespace Assets
             UpdateRemainingUses();
             //ResetCooldown();
 
-            if (Tags.Contains(TAG.KILLMOMENTUM)) casterActor.GetComponent<Rigidbody>().velocity = Vector3.zero;
+            if (Tags.Contains(TAG.KILLMOMENTUM)) casterActor.movement.ResetMomentum();
 
             casterActor.ActorData.DealStaminaDamage(StaminaCost);
             casterActor.ActorData.ChangeBuildup(BuildupGain);
@@ -47,7 +47,7 @@ namespace Assets
                 currentCooldownTimer = currentCooldownTimer -= Time.deltaTime;
             else
                 currentCooldownTimer = 0f;
-
+            if(Tags != null)
             if (Tags.Contains(TAG.RECHARGE_TOTAL_USES) && remainingUses < TotalUses)
             {
                 if (currentCooldownTimer == 0)

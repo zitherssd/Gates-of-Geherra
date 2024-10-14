@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Roll
+  m_Name: RollBackwards
   serializedVersion: 6
   m_Legacy: 0
   m_Compressed: 0
@@ -20,24 +20,24 @@ AnimationClip:
       - serializedVersion: 3
         time: 0
         value: {x: 0, y: 0, z: 0}
-        inSlope: {x: 0, y: 0, z: 1135.5276}
-        outSlope: {x: 0, y: 0, z: 1135.5276}
+        inSlope: {x: 0, y: 0, z: -1553.048}
+        outSlope: {x: 0, y: 0, z: -1553.048}
         tangentMode: 0
         weightedMode: 0
         inWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
-        outWeight: {x: 0.33333334, y: 0.33333334, z: 0.06318202}
+        outWeight: {x: 0.33333334, y: 0.33333334, z: 0.04234283}
       - serializedVersion: 3
         time: 0.98333335
-        value: {x: -0.09486389, y: 0, z: 360}
-        inSlope: {x: 0, y: 0, z: -43.660492}
+        value: {x: -0.09486389, y: 0, z: -360}
+        inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 0, y: 0, z: 0}
         tangentMode: 0
         weightedMode: 0
-        inWeight: {x: 0.33333334, y: 0.33333334, z: 0.08098889}
+        inWeight: {x: 0.33333334, y: 0.33333334, z: 0.06596694}
         outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
       - serializedVersion: 3
         time: 1
-        value: {x: -0.09486389, y: 0, z: 360}
+        value: {x: -0.09486389, y: 0, z: -360}
         inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 0, y: 0, z: 0}
         tangentMode: 0
@@ -284,20 +284,20 @@ AnimationClip:
       - serializedVersion: 3
         time: 0
         value: 0
-        inSlope: 1135.5276
-        outSlope: 1135.5276
+        inSlope: -1553.048
+        outSlope: -1553.048
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.06318202
+        outWeight: 0.04234283
       - serializedVersion: 3
         time: 0.98333335
-        value: 360
-        inSlope: -43.660492
-        outSlope: -43.660492
+        value: -360
+        inSlope: 0
+        outSlope: 0
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0.08098889
+        inWeight: 0.06596694
         outWeight: 0.33333334
       m_PreInfinity: 2
       m_PostInfinity: 2

@@ -11,6 +11,8 @@ namespace Assets.Scripts.Battle.Components.AI
 {
     public enum AiRuleset { DEFAULT, Boxer }
 
+    public enum AIState { Thinking }
+
     public class AIComponent
     {
 
@@ -18,6 +20,9 @@ namespace Assets.Scripts.Battle.Components.AI
 
         private readonly Actor actor;
         private readonly AiRuleset ruleset;
+        private readonly Actor target;
+        private AIState aiState;
+        private float timer = 0f;
 
         public AIComponent(Actor actor)
         {
@@ -50,6 +55,7 @@ namespace Assets.Scripts.Battle.Components.AI
             }
             else
             {
+                return;
                 switch (ruleset)
                 {
                     case AiRuleset.DEFAULT:
@@ -91,20 +97,42 @@ namespace Assets.Scripts.Battle.Components.AI
                     }
                 });
             }
-            else
-            {
-                switch (ruleset)
-                {
-                    default:
-                        onReactionChosen.Invoke(EvaluateDefaultReactionRuleset());
-                        break;
-                }
-            }
         }
 
-        public BaseAction EvaluateBoxerRuleset()
+        internal void Update()
         {
-            return null;
+            if (actor.isControllable()) return;
+            var timeToThink = 0.5f;
+            if(actor.state.CurrentState == actor.state.idleState)
+            {
+                timer += Time.deltaTime;
+                if(timer > timeToThink)
+                {
+                    var chosenSkill = ChooseValidSkillInRangeOrReturnNull();
+                    if (chosenSkill == null)
+                    {
+                        var moveSkill = actor.ActorData.actions.OfType<MoveAction>().First();
+                        moveSkill.Direction = actor.target.DirectionToClosestEnemy;
+                        actor.UseAction(moveSkill, () => { timer = 0; actor.state.TransitionTo(actor.state.idleState); });
+                    }
+                    else
+                    {
+                        var directionToEnemy = actor.target.DirectionToClosestEnemy;
+                        var perpendicular = Vector3.Cross(Vector3.up, directionToEnemy).normalized;
+                        perpendicular *= UnityEngine.Random.Range(-0.3f, 0.3f);
+                        var dirleftvector = new Vector3(perpendicular.x, 0, perpendicular.z);
+                        chosenSkill.Direction = new Vector3(directionToEnemy.x, 0, directionToEnemy.z) + dirleftvector;
+                        actor.UseAction(chosenSkill, () => { timer = 0; actor.state.TransitionTo(actor.state.idleState); });
+                    }
+                }
+            }
+
+            //anticipate
+            //while anticipating it can react to your attacks;
+            //wait a bit and then think()
+            //>if very far wait a bit and approach 1/3 of a distance
+            //>if close range
+
         }
 
         public void EvaluateDefaultRuleset(Action<BaseAction> action)
@@ -118,11 +146,12 @@ namespace Assets.Scripts.Battle.Components.AI
                     var moveSkill = actor.ActorData.actions.OfType<MoveAction>().First();
                     moveSkill.Direction = actor.target.DirectionToClosestEnemy;
                     action.Invoke(moveSkill);
-                }, UnityEngine.Random.Range(0.2f,0.5f)));
+                }, UnityEngine.Random.Range(0.2f, 0.5f)));
             }
             else
             {
-                actor.StartCoroutine(actor.WaitForTime(() => {
+                actor.StartCoroutine(actor.WaitForTime(() =>
+                {
                     var directionToEnemy = actor.target.DirectionToClosestEnemy;
                     var perpendicular = Vector3.Cross(Vector3.up, directionToEnemy).normalized;
                     perpendicular *= UnityEngine.Random.Range(-0.3f, 0.3f);
@@ -131,11 +160,6 @@ namespace Assets.Scripts.Battle.Components.AI
                     action.Invoke(chosenSkill);
                 }, UnityEngine.Random.Range(0.2f, 1f)));
             }
-        }
-
-        public BaseReaction EvaluateDefaultReactionRuleset()
-        {
-            return null;
         }
 
 

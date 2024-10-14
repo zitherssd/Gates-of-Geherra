@@ -15,17 +15,17 @@ MonoBehaviour:
   Name: Roll
   Rarity: 0
   Description: 
-  cooldownTurns: 6
+  CooldownTimer: 0
   TotalUses: 0
   BuildupCost: 0
   BuildupGain: 0
   StaminaCost: 14
   Speed: 0
-  Tags: 0d00000009000000
+  Tags: 0d000000090000000c000000
   Direction: {x: 0, y: 0, z: 0}
-  currentCooldownTurns: 0
+  currentCooldownTimer: 0
   remainingUses: 0
-  StickMult: 2
+  StickMult: 1
   Animation: 13
-  force: 2.5
-  time: 0.4
+  force: 4
+  time: 0.7

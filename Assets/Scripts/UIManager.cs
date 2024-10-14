@@ -1,14 +1,13 @@
 using Assets;
 using Assets.Scripts.Actions;
+using Assets.Scripts.Battle;
+using Assets.Scripts.Battle.Actions.Skills;
 using Assets.Scripts.Utility;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UIElements;
-using UnityEngine.UI;
-using Assets.Scripts.Battle;
 
 public class UIManager : MonoBehaviour
 {
@@ -36,6 +35,7 @@ public class UIManager : MonoBehaviour
     private Action onActionSelected;
     public GameObject OriginPoint;
     public GameObject ActionsHolder;
+    public GameObject SkillHolder;
     public GameObject ActionSlot;
     public UnityEngine.UI.Button EndButton;
     public GameObject Slider;
@@ -61,7 +61,7 @@ public class UIManager : MonoBehaviour
         {
             if (ActionSlot.transform.childCount > 0)
             {
-                if(OnActionSelected != null)
+                if (OnActionSelected != null)
                 {
                     OnActionSelected(ActionSlot.GetComponentInChildren<ButtonHandler>().referencedAction);
                     OnActionSelected = null;
@@ -69,7 +69,7 @@ public class UIManager : MonoBehaviour
             }
             else
             {
-                if(OnActionSelected != null)
+                if (OnActionSelected != null)
                 {
                     OnActionSelected(null);
                     OnActionSelected = null;
@@ -111,7 +111,11 @@ public class UIManager : MonoBehaviour
             Vector2 position = new(x, y);
 
             GameObject UISkill = Instantiate(buttonPrefab, position, Quaternion.identity);
-            UISkill.transform.SetParent(ActionsHolder.transform);
+            if (actions[i] is AttackSkill)
+                UISkill.transform.SetParent(SkillHolder.transform);
+            else
+                UISkill.transform.SetParent(ActionsHolder.transform);
+
             UISkill.GetComponent<RectTransform>().localPosition = position;
             var handler = UISkill.GetComponent<ButtonHandler>();
             handler.referencedAction = actions[i];
@@ -134,7 +138,7 @@ public class UIManager : MonoBehaviour
     }
 
 
-    
+
 
 
     internal void DrawActionAboveHead(Actor actor, BaseAction action)
@@ -157,30 +161,30 @@ public class UIManager : MonoBehaviour
     {
 
         List<Assets.BaseAction> fakeReactions = new();
-            List<BaseReaction> chosenReactions = new();
-            var reactions = actor.ActorData.reactions;
+        List<BaseReaction> chosenReactions = new();
+        var reactions = actor.ActorData.reactions;
 
 
-            foreach (var reaction in reactions)
-            {
-                if (reaction.Speed >= minimumSpeed)
-                    fakeReactions.Add(reaction);
-                chosenReactions.Add(reaction);
-            }
+        foreach (var reaction in reactions)
+        {
+            if (reaction.Speed >= minimumSpeed)
+                fakeReactions.Add(reaction);
+            chosenReactions.Add(reaction);
+        }
 
-            var buttonHandlers = DrawActionsRadiallyOnScreenPoint(fakeReactions);
-            for (int i = 0; i < fakeReactions.Count; i++)
-            {
-                buttonHandlers[i].referencedAction = null;
-            }
-            this.onActionSelected = onReactionSelected;
-            this.waitingForAction = true;
+        var buttonHandlers = DrawActionsRadiallyOnScreenPoint(fakeReactions);
+        for (int i = 0; i < fakeReactions.Count; i++)
+        {
+            buttonHandlers[i].referencedAction = null;
+        }
+        this.onActionSelected = onReactionSelected;
+        this.waitingForAction = true;
     }
 
     public void DrawActionsAndWaitForSelectionOrNull(List<Assets.BaseAction> ActionsToDraw, Action<BaseAction> onActionSelected)
     {
         var buttonHandlers = DrawActionsRadiallyOnScreenPoint(ActionsToDraw);
-        
+
         for (int i = 0; i < ActionsToDraw.Count; i++)
         {
             buttonHandlers[i].referencedAction = ActionsToDraw[i];
@@ -279,11 +283,11 @@ public class UIManager : MonoBehaviour
         TurnText.text = "Turn " + turn.ToString();
     }
 
-    public  void HideUI()
+    public void HideUI()
     {
         ActionsHolder.transform.parent.gameObject.SetActive(false);
     }
-    public  void ShowUI()
+    public void ShowUI()
     {
         ActionsHolder.transform.parent.gameObject.SetActive(true);
 

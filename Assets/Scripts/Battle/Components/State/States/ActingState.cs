@@ -40,7 +40,16 @@ namespace Assets.Scripts.Battle.Components.State.States
             this.onEnterRecovery += recoveryHandler;
             this.onHit += hitHandler;
             this.onEnd += endHandler;
-            animator.Play(action.Animation.ToString(), -1, 0f);
+            if(action.Animation.ToString() == "Roll")
+            {
+                float crossY = Vector3.Cross(Camera.main.transform.forward, action.Direction).y;
+                if (crossY < 0)
+                    animator.Play("RollBackwards", -1, 0f);
+                else
+                    animator.Play("Roll", -1, 0f);
+            }
+            else
+                animator.Play(action.Animation.ToString(), -1, 0f);
             return this;
         }
 

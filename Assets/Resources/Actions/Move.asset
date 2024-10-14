@@ -15,7 +15,7 @@ MonoBehaviour:
   Name: Move
   Rarity: 0
   Description: 
-  cooldownTurns: 0
+  CooldownTimer: 0
   TotalUses: 0
   BuildupCost: 0
   BuildupGain: 0
@@ -23,6 +23,6 @@ MonoBehaviour:
   Speed: 0
   Tags: 09000000
   Direction: {x: 0, y: 0, z: 0}
-  currentCooldownTurns: 0
+  currentCooldownTimer: 0
   remainingUses: 0
-  StickMult: 2
+  StickMult: 4

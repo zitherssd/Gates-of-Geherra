@@ -34,6 +34,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 84039c0611ba36841b126f1d365eb783, type: 2}
   - {fileID: 11400000, guid: 1d52d04a55eb6724ba493dfbfba3ada3, type: 2}
   - {fileID: 11400000, guid: 7564a557fb69c3d4c938dcb0686b3e85, type: 2}
+  - {fileID: 11400000, guid: d4852d63a398314488e810be1c412698, type: 2}
   baseReactions: []
   basePassives: []
   baseHpBars:
@@ -57,10 +58,9 @@ MonoBehaviour:
   hpBars:
   - {fileID: 11400000, guid: 844423a2bec91434bb166f8390aa80f8, type: 2}
   - {fileID: 11400000, guid: f273e92b83c897a48b992d9fefe2c87e, type: 2}
-  currentHp: 30
-  currentBuildup: 63
+  currentBuildup: 2
   currentPosture: 50
-  currentStamina: 100
+  currentStamina: 6.0560474
   postureRegenRate: 1
   staminaRegenRate: 1
   ATK: 1
