@@ -63,7 +63,6 @@ namespace Assets.Scripts.Battle.Components.State.States
 
             // Increment the timer by deltaTime
             timer += Time.deltaTime;
-            Debug.Log($"Timer: {timer}, Duration: {duration}");
 
             // Check if the total stagger duration has been reached
             if (timer >= duration)

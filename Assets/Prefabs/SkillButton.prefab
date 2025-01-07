@@ -590,8 +590,8 @@ MonoBehaviour:
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 0.74509805}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 0.42745098}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.53333336}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 0.3882353}
+    m_PressedColor: {r: 1, g: 1, b: 1, a: 0.53333336}
+    m_SelectedColor: {r: 1, g: 1, b: 1, a: 0.74509805}
     m_DisabledColor: {r: 0.4528302, g: 0.4528302, b: 0.4528302, a: 0.57254905}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -638,6 +638,7 @@ MonoBehaviour:
   image: {fileID: 8699122292447703189}
   cooldownimage: {fileID: 3314215437140176331}
   referencedAction: {fileID: 0}
+  Disabled: 0
   skillName: {fileID: 8699122292997910123}
   remainingUses: {fileID: 8699122293257293797}
   buildupCost: {fileID: 2895288195471317767}

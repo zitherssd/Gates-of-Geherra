@@ -10,31 +10,28 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3be3547e3e6f74e4bae902b75515650e, type: 3}
-  m_Name: Left hook
+  m_Name: Fast Jab
   m_EditorClassIdentifier: 
-  Name: Left Hook
+  Name: Weak Jab
   Rarity: 0
   Description: 
-  cooldownTurns: 2
+  CooldownTimer: 0
   TotalUses: 0
   BuildupCost: 0
-  BuildupGain: 4
-  StaminaCost: 7
-  Speed: 0
-  Tags: 020000000c00000009000000
+  BuildupGain: 1
+  StaminaCost: 8
+  Speed: 1
+  Tags: 09000000
   Direction: {x: 0, y: 0, z: 0}
-  currentCooldownTurns: 0
+  currentCooldownTimer: 0
   remainingUses: 0
-  StickMult: 1
+  StickMult: 0.5
   Animation: 1
   Range: 0.8
-  Damage: 3.5
-  PostureDamage: 3
-  KnockbackForce: 1
-  tweenDistance: 0
-  tweenType: 0
-  tweenduration: 0
+  Damage: 2.5
+  PostureDamage: 2.5
+  KnockbackForce: 0.8
   windupTimeMult: 1
   recoveryTimeMult: 1
   state: 0
-  SelfForce: 1.5
+  SelfForce: 1.1

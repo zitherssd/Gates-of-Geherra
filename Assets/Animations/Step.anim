@@ -21,7 +21,7 @@ AnimationClip:
   - curve:
     - time: 0
       value: {fileID: -446835194, guid: dbed9846e9655f9489c37ed23450fffa, type: 3}
-    - time: 1
+    - time: 1.25
       value: {fileID: 1619807635, guid: dbed9846e9655f9489c37ed23450fffa, type: 3}
     attribute: m_Sprite
     path: Billboard/Graphic
@@ -49,7 +49,7 @@ AnimationClip:
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 1.0166667
+    m_StopTime: 1.2666667
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0

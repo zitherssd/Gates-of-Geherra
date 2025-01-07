@@ -12,26 +12,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3be3547e3e6f74e4bae902b75515650e, type: 3}
   m_Name: Palm Strike
   m_EditorClassIdentifier: 
+  Type: 1
   Name: Palm Strike
   Rarity: 0
   Description: 
   CooldownTimer: 5
   TotalUses: 0
+  remainingUses: 0
   BuildupCost: 15
   BuildupGain: 5
   StaminaCost: 13
   Speed: 0
-  Tags: 09000000
-  Direction: {x: 0, y: 0, z: 0}
+  Tags: 090000000f000000
+  Direction: {x: -0.1656936, y: 0, z: -0.98617727}
   currentCooldownTimer: 0
-  remainingUses: 0
   StickMult: 2
+  SlowdownMeterGain: 0
   Animation: 5
   Range: 1
   Damage: 0
   PostureDamage: 12
   KnockbackForce: 1.7
   windupTimeMult: 0.7
-  recoveryTimeMult: 0.33
-  state: 0
+  recoveryTimeMult: 0.45
+  state: 1
   SelfForce: 2.5

@@ -6,7 +6,7 @@ namespace Assets.Scripts.Utility
     [CreateAssetMenu(fileName = "HpBar", menuName = "ScriptableObjects/HpBar", order = 2)]
     public class HpBar : ScriptableObject
     {
-        private float _currentHp;
+        public float _currentHp;
 
 
         public string Name;

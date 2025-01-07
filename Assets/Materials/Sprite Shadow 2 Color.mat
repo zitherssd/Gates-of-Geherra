@@ -51,9 +51,12 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _HpDamageFlashColor: 0
+    - _PostureDamageFlashAmount: 0
     - _QueueControl: 0
     - _QueueOffset: 0
     m_Colors:
-    - _MainColor: {r: 0, g: 0, b: 0, a: 1}
+    - _MainColor: {r: 0, g: 0, b: 0, a: 0.23921569}
+    - _PostureDamageFlashColor: {r: 0.99868643, g: 0.99868643, b: 0.99868643, a: 0.5882353}
     - _SecondaryColor: {r: 0, g: 1, b: 0.424644, a: 1}
   m_BuildTextureStacks: []

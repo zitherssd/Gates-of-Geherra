@@ -9,28 +9,29 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ab9538cf5b653e48aa37b2dea64c00c, type: 3}
-  m_Name: Resist
+  m_Script: {fileID: 11500000, guid: 3be3547e3e6f74e4bae902b75515650e, type: 3}
+  m_Name: Normal Jab
   m_EditorClassIdentifier: 
-  Type: 2
-  Name: Block
+  Name: Sloow Jab
   Rarity: 0
   Description: 
-  CooldownTimer: 5
+  CooldownTimer: 2
   TotalUses: 0
-  remainingUses: 0
   BuildupCost: 0
-  BuildupGain: 0
-  StaminaCost: 5
+  BuildupGain: 2
+  StaminaCost: 6
   Speed: 0
-  Tags: 
+  Tags: 09000000
   Direction: {x: 0, y: 0, z: 0}
   currentCooldownTimer: 0
-  StickMult: 1
-  SlowdownMeterGain: 0
-  Animation: 0
-  DamageModifier: 0.5
-  PostureModifier: 0.5
-  KnockbackModifier: 0.5
-  duration: 5
-  startupDelay: 0
+  remainingUses: 0
+  StickMult: 0.5
+  Animation: 1
+  Range: 0.8
+  Damage: 2
+  PostureDamage: 3
+  KnockbackForce: 0.5
+  windupTimeMult: 0.5
+  recoveryTimeMult: 0.7
+  state: 0
+  SelfForce: 1

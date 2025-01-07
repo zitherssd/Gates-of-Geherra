@@ -6,21 +6,44 @@ public class ColorController : MonoBehaviour
 {
     public Color mainColor = Color.white;
     public Color secondaryColor = Color.black;
+    private MaterialPropertyBlock propBlock;
+    public AnimationCurve curve;
+
+    private SpriteRenderer spriteRenderer;
 
     void Start()
     {
-        Renderer renderer = GetComponent<Renderer>();
-        MaterialPropertyBlock propBlock = new MaterialPropertyBlock();
+        propBlock = new MaterialPropertyBlock();
+        spriteRenderer = GetComponent<SpriteRenderer>();
 
-        propBlock.SetTexture("_MainTex", GetComponent<SpriteRenderer>().sprite.texture);
+        // Set the texture from the sprite
+        propBlock.SetTexture("_MainTex", spriteRenderer.sprite.texture);
 
-        // Set mainColor property
+        // Set the mainColor and secondaryColor properties
         propBlock.SetColor("_MainColor", mainColor);
-
-        // Set secondaryColor property
         propBlock.SetColor("_SecondaryColor", secondaryColor);
 
         // Apply the property block to the renderer
-        renderer.SetPropertyBlock(propBlock);
+        spriteRenderer.SetPropertyBlock(propBlock);
+    }
+
+    public IEnumerator FlashWhite(float duration, float intensity)
+    {
+        float currentFlashAmount = 0f;
+        float elapsedTime = 0f;
+
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+            currentFlashAmount = curve.Evaluate(elapsedTime / duration);
+            currentFlashAmount *= intensity;
+            // Set the flash amount in the property block
+            propBlock.SetFloat("_PostureDamageFlashAmount", currentFlashAmount);
+
+            // Apply the property block to the renderer
+            spriteRenderer.SetPropertyBlock(propBlock);
+
+            yield return null;
+        }
     }
 }

@@ -10,27 +10,30 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3be3547e3e6f74e4bae902b75515650e, type: 3}
-  m_Name: Fast Jab
+  m_Name: Weak Jab
   m_EditorClassIdentifier: 
-  Name: Weak Jab
+  Type: 0
+  Name: Sloow Jab
   Rarity: 0
   Description: 
-  cooldownTurns: 1
-  TotalUses: 0
+  CooldownTimer: 10
+  TotalUses: 5
+  remainingUses: 4
   BuildupCost: 0
-  BuildupGain: 1
-  StaminaCost: 8
-  Speed: 1
-  Tags: 09000000
+  BuildupGain: 2
+  StaminaCost: 6
+  Speed: 0
+  Tags: 090000000a000000
   Direction: {x: 0, y: 0, z: 0}
-  currentCooldownTurns: 0
-  remainingUses: 0
-  StickMult: 1
+  currentCooldownTimer: 0.16487388
+  StickMult: 0.5
+  SlowdownMeterGain: 0.01
   Animation: 1
-  Range: 1
-  Damage: 2.5
-  PostureDamage: 2.5
-  KnockbackForce: 0.8
-  SelfForce: 1.1
-  Delay: 0
-  preciseattack: 1
+  Range: 0.8
+  Damage: 2
+  PostureDamage: 3
+  KnockbackForce: 0.5
+  windupTimeMult: 0.25
+  recoveryTimeMult: 0.5
+  state: 2
+  SelfForce: 1

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3be3547e3e6f74e4bae902b75515650e, type: 3}
   m_Name: Sweep
   m_EditorClassIdentifier: 
+  Type: 1
   Name: Sweep
   Rarity: 0
   Description: 
@@ -21,11 +22,12 @@ MonoBehaviour:
   BuildupGain: 7
   StaminaCost: 10
   Speed: 0
-  Tags: 0100000009000000
+  Tags: 010000000900000003000000
   Direction: {x: 0, y: 0, z: 0}
   currentCooldownTimer: 0
   remainingUses: 1
   StickMult: 1.2
+  SlowdownMeterGain: 0.1
   Animation: 2
   Range: 1.5
   Damage: 3

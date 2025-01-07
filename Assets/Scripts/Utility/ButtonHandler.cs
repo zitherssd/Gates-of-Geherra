@@ -13,28 +13,21 @@ using static Assets.BaseAction;
 public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
 
-
     public Image image;
     public Image cooldownimage;
 
     private Transform home;
+    private Button button;
     public BaseAction referencedAction;
     public Action<BaseAction> Click;
+    public bool Disabled = false;
 
     private Vector2 targetPos;
 
 
-
-    public void SetDraggable(bool draggable)
+    public void SetInteractable(bool interactable)
     {
-        isDraggable = draggable;
-
-        gameObject.GetComponent<Button>().interactable = draggable;
-        //animation
-        if (gameObject.GetComponent<Button>().IsInteractable())
-        {
-
-        }
+        button.interactable = interactable;
 
     }
 
@@ -47,8 +40,7 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
             Transform child = actionHolder.transform.GetChild(i);
             Destroy(child.gameObject);
         }
-        if (actionSlot.transform.childCount > 0)
-            Destroy(actionSlot.transform.GetChild(0).gameObject);
+
 
         childCount = skillHolder.transform.childCount;
 
@@ -57,16 +49,15 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
             Transform child = skillHolder.transform.GetChild(i);
             Destroy(child.gameObject);
         }
-        if (actionSlot.transform.childCount > 0)
-            Destroy(actionSlot.transform.GetChild(0).gameObject);
+
     }
 
     private void Awake()
     {
-        if (actionHolder == null) actionHolder = GameObject.Find("ActionHolder");
-        if (skillHolder == null) skillHolder = GameObject.Find("SkillHolder");
-        if (actionSlot == null) actionSlot = GameObject.Find("ActionSlot");
-        if (actionSlotScript == null) actionSlotScript = actionSlot.GetComponent<ActionSlot>();
+        button = gameObject.GetComponent<Button>();
+        if (actionHolder == null) actionHolder = GameObject.Find("LeftContainer");
+        if (skillHolder == null) skillHolder = GameObject.Find("RightContainer");
+        //if (actionSlot == null) actionSlot = GameObject.Find("ActionSlot");
         if (guide == null) guide = GameObject.Find("PlacementGuide");
     }
 
@@ -80,15 +71,23 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
 
     private void Update()
     {
-        if (referencedAction)
+        string plusSymbol = "+";
+        if (referencedAction.TotalUses != 0 && referencedAction.remainingUses > 0)
         {
-            if (referencedAction.CooldownTimer == 0)
-                cooldownimage.fillAmount = 0f;
-            else
-                cooldownimage.fillAmount = Mathf.Clamp(referencedAction.currentCooldownTimer / referencedAction.CooldownTimer, 0, 1);
-
-            if (cooldownimage.fillAmount == 0) SetDraggable(referencedAction.IsValid(BattleManager.instance.PlayerActors[0], out _));
+            remainingUses.text = ConcatWithPlus(plusSymbol, referencedAction.remainingUses);
         }
+
+        else
+        {
+            remainingUses.text = string.Empty;
+        }
+
+        SetInteractable(referencedAction.IsValid(player, out _));
+
+        if(referencedAction)
+        cooldownimage.fillAmount = Mathf.Clamp(referencedAction.currentCooldownTimer / referencedAction.CooldownTimer, 0, 1);
+
+        if (Disabled) return;
         if (!isPressed) return;
         // Check if the pointer is currently pressed down
         if (Input.GetMouseButton(0) || Input.touchCount > 0)
@@ -110,9 +109,9 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
             Vector2 delta = currentPointerPosition - pointerDownPosition; // Calculate the movement delta
             if (delta.magnitude > 300) { pointerDownPosition += Vector2.ClampMagnitude(delta, delta.magnitude - 300); }
             delta = Vector2.ClampMagnitude(delta, 300);
-            deltaScaled = new Vector2(LinearMap(delta.x, 0, 300, 0, 1), LinearMap(delta.y, 0, 300, 0, 1));
+            deltaScaled = new Vector2(StaticHelpers.LinearMap(delta.x, 0, 300, 0, 1), StaticHelpers.LinearMap(delta.y, 0, 300, 0, 1));
             deltaScaled = Vector2.ClampMagnitude(deltaScaled, 1);
-            if (referencedAction.Tags.Contains(TAG.USESTICK))
+            if (referencedAction.Tags.Contains(TAG.USESTICK) || referencedAction.Type == BUTTONTYPE.VECTOR || referencedAction.Type == BUTTONTYPE.CONTINUOUS_VECTOR)
             {
                 //Show guide and store Direction in skill;
                 guide.transform.position = player.transform.position + GetRelativeToCamera(deltaScaled * referencedAction.StickMult);
@@ -121,25 +120,15 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
 
             rect.transform.position = Vector2.Lerp(rect.transform.position, targetPos + deltaScaled * 150f, 0.2f);
 
-
-            if (deltaScaled.magnitude > 0.1f)
-            {
-                rect.transform.localScale = Vector3.Lerp(rect.transform.localScale, Vector3.one * LinearMap(deltaScaled.magnitude, 0.1f, 1, 1.0f, 1.5f), 0.1f);
-            }
-            else
-            {
-                rect.transform.localScale = Vector3.Lerp(rect.transform.localScale, Vector3.one * 0.66f, 0.1f);
-            }
-
         }
     }
 
-    public void Init() //This can be moved in Start probably
+    public void Initialize(BaseAction referencedAction) //This can be moved in Start probably
     {
         if (referencedAction != null)
         {
             SetUIFromAction(referencedAction);
-            SetDraggable(referencedAction.IsValid(BattleManager.instance.PlayerActors[0], out _));
+            SetInteractable(referencedAction.IsValid(BattleManager.instance.PlayerActors[0], out _));
         }
     }
 
@@ -199,49 +188,13 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
             }
 
 
-            SetDraggable(action);
+            SetInteractable(action);
         }
-    }
-
-    public void SetRemainingUsesText(string text)
-    {
-        remainingUses.text = text;
     }
 
     private string ConcatWithPlus(string symbol, int value)
     {
         return new string(symbol[0], value);
-    }
-
-    public void SetActive()
-    {
-        if (actionSlot.transform.childCount > 0)
-        {
-            var actionInSlot = actionSlot.transform.GetChild(0);
-
-            if (actionInSlot == gameObject.transform) //this skill is already in the slot
-            {
-                gameObject.transform.SetParent(home.transform);
-            }
-            else
-            {
-                actionInSlot.SetParent(actionInSlot.GetComponent<ButtonHandler>().home.transform); //move action in slot back to home position
-                gameObject.transform.SetParent(actionSlot.transform); //move this action inside the slot
-                gameObject.transform.localScale = Vector3.zero;
-                LeanTween.scale(gameObject, Vector3.one, 0.4f).setEaseOutBack().setIgnoreTimeScale(true);
-            }
-        }
-        else
-        {
-            gameObject.transform.SetParent(actionSlot.transform);
-            gameObject.transform.localScale = Vector3.zero;
-            LeanTween.scale(gameObject, Vector3.one, 0.4f).setEaseOutBack().setIgnoreTimeScale(true);
-        }
-        actionSlotScript.OnDrop();
-        //if actionslot is empty move to actionslot
-        //if actionslot is full
-        //  if this is already in actionslot move back to startingplace
-        //  else replace action in actionslot with this one. move action in actionslot back home.
     }
 
     private void MoveToCenter()
@@ -260,6 +213,7 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
 
     private void MoveToHome()
     {
+        isPressed = false;
         LeanTween.cancel(rect);
         LeanTween.move(rect, homePosition, 0.15f).setEaseOutCubic().setIgnoreTimeScale(true);
         LeanTween.scale(rect, Vector3.one, 0.5f).setEaseOutCubic().setIgnoreTimeScale(true);
@@ -269,33 +223,83 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
 
     public void OnPointerDown(PointerEventData pointerEventData)
     {
+        if (Disabled) return;
+
+        if (button.IsInteractable() == false) return;
+
         if (referencedAction is AttackSkill)
         {
             CameraManager.instance.SlowTrack = false;
         }
-        if (isDraggable == false) return;
-        homePosition = gameObject.transform.localPosition;
-        MoveToCenter();
-        isPressed = true;
-        pointerDownPosition = Input.touchCount > 0 ? Input.GetTouch(0).position : (Vector2)Input.mousePosition;
+
+        homePosition = gameObject.transform.position;
+
+        switch (referencedAction.Type)
+        {
+            case BUTTONTYPE.INSTANT:
+                //UseSkill nothing else
+                return;
+                break;
+            case BUTTONTYPE.VECTOR:
+                UIManager.instance.HideAllButThis(referencedAction);
+                MoveToCenter();
+                isPressed = true;
+                pointerDownPosition = Input.touchCount > 0 ? Input.GetTouch(0).position : (Vector2)Input.mousePosition;
+                break;
+            case BUTTONTYPE.CONTINNUOUS:
+                HideUIExceptThisAndUseAction();
+                break;
+            case BUTTONTYPE.CONTINUOUS_VECTOR:
+                MoveToCenter();
+                isPressed = true;
+                pointerDownPosition = Input.touchCount > 0 ? Input.GetTouch(0).position : (Vector2)Input.mousePosition;
+                HideUIExceptThisAndUseAction();
+                break;
+            default:
+                break;
+        }
+
         //Output the name of the GameObject that is being clicked
     }
 
     public void OnPointerUp(PointerEventData pointerEventData)
     {
-        if (isDraggable == false) return;
-        MoveToHome();
+        if (button.IsInteractable() == false) return;
         isPressed = false;
-        if (deltaScaled.magnitude > 0.1f)
+        if (Disabled) return;
+
+        switch (referencedAction.Type)
         {
-            Click.Invoke(referencedAction);
-            KillAll();
+            case BUTTONTYPE.INSTANT:
+                HideUIAndUseAction();
+                break;
+            case BUTTONTYPE.VECTOR:
+                HideUIAndUseAction();
+                MoveToHome();
+                break;
+            case BUTTONTYPE.CONTINNUOUS:
+                referencedAction.cancel?.Invoke();
+                break;
+            case BUTTONTYPE.CONTINUOUS_VECTOR:
+                referencedAction.cancel?.Invoke();
+                MoveToHome();
+                break;
+            default:
+                break;
         }
+        isPressed = false;
     }
 
-    float LinearMap(float input, float inputMin, float inputMax, float outputMin, float outputMax)
+    public void HideUIAndUseAction()
     {
-        return outputMin + (outputMax - outputMin) * ((input - inputMin) / (inputMax - inputMin));
+        isPressed = false;
+        UIManager.instance.HideUI();
+        player.UseAction(referencedAction, () => { player.state.TransitionTo(player.state.idleState); });
+    }
+    public void HideUIExceptThisAndUseAction()
+    {
+        UIManager.instance.HideAllButThis(referencedAction);
+        player.UseAction(referencedAction, () => { player.state.TransitionTo(player.state.idleState); });
     }
 
     public Vector3 GetRelativeToCamera(Vector2 direction)
@@ -327,7 +331,6 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
     private static ActionSlot actionSlotScript;
     private static GameObject guide;
 
-    private bool isDraggable = true;
     private RectTransform rect;
     private bool isPressed;
     private Vector2 pointerDownPosition;

@@ -13,6 +13,7 @@ namespace Assets.Scripts.Battle.Components.Effects
 
             owner.OnDamageApplied += ShowDamagePopup;
             owner.OnPostureApplied += ShowPosturePopup;
+            owner.OnDamageApplied += FlashWhite;
         }
 
         private void ShowDamagePopup(float damageAmount)
@@ -31,5 +32,14 @@ namespace Assets.Scripts.Battle.Components.Effects
             // Set the damage amount text
             popup.GetComponentInChildren<DamagePopup>().Initialize(damageAmount);
         }
+
+        private void FlashWhite(float damageAmount)
+        {
+            var cc = owner.GetComponentInChildren<ColorController>();
+
+            var intensity = (damageAmount / owner.ActorData.maxPosture);
+            cc.StartCoroutine(cc.FlashWhite(0.3f, Mathf.Clamp(intensity,0,1.2f)));
+        }
+        
     }
 }

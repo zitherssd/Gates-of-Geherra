@@ -12,20 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ab9538cf5b653e48aa37b2dea64c00c, type: 3}
   m_Name: Block
   m_EditorClassIdentifier: 
+  Type: 2
   Name: Block
   Rarity: 0
-  cooldownTurns: 4
-  TotalUses: 2
+  Description: 
+  CooldownTimer: 10
+  TotalUses: 0
+  remainingUses: 0
   BuildupCost: 0
   BuildupGain: 0
   StaminaCost: 0
   Speed: 0
-  Tags: 0e000000
-  SliderValue: 0
-  StickValue: {x: 0, y: 0}
-  currentCooldownTurns: 0
-  remainingUses: 0
+  Tags: 
+  Direction: {x: 0, y: 0, z: 0}
+  currentCooldownTimer: 0
   StickMult: 1
-  DamageModifier: 0.75
+  SlowdownMeterGain: 0
+  Animation: 0
+  DamageModifier: 0.5
   PostureModifier: 0.5
   KnockbackModifier: 1
+  duration: 10
+  startupDelay: 0

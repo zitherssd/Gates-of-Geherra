@@ -9,24 +9,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3d2c66b39a75e8e4c810a8e1f12fbd1b, type: 3}
-  m_Name: Charge
+  m_Script: {fileID: 11500000, guid: a53caa89e83e055489c03028a676b01e, type: 3}
+  m_Name: Infinite Move
   m_EditorClassIdentifier: 
-  Type: 1
-  Name: Charge
+  Type: 3
+  Name: Move
   Rarity: 0
   Description: 
-  CooldownTimer: 10
+  CooldownTimer: 3
   TotalUses: 0
   remainingUses: 0
   BuildupCost: 0
-  BuildupGain: 5
+  BuildupGain: 0
   StaminaCost: 0
-  Speed: 5
-  Tags: 09000000
-  Direction: {x: 0.8048138, y: 0, z: -0.42691037}
+  Speed: 0
+  Tags: 
+  Direction: {x: -0.99897283, y: 0.000000080293354, z: 0.045313615}
   currentCooldownTimer: 0
-  StickMult: 3
-  SlowdownMeterGain: 5
-  Animation: 12
-  power: 2
+  StickMult: 1
+  SlowdownMeterGain: 0
+  duration: 10

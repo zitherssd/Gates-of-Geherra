@@ -36,6 +36,23 @@ namespace Assets.Scripts.Battle.Components
             physicMaterial.frictionCombine = PhysicMaterialCombine.Minimum;
         }
 
+        public void FaceDirection(Vector3 direction)
+        {
+            //Face the enemy
+            var lookrotation = direction.normalized;
+            lookrotation.y = 0;
+            actor.transform.rotation = Quaternion.LookRotation(lookrotation, Vector3.up);
+        }
+
+        public void FaceTarget(Actor target)
+        {
+            //Face the enemy
+            var targetpoint = target.transform.position;
+            var lookrotation = (targetpoint - actor.transform.position).normalized;
+            lookrotation.y = 0;
+           actor.transform.rotation = Quaternion.LookRotation(lookrotation, Vector3.up);
+        }
+
         public void AddForce(Vector3 force)
         {
             var currentMagnitude = rigidbody.velocity.magnitude;
@@ -47,6 +64,28 @@ namespace Assets.Scripts.Battle.Components
             {
                 // Clamp the velocity to the max speed while maintaining the direction
                 rigidbody.velocity = newVelocity.normalized * currentMagnitude;
+            }
+        }
+        public void ChangeSpeed(Vector3 force)
+        {
+            // Apply the force and ensure the velocity is within a maximum value
+            var appliedForce = Mathf.Max(force.magnitude, rigidbody.velocity.magnitude);
+            rigidbody.velocity = force.normalized * appliedForce;
+
+            // Get the direction from the velocity (this will be a normalized vector pointing in the direction of movement)
+            Vector3 velocityDirection = rigidbody.velocity.normalized;
+
+            // Face the direction the object is moving (using the velocity direction)
+            if (velocityDirection.magnitude > 0.01f) // Prevent rotating when velocity is almost zero
+            {
+                FaceDirection(velocityDirection); // Point to the target position based on velocity direction
+            }
+
+            // Limit the maximum speed of the object
+            float maxSpeed = 5f;
+            if (rigidbody.velocity.magnitude > maxSpeed)
+            {
+                rigidbody.velocity = rigidbody.velocity.normalized * maxSpeed;
             }
         }
 

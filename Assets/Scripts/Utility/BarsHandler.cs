@@ -69,11 +69,7 @@ public class BarsHandler : MonoBehaviour
         staminaBar.value = actorData.currentStamina / actorData.maxStamina;
 
 
-        LeanTween.value(staminaBarEase.value, staminaBar.value, 2f).setEaseOutCubic().setIgnoreTimeScale(true).setOnComplete(() =>
-        {
-            LeanTween.alpha(staminaBarEase.fillRect, 0f, 10f).setEaseOutExpo().setIgnoreTimeScale(true);
-            LeanTween.alpha(staminaBar.fillRect, 0f, 10f).setEaseOutExpo().setIgnoreTimeScale(true);
-        }).setOnUpdate((float val) =>
+        LeanTween.value(staminaBarEase.value, staminaBar.value, 2f).setEaseOutCubic().setIgnoreTimeScale(true).setOnUpdate((float val) =>
         {
             staminaBarEase.value = val;
         });
@@ -91,18 +87,16 @@ public class BarsHandler : MonoBehaviour
 
     void HealStamina()
     {
-        LeanTween.cancel(staminaBar.fillRect);
-        LeanTween.cancel(staminaBarEase.fillRect);
+        //LeanTween.cancel(staminaBar.fillRect);
+        //LeanTween.cancel(staminaBarEase.fillRect);
         //Brings up the staminaBar in 0.1 seconds
-        LeanTween.alpha(staminaBarEase.fillRect, 1f, 0.1f).setEaseOutCubic().setIgnoreTimeScale(true);
-        LeanTween.alpha(staminaBar.fillRect, 1f, 0.1f).setEaseOutCubic().setIgnoreTimeScale(true);
+        //LeanTween.alpha(staminaBarEase.fillRect, 1f, 0.1f).setEaseOutCubic().setIgnoreTimeScale(true);
+        //LeanTween.alpha(staminaBar.fillRect, 1f, 0.1f).setEaseOutCubic().setIgnoreTimeScale(true);
         float newvalue = actorData.currentStamina / actorData.maxStamina;
         //new desired value for stamina bar
-        LeanTween.value(staminaBar.value, newvalue, 1f).setEaseOutCubic().setIgnoreTimeScale(true).setOnUpdate((float val) =>
-        {
-            staminaBar.value = val;
-            staminaBarEase.value = val;
-        });
+        staminaBar.value = newvalue;
+        staminaBarEase.value = newvalue;
+        
     }
 
 
@@ -110,7 +104,7 @@ public class BarsHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (lastStamina < actorData.currentStamina)
+        if (lastStamina <= actorData.currentStamina)
         {
             //heal stamina
             HealStamina();

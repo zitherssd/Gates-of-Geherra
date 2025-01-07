@@ -12,20 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94ee0db516bd2344ebc0a36825941aa7, type: 3}
   m_Name: Roll
   m_EditorClassIdentifier: 
+  Type: 1
   Name: Roll
   Rarity: 0
   Description: 
-  CooldownTimer: 0
+  CooldownTimer: 2
   TotalUses: 0
+  remainingUses: 0
   BuildupCost: 0
   BuildupGain: 0
   StaminaCost: 14
   Speed: 0
   Tags: 0d000000090000000c000000
-  Direction: {x: 0, y: 0, z: 0}
+  Direction: {x: 0.7184283, y: 0, z: 0.69560087}
   currentCooldownTimer: 0
-  remainingUses: 0
   StickMult: 1
+  SlowdownMeterGain: 0
   Animation: 13
   force: 4
   time: 0.7

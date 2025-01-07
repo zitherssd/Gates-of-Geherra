@@ -7,11 +7,13 @@ namespace Assets
 {
     public class BaseAction : ScriptableObject
     {
+        public BUTTONTYPE Type;
         public string Name;
         public RARITY Rarity;
         public string Description;
         public float CooldownTimer;
         public int TotalUses;
+        public int remainingUses;
         //public int Range;
         //public SpriteRenderer sprite;
         public int BuildupCost;
@@ -21,13 +23,14 @@ namespace Assets
         public List<TAG> Tags;
         [HideInInspector] public Vector3 Direction;
         public float currentCooldownTimer = 0;
-        [HideInInspector] public int remainingUses;
         public float StickMult = 1;
+        public float SlowdownMeterGain;
+        public Action cancel;
 
+        public enum BUTTONTYPE { INSTANT, VECTOR, CONTINNUOUS, CONTINUOUS_VECTOR };
 
         public virtual void Perform(Actor casterActor, Action onPerformEnd)
         {
-            UpdateRemainingUses();
             //ResetCooldown();
 
             if (Tags.Contains(TAG.KILLMOMENTUM)) casterActor.movement.ResetMomentum();
@@ -36,48 +39,51 @@ namespace Assets
             casterActor.ActorData.ChangeBuildup(BuildupGain);
             casterActor.ActorData.ChangeBuildup(-BuildupCost);
 
-            PerformSpecific(casterActor, onPerformEnd);
+            PerformSpecific(casterActor, () =>
+            {
+                UpdateRemainingUses(); onPerformEnd?.Invoke();
+            });
         }
 
         protected virtual void PerformSpecific(Actor casterActor, Action onPerformEnd) { }
 
-        public virtual void UpdateCooldown()
+        public virtual void UpdateCooldown() //runs every frame
         {
+            if (TotalUses != 0) //limited number of uses or recharges uses
+            {
+                if (Tags.Contains(TAG.RECHARGE_TOTAL_USES)) //recharges uses
+                {
+                    if (remainingUses < TotalUses && currentCooldownTimer == 0)
+                    {
+                        currentCooldownTimer = CooldownTimer;
+                    }
+                }
+            }
+
+
             if (currentCooldownTimer > 0)
                 currentCooldownTimer = currentCooldownTimer -= Time.deltaTime;
             else
                 currentCooldownTimer = 0f;
-            if(Tags != null)
-            if (Tags.Contains(TAG.RECHARGE_TOTAL_USES) && remainingUses < TotalUses)
-            {
-                if (currentCooldownTimer == 0)
+
+
+            if (Tags != null)
+                if (TotalUses != 0) //limited number of uses or recharges uses
                 {
-                    remainingUses++;
-                    currentCooldownTimer = CooldownTimer;
+                    if (Tags.Contains(TAG.RECHARGE_TOTAL_USES)) //recharges uses
+                    {
+                        if (remainingUses < TotalUses && currentCooldownTimer == 0)
+                        {
+                            remainingUses++;
+                        }
+                    }
                 }
-            }
         }
 
         public bool IsSkillOnCooldown()
         {
             if (Tags.Contains(TAG.RECHARGE_TOTAL_USES)) return false;
             return currentCooldownTimer > 0;
-        }
-
-        public void ResetCooldown()
-        {
-            currentCooldownTimer = CooldownTimer;
-            if (Tags.Contains(TAG.RECHARGE_TOTAL_USES))
-            {
-                if(remainingUses < TotalUses)
-                {
-                    remainingUses++;
-                    currentCooldownTimer = CooldownTimer;
-                }    
-            }
-            else
-                currentCooldownTimer = CooldownTimer;
-
         }
 
         public virtual bool HasUsesLeft()
@@ -125,25 +131,34 @@ namespace Assets
             return false;
         }
 
-        public void UpdateRemainingUses()
+        public void UpdateRemainingUses() //Runs when animation ends
         {
-            currentCooldownTimer = CooldownTimer;
-
-            if (remainingUses == TotalUses && Tags.Contains(TAG.RECHARGE_TOTAL_USES))
+            if (TotalUses != 0) //limited number of uses or recharges uses
             {
-                remainingUses -= 1;
-                currentCooldownTimer = CooldownTimer;
+                remainingUses--;
+
+                if (!Tags.Contains(TAG.RECHARGE_TOTAL_USES))
+                {
+                    currentCooldownTimer = CooldownTimer;
+                }
+                else if (remainingUses <= 0 && currentCooldownTimer == 0)
+                {
+                    // Start the recharge cycle only when remaining uses reach 0
+                    currentCooldownTimer = CooldownTimer;
+                }
             }
             else
-            if (remainingUses != 0)
-                remainingUses -= 1;
+            {
+                currentCooldownTimer = CooldownTimer;
+            }
         }
 
         public enum TAG
         {
             PROJECTILE, KNOCKBACK_AIR, KNOCKBACK_FRONT, KNOCKBACK_BACK, NO_REACTION, FREE, STARTER, FINISHER, COUNTER, USESTICK, RECHARGE_TOTAL_USES,
             APPLYROOTMOTION,
-            KILLMOMENTUM, KILL_TRACKING
+            KILLMOMENTUM, KILL_TRACKING, PLAY_WHILE_SELECTING,
+            TECH
         }
     }
 

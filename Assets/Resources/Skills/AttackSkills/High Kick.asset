@@ -12,20 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3be3547e3e6f74e4bae902b75515650e, type: 3}
   m_Name: High Kick
   m_EditorClassIdentifier: 
+  Type: 1
   Name: High Kick
   Rarity: 0
   Description: 
   CooldownTimer: 6
   TotalUses: 0
+  remainingUses: 0
   BuildupCost: 0
   BuildupGain: 0
-  StaminaCost: 16
+  StaminaCost: 35
   Speed: 0
-  Tags: 0100000009000000
-  Direction: {x: 0, y: 0, z: 0}
+  Tags: 01000000090000000f000000
+  Direction: {x: 0.112807944, y: -0, z: -0.98130697}
   currentCooldownTimer: 0
-  remainingUses: 0
   StickMult: 1.2
+  SlowdownMeterGain: 4
   Animation: 4
   Range: 1.1
   Damage: 7
@@ -33,5 +35,5 @@ MonoBehaviour:
   KnockbackForce: 1.5
   windupTimeMult: 0.6
   recoveryTimeMult: 0.3
-  state: 0
+  state: 2
   SelfForce: 2.2

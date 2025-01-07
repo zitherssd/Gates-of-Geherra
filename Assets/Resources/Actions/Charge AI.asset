@@ -9,20 +9,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a53caa89e83e055489c03028a676b01e, type: 3}
-  m_Name: Move
+  m_Script: {fileID: 11500000, guid: 3d2c66b39a75e8e4c810a8e1f12fbd1b, type: 3}
+  m_Name: Charge AI
   m_EditorClassIdentifier: 
-  Name: Move
+  Type: 0
+  Name: Charge
   Rarity: 0
   Description: 
-  CooldownTimer: 0
+  CooldownTimer: 10
   TotalUses: 0
+  remainingUses: 0
   BuildupCost: 0
-  BuildupGain: 0
+  BuildupGain: 5
   StaminaCost: 0
-  Speed: 0
-  Tags: 09000000
+  Speed: 5
+  Tags: 
   Direction: {x: 0, y: 0, z: 0}
   currentCooldownTimer: 0
-  remainingUses: 0
-  StickMult: 4
+  StickMult: 1
+  SlowdownMeterGain: 0
+  Animation: 12
+  power: 3

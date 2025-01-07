@@ -1,13 +1,29 @@
 refactor posture regen -- done
 refactor stamina regen -- done
 refactor skill cd (keep skills always avaliable on screen) -- lets say done? not stable
-if you are in ready state you can select new skill from ui
-skills are always avaliable in ui etc
+if you are in ready state you can select new skill from ui -- done
+skills are always avaliable in ui etc --d done
 contextual skills may appear based on where you stand
 underlord skills and upgrades
-new ui
-indicator for player facing.
-tie in player facing with camera
 BRAINSTORM MOVMEENT SOME MORE
 improve ai
 fix addforce so it doesn't work like that
+on hit flash gray  -- done
+slowdown overlay effect
+ 
+
+
+ rework direction facing/orientation!!!
+ indicator for player facing.
+ tie in player facing with camera
+
+ Iteration 2
+- automatically target acqusition - with red circle indicator? (can be no target)
+- idle state transitionts to move towards target after a while
+- use block and dodge to move
+- enemies also move towards you and try to hit their abilities.
+- code enemies:
+- enemy that approaches
+- enemy that shoots
+
+

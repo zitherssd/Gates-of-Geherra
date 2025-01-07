@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using Assets.Scripts.Battle;
+using System.Collections;
+using System.Linq;
 using UnityEngine;
 
 namespace Assets
@@ -23,7 +25,8 @@ namespace Assets
         public bool Override = false;
         public bool SlowTrack = false;
 
-        public Transform leftObj;
+        public Transform playerTransform;
+        private Actor playerActor;
         public Transform rightObj;
 
 
@@ -31,6 +34,9 @@ namespace Assets
         Vector3 directionvector;
         Vector3 blue;
         Vector3 newposition;
+        Vector3 rightObjPoint;
+
+        public Vector3 NEWdistvector { get; private set; }
 
         private void Awake()
         {
@@ -40,7 +46,8 @@ namespace Assets
         // Use this for initialization
         void Start()
         {
-            leftObj = BattleManager.instance.PlayerActors[0].transform;
+            playerTransform = BattleManager.instance.PlayerActors[0].transform;
+            playerActor = BattleManager.instance.PlayerActors[0];
             rightObj = BattleManager.instance.EnemyActors[0].transform;
             camera = gameObject.GetComponent<Camera>();
 
@@ -54,29 +61,43 @@ namespace Assets
         // Update is called once per frame
         void Update()
         {
+            //rightObj is what
+            rightObjPoint = Vector3.zero;
+            foreach (var enemy in BattleManager.instance.EnemyActors.Where(actor => actor.state.CurrentState != actor.state.deathState))
+            {
+                rightObjPoint += enemy.transform.position;
+            }
+            rightObjPoint = rightObjPoint / BattleManager.instance.EnemyActors.Count;
+
+
             Vector3 targetpos;
 
-            var leftobjpoint = camera.WorldToScreenPoint(leftObj.position);
-            var rightobpoint = camera.WorldToScreenPoint(rightObj.position);
-            if(leftobjpoint.x > rightobpoint.x)
-            {
-               Switch();
-            }
+            var leftobjpoint = camera.WorldToScreenPoint(playerTransform.position);
+            var rightobpoint = camera.WorldToScreenPoint(rightObjPoint);
+            //if(leftobjpoint.x > rightobpoint.x)
+            //{
+            //   Switch();
+            //}
 
-            distvector = (rightObj.position + leftObj.position) / 2; //start point
+            distvector = (rightObjPoint + playerTransform.position) / 2; //start point 
             distvector = new Vector3(distvector.x, 0, distvector.z);
-            directionvector = (rightObj.position - leftObj.position) / 2;
+            directionvector = (rightObjPoint - playerTransform.position) / 2;
             directionvector = new Vector3(directionvector.x, 0, directionvector.z);
 
             if(!Override)
             {
                 var input = Mathf.Clamp((directionvector * 2).magnitude, 3, 40);
-                UpDistance = LinearMap(input, 3, 40, 1.5f, 6);
-                BackDistance = LinearMap(input, 3, 40, 4, 20);
+                UpDistance = LinearMap(input, 3, 40, 2.5f, 8);
+                BackDistance = LinearMap(input, 3, 40, 4.5f, 20);
             }
 
             directionvector = Vector3.ProjectOnPlane(directionvector, Vector3.up).normalized;
-            if(!SlowTrack)
+            if (Vector3.Dot(directionvector, transform.right) < 0)
+            {
+                // Flip directionvector to align with cameraMain.right
+                directionvector = -directionvector;
+            }
+            if (!SlowTrack)
             blue = Vector3.Cross(directionvector, Vector3.up).normalized;
             newposition = distvector + Vector3.up * UpDistance + -blue * BackDistance;
 
@@ -109,9 +130,16 @@ namespace Assets
             else transform.position = targetpos;
             if(!SlowTrack)
             transform.LookAt(distvector + Vector3.up * 0.5f);
+
             else
             {
-                Vector3 targetRotation = (distvector + Vector3.up * 0.5f) - transform.position;
+                var playertarget = BattleManager.instance.PlayerActors[0].target.target;
+                if (playertarget != null)
+                {
+                    NEWdistvector = (playertarget.transform.position + playerTransform.position) / 2; //start point 
+                    NEWdistvector = new Vector3(distvector.x, 0, distvector.z);
+                }
+                Vector3 targetRotation = (NEWdistvector + Vector3.up * 0.5f) - transform.position;
                 Quaternion endRotation = Quaternion.LookRotation(targetRotation);
 
                 // Smoothly rotate towards the target rotation
@@ -119,14 +147,33 @@ namespace Assets
             }
 
         }
+        //void OnGUI()
+        //{
+        //    if (camera != null)
+        //    {
+        //        // Convert world points to screen points
+        //        Vector3 leftScreenPoint = camera.WorldToScreenPoint(playerTransform.position);
+        //        Vector3 rightScreenPoint = camera.WorldToScreenPoint(rightObjPoint);
+        //        // Vector3 playertargetPoint = camera.WorldToScreenPoint(playerActor.target.target.transform.position);
 
-        private void UpdateOrientation(Transform gameobject)
-        {
-            Vector3 cameraRight = transform.right;
-            float dotProduct = Vector3.Dot(gameobject.transform.forward, cameraRight.normalized);
-            if(dotProduct > 0f) gameObject.GetComponentInChildren<SpriteRenderer>().flipX = true;
-            else gameObject.GetComponentInChildren<SpriteRenderer>().flipX = false;
-        }
+        //        // Screen space adjustment (invert y-axis for GUI coordinates)
+        //        leftScreenPoint.y = Screen.height - leftScreenPoint.y;
+        //        rightScreenPoint.y = Screen.height - rightScreenPoint.y;
+        //        //playertargetPoint.y = Screen.height - playertargetPoint.y;
+
+        //        // Draw green dot for leftobjpoint
+        //        GUI.color = Color.green;
+        //        GUI.DrawTexture(new Rect(leftScreenPoint.x - 2f, leftScreenPoint.y - 2f, 2f, 4f), Texture2D.whiteTexture);
+
+        //        // Draw blue dot for rightobpoint
+        //        GUI.color = Color.blue;
+        //        GUI.DrawTexture(new Rect(rightScreenPoint.x - 2f, rightScreenPoint.y - 2f, 2f, 4f), Texture2D.whiteTexture);
+
+        //        // Draw RED dot for PLAYERTARGETPOINT
+        //        GUI.color = Color.red;
+        //        //GUI.DrawTexture(new Rect(playertargetPoint.x - 0.1f, playertargetPoint.y - 0.1f, 0.2f, 0.2f), Texture2D.whiteTexture);
+        //    }
+        //}
 
         public void LateUpdate()
         {
@@ -142,19 +189,6 @@ namespace Assets
         {
             shakeDuration = duration;
             shakeMagnitude = magnitude;
-        }
-
-        public void Switch()
-        {
-            var aux = rightObj;
-            rightObj = leftObj;
-            leftObj = aux;
-            var leftSObj = leftObj.Find("Billboard");
-            var rightSObj = rightObj.Find("Billboard");
-
-
-            leftSObj.transform.localScale = new Vector3(1, 1, 1);
-            rightSObj.transform.localScale = new Vector3(-1, 1, 1);
         }
 
 

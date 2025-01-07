@@ -60,6 +60,7 @@ namespace Assets.Scripts.Battle
 
         private void Awake()
         {
+            ActorData.Reset();
             rigidbody = gameObject.GetComponent<Rigidbody>();
             animator = gameObject.GetComponent<Animator>();
 
@@ -74,40 +75,34 @@ namespace Assets.Scripts.Battle
         }
         public void UseAction(BaseAction action, Action onActionComplete) //Perform an action
         {
-            //Face the enemy
-            var lookrotation = target.DirectionToClosestEnemy;
-            lookrotation.y = 0;
-            transform.rotation = Quaternion.LookRotation(lookrotation, Vector3.up);
+            if(isControllable())
+            UIManager.instance.ResetMeter();
             Time.timeScale = 1f;
 
             //UIManager.GetInstance().DrawActionAboveHead(this, action);
-            UIManager.GetInstance().SetTextThenFade($"{ActorData.Name} uses {action.Name}!", 0.5f);
 
             action.Perform(this, onActionComplete);
         }
 
         public void Update()
         {
-            state.Update();
-            ai.Update();
+            if(state.CurrentState == state.idleState)
+            ActorData.DealStaminaDamage(-ActorData.staminaRegenRate * 2 * Time.deltaTime);
+
             if (!state.IsStaggered() && CanRegenPosture)
             {
                 if (ActorData.currentPosture < ActorData.maxPosture)
                 {
-                    ActorData.currentPosture = Mathf.Min(ActorData.maxPosture, ActorData.currentPosture + ActorData.postureRegenRate * Time.deltaTime);
+                    ActorData.DealPostureDamage(-ActorData.postureRegenRate * Time.deltaTime);
                 }
             }
-            if(!CanRegenPosture && postureRegenCooldownTimer > 0)
+            if (!CanRegenPosture && postureRegenCooldownTimer > 0)
             {
                 postureRegenCooldownTimer -= Time.deltaTime;
-                if(postureRegenCooldownTimer < 0)
+                if (postureRegenCooldownTimer < 0)
                 {
                     CanRegenPosture = true;
                 }
-            }
-            if(state.CurrentState == state.idleState)
-            {
-                ActorData.currentStamina = Mathf.Min(ActorData.maxStamina, ActorData.currentStamina + ActorData.staminaRegenRate * 8 * Time.deltaTime);
             }
             foreach (var skill in ActorData.actions)
             {
@@ -117,6 +112,9 @@ namespace Assets.Scripts.Battle
             {
                 reaction.UpdateCooldown();
             }
+            state.Update();
+            ai.Update();
+            if (isControllable()) target.Update();
         }
 
         public void ApplyPosture(float originalPostureDamage)

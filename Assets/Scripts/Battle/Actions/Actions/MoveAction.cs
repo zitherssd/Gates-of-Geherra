@@ -7,14 +7,21 @@ namespace Assets.Scripts.Battle.Actions
     public class MoveAction : BaseAction
     {
         public static MoveAction instance;
+        public float duration;
 
         protected override void PerformSpecific(Actor casterActor, Action onPerformEnd)
         {
-            StickMult = 1 + casterActor.ActorData.AGI / 3;
+            cancel = onPerformEnd;
+            StickMult = 1 + casterActor.ActorData.AGI / 10;
             var scaledStickMult = Direction * StickMult;
             var TargetPosition = casterActor.transform.position + scaledStickMult;
 
-            casterActor.state.TransitionTo(casterActor.state.moveState.Set(TargetPosition, onPerformEnd));
+            if (Type == BUTTONTYPE.CONTINUOUS_VECTOR)
+            {
+                casterActor.state.TransitionTo(casterActor.state.moveState.Set(duration, onPerformEnd, this));
+            }
+            else
+                casterActor.state.TransitionTo(casterActor.state.moveState.Set(TargetPosition, onPerformEnd));
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Battle.Components.State.States;
+﻿using Assets.Scripts.Actions;
+using Assets.Scripts.Battle.Components.State.States;
 using Assets.Scripts.Pattern;
 using UnityEngine;
 
@@ -21,6 +22,8 @@ namespace Assets.Scripts.Battle.Components.State
         public DeathState deathState;
         public bool locked;
         private Actor actor;
+        public BaseSkill action;
+
 
         public ActorStateMachine(Actor actor)
         {

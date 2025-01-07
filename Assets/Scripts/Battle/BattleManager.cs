@@ -23,7 +23,6 @@ namespace Assets
         private Queue<Actor> turnQueue = new Queue<Actor>();
         private Actor activeBattler;
         private bool repeatTurn;
-        private UIManager uiManager;
         private uint currentTurn;
         private bool isHitstopActive = false;
         private float originalTimeScale = 1.0f;
@@ -36,19 +35,17 @@ namespace Assets
             MoveAction.instance = ScriptableObject.CreateInstance<MoveAction>();
             MoveAction.instance.Name = "Move";
             MoveAction.instance.Tags = new List<TAG>();
-
         }
         void Start()
         {
             Physics.gravity = new Vector3(0, -6f, 0);
-            uiManager = UIManager.GetInstance();
-            StartCoroutine(uiManager.TypeTextMiddleLetterByLetter($"{PlayerActors[0].ActorData.Name} vs {EnemyActors[0].ActorData.Name}", () =>
+            StartCoroutine(UIManager.instance.TypeTextMiddleLetterByLetter($"{PlayerActors[0].ActorData.Name} vs {EnemyActors[0].ActorData.Name}", () =>
             {
                 SoundManager.instance.PlayMusic(null);
-                StartCoroutine(uiManager.FadeMiddleText(1));
-                uiManager.Fade(false, () =>
+                StartCoroutine(UIManager.instance.FadeMiddleText(1));
+                UIManager.instance.Fade(false, () =>
                 {
-                    StartCoroutine(WaitForSeconds(0.1f, () =>
+                    StartCoroutine(WaitForSeconds(2f, () =>
                     {
                         StartBattle();
                     }));
@@ -56,39 +53,17 @@ namespace Assets
             }));
         }
 
-
-        public void ApplyHitstop(float duration)
-        {
-            if (!isHitstopActive)
-            {
-                StartCoroutine(HitstopCoroutine(duration));
-            }
-        }
-
-        private IEnumerator HitstopCoroutine(float duration)
-        {
-            isHitstopActive = true;
-            originalTimeScale = Time.timeScale;
-            Time.timeScale = 0.0f;
-
-            yield return new WaitForSecondsRealtime(duration);
-
-            Time.timeScale = originalTimeScale;
-            isHitstopActive = false;
-        }
-
         //Starts a battle with current PlayerActors and EnemyActors
         void StartBattle()
         {
-            currentTurn = 0;
-            uiManager.SetTurn(currentTurn);
-            turnQueue.Clear();
-            foreach(var actor in PlayerActors.Concat(EnemyActors))
+            foreach (var actor in PlayerActors.Concat(EnemyActors))
             {
-                actor.ActorData.Reset();
+                //actor.ActorData.Reset();
                 actor.state.TransitionTo(actor.state.idleState);
             }
-            Time.timeScale = 0f;
+            UIManager.instance.DrawActions(PlayerActors[0].ActorData.actions);
+            //UIManager.instance.GainMeter(2f);
+            Debug.Log("Gained meter!");
             //SwitchToNextTurn();
         }
 
@@ -96,7 +71,7 @@ namespace Assets
 
         public void SetupBattleWithEnemies(List<ActorData> enemy) //Floor 1,2 etc setup
         {
-            uiManager.Fade(false, () =>
+            UIManager.instance.Fade(false, () =>
             {
 
                 EnemyActors[0].ActorData = enemy[0];
@@ -138,7 +113,7 @@ namespace Assets
             yield return new WaitForSeconds(seconds);
             onFinishedWaiting();
         }
-        
+
         public void End()
         {
             if (PlayerActors.TrueForAll(actor => actor.ActorData.GetCurrentHP() == 0))
@@ -153,7 +128,7 @@ namespace Assets
                 PlayerActors[0].PlayAnimation("Victory");
                 //SoundManager.instance.PlaySingle(SoundManager.instance.GetAudioClipByName("Like"));
                 UIManager.GetInstance().ChangeStatus("YOU WIN!!");
-                ButtonHandler.KillAll();
+                UIManager.instance.HideUI();
                 FloorManager.GetInstance().ProgressToNextFloor();
             }
         }

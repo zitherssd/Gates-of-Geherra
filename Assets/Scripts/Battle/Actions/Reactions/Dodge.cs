@@ -18,7 +18,12 @@ namespace Assets.Scripts.Battle.Actions.Reactions
             CameraManager.instance.SlowTrack = true;
             actor.movement.SetFriction(0);
             actor.movement.AddForce(force * Direction * StickMult);
-            actor.state.TransitionTo(actor.state.actingState.Set(this, () => { actor.movement.SetFriction(); onActionComplete?.Invoke(); }));
+            actor.state.TransitionTo(actor.state.actingState.Set(this, () => { 
+                actor.movement.SetFriction();
+                actor.movement.FaceTarget(actor.target.target);
+                onActionComplete?.Invoke(); 
+                UIManager.instance.GainMeter(SlowdownMeterGain);  
+            }));
             owner = actor;
         }
 

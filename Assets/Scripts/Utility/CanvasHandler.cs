@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 namespace Assets.Scripts.Utility
 {
-    public class CanvasHandler : MonoBehaviour, IHasChanged
+    public class CanvasHandler : MonoBehaviour
     {
         public static CanvasHandler instance = null;
 
@@ -14,17 +14,7 @@ namespace Assets.Scripts.Utility
 
         void Start ()
         {
-            HasChanged();
             if (instance == null) instance = this;
-        }
-
-        public void HasChanged()
-        {
-            if (ActionSlot.transform.childCount > 0)
-                EndButton.GetComponentInChildren<TextMeshProUGUI>().text = "ACT";
-            else
-                EndButton.GetComponentInChildren<TextMeshProUGUI>().text = "SKIP";
-
         }
     }
 }

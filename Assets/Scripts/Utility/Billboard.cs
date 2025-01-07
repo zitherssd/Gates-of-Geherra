@@ -1,3 +1,5 @@
+using Assets.Scripts.Battle;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,18 +10,41 @@ public class Billboard : MonoBehaviour
 
     private Quaternion shurikenRotation = Quaternion.Euler(50f, 0, 0);
     private new Camera camera;
-    private GameObject thisgameobj;
+    private GameObject graphicObj;
     private float prevrotation;
+    private Actor actor;
 
     public void Start()
     {
         camera = Camera.main;
-        thisgameobj = transform.gameObject;
+        graphicObj = transform.GetChild(0).gameObject;
+        if(gameObject.name == "Billboard")
+        actor = gameObject.GetComponentInParent<Actor>();
     }
 
     public enum BillboardType { LookAtCamera, CameraForward,
         Shuriken
     }
+
+    private void Update()
+    {
+        UpdateOrientation();
+
+    }
+
+    private void UpdateOrientation()
+    {
+        if (actor != null)
+        {
+            Vector3 camerRight = Camera.main.transform.right;
+            float dotProduct = Vector3.Dot(actor.transform.forward, camerRight.normalized);
+            if (dotProduct > 0f)
+                transform.localScale = new Vector3(1, 1, 1);
+            else
+                transform.localScale = new Vector3(-1, 1, 1);
+        }
+    }
+
     void LateUpdate()
     {
         switch(billboardType)

@@ -24,6 +24,8 @@ namespace Assets.Scripts.Battle.Actions.Skills
         {
             CameraManager.instance.SlowTrack = true;
             caster.transform.position = caster.transform.position + Direction * Distance;
+            caster.movement.FaceTarget(caster.target.ClosestEnemy);
+
         }
     }
 }

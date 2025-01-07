@@ -2,7 +2,6 @@
 using Assets.Scripts.Utility;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace Assets.Scripts.Battle.Actions.Skills
@@ -18,7 +17,6 @@ namespace Assets.Scripts.Battle.Actions.Skills
         public float recoveryTimeMult = 1f;
         public STATE state = STATE.uninitialized;
         public float SelfForce;
-
         private Actor target;
         private Actor casterActor;
 
@@ -28,19 +26,36 @@ namespace Assets.Scripts.Battle.Actions.Skills
             //1. Get Target
             //2. Continuously Rotate Incrementally so you are facing target //more work
             //3. Move towards the Direction
-
+            cancel = onPerformEnd;
             this.casterActor = casterActor;
             casterActor.state.TransitionTo(casterActor.state.actingState.Set(this, onPerformEnd));
-            casterActor.movement.AddForce(Direction.normalized * SelfForce);
+            if (Type == BUTTONTYPE.VECTOR)
+            {
+                casterActor.movement.AddForce(Direction.normalized * SelfForce);
+                casterActor.movement.FaceDirection(Direction.normalized);
+            }
+
+            else
+            {
+                casterActor.movement.AddForce(casterActor.target.DirectionToClosestEnemy * SelfForce);
+                casterActor.movement.FaceDirection(casterActor.target.DirectionToClosestEnemy);
+            }
+
             //var movetween = LeanTween.move(casterActor.gameObject, casterActor.transform.position + Direction * StickMult, tweenduration).setEase(tweenType);
             target = casterActor.target.ClosestEnemy;
+
         }
         public void ApplyDamageEffects(Actor casterActor, Actor targetActor, BaseReaction targetReaction, Action onDamageEffectsApplied)
         {
+
             //Apply posture
             if (PostureDamage > 0)
             {
                 targetActor.ApplyPosture(PostureDamage);
+                if (casterActor.isControllable())
+                {
+                    UIManager.instance.GainMeter(SlowdownMeterGain);
+                }
             }
 
             // Apply Damage
@@ -48,7 +63,6 @@ namespace Assets.Scripts.Battle.Actions.Skills
             if (damage > 0)
             {
                 var hitstop = StaticHelpers.LinearMap(damage, 0.2f, 15, 0.083f, 0.420f);
-                BattleManager.instance.ApplyHitstop(hitstop);
                 targetActor.ApplyDamage(damage);
             };
 
@@ -97,29 +111,26 @@ namespace Assets.Scripts.Battle.Actions.Skills
 
             var potentialTargets = new List<Actor>();
 
-            //Get all active
-            if (caster.isControllable())
-                potentialTargets = BattleManager.instance.EnemyActors;
-            else
-                potentialTargets = BattleManager.instance.PlayerActors;
-            //If any of them are in range return true
-            if (potentialTargets.Any(target => (target.transform.position - caster.transform.position).magnitude < 1 + Range))
+            if (caster.target.DistanceToClosestEnemy < Range + SelfForce)
                 return true;
             else
-            {
                 return false;
-            }
         }
 
 
         public override void OnHit()
         {
+
             RaycastHit hit;
             var targetDir = target.transform.position - casterActor.transform.position;
+            casterActor.movement.FaceDirection(targetDir);
             Debug.DrawRay(casterActor.transform.position + Vector3.up * 0.6f, targetDir * Range, Color.green, 1f, false);
             if (Physics.SphereCast(casterActor.transform.position + Vector3.up * 0.6f, 0.1f, targetDir, out hit, Range))
             {
-                ApplyDamageEffects(casterActor, target, BaseReaction.NoReaction, null);
+                if (Tags.Contains(TAG.TECH))
+                    ApplyDamageEffects(casterActor, target, BaseReaction.NoReaction, cancel);
+                else
+                    ApplyDamageEffects(casterActor, target, BaseReaction.NoReaction, null);
                 return;
             }
             else

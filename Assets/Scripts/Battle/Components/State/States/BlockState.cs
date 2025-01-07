@@ -2,6 +2,7 @@
 using UnityEngine;
 using Assets.Scripts.Pattern;
 using System;
+using Assets.Scripts.Battle.Actions.Reactions;
 
 namespace Assets.Scripts.Battle.Components.State.States
 {
@@ -14,12 +15,22 @@ namespace Assets.Scripts.Battle.Components.State.States
         [Range(0, 2)] public float KnockbackModifier = 1f;
         public Action onAnimationEnd;
         private float duration;
+        private Block skill;
 
         public BlockState(Actor owner)
         {
             this.owner = owner;
         }
 
+        public BlockState Set(Block block)
+        {
+            this.DamageModifier = block.DamageModifier;
+            this.PostureModifier = block.PostureModifier;
+            this.KnockbackModifier = block.KnockbackModifier;
+            this.duration = block.duration;
+            this.skill = block;
+            return this;
+        }
         public BlockState Set(float DamageModifier, float PostureModifier, float KnockbackModifier, float duration)
         {
             this.DamageModifier = DamageModifier;
@@ -34,13 +45,14 @@ namespace Assets.Scripts.Battle.Components.State.States
             owner.PlayAnimation("Block");
             owner.DamageRecieved += ModifyDamage;
             owner.KnockbackRecieved += ModifyKnockback;
-            Time.timeScale = 1f;
         }
 
         public void Exit()
         {
             owner.DamageRecieved -= ModifyDamage;
             owner.KnockbackRecieved -= ModifyKnockback;
+            owner.PlayAnimation("Idle");
+
         }
 
         public float ModifyDamage(float damage)
@@ -59,14 +71,14 @@ namespace Assets.Scripts.Battle.Components.State.States
             duration -= Time.deltaTime;
             if (duration < 0)
             {
-                owner.state.TransitionTo(owner.state.idleState);
+                skill.cancel?.Invoke();
                 duration = 0;
             }
         }
 
         public void OnCollisionEnter(Collision collision)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }

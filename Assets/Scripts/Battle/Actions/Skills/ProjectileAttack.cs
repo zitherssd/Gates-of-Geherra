@@ -14,7 +14,6 @@ namespace Assets.Scripts.Battle.Actions.Skills
 
     public class ProjectileAttack : BaseSkill
     {
-        public ANIMATION Animation;
         public GameObject projectilePrefab;
         public float Range;
         public float Damage;

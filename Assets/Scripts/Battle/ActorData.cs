@@ -25,7 +25,7 @@ public class ActorData : ScriptableObject
     public List<BasePassive> basePassives;
     public List<HpBar> baseHpBars;
 
-     public List<Assets.BaseAction> actions;
+     public List<BaseAction> actions;
      public List<BaseReaction> reactions;
      public List<HpBar> hpBars;
 
@@ -56,7 +56,7 @@ public class ActorData : ScriptableObject
     public void DealDamage(float damage)
     {
         //Find last bar which is alive
-        var lastBar = hpBars.Where<HpBar>(item => item.alive).Last();
+        var lastBar = hpBars.Where<HpBar>(item => item.alive).LastOrDefault();
 
         //Deal damage
         if (lastBar == null) return;
@@ -93,8 +93,7 @@ public class ActorData : ScriptableObject
 
     public void DealStaminaDamage(float damage)
     {
-        currentStamina -= damage;
-        Mathf.Clamp(currentStamina, 0, maxStamina);
+        currentStamina = Mathf.Clamp(currentStamina - damage, 0, maxStamina);
     }
 
     public void ChangeBuildup(float value)
@@ -172,14 +171,10 @@ public class ActorData : ScriptableObject
             }
 
         }
-        foreach (var passive in basePassives)
-        {
-            //passive.Perform();
-        }
         foreach (var bar in baseHpBars)
         {
             var clone = Instantiate(bar);
-            hpBars.Add(bar);
+            hpBars.Add(clone);
         }
     }
 
