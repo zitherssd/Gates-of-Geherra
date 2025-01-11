@@ -16,24 +16,30 @@ MonoBehaviour:
   Name: High Kick
   Rarity: 0
   Description: 
-  CooldownTimer: 6
+  CooldownTimer: 8
   TotalUses: 0
   remainingUses: 0
-  BuildupCost: 0
+  BuildupCost: 12
   BuildupGain: 0
-  StaminaCost: 35
+  StaminaCost: 20
   Speed: 0
   Tags: 01000000090000000f000000
   Direction: {x: 0.112807944, y: -0, z: -0.98130697}
   currentCooldownTimer: 0
   StickMult: 1.2
-  SlowdownMeterGain: 4
+  SlowdownMeterGain: 2
+  SlowdownMeterGainVector: 0
   Animation: 4
   Range: 1.1
-  Damage: 7
+  Damage: 5
   PostureDamage: 8
   KnockbackForce: 1.5
   windupTimeMult: 0.6
   recoveryTimeMult: 0.3
   state: 2
   SelfForce: 2.2
+  HitboxPoints:
+  - {x: -0.5, y: 0, z: 0}
+  - {x: 0.5, y: 0, z: 0}
+  - {x: 0.35, y: 0, z: 1}
+  - {x: -0.35, y: 0, z: 1}

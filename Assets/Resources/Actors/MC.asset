@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: MC
   m_EditorClassIdentifier: 
   Name: Player
-  maxHp: 30
-  maxBuildup: 100
-  maxPosture: 50
+  maxHp: 10
+  maxBuildup: 50
+  maxPosture: 25
   maxStamina: 100
   Controllable: 1
   mainColor: {r: 1, g: 1, b: 1, a: 0}
@@ -23,7 +23,7 @@ MonoBehaviour:
   baseActions:
   - {fileID: 11400000, guid: f931b69ae9e3a26468a97a337c927f76, type: 2}
   - {fileID: 11400000, guid: 498ba4be69212c045ad9de12e867357c, type: 2}
-  - {fileID: 11400000, guid: 8944dff4634e45d4bbb0765034e3c880, type: 2}
+  - {fileID: 11400000, guid: 923e559ba7ce6f94abcdc40b245da779, type: 2}
   - {fileID: 11400000, guid: 3aa89802a1ec30d48b32f497ba10ce82, type: 2}
   - {fileID: 11400000, guid: 3a2fead6c4e4bd14e975cc8e422006e4, type: 2}
   - {fileID: 11400000, guid: 6b798446413f4794088292db8b471646, type: 2}
@@ -35,6 +35,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 1d52d04a55eb6724ba493dfbfba3ada3, type: 2}
   - {fileID: 11400000, guid: 7564a557fb69c3d4c938dcb0686b3e85, type: 2}
   - {fileID: 11400000, guid: d4852d63a398314488e810be1c412698, type: 2}
+  - {fileID: 11400000, guid: 8e14bb00a8650ff4b8875e63d4333f42, type: 2}
   baseReactions: []
   basePassives: []
   baseHpBars:
@@ -55,17 +56,17 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 11400000, guid: 10b245a55692cdf4a84960e7390ed7a3, type: 2}
+  - {fileID: 0}
   reactions: []
   hpBars:
-  - {fileID: 11400000, guid: f273e92b83c897a48b992d9fefe2c87e, type: 2}
-  - {fileID: 11400000, guid: 844423a2bec91434bb166f8390aa80f8, type: 2}
-  currentBuildup: 5
-  currentPosture: 50
-  currentStamina: 11.271786
+  - {fileID: 0}
+  - {fileID: 0}
+  currentBuildup: 20.5
+  currentPosture: 25
+  currentStamina: 78.64832
   postureRegenRate: 1
   staminaRegenRate: 1
   ATK: 1
   DEF: 1
-  AGI: 2
+  AGI: 5
   Spirit: 0

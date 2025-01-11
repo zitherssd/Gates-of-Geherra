@@ -23,9 +23,11 @@ MonoBehaviour:
   BuildupGain: 0
   StaminaCost: 0
   Speed: 0
-  Tags: 
+  Tags: 09000000
   Direction: {x: -0.56206256, y: -0, z: 0.13260877}
   currentCooldownTimer: 0
   StickMult: 1
-  SlowdownMeterGain: 0.5
-  duration: 15
+  SlowdownMeterGain: 0
+  SlowDownMeterGainOnPress: 0
+  SlowdownMeterGainOnRelease: 1
+  duration: 19.4

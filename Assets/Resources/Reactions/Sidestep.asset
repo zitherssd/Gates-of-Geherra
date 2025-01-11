@@ -28,6 +28,7 @@ MonoBehaviour:
   currentCooldownTimer: 0
   StickMult: 1
   SlowdownMeterGain: 1
+  SlowdownMeterGainVector: 1
   Animation: 14
   force: 4
   time: 2

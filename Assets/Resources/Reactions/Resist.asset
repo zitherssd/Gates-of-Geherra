@@ -16,18 +16,19 @@ MonoBehaviour:
   Name: Block
   Rarity: 0
   Description: 
-  CooldownTimer: 5
+  CooldownTimer: 4
   TotalUses: 0
   remainingUses: 0
   BuildupCost: 0
   BuildupGain: 0
-  StaminaCost: 5
+  StaminaCost: 0
   Speed: 0
   Tags: 
   Direction: {x: 0, y: 0, z: 0}
   currentCooldownTimer: 0
   StickMult: 1
-  SlowdownMeterGain: 0
+  SlowdownMeterGain: 1
+  SlowdownMeterGainVector: 0
   Animation: 0
   DamageModifier: 0.5
   PostureModifier: 0.5

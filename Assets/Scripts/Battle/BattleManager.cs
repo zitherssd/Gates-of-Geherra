@@ -116,13 +116,13 @@ namespace Assets
 
         public void End()
         {
-            if (PlayerActors.TrueForAll(actor => actor.ActorData.GetCurrentHP() == 0))
+            if (PlayerActors.TrueForAll(actor => actor.state.CurrentState == actor.state.deathState))
             {
                 EnemyActors[0].PlayAnimation("Victory");
                 UIManager.GetInstance().ChangeStatus("YOU LOSE");
                 SoundManager.instance.PlaySingle(SoundManager.instance.GetAudioClipByName("Curse2"));
             }
-            if (EnemyActors.TrueForAll(actor => actor.ActorData.GetCurrentHP() == 0))
+            if (EnemyActors.TrueForAll(actor => actor.state.CurrentState == actor.state.deathState))
             {
                 PlayerActors[0].state.TransitionTo(PlayerActors[0].state.blockState);
                 PlayerActors[0].PlayAnimation("Victory");

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Windows;
 
 namespace Assets
 {
@@ -24,10 +25,10 @@ namespace Assets
         private new Camera camera;
         public bool Override = false;
         public bool SlowTrack = false;
-
+        private Actor playerActorTarget;
         public Transform playerTransform;
         private Actor playerActor;
-        public Transform rightObj;
+        public Transform enemyTransform;
 
 
         Vector3 distvector;
@@ -48,7 +49,7 @@ namespace Assets
         {
             playerTransform = BattleManager.instance.PlayerActors[0].transform;
             playerActor = BattleManager.instance.PlayerActors[0];
-            rightObj = BattleManager.instance.EnemyActors[0].transform;
+            enemyTransform = BattleManager.instance.EnemyActors[0].transform;
             camera = gameObject.GetComponent<Camera>();
 
         }
@@ -58,37 +59,23 @@ namespace Assets
             transform.position = new Vector3(3.68f, 2.4f, -5.17f);
         }
 
-        // Update is called once per frame
         void Update()
         {
-            //rightObj is what
-            rightObjPoint = Vector3.zero;
-            foreach (var enemy in BattleManager.instance.EnemyActors.Where(actor => actor.state.CurrentState != actor.state.deathState))
-            {
-                rightObjPoint += enemy.transform.position;
-            }
-            rightObjPoint = rightObjPoint / BattleManager.instance.EnemyActors.Count;
-
-
             Vector3 targetpos;
+            var playerTarget = playerActor.target.TargetPosition;
 
-            var leftobjpoint = camera.WorldToScreenPoint(playerTransform.position);
-            var rightobpoint = camera.WorldToScreenPoint(rightObjPoint);
-            //if(leftobjpoint.x > rightobpoint.x)
-            //{
-            //   Switch();
-            //}
-
-            distvector = (rightObjPoint + playerTransform.position) / 2; //start point 
+            distvector = (playerTarget + playerTransform.position) / 2; //start point 
             distvector = new Vector3(distvector.x, 0, distvector.z);
-            directionvector = (rightObjPoint - playerTransform.position) / 2;
+            directionvector = (playerTarget - playerTransform.position) / 2;
             directionvector = new Vector3(directionvector.x, 0, directionvector.z);
 
-            if(!Override)
+            //Debug.Log($"distvector Vector: {directionvector}, directionvector Vector: {directionvector}");
+
+            if (!Override)
             {
-                var input = Mathf.Clamp((directionvector * 2).magnitude, 3, 40);
-                UpDistance = LinearMap(input, 3, 40, 2.5f, 8);
-                BackDistance = LinearMap(input, 3, 40, 4.5f, 20);
+                var input = Mathf.Clamp((directionvector * 2).magnitude, 1, 30);
+                UpDistance = LinearMap(input, 1, 30, 2.6f, 8);
+                BackDistance = LinearMap(input, 1, 30, 5.3f, 20);
             }
 
             directionvector = Vector3.ProjectOnPlane(directionvector, Vector3.up).normalized;
@@ -98,7 +85,7 @@ namespace Assets
                 directionvector = -directionvector;
             }
             if (!SlowTrack)
-            blue = Vector3.Cross(directionvector, Vector3.up).normalized;
+                blue = Vector3.Cross(directionvector, Vector3.up).normalized;
             newposition = distvector + Vector3.up * UpDistance + -blue * BackDistance;
 
             if (shakeDuration > 0)
@@ -114,22 +101,22 @@ namespace Assets
             if (cameraType == CameraType.Main)
             {
                 if (!SlowTrack)
-                //if (Vector3.Distance(transform.position, targetpos) > 3f)
-                  //  {
-                        //transform.position = Vector3.MoveTowards(transform.position, targetpos, 4f * Time.unscaledDeltaTime);
-                   // }
-                //else
-                  //  {
-                  transform.position = Vector3.Lerp(transform.position, targetpos, 0.03f);
-                  //  }
+                    //if (Vector3.Distance(transform.position, targetpos) > 3f)
+                    //  {
+                    //transform.position = Vector3.MoveTowards(transform.position, targetpos, 4f * Time.unscaledDeltaTime);
+                    // }
+                    //else
+                    //  {
+                    transform.position = Vector3.Lerp(transform.position, targetpos, 0.03f);
+                //  }
                 else
                     transform.position = Vector3.MoveTowards(transform.position, targetpos, 0.1f * Time.unscaledDeltaTime);
 
 
             }
             else transform.position = targetpos;
-            if(!SlowTrack)
-            transform.LookAt(distvector + Vector3.up * 0.5f);
+            if (!SlowTrack)
+                transform.LookAt(distvector + Vector3.up * 0.5f);
 
             else
             {
@@ -147,48 +134,37 @@ namespace Assets
             }
 
         }
-        //void OnGUI()
-        //{
-        //    if (camera != null)
-        //    {
-        //        // Convert world points to screen points
-        //        Vector3 leftScreenPoint = camera.WorldToScreenPoint(playerTransform.position);
-        //        Vector3 rightScreenPoint = camera.WorldToScreenPoint(rightObjPoint);
-        //        // Vector3 playertargetPoint = camera.WorldToScreenPoint(playerActor.target.target.transform.position);
-
-        //        // Screen space adjustment (invert y-axis for GUI coordinates)
-        //        leftScreenPoint.y = Screen.height - leftScreenPoint.y;
-        //        rightScreenPoint.y = Screen.height - rightScreenPoint.y;
-        //        //playertargetPoint.y = Screen.height - playertargetPoint.y;
-
-        //        // Draw green dot for leftobjpoint
-        //        GUI.color = Color.green;
-        //        GUI.DrawTexture(new Rect(leftScreenPoint.x - 2f, leftScreenPoint.y - 2f, 2f, 4f), Texture2D.whiteTexture);
-
-        //        // Draw blue dot for rightobpoint
-        //        GUI.color = Color.blue;
-        //        GUI.DrawTexture(new Rect(rightScreenPoint.x - 2f, rightScreenPoint.y - 2f, 2f, 4f), Texture2D.whiteTexture);
-
-        //        // Draw RED dot for PLAYERTARGETPOINT
-        //        GUI.color = Color.red;
-        //        //GUI.DrawTexture(new Rect(playertargetPoint.x - 0.1f, playertargetPoint.y - 0.1f, 0.2f, 0.2f), Texture2D.whiteTexture);
-        //    }
-        //}
-
-        public void LateUpdate()
+        void OnGUI()
         {
-            
+            if (camera != null)
+            {
+                // Convert world points to screen points
+                Vector3 leftScreenPoint = camera.WorldToScreenPoint(playerTransform.position);
+                Vector3 rightScreenPoint = camera.WorldToScreenPoint(rightObjPoint);
+                // Vector3 playertargetPoint = camera.WorldToScreenPoint(playerActor.target.target.transform.position);
+
+                // Screen space adjustment (invert y-axis for GUI coordinates)
+                leftScreenPoint.y = Screen.height - leftScreenPoint.y;
+                rightScreenPoint.y = Screen.height - rightScreenPoint.y;
+                //playertargetPoint.y = Screen.height - playertargetPoint.y;
+
+                // Draw green dot for leftobjpoint
+                GUI.color = Color.green;
+                GUI.DrawTexture(new Rect(leftScreenPoint.x - .2f, leftScreenPoint.y - .2f, .2f, .4f), Texture2D.whiteTexture);
+
+                // Draw blue dot for rightobpoint
+                GUI.color = Color.blue;
+                GUI.DrawTexture(new Rect(rightScreenPoint.x - .2f, rightScreenPoint.y - .2f, .2f, .4f), Texture2D.whiteTexture);
+
+                // Draw RED dot for PLAYERTARGETPOINT
+                GUI.color = Color.red;
+                //GUI.DrawTexture(new Rect(playertargetPoint.x - 0.1f, playertargetPoint.y - 0.1f, 0.2f, 0.2f), Texture2D.whiteTexture);
+            }
         }
 
         float LinearMap(float input, float inputMin, float inputMax, float outputMin, float outputMax)
         {
             return outputMin + (outputMax - outputMin) * ((input - inputMin) / (inputMax - inputMin));
-        }
-
-        public void TriggerShake(float duration, float magnitude)
-        {
-            shakeDuration = duration;
-            shakeMagnitude = magnitude;
         }
 
 

@@ -66,11 +66,36 @@ namespace Assets.Scripts.Battle.Components
                 rigidbody.velocity = newVelocity.normalized * currentMagnitude;
             }
         }
+        public void MoveTowardTarget(Vector3 targetPoint, float acceleration, float maxSpeed)
+        {
+            // Calculate the desired direction and velocity
+            Vector3 directionToTarget = (targetPoint - actor.transform.position);
+
+            // Get the current velocity
+            Vector3 currentVelocity = rigidbody.velocity;
+
+            // Calculate the desired velocity (direction * max speed)
+            Vector3 desiredVelocity = directionToTarget * maxSpeed;
+
+            // Smoothly interpolate the velocity (acceleration defines how quickly it adjusts)
+            Vector3 newVelocity = Vector3.Lerp(currentVelocity, desiredVelocity, acceleration * Time.fixedDeltaTime);
+
+            // Apply the new velocity
+            rigidbody.velocity = newVelocity;
+
+            // Face the direction of movement
+            if (newVelocity.magnitude > 0.01f)
+            {
+                FaceDirection(newVelocity.normalized);
+            }
+        }
+
         public void ChangeSpeed(Vector3 force)
         {
+
             // Apply the force and ensure the velocity is within a maximum value
-            var appliedForce = Mathf.Max(force.magnitude, rigidbody.velocity.magnitude);
-            rigidbody.velocity = force.normalized * appliedForce;
+            //var appliedForce = Mathf.Max(force.magnitude, rigidbody.velocity.magnitude);
+            rigidbody.AddForce(force, ForceMode.VelocityChange);
 
             // Get the direction from the velocity (this will be a normalized vector pointing in the direction of movement)
             Vector3 velocityDirection = rigidbody.velocity.normalized;

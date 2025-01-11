@@ -72,7 +72,6 @@ namespace Assets.Scripts.Battle.Components.AI
         internal void Update()
         {
             if (actor.isControllable()) return;
-            var timeToThink = 1f;
             if (actor.state.CurrentState == actor.state.idleState)
             {
                 if (Reaction()) return;
@@ -92,8 +91,8 @@ namespace Assets.Scripts.Battle.Components.AI
 
             if (actor.state.CurrentState == actor.state.moveState)
             {
-                //actor.state.moveState.action.Direction = actor.target.DirectionToClosestEnemy;
-                //if (actor.target.DistanceToClosestEnemy < 1.1f) actor.state.moveState.action.cancel?.Invoke();
+                actor.state.moveState.action.Direction = actor.target.DirectionToClosestEnemy;
+                if (actor.target.DistanceToClosestEnemy < 1.4f) actor.state.moveState.action.cancel?.Invoke();
             }
             //anticipate
             //while anticipating it can react to your attacks;
@@ -145,9 +144,6 @@ namespace Assets.Scripts.Battle.Components.AI
         }
         private bool Attack()
         {
-            if (timer > timeToThink)
-            {
-
                 var chosenSkill = ChooseValidSkillInRange();
                 if (chosenSkill == null) return false;
                 if (!chosenSkill.IsValid(actor, out _)) return false;
@@ -156,23 +152,21 @@ namespace Assets.Scripts.Battle.Components.AI
                 perpendicular *= UnityEngine.Random.Range(-0.3f, 0.3f);
                 var dirleftvector = new Vector3(perpendicular.x, 0, perpendicular.z);
                 chosenSkill.Direction = new Vector3(directionToEnemy.x, 0, directionToEnemy.z) + dirleftvector;
-                timeToThink = 0.1f;
+                timeToThink = 1f;
                 UseActionThenReturnToIdle(chosenSkill);
                 return true;
-            }
-            return false;
         }
         private bool Approach()
         {
             if (actor.rigidbody.velocity.magnitude > 0.5f) return false;
-            if (actor.target.DistanceToClosestEnemy < 1.5f)
+            if (actor.target.DistanceToClosestEnemy < 1.4f)
                 return false;
             else
             {
                 var moveSkill = actor.ActorData.actions.OfType<MoveAction>().First();
                 if (!moveSkill.IsValid(actor, out _)) return false;
                 moveSkill.Direction = actor.target.DirectionToClosestEnemy;
-                timeToThink = 0.5f;
+                timeToThink = 0.4f;
                 UseActionThenReturnToIdle(moveSkill);
                 return true;
             }

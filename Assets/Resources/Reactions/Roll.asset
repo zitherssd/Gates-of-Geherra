@@ -16,18 +16,20 @@ MonoBehaviour:
   Name: Roll
   Rarity: 0
   Description: 
-  CooldownTimer: 2
+  CooldownTimer: 1
   TotalUses: 0
   remainingUses: 0
   BuildupCost: 0
   BuildupGain: 0
-  StaminaCost: 14
+  StaminaCost: 15
   Speed: 0
   Tags: 0d000000090000000c000000
   Direction: {x: 0.7184283, y: 0, z: 0.69560087}
   currentCooldownTimer: 0
   StickMult: 1
-  SlowdownMeterGain: 0
+  SlowdownMeterGain: 1
+  SlowDownMeterGainOnPress: 0
+  SlowdownMeterGainOnRelease: 0
   Animation: 13
   force: 4
   time: 0.7

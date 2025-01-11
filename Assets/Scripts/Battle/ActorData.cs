@@ -120,8 +120,8 @@ public class ActorData : ScriptableObject
 
     public void Reset()
     {
-        HealAllBars();
         Initialize();
+        HealAllBars();
         Refresh();
     }
 

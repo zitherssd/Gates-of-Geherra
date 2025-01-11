@@ -16,7 +16,12 @@ namespace Assets.Scripts.Battle.Components.Target
             selectionCircle = actor.GetComponentInChildren<SelectionCircle>();
         }
 
-        public Actor ClosestEnemy
+        public Vector3 TargetPosition { get {
+                return target.transform.position;
+            } }
+
+
+    public Actor ClosestEnemy
         {
             get
             {

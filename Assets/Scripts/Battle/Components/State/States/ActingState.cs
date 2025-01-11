@@ -2,6 +2,7 @@
 using Assets.Scripts.Battle.Actions.Skills;
 using Assets.Scripts.Pattern;
 using System;
+using System.Buffers;
 using UnityEngine;
 
 namespace Assets.Scripts.Battle.Components.State.States
@@ -22,10 +23,12 @@ namespace Assets.Scripts.Battle.Components.State.States
         private Action hitHandler;
         private Action endHandler;
         public BaseSkill action;
+        private Actor owner;
 
         public ActingState(Actor owner)
         {
             this.animator = owner.GetAnimator();
+            this.owner = owner;
         }
 
         public ActingState Set(BaseSkill action, Action onEnd)
@@ -42,8 +45,9 @@ namespace Assets.Scripts.Battle.Components.State.States
             this.onEnd += endHandler;
             if(action.Animation.ToString() == "Roll")
             {
-                float crossY = Vector3.Cross(Camera.main.transform.forward, action.Direction).y;
-                if (crossY < 0)
+                float dotProduct = Vector3.Dot(owner.transform.forward, action.Direction);
+                Debug.Log(dotProduct);
+                if (dotProduct < 0)
                     animator.Play("RollBackwards", -1, 0f);
                 else
                     animator.Play("Roll", -1, 0f);

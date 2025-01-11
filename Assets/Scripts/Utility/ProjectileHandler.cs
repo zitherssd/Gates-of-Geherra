@@ -17,7 +17,7 @@ namespace Assets.Scripts.Utility
             rb = gameObject.GetComponent<Rigidbody>();
         }
 
-        private void OnCollisionEnter(Collision other)
+        private void OnTriggerEnter(Collider other)
         {
             Debug.Log("Entered trigger zone with: " + other.gameObject.name);
 

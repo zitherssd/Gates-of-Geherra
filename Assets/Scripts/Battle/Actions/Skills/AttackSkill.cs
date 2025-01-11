@@ -17,6 +17,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
         public float recoveryTimeMult = 1f;
         public STATE state = STATE.uninitialized;
         public float SelfForce;
+        public List<Vector3> HitboxPoints;
         private Actor target;
         private Actor casterActor;
 
@@ -40,6 +41,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
                 casterActor.movement.AddForce(casterActor.target.DirectionToClosestEnemy * SelfForce);
                 casterActor.movement.FaceDirection(casterActor.target.DirectionToClosestEnemy);
             }
+            if (Tags.Contains(TAG.FACECLOSEST)) casterActor.movement.FaceDirection(casterActor.target.DirectionToClosestEnemy);
 
             //var movetween = LeanTween.move(casterActor.gameObject, casterActor.transform.position + Direction * StickMult, tweenduration).setEase(tweenType);
             target = casterActor.target.ClosestEnemy;
@@ -121,26 +123,38 @@ namespace Assets.Scripts.Battle.Actions.Skills
         public override void OnHit()
         {
 
-            RaycastHit hit;
-            var targetDir = target.transform.position - casterActor.transform.position;
-            casterActor.movement.FaceDirection(targetDir);
-            Debug.DrawRay(casterActor.transform.position + Vector3.up * 0.6f, targetDir * Range, Color.green, 1f, false);
-            if (Physics.SphereCast(casterActor.transform.position + Vector3.up * 0.6f, 0.1f, targetDir, out hit, Range))
+            //RaycastHit hit;
+            //var targetDir = target.transform.position - casterActor.transform.position;
+            casterActor.effects.Clear();
+
+
+            var hits = CheckEnemiesInsideHitbox();
+            foreach(var hit in hits)
             {
                 if (Tags.Contains(TAG.TECH))
-                    ApplyDamageEffects(casterActor, target, BaseReaction.NoReaction, cancel);
+                    ApplyDamageEffects(casterActor, hit, BaseReaction.NoReaction, cancel);
                 else
-                    ApplyDamageEffects(casterActor, target, BaseReaction.NoReaction, null);
-                return;
+                    ApplyDamageEffects(casterActor, hit, BaseReaction.NoReaction, null);
             }
-            else
-            {
-                Debug.Log($"{casterActor.ActorData.name} missed performing {this.Name}!");
-            }
+            //Debug.DrawRay(casterActor.transform.position + Vector3.up * 0.6f, targetDir * Range, Color.green, 1f, false);
+            //if (Physics.SphereCast(casterActor.transform.position + Vector3.up * 0.6f, 0.1f, targetDir, out hit, Range))
+            //{
+            //    if (Tags.Contains(TAG.TECH))
+            //        ApplyDamageEffects(casterActor, target, BaseReaction.NoReaction, cancel);
+            //    else
+            //        ApplyDamageEffects(casterActor, target, BaseReaction.NoReaction, null);
+            //    return;
+            //}
+            //else
+            //{
+            //    Debug.Log($"{casterActor.ActorData.name} missed performing {this.Name}!");
+            //}
         }
 
         public override void OnEnterWindup(Animator animator)
         {
+            //here it should set the target for the drawer so it can draw it 
+            casterActor.effects.SetHitbox(HitboxPoints);
             CalculateDuration(animator);
             animator.speed = windupTimeMult;
             state = STATE.windup;
@@ -158,5 +172,115 @@ namespace Assets.Scripts.Battle.Actions.Skills
         }
 
         public enum STATE { uninitialized, windup, recovery };
+
+        private List<Actor> CheckEnemiesInsideHitbox()
+        {
+            // Transform hitbox points to world space based on caster's position and orientation
+            List<Vector3> transformedPoints = new List<Vector3>();
+            var validActors = new List<Actor>();
+
+            foreach (var point in HitboxPoints)
+            {
+                // Rotate and position each point relative to the caster
+                Vector3 worldPoint = casterActor.transform.position + casterActor.transform.TransformDirection(point);
+                transformedPoints.Add(worldPoint);
+            }
+
+            List<Actor> enemyActors = casterActor.isControllable()
+                ? BattleManager.instance.EnemyActors
+                : BattleManager.instance.PlayerActors;
+
+
+            foreach (var enemy in enemyActors)
+            {
+                Vector3 enemyPosition = enemy.transform.position;
+                
+
+                // Check if the center of the capsule is inside
+                if (IsPointInsidePolygon(enemyPosition, transformedPoints))
+                {
+                    validActors.Add(enemy);
+                    continue;
+                }
+                float capsuleRadius = enemy.GetComponent<CapsuleCollider>().radius;
+
+                // Check if the capsule collider intersects the polygon
+                foreach (var edgeStart in transformedPoints)
+                {
+                    int nextIndex = (transformedPoints.IndexOf(edgeStart) + 1) % transformedPoints.Count;
+                    Vector3 edgeEnd = transformedPoints[nextIndex];
+
+                    if (IsCircleIntersectingLine(enemyPosition, capsuleRadius, edgeStart, edgeEnd))
+                    {
+                        validActors.Add(enemy);
+                        break;
+                    }
+                }
+            }
+
+            return validActors;
+        }
+
+        public static bool IsPointInsidePolygon(Vector3 point, List<Vector3> polygon)
+        {
+            if (polygon == null || polygon.Count < 3)
+            {
+                Debug.LogWarning("Polygon must have at least 3 points.");
+                return false;
+            }
+
+            int intersections = 0;
+
+            for (int i = 0; i < polygon.Count; i++)
+            {
+                Vector3 vertex1 = polygon[i];
+                Vector3 vertex2 = polygon[(i + 1) % polygon.Count]; // Wrap around to the first vertex
+
+                // Check if the ray from the point to +X axis intersects the polygon edge
+                if (IsIntersecting(point, vertex1, vertex2))
+                {
+                    intersections++;
+                }
+            }
+
+            // If the number of intersections is odd, the point is inside the polygon
+            return (intersections % 2) == 1;
+        }
+
+        private static bool IsIntersecting(Vector3 point, Vector3 vertex1, Vector3 vertex2)
+        {
+            // Ensure we work in 2D (XZ-plane)
+            point.y = 0;
+            vertex1.y = 0;
+            vertex2.y = 0;
+
+            // Check if the edge straddles the horizontal ray from the point
+            if ((vertex1.z > point.z && vertex2.z <= point.z) || (vertex2.z > point.z && vertex1.z <= point.z))
+            {
+                // Compute the intersection point's X-coordinate
+                float t = (point.z - vertex1.z) / (vertex2.z - vertex1.z);
+                float intersectionX = vertex1.x + t * (vertex2.x - vertex1.x);
+
+                // Check if the intersection is to the right of the point
+                return intersectionX > point.x;
+            }
+
+            return false;
+        }
+        private bool IsCircleIntersectingLine(Vector3 circleCenter, float radius, Vector3 lineStart, Vector3 lineEnd)
+        {
+            // Project the circle center onto the line segment and find the closest point
+            Vector3 lineDir = lineEnd - lineStart;
+            float lineLength = lineDir.magnitude;
+            lineDir.Normalize();
+
+            Vector3 pointToCircle = circleCenter - lineStart;
+            float t = Mathf.Clamp(Vector3.Dot(pointToCircle, lineDir), 0, lineLength);
+            Vector3 closestPoint = lineStart + t * lineDir;
+
+            // Check the distance from the closest point to the circle's center
+            float distanceSquared = (closestPoint - circleCenter).sqrMagnitude;
+            return distanceSquared <= radius * radius;
+        }
     }
 }

@@ -8,6 +8,7 @@ using Assets.Scripts.Battle.Components.Status;
 using Assets.Scripts.Battle.Components.Target;
 using Assets.Scripts.Utility;
 using System;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace Assets.Scripts.Battle
@@ -54,6 +55,7 @@ namespace Assets.Scripts.Battle
         public bool CanRegenPosture = true;
         public float postureRegenCooldownDuration = 1f;
         private float postureRegenCooldownTimer;
+        public float staminaRegenRateModifier = 1.0f;
 
         public new Rigidbody rigidbody { get; set; }
 
@@ -86,8 +88,8 @@ namespace Assets.Scripts.Battle
 
         public void Update()
         {
-            if(state.CurrentState == state.idleState)
-            ActorData.DealStaminaDamage(-ActorData.staminaRegenRate * 2 * Time.deltaTime);
+            if(state.CurrentState == state.idleState || state.CurrentState == state.blockState)
+            ActorData.DealStaminaDamage(-ActorData.staminaRegenRate * 5 * staminaRegenRateModifier * Time.deltaTime);
 
             if (!state.IsStaggered() && CanRegenPosture)
             {
@@ -114,6 +116,7 @@ namespace Assets.Scripts.Battle
             }
             state.Update();
             ai.Update();
+            effects.UpdatePolygon();
             if (isControllable()) target.Update();
         }
 
@@ -157,6 +160,7 @@ namespace Assets.Scripts.Battle
         }
         public void ApplyDamage(float originalDamage)
         {
+            ActorData.ChangeBuildup(Mathf.Max(UnityEngine.Random.Range(2,3), originalDamage));
             float postMitgationDamage = originalDamage;
             if (DamageRecieved != null)
             {
@@ -165,7 +169,7 @@ namespace Assets.Scripts.Battle
 
             OnDamageApplied?.Invoke(postMitgationDamage);
             ActorData.DealDamage(postMitgationDamage);
-
+            if (isControllable()) UIManager.instance.GainMeter(0.5f);
         }
         public void ApplyKnockback(Vector3 direction, float force)
         {

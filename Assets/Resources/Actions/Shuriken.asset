@@ -12,24 +12,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a010cb88c4c03d41b2ccab661c8c4b2, type: 3}
   m_Name: Shuriken
   m_EditorClassIdentifier: 
+  Type: 0
   Name: Shuriken Throw
   Rarity: 0
   Description: 
-  cooldownTurns: 0
-  TotalUses: 2
+  CooldownTimer: 1
+  TotalUses: 0
+  remainingUses: 0
   BuildupCost: 0
   BuildupGain: 2
-  StaminaCost: 0
+  StaminaCost: 2
   Speed: 1
   Tags: 00000000
   Direction: {x: 0, y: 0, z: 0}
-  currentCooldownTurns: 0
-  remainingUses: 0
+  currentCooldownTimer: 0
   StickMult: 1
-  Animation: 0
+  SlowdownMeterGain: 0
+  Animation: 8
   projectilePrefab: {fileID: 23187127587949415, guid: 75f9b1b7a4c19464e9698e187dc29259, type: 3}
   Range: 0
   Damage: 3
   PostureDamage: 1.5
   KnockbackForce: 0.6
-  SelfForce: -0.4
+  SelfForce: -1

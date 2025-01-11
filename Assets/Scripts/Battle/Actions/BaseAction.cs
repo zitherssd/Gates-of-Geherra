@@ -25,6 +25,8 @@ namespace Assets
         public float currentCooldownTimer = 0;
         public float StickMult = 1;
         public float SlowdownMeterGain;
+        public float SlowDownMeterGainOnPress;
+        public float SlowdownMeterGainOnRelease;
         public Action cancel;
 
         public enum BUTTONTYPE { INSTANT, VECTOR, CONTINNUOUS, CONTINUOUS_VECTOR };
@@ -158,7 +160,7 @@ namespace Assets
             PROJECTILE, KNOCKBACK_AIR, KNOCKBACK_FRONT, KNOCKBACK_BACK, NO_REACTION, FREE, STARTER, FINISHER, COUNTER, USESTICK, RECHARGE_TOTAL_USES,
             APPLYROOTMOTION,
             KILLMOMENTUM, KILL_TRACKING, PLAY_WHILE_SELECTING,
-            TECH
+            TECH, FACECLOSEST
         }
     }
 

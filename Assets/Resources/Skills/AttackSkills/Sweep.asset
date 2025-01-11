@@ -18,14 +18,14 @@ MonoBehaviour:
   Description: 
   CooldownTimer: 4
   TotalUses: 2
+  remainingUses: 1
   BuildupCost: 0
   BuildupGain: 7
   StaminaCost: 10
   Speed: 0
-  Tags: 010000000900000003000000
+  Tags: 01000000090000000300000010000000
   Direction: {x: 0, y: 0, z: 0}
   currentCooldownTimer: 0
-  remainingUses: 1
   StickMult: 1.2
   SlowdownMeterGain: 0.1
   Animation: 2
@@ -37,3 +37,11 @@ MonoBehaviour:
   recoveryTimeMult: 0.3
   state: 0
   SelfForce: 3
+  HitboxPoints:
+  - {x: 0, y: 0, z: 0}
+  - {x: -1.3334, y: 0, z: 1.4908}
+  - {x: -0.6666, y: 0, z: 1.8856}
+  - {x: 0, y: 0, z: 2}
+  - {x: 0.6666, y: 0, z: 1.8856}
+  - {x: 1.3334, y: 0, z: 1.4908}
+  - {x: 2, y: 0, z: 1.4908}

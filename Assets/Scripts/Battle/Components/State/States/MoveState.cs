@@ -1,5 +1,7 @@
-﻿using Assets.Scripts.Pattern;
+﻿using Assets.Scripts.Battle.Actions.Skills;
+using Assets.Scripts.Pattern;
 using System;
+using UnityEditor;
 using UnityEngine;
 
 namespace Assets.Scripts.Battle.Components.State
@@ -50,14 +52,20 @@ namespace Assets.Scripts.Battle.Components.State
             lastSqrMag = Mathf.Infinity;
             actor.movement.ResetMomentum();
             actor.movement.SetFriction(0);
-            actor.movement.AddForce((destination - actor.transform.position).normalized * (1 + actor.ActorData.AGI/10));
-            actor.movement.FaceDirection(destination - actor.transform.position);
+            if (!continousAction)
+            {
+                actor.movement.AddForce((destination - actor.transform.position).normalized * (1 + actor.ActorData.AGI / 10));
+                actor.movement.FaceDirection(destination - actor.transform.position);
+            }
         }
 
         public void Exit()
         {
             onMoveComplete = null;
             actor.movement.SetFriction();
+            actor.GetAnimator().speed = 1;
+            
+
         }
 
         public void OnCollisionEnter(Collision collision)
@@ -71,14 +79,20 @@ namespace Assets.Scripts.Battle.Components.State
             if (continousAction)
             {
                 timer += Time.deltaTime;
-                if (timer < 2f)
+                if (timer < 1f)
                 {
                     var animator = actor.GetAnimator();
-                    animator.speed = timer / 2;
-                    actor.movement.ChangeSpeed((action.Direction * 36) * (1 + actor.ActorData.AGI/10) * Time.deltaTime * timer / 2);
+                    animator.speed = timer * 2 / 3 * (1 + (float)actor.ActorData.AGI/10);
+                    //actor.movement.ChangeSpeed((action.Direction.normalized) * (1 + actor.ActorData.AGI/10) * timer);
+                    actor.movement.MoveTowardTarget(action.Direction + actor.transform.position, 2f * timer, 1 + (float)actor.ActorData.AGI / 10);
                 }
                 else
-                    actor.movement.ChangeSpeed((action.Direction * 36) * (1 + actor.ActorData.AGI / 10) * Time.deltaTime);
+                    //actor.movement.ChangeSpeed((action.Direction) * (1 + actor.ActorData.AGI/10));
+                    actor.movement.MoveTowardTarget(action.Direction + actor.transform.position, 2f, 1 + (float)actor.ActorData.AGI / 10);
+                //Show guide and store Direction in skill;
+                //guide.transform.position = player.transform.position + GetRelativeToCamera(deltaScaled * referencedAction.StickMult);
+                //referencedAction.Direction = GetRelativeToCamera(deltaScaled);
+
 
                 if (timer >= duration)
                 {

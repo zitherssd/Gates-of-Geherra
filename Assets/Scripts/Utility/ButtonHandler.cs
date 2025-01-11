@@ -243,6 +243,7 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
             case BUTTONTYPE.VECTOR:
                 UIManager.instance.HideAllButThis(referencedAction);
                 MoveToCenter();
+                UIManager.instance.GainMeter(referencedAction.SlowDownMeterGainOnPress);
                 isPressed = true;
                 pointerDownPosition = Input.touchCount > 0 ? Input.GetTouch(0).position : (Vector2)Input.mousePosition;
                 break;
@@ -282,6 +283,7 @@ public class ButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
                 break;
             case BUTTONTYPE.CONTINUOUS_VECTOR:
                 referencedAction.cancel?.Invoke();
+                UIManager.instance.GainMeter(referencedAction.SlowdownMeterGainOnRelease);
                 MoveToHome();
                 break;
             default:

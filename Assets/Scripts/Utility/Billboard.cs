@@ -17,6 +17,7 @@ public class Billboard : MonoBehaviour
     public void Start()
     {
         camera = Camera.main;
+        if (billboardType == BillboardType.Shuriken) return;
         graphicObj = transform.GetChild(0).gameObject;
         if(gameObject.name == "Billboard")
         actor = gameObject.GetComponentInParent<Actor>();

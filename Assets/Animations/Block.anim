@@ -20,6 +20,8 @@ AnimationClip:
   m_PPtrCurves:
   - curve:
     - time: 0
+      value: {fileID: -291630287, guid: dbed9846e9655f9489c37ed23450fffa, type: 3}
+    - time: 0.15
       value: {fileID: 323385835, guid: dbed9846e9655f9489c37ed23450fffa, type: 3}
     attribute: m_Sprite
     path: Billboard/Graphic
@@ -40,6 +42,7 @@ AnimationClip:
       customType: 23
       isPPtrCurve: 1
     pptrCurveMapping:
+    - {fileID: -291630287, guid: dbed9846e9655f9489c37ed23450fffa, type: 3}
     - {fileID: 323385835, guid: dbed9846e9655f9489c37ed23450fffa, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2

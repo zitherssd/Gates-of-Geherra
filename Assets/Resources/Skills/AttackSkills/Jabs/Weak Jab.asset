@@ -16,18 +16,20 @@ MonoBehaviour:
   Name: Sloow Jab
   Rarity: 0
   Description: 
-  CooldownTimer: 10
-  TotalUses: 5
-  remainingUses: 4
+  CooldownTimer: 8
+  TotalUses: 3
+  remainingUses: 0
   BuildupCost: 0
-  BuildupGain: 2
-  StaminaCost: 6
+  BuildupGain: 4
+  StaminaCost: 5
   Speed: 0
   Tags: 090000000a000000
   Direction: {x: 0, y: 0, z: 0}
   currentCooldownTimer: 0.16487388
   StickMult: 0.5
   SlowdownMeterGain: 0.01
+  SlowDownMeterGainOnPress: 0
+  SlowdownMeterGainOnRelease: 0
   Animation: 1
   Range: 0.8
   Damage: 2
@@ -37,3 +39,8 @@ MonoBehaviour:
   recoveryTimeMult: 0.5
   state: 2
   SelfForce: 1
+  HitboxPoints:
+  - {x: -0.18, y: 0, z: 0}
+  - {x: -0.18, y: 0, z: 0.6}
+  - {x: 0.18, y: 0, z: 0.6}
+  - {x: 0.18, y: 0, z: 0}

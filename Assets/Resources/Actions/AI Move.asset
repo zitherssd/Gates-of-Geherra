@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a53caa89e83e055489c03028a676b01e, type: 3}
   m_Name: AI Move
   m_EditorClassIdentifier: 
-  Type: 0
+  Type: 3
   Name: Move
   Rarity: 0
   Description: 
@@ -23,9 +23,9 @@ MonoBehaviour:
   BuildupGain: 0
   StaminaCost: 0
   Speed: 0
-  Tags: 
+  Tags: 09000000
   Direction: {x: -0.56206256, y: -0, z: 0.13260877}
   currentCooldownTimer: 0
   StickMult: 1
   SlowdownMeterGain: 0
-  duration: 15
+  duration: 99

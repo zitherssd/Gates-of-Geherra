@@ -3,6 +3,7 @@ using Assets.Scripts.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 
@@ -20,18 +21,22 @@ namespace Assets.Scripts.Battle.Actions.Skills
         public float PostureDamage;
         public float KnockbackForce;
         public float SelfForce;
+        private Actor caster;
 
         
         protected override void PerformSpecific(Actor casterActor, Action onPerformEnd)
         {
-            var targetActor = casterActor.target.ClosestEnemy;
+            caster = casterActor;
 
-            var casterToTarget = (targetActor.transform.position - casterActor.transform.position).normalized;
+            casterActor.state.TransitionTo(casterActor.state.actingState.Set(this, onPerformEnd));
+            casterActor.movement.FaceTarget(caster.target.target);
+        }
+        public override void OnHit()
+        {
+            caster.movement.AddForce(caster.target.DirectionToClosestEnemy * SelfForce);
+            GameObject projectile = Instantiate(projectilePrefab, caster.transform.position + caster.transform.forward * 1f + Vector3.up * 0.5f, caster.transform.rotation, caster.transform);
+            projectile.GetComponent<Rigidbody>().AddForce(caster.transform.forward * 3, ForceMode.Impulse);
 
-
-            casterActor.GetComponent<Rigidbody>().AddForce(casterToTarget * 100 * SelfForce);
-
-           
         }
 
         public override bool IsValidAndInRange(Actor caster)
