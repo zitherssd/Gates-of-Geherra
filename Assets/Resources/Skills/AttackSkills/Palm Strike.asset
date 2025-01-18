@@ -19,8 +19,8 @@ MonoBehaviour:
   CooldownTimer: 10
   TotalUses: 0
   remainingUses: 0
-  BuildupCost: 16
-  BuildupGain: 4
+  BuildupCost: 12
+  BuildupGain: 0
   StaminaCost: 13
   Speed: 0
   Tags: 090000000f000000
@@ -28,7 +28,8 @@ MonoBehaviour:
   currentCooldownTimer: 0
   StickMult: 2
   SlowdownMeterGain: 0
-  SlowdownMeterGainVector: 2
+  SlowDownMeterGainOnPress: 0
+  SlowdownMeterGainOnRelease: 0
   Animation: 5
   Range: 1
   Damage: 3
@@ -37,9 +38,11 @@ MonoBehaviour:
   windupTimeMult: 0.65
   recoveryTimeMult: 0.55
   state: 1
-  SelfForce: 2.5
+  SelfForce: 3.2
   HitboxPoints:
   - {x: -0.2, y: 0, z: 0}
   - {x: 0.2, y: 0, z: 0}
   - {x: 0.4, y: 0, z: 1}
   - {x: -0.4, y: 0, z: 1}
+  windupPostureDamageMult: 1
+  recoveryPostureDamageMult: 1

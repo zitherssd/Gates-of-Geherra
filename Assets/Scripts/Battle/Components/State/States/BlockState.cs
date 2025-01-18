@@ -45,6 +45,7 @@ namespace Assets.Scripts.Battle.Components.State.States
             owner.PlayAnimation("Block");
             owner.DamageRecieved += ModifyDamage;
             owner.KnockbackRecieved += ModifyKnockback;
+            owner.PostureRecieved += ModifyPosture;
             owner.OnDamageApplied += GainSlowdownMeter;
             owner.staminaRegenRateModifier = 0.5f;
         }
@@ -53,6 +54,8 @@ namespace Assets.Scripts.Battle.Components.State.States
         {
             owner.DamageRecieved -= ModifyDamage;
             owner.KnockbackRecieved -= ModifyKnockback;
+            owner.PostureRecieved -= ModifyPosture;
+
             owner.PlayAnimation("Idle");
             owner.OnDamageApplied -= GainSlowdownMeter;
             owner.staminaRegenRateModifier = 1f;
@@ -60,12 +63,19 @@ namespace Assets.Scripts.Battle.Components.State.States
 
         private void GainSlowdownMeter(float damage)
         {
+            if(owner.isControllable())
             UIManager.instance.GainMeter(skill.SlowdownMeterGain);
         }
 
         public float ModifyDamage(float damage)
         {
             float modifiedDamage = damage * DamageModifier;
+            return modifiedDamage;
+        }
+
+        public float ModifyPosture(float damage)
+        {
+            float modifiedDamage = damage * PostureModifier;
             return modifiedDamage;
         }
 

@@ -18,15 +18,17 @@ MonoBehaviour:
   Description: 
   CooldownTimer: 10
   TotalUses: 0
+  remainingUses: 0
   BuildupCost: 0
-  BuildupGain: 0
+  BuildupGain: 50
   StaminaCost: 0
   Speed: 0
   Tags: 09000000
   Direction: {x: 0, y: 0, z: 0}
   currentCooldownTimer: 0
-  remainingUses: 0
   StickMult: 10
   SlowdownMeterGain: 0
+  SlowDownMeterGainOnPress: 0
+  SlowdownMeterGainOnRelease: 0
   Animation: 6
   Distance: 10

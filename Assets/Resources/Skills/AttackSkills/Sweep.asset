@@ -28,11 +28,13 @@ MonoBehaviour:
   currentCooldownTimer: 0
   StickMult: 1.2
   SlowdownMeterGain: 0.1
+  SlowDownMeterGainOnPress: 0
+  SlowdownMeterGainOnRelease: 0
   Animation: 2
   Range: 1.5
-  Damage: 3
-  PostureDamage: 5
-  KnockbackForce: 1.2
+  Damage: 0
+  PostureDamage: 0
+  KnockbackForce: 0
   windupTimeMult: 0.5
   recoveryTimeMult: 0.3
   state: 0
@@ -45,3 +47,5 @@ MonoBehaviour:
   - {x: 0.6666, y: 0, z: 1.8856}
   - {x: 1.3334, y: 0, z: 1.4908}
   - {x: 2, y: 0, z: 1.4908}
+  windupPostureDamageMult: 4
+  recoveryPostureDamageMult: 4

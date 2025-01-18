@@ -6,6 +6,7 @@ using UnityEngine;
 using System.Linq;
 using Assets.Scripts.Battle;
 using Assets.Scripts.Utility;
+using Assets.Scripts.Battle.Components.AI;
 
 [CreateAssetMenu(fileName = "Actor", menuName = "ScriptableObjects/Actor", order = 1)]
 public class ActorData : ScriptableObject
@@ -17,6 +18,8 @@ public class ActorData : ScriptableObject
     public float maxStamina;
 
     public bool Controllable;
+    public AiRuleset ruleset;
+
     [HideInInspector] public Color mainColor;
     [HideInInspector] public Color secondaryColor;
 

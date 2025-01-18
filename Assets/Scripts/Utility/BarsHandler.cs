@@ -53,7 +53,7 @@ public class BarsHandler : MonoBehaviour
         if (statesText != null)
         {
             var name = state.GetType().Name;
-            statesText.text = name;
+            statesText.text = "Lv.1 " + $"{actorData.name}";
         }
     }
 

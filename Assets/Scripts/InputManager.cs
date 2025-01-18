@@ -39,36 +39,7 @@ namespace Assets
         }
 
 
-        private void MoveActor(Vector2 delta)
-        {
-            InputHandler.instance.OnSwipe -= MoveActor;
-            InputHandler.instance.OnHold -= EndTurn;
-            ButtonHandler.KillAll();
-
-            //battleManager.GetActiveActor().MoveRelativeToCamera(delta.normalized, () =>
-            //{
-            //    //InputHandler.instance.OnHold += EndTurn;
-
-            //    if  (battleManager.GetActiveActor().GetValidStartComboSkills().Count == 0) { EndTurn(Vector2.zero); return; }; //Automatically end turn if no valid skills
-
-            //    var skillsToDraw = battleManager.GetActiveActor().GetValidStartComboSkills();
-            //    UIManager.GetInstance().DrawActionsAndWaitForSelectionOrNull(skillsToDraw, selectedSkill =>    //one shot option for the skill
-            //    {
-            //        InputHandler.instance.OnHold -= EndTurn;
-
-            //        if (selectedSkill == null)
-            //            onTurnEnd();
-            //        else
-            //            battleManager.GetActiveActor().UseAction(selectedSkill, onTurnEnd);
-            //    });
-            //});
-        }
-        private void EndTurn(Vector2 delta)
-        {
-            InputHandler.instance.OnHold -= EndTurn;
-            ButtonHandler.KillAll();
-            onTurnEnd.Invoke();
-        }
+     
 
 
 

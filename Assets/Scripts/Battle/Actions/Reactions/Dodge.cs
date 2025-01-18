@@ -20,7 +20,7 @@ namespace Assets.Scripts.Battle.Actions.Reactions
             actor.movement.AddForce(force * Direction * StickMult);
             actor.state.TransitionTo(actor.state.actingState.Set(this, () => { 
                 actor.movement.SetFriction();
-                actor.movement.FaceTarget(actor.target.target);
+                actor.movement.FaceTarget(actor.target.ClosestEnemy);
                 onActionComplete?.Invoke(); 
                 UIManager.instance.GainMeter(SlowdownMeterGain);  
             }));

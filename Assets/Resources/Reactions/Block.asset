@@ -16,7 +16,7 @@ MonoBehaviour:
   Name: Block
   Rarity: 0
   Description: 
-  CooldownTimer: 10
+  CooldownTimer: 0.1
   TotalUses: 0
   remainingUses: 0
   BuildupCost: 0
@@ -28,10 +28,11 @@ MonoBehaviour:
   currentCooldownTimer: 0
   StickMult: 1
   SlowdownMeterGain: 2
-  SlowdownMeterGainVector: 0
+  SlowDownMeterGainOnPress: 0
+  SlowdownMeterGainOnRelease: 0
   Animation: 0
   DamageModifier: 0.5
   PostureModifier: 0.5
   KnockbackModifier: 1
-  duration: 10
+  duration: 5
   startupDelay: 0

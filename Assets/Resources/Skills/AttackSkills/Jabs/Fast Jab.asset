@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Fast Jab
   m_EditorClassIdentifier: 
   Type: 0
-  Name: Weak Jab
+  Name: Manic Jab
   Rarity: 0
   Description: 
   CooldownTimer: 0
@@ -21,24 +21,26 @@ MonoBehaviour:
   remainingUses: 0
   BuildupCost: 0
   BuildupGain: 1
-  StaminaCost: 8
+  StaminaCost: 10
   Speed: 1
-  Tags: 09000000
+  Tags: 090000000f000000
   Direction: {x: 0, y: 0, z: 0}
   currentCooldownTimer: 0
   StickMult: 0.5
   SlowdownMeterGain: 0
+  SlowDownMeterGainOnPress: 0
+  SlowdownMeterGainOnRelease: 0
   Animation: 1
   Range: 0.8
   Damage: 2.5
-  PostureDamage: 2.5
+  PostureDamage: 3
   KnockbackForce: 0.8
   windupTimeMult: 1
-  recoveryTimeMult: 1.15
+  recoveryTimeMult: 0.15
   state: 0
   SelfForce: 1.1
   HitboxPoints:
-  - {x: -0.18, y: 0, z: 0}
-  - {x: 0.18, y: 0, z: 0}
+  - {x: -0.18, y: 0, z: 0.1}
+  - {x: 0.18, y: 0, z: 0.1}
   - {x: 0.18, y: 0, z: 0.6}
   - {x: -0.18, y: 0, z: 0.6}

@@ -74,8 +74,8 @@ namespace Assets
             if (!Override)
             {
                 var input = Mathf.Clamp((directionvector * 2).magnitude, 1, 30);
-                UpDistance = LinearMap(input, 1, 30, 2.6f, 8);
-                BackDistance = LinearMap(input, 1, 30, 5.3f, 20);
+                UpDistance = LinearMap(input, 1, 30, 1.7f, 8);
+                BackDistance = LinearMap(input, 1, 30, 3.3f, 20);
             }
 
             directionvector = Vector3.ProjectOnPlane(directionvector, Vector3.up).normalized;

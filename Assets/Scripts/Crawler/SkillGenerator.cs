@@ -46,21 +46,21 @@ public class SkillGenerator : MonoBehaviour
         var UICard1 = Instantiate(CardPrefab, Vector2.zero, Quaternion.identity);
         UICard1.transform.SetParent(GameObject.FindGameObjectWithTag("MainCanvas").transform);
         UICard1.GetComponent<RectTransform>().localPosition = Vector3.zero;
-        var handler = UICard1.GetComponent<ButtonHandler>();
+        var handler = UICard1.GetComponent<ActionButtonHandler>();
         handler.referencedAction = skill1;
         handler.InitCard();
 
         var UICard2 = Instantiate(CardPrefab, Vector2.zero, Quaternion.identity);
         UICard2.transform.SetParent(GameObject.FindGameObjectWithTag("MainCanvas").transform);
         UICard2.GetComponent<RectTransform>().localPosition = Vector3.right * 250;
-        handler = UICard2.GetComponent<ButtonHandler>();
+        handler = UICard2.GetComponent<ActionButtonHandler>();
         handler.referencedAction = skill2;
         handler.InitCard();
 
         var UICard3 = Instantiate(CardPrefab, Vector2.zero, Quaternion.identity);
         UICard3.transform.SetParent(GameObject.FindGameObjectWithTag("MainCanvas").transform);
         UICard3.GetComponent<RectTransform>().localPosition = Vector3.right * -250;
-        handler = UICard3.GetComponent<ButtonHandler>();
+        handler = UICard3.GetComponent<ActionButtonHandler>();
         handler.referencedAction = skill3;
         handler.InitCard();
 

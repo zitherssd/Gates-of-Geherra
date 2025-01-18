@@ -40,16 +40,13 @@ public class FloorManager : MonoBehaviour
             bm.EnemyActors[0].transform.position = Vector3.right * 10;
             bm.EnemyActors[0].PlayAnimation("Idle");
 
-            SkillGenerator.GetInstance().GenerateOptionsForCurrentFloorAndWaitForSelection(() =>
+            StartCoroutine(uiManager.TypeTextMiddleLetterByLetter(line, () =>
             {
-                StartCoroutine(uiManager.TypeTextMiddleLetterByLetter(line, () =>
-                {
-                    StartCoroutine(uiManager.FadeMiddleText(1));
-                    bm.SetupBattleWithEnemies(GetActorsForFloor());
+                StartCoroutine(uiManager.FadeMiddleText(1));
+                bm.SetupBattleWithEnemies(GetActorsForFloor());
 
 
-                }));
-            });
+            }));
         });
     }
 

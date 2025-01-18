@@ -16,26 +16,22 @@ MonoBehaviour:
   maxHp: 10
   maxBuildup: 50
   maxPosture: 25
-  maxStamina: 100
+  maxStamina: 50
   Controllable: 1
+  ruleset: 0
   mainColor: {r: 1, g: 1, b: 1, a: 0}
   secondaryColor: {r: 0, g: 0, b: 0, a: 1}
   baseActions:
-  - {fileID: 11400000, guid: f931b69ae9e3a26468a97a337c927f76, type: 2}
   - {fileID: 11400000, guid: 498ba4be69212c045ad9de12e867357c, type: 2}
   - {fileID: 11400000, guid: 923e559ba7ce6f94abcdc40b245da779, type: 2}
   - {fileID: 11400000, guid: 3aa89802a1ec30d48b32f497ba10ce82, type: 2}
   - {fileID: 11400000, guid: 3a2fead6c4e4bd14e975cc8e422006e4, type: 2}
   - {fileID: 11400000, guid: 6b798446413f4794088292db8b471646, type: 2}
-  - {fileID: 11400000, guid: 21251148802143a45bdab2343aff4141, type: 2}
-  - {fileID: 11400000, guid: 9d9c158b6237a0a448650b815b5c2ea7, type: 2}
-  - {fileID: 11400000, guid: bf008b48a128f684688ff3f50b917ee8, type: 2}
-  - {fileID: 11400000, guid: e1dd5f1ba77a8a147ada505d02ffc4f1, type: 2}
   - {fileID: 11400000, guid: 84039c0611ba36841b126f1d365eb783, type: 2}
-  - {fileID: 11400000, guid: 1d52d04a55eb6724ba493dfbfba3ada3, type: 2}
-  - {fileID: 11400000, guid: 7564a557fb69c3d4c938dcb0686b3e85, type: 2}
+  - {fileID: 11400000, guid: f931b69ae9e3a26468a97a337c927f76, type: 2}
   - {fileID: 11400000, guid: d4852d63a398314488e810be1c412698, type: 2}
-  - {fileID: 11400000, guid: 8e14bb00a8650ff4b8875e63d4333f42, type: 2}
+  - {fileID: 11400000, guid: 25c16194e242f234a95100260c6fe954, type: 2}
+  - {fileID: 11400000, guid: 531d3672a77fe614eae5b3d8ea0ea885, type: 2}
   baseReactions: []
   basePassives: []
   baseHpBars:
@@ -52,18 +48,13 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   reactions: []
   hpBars:
   - {fileID: 0}
   - {fileID: 0}
-  currentBuildup: 20.5
-  currentPosture: 25
-  currentStamina: 78.64832
+  currentBuildup: 28
+  currentPosture: 20.837614
+  currentStamina: 13.407128
   postureRegenRate: 1
   staminaRegenRate: 1
   ATK: 1

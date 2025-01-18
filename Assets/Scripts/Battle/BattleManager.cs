@@ -21,11 +21,8 @@ namespace Assets
         public STATE state = STATE.READY;
 
         private Queue<Actor> turnQueue = new Queue<Actor>();
-        private Actor activeBattler;
         private bool repeatTurn;
         private uint currentTurn;
-        private bool isHitstopActive = false;
-        private float originalTimeScale = 1.0f;
         private void Awake()
         {
             if (instance == null) instance = this;
@@ -38,6 +35,7 @@ namespace Assets
         }
         void Start()
         {
+            Application.targetFrameRate = 60;
             Physics.gravity = new Vector3(0, -6f, 0);
             StartCoroutine(UIManager.instance.TypeTextMiddleLetterByLetter($"{PlayerActors[0].ActorData.Name} vs {EnemyActors[0].ActorData.Name}", () =>
             {
@@ -59,10 +57,10 @@ namespace Assets
             foreach (var actor in PlayerActors.Concat(EnemyActors))
             {
                 //actor.ActorData.Reset();
-                actor.state.TransitionTo(actor.state.idleState);
+                actor.state.TransitionToIdle();
             }
             UIManager.instance.DrawActions(PlayerActors[0].ActorData.actions);
-            //UIManager.instance.GainMeter(2f);
+            UIManager.instance.GainMeter(4f);
             Debug.Log("Gained meter!");
             //SwitchToNextTurn();
         }
@@ -101,11 +99,6 @@ namespace Assets
             //            StartEnemyTurn();
             //    }));
             //}));
-        }
-
-        public Actor GetActiveActor()
-        {
-            return activeBattler;
         }
 
         IEnumerator WaitForSeconds(float seconds, Action onFinishedWaiting)

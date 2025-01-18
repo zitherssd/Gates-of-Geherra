@@ -27,3 +27,11 @@ slowdown overlay effect
 - enemy that shoots
 
 
+
+
+-posture becomes poise
+-actions can have different poise multipliers on windup or on recovery
+-a grounded straight jab or just idling has no multiplier is or x1
+-a high kick will be more vulnerable to poise damage during windup than other moves
+-if damage is taken such that it would reduce the poise below 1/2 of its maximum, then enter stagger state from 1.1 seconds up to 3 seconds based on how much poise is remaining.
+-on a full bar drain enter airstaggerstate

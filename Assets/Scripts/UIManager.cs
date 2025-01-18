@@ -80,7 +80,7 @@ public class UIManager : MonoBehaviour
             {
                 StartCoroutine(StopEffect(0.1f)); // Stop the effect when slider reaches 0
             }
-            if (SlowdownMeter.gameObject.active == true)
+            if (SlowdownMeter.gameObject == true)
             {
                 SlowdownMeter.value = 0; // Ensure the value doesn't go below 0
                 SlowdownMeter.gameObject.SetActive(false);
@@ -145,7 +145,7 @@ public class UIManager : MonoBehaviour
 
     public void ChangeStatus(string status)
     {
-        TopTextbox.text = status;
+        MiddleTextbox.text = status;
     }
 
     public void AddToStoneSlab(string textToAdd)
@@ -155,11 +155,11 @@ public class UIManager : MonoBehaviour
         StoneSlab.text += previous;
     }
 
-    public List<ButtonHandler> DrawActionsRadiallyOnScreenPoint(List<Assets.BaseAction> actions)
+    public List<ActionButtonHandler> DrawActionsRadiallyOnScreenPoint(List<Assets.BaseAction> actions)
     {
         LeanTween.scale(ActionsHolder, Vector3.one, 0.2f).setEaseOutCubic().setIgnoreTimeScale(true);
         float radius = 100f;
-        var handlers = new List<ButtonHandler>();
+        var handlers = new List<ActionButtonHandler>();
 
         float anglestep = 360f / actions.Count;
         for (int i = 0; i < actions.Count; i++)
@@ -176,7 +176,7 @@ public class UIManager : MonoBehaviour
                 UISkill.transform.SetParent(ActionsHolder.transform);
 
             UISkill.GetComponent<RectTransform>().localPosition = position;
-            var handler = UISkill.GetComponent<ButtonHandler>();
+            var handler = UISkill.GetComponent<ActionButtonHandler>();
             handler.Initialize(actions[i]);
             handlers.Add(handler);
         }
@@ -189,45 +189,11 @@ public class UIManager : MonoBehaviour
 
 
 
-    //internal void DrawActionAboveHead(Actor actor, BaseAction action)
-    //{
-    //    var handler = actor.originPointInUI.transform.GetChild(0).GetComponent<ButtonHandler>();
-    //    handler.referencedAction = action;
-    //    handler.Init();
-    //    handler.SetInteractable(false);
-    //    LeanTween.cancel(actor.originPointInUI.transform.gameObject);
-    //    LeanTween.scale(actor.originPointInUI.transform.gameObject, Vector3.one, 1f).setEaseOutBack().setIgnoreTimeScale(true);
-    //}
-
-    internal void KillActionAboveHead(Actor actor)
-    {
-        LeanTween.cancel(actor.originPointInUI.transform.gameObject);
-        LeanTween.scale(actor.originPointInUI.transform.gameObject, Vector3.zero, 1f).setEaseOutBack().setIgnoreTimeScale(true);
-    }
-
-    public void DrawAllActorReactionsAboveSpeed(Actor actor, int minimumSpeed, Action onReactionSelected)
-    {
-
-        List<Assets.BaseAction> fakeReactions = new();
-        List<BaseReaction> chosenReactions = new();
-        var reactions = actor.ActorData.reactions;
 
 
-        foreach (var reaction in reactions)
-        {
-            if (reaction.Speed >= minimumSpeed)
-                fakeReactions.Add(reaction);
-            chosenReactions.Add(reaction);
-        }
 
-        var buttonHandlers = DrawActionsRadiallyOnScreenPoint(fakeReactions);
-        for (int i = 0; i < fakeReactions.Count; i++)
-        {
-            buttonHandlers[i].referencedAction = null;
-        }
-        this.onActionSelected = onReactionSelected;
-        this.waitingForAction = true;
-    }
+
+
 
     public void DrawActions(List<Assets.BaseAction> ActionsToDraw)
     {
@@ -242,27 +208,9 @@ public class UIManager : MonoBehaviour
 
 
 
-    public static Vector2 rotate(Vector2 v, float delta)
-    {
-        return new Vector2(
-            v.x * Mathf.Cos(delta) - v.y * Mathf.Sin(delta),
-            v.x * Mathf.Sin(delta) + v.y * Mathf.Cos(delta)
-        );
-    }
 
-    public void SetText(string text)
-    {
-        TopTextbox.text = text;
 
-    }
 
-    internal void SetTextThenFade(string texttobeshown, float fadeduration)
-    {
-        TopTextbox.text = texttobeshown;
-        TopTextbox.color = new Color(1, 1, 1, 1);
-        this.fadeduration = fadeduration;
-        timer = 0f;
-    }
 
     public IEnumerator TypeTextMiddleLetterByLetter(string text, Action onTypingComplete)
     {
@@ -315,7 +263,7 @@ public class UIManager : MonoBehaviour
     {
         var leftContainerChildren = GetAllChildren(ActionsHolder);
         var rightContainer = GetAllChildren(SkillHolder);
-
+        HideUI();
         HideIfNotMatch(leftContainerChildren.Concat(rightContainer).ToList(), action);
     }
     public void HideIfNotMatch(List<GameObject> children, BaseAction action)
@@ -323,7 +271,7 @@ public class UIManager : MonoBehaviour
         // Loop through the children to find the one with the correct ButtonHandler
         foreach (GameObject child in children)
         {
-            ButtonHandler buttonHandler = child.GetComponent<ButtonHandler>();
+            ActionButtonHandler buttonHandler = child.GetComponent<ActionButtonHandler>();
 
             // Check if the child has a ButtonHandler and if its referencedSkill matches the action
             if (buttonHandler != null && buttonHandler.referencedAction == action)
@@ -352,10 +300,11 @@ public class UIManager : MonoBehaviour
 
         return children;
     }
-
     public void HideUI()
     {
-        ActionsHolder.transform.parent.gameObject.SetActive(false);
+        LeanTween.scale(ActionsHolder.gameObject, new Vector3(1, 0, 1), 0.15f).setEaseInOutCubic().setIgnoreTimeScale(true);
+        LeanTween.scale(SkillHolder.gameObject, new Vector3(1, 0, 1), 0.15f).setEaseInOutCubic().setIgnoreTimeScale(true);
+        //ActionsHolder.transform.parent.gameObject.SetActive(false);
     }
     public void ShowUI()
     {
@@ -366,12 +315,12 @@ public class UIManager : MonoBehaviour
         
         foreach(var child in leftContainerChildren.Concat(rightContainer))
         {
-            child.GetComponent<ButtonHandler>().Disabled = false;
+            child.GetComponent<ActionButtonHandler>().Disabled = false;
             LeanTween.scale(child.gameObject, Vector3.one, 0.4f).setEaseOutBack().setIgnoreTimeScale(true);
         }
-
+        LeanTween.scale(ActionsHolder.gameObject, Vector3.one, 0.15f).setEaseInOutCubic().setIgnoreTimeScale(true);
+        LeanTween.scale(SkillHolder.gameObject, Vector3.one, 0.15f).setEaseInOutCubic().setIgnoreTimeScale(true);
     }
-
     internal void ResetMeter()
     {
         SlowdownMeter.value = 0f;

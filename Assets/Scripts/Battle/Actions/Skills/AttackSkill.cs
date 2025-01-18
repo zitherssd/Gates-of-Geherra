@@ -20,7 +20,8 @@ namespace Assets.Scripts.Battle.Actions.Skills
         public List<Vector3> HitboxPoints;
         private Actor target;
         private Actor casterActor;
-
+        public float windupPostureDamageMult = 1f;
+        public float recoveryPostureDamageMult = 1f;
 
         protected override void PerformSpecific(Actor casterActor, Action onPerformEnd)
         {
@@ -45,7 +46,12 @@ namespace Assets.Scripts.Battle.Actions.Skills
 
             //var movetween = LeanTween.move(casterActor.gameObject, casterActor.transform.position + Direction * StickMult, tweenduration).setEase(tweenType);
             target = casterActor.target.ClosestEnemy;
+            casterActor.PostureRecieved += ApplyPostureModifier;
+        }
 
+        public void Unsubscribe()
+        {
+            casterActor.PostureRecieved -= ApplyPostureModifier;
         }
         public void ApplyDamageEffects(Actor casterActor, Actor targetActor, BaseReaction targetReaction, Action onDamageEffectsApplied)
         {
@@ -54,7 +60,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
             if (PostureDamage > 0)
             {
                 targetActor.ApplyPosture(PostureDamage);
-                if (casterActor.isControllable())
+                if (casterActor.isControllable() && targetActor.state.CurrentState != targetActor.state.blockState)
                 {
                     UIManager.instance.GainMeter(SlowdownMeterGain);
                 }
@@ -107,16 +113,14 @@ namespace Assets.Scripts.Battle.Actions.Skills
         }
         public override bool IsValidAndInRange(Actor caster)
         {
-            if (!HasUsesLeft()) return false;
-
-            if (IsSkillOnCooldown()) return false;
-
-            var potentialTargets = new List<Actor>();
-
-            if (caster.target.DistanceToClosestEnemy < Range + SelfForce)
-                return true;
-            else
-                return false;
+            if (IsValid(caster, out _))
+            {
+                if (caster.target.DistanceToClosestEnemy < Range + SelfForce)
+                    return true;
+                else
+                    return false;
+            }
+            return false;
         }
 
 
@@ -131,7 +135,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
             var hits = CheckEnemiesInsideHitbox();
             foreach(var hit in hits)
             {
-                if (Tags.Contains(TAG.TECH))
+                if (Tags.Contains(TAG.TECH) && target.state.CurrentState != target.state.blockState)
                     ApplyDamageEffects(casterActor, hit, BaseReaction.NoReaction, cancel);
                 else
                     ApplyDamageEffects(casterActor, hit, BaseReaction.NoReaction, null);
@@ -281,6 +285,20 @@ namespace Assets.Scripts.Battle.Actions.Skills
             // Check the distance from the closest point to the circle's center
             float distanceSquared = (closestPoint - circleCenter).sqrMagnitude;
             return distanceSquared <= radius * radius;
+        }
+
+        internal bool IsWithinRange(Actor actor, Actor target)
+        {
+            throw new NotImplementedException();
+        }
+
+        public float ApplyPostureModifier(float posture)
+        {
+            if(state == STATE.windup)
+               return posture * windupPostureDamageMult;
+            if(state == STATE.recovery)
+                return posture * recoveryPostureDamageMult; 
+            return posture;
         }
     }
 }

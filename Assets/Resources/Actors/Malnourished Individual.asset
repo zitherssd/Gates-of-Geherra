@@ -16,8 +16,9 @@ MonoBehaviour:
   maxHp: 25
   maxBuildup: 20
   maxPosture: 20
-  maxStamina: 53.72
+  maxStamina: 50
   Controllable: 0
+  ruleset: 1
   mainColor: {r: 0, g: 0, b: 0, a: 0}
   secondaryColor: {r: 0, g: 0, b: 0, a: 0}
   baseActions:
@@ -34,13 +35,14 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   reactions: []
-  hpBars: []
-  currentBuildup: 1
-  currentPosture: 12
-  currentStamina: 45.72
+  hpBars:
+  - {fileID: 0}
+  currentBuildup: -4
+  currentPosture: 20
+  currentStamina: 0
   postureRegenRate: 1
   staminaRegenRate: 1
   ATK: 1
   DEF: 0
-  AGI: 2
+  AGI: 3
   Spirit: 0

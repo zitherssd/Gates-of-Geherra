@@ -1,6 +1,8 @@
 ﻿using Assets.Scripts.Actions;
+using Assets.Scripts.Battle.Actions.Skills;
 using Assets.Scripts.Battle.Components.State.States;
 using Assets.Scripts.Pattern;
+using System;
 using UnityEngine;
 
 namespace Assets.Scripts.Battle.Components.State
@@ -90,6 +92,38 @@ namespace Assets.Scripts.Battle.Components.State
             {
                 actingState.EnterRecovery(actor.GetAnimator());
             }
+        }
+
+        public bool IsAlive()
+        {
+            if (CurrentState != deathState)
+                return true;
+            else
+                return false;
+        }
+        public bool IsIdle()
+        {
+            if (CurrentState == idleState)
+                return true;
+            else
+                return false;
+        }
+        public bool IsAttacking(out AttackSkill attackSkill)
+        {
+            if (CurrentState == actingState && actingState.action is AttackSkill skill)
+            {
+                attackSkill = skill;
+                return true;
+            }
+            else
+            {
+                attackSkill = null;
+                return false;
+            }
+        }
+        public void TransitionToIdle()
+        {
+            TransitionTo(idleState);
         }
     }
 }

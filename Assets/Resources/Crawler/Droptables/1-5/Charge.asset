@@ -12,18 +12,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d2c66b39a75e8e4c810a8e1f12fbd1b, type: 3}
   m_Name: Charge
   m_EditorClassIdentifier: 
+  Type: 0
   Name: Charge
   Rarity: 0
-  cooldownTurns: 2
+  Description: 
+  CooldownTimer: 0
   TotalUses: 0
+  remainingUses: 0
   BuildupCost: 0
-  BuildupGain: 5
+  BuildupGain: 10
   StaminaCost: 0
   Speed: 5
   Tags: 1000000008000000
-  SliderValue: 1
-  StickValue: {x: 0.8072456, y: 0.5902156}
-  currentCooldownTurns: 2
-  remainingUses: 0
+  Direction: {x: 0, y: 0, z: 0}
+  currentCooldownTimer: 0
   StickMult: 1
+  SlowdownMeterGain: 0
+  SlowDownMeterGainOnPress: 0
+  SlowdownMeterGainOnRelease: 0
+  Animation: 0
   power: 3.5

@@ -11,8 +11,9 @@ namespace Assets.Scripts.Battle.Components.State.States
 
         public void Enter()
         {
-            cc.height = 0.3f;
-            cc.center = new Vector3(0, 0.2f, 0);
+            cc.height = 0.4f;
+            cc.center = new Vector3(0, 0.3f, 0);
+            actor.ActorData.currentPosture = actor.ActorData.maxPosture;
             elapsedTime = 0f; // Reset the timer when entering the state
         }
 

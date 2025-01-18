@@ -8,7 +8,6 @@ public class BasePassive : BaseAction
     public float chanceToTrigger;
     public Effect effect;
     public bool IsConsumed;
-    private Actor _casterActor;
 
     //public void Apply();
 
@@ -25,13 +24,13 @@ public class BasePassive : BaseAction
 
     private void PerformEffect()
     {
-        if (IsConsumed)
-            _casterActor.ActorData.OnHpBarLost -= PerformEffect;
+        //if (IsConsumed)
+            //_casterActor.ActorData.OnHpBarLost -= PerformEffect;
     }
 
     private void OnDestroy()
     {
-        _casterActor.ActorData.OnHpBarLost -= PerformEffect;
+        //_casterActor.ActorData.OnHpBarLost -= PerformEffect;
     }
 
     public enum Trigger

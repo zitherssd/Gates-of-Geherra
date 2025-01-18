@@ -8,7 +8,6 @@ using Assets.Scripts.Battle.Components.Status;
 using Assets.Scripts.Battle.Components.Target;
 using Assets.Scripts.Utility;
 using System;
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace Assets.Scripts.Battle
@@ -39,8 +38,6 @@ namespace Assets.Scripts.Battle
         public event Action<float> OnDamageApplied;
         public event Action<float> OnPostureApplied;
         public event Action<float, Vector3> KnockbackApplied;
-        public event Action onAnimationEnd;
-        public event Action onAnimationHit;
 
         public Vector3 movementForce;
 
@@ -75,10 +72,18 @@ namespace Assets.Scripts.Battle
             movement = new MovementManager(this);
 
         }
+
+        private void Start()
+        {
+            if (!isControllable())
+                if (!BattleManager.instance.EnemyActors.Contains(this)) BattleManager.instance.EnemyActors.Add(this);
+                //do nothing
+
+        }
         public void UseAction(BaseAction action, Action onActionComplete) //Perform an action
         {
-            if(isControllable())
-            UIManager.instance.ResetMeter();
+            if (isControllable())
+                UIManager.instance.ResetMeter();
             Time.timeScale = 1f;
 
             //UIManager.GetInstance().DrawActionAboveHead(this, action);
@@ -88,8 +93,8 @@ namespace Assets.Scripts.Battle
 
         public void Update()
         {
-            if(state.CurrentState == state.idleState || state.CurrentState == state.blockState)
-            ActorData.DealStaminaDamage(-ActorData.staminaRegenRate * 5 * staminaRegenRateModifier * Time.deltaTime);
+            if (state.CurrentState == state.idleState || state.CurrentState == state.blockState)
+                ActorData.DealStaminaDamage(-ActorData.staminaRegenRate * 5 * staminaRegenRateModifier * Time.deltaTime);
 
             if (!state.IsStaggered() && CanRegenPosture)
             {
@@ -137,30 +142,18 @@ namespace Assets.Scripts.Battle
 
 
             var postureLostPercentage = (postMitigationDamage / ActorData.maxPosture) * 100;
-            if (postureLostPercentage > 10)
-                if (state.CurrentState == state.actingState)
-                {
-                    var action = state.actingState.action;
-                    if (action is AttackSkill skill)
-                    {
-                        if (skill.state == AttackSkill.STATE.windup)
-                        {
-                            float duration = StaticHelpers.LinearMap(postureLostPercentage, 0, 50, 0, 1f);
-                            state.TransitionTo(state.fumbleState.Set(duration));
-                        }
-                    }
-                }
             if (ActorData.currentPosture <= ActorData.maxPosture / 2)
             {
-                //inflict stagger or if already staggered, refresh duration
-                float duration = StaticHelpers.LinearMap(postureLostPercentage, 0, 100, 1f, 4f);
-                state.TransitionTo(state.staggerState.Set(duration));
-            }
+                // Calculate stagger duration
+                float staggerDuration = StaticHelpers.LinearMap(postureLostPercentage, 0, 50, 1f, 3.5f);
 
+                    state.TransitionTo(state.staggerState.Set(staggerDuration));
+            }
         }
+
         public void ApplyDamage(float originalDamage)
         {
-            ActorData.ChangeBuildup(Mathf.Max(UnityEngine.Random.Range(2,3), originalDamage));
+            ActorData.ChangeBuildup(Mathf.Max(UnityEngine.Random.Range(2, 3), originalDamage));
             float postMitgationDamage = originalDamage;
             if (DamageRecieved != null)
             {

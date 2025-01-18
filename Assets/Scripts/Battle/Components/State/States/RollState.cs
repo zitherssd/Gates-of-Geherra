@@ -18,7 +18,7 @@ namespace Assets.Scripts.Battle.Components.State.States
 
         public void Enter()
         {
-            actor.PlayAnimation("Roll");
+            actor.PlayAnimation("RollBackwards");
         }
 
         public void Exit()

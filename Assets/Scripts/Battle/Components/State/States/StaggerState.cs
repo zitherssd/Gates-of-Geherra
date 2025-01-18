@@ -24,6 +24,11 @@ namespace Assets.Scripts.Battle.Components.State.States
 
         public void Enter()
         {
+            if (actor.isControllable())
+            {
+                UIManager.GetInstance().HideUI();
+                var Ready = false;
+            }
             Physics.IgnoreLayerCollision(3, 3, true);
             //actor.KnockbackRecieved += ModifyKnockback;
             actor.PlayAnimation("HurtGround");

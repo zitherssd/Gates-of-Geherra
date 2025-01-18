@@ -17,7 +17,7 @@ MonoBehaviour:
   Rarity: 0
   Description: 
   CooldownTimer: 1
-  TotalUses: 0
+  TotalUses: 3
   remainingUses: 0
   BuildupCost: 0
   BuildupGain: 2
@@ -28,6 +28,8 @@ MonoBehaviour:
   currentCooldownTimer: 0
   StickMult: 1
   SlowdownMeterGain: 0
+  SlowDownMeterGainOnPress: 0
+  SlowdownMeterGainOnRelease: 0
   Animation: 8
   projectilePrefab: {fileID: 23187127587949415, guid: 75f9b1b7a4c19464e9698e187dc29259, type: 3}
   Range: 0

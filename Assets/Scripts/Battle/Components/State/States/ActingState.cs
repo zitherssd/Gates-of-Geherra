@@ -64,7 +64,11 @@ namespace Assets.Scripts.Battle.Components.State.States
         public void Exit()
         {
             animator.speed = 1f;
-
+            if(action is AttackSkill)
+            {
+                var asa = action as AttackSkill;
+                asa.Unsubscribe();
+            }    
             if (windupHandler != null)
                 onEnterWindup -= windupHandler;
 

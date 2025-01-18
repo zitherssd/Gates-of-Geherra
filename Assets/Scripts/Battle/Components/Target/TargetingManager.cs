@@ -16,19 +16,31 @@ namespace Assets.Scripts.Battle.Components.Target
             selectionCircle = actor.GetComponentInChildren<SelectionCircle>();
         }
 
-        public Vector3 TargetPosition { get {
-                return target.transform.position;
-            } }
+        public Vector3 TargetPosition
+        {
+            get
+            {
+                if (target != null)
+                {
+                    return target.transform.position;
+                }
+                else
+                {
+                    Debug.LogWarning("Target is null! Returning actor's position instead.");
+                    return actor.transform.position; // Fallback to the actor's position or a default value
+                }
+            }
+        }
 
 
-    public Actor ClosestEnemy
+        public Actor ClosestEnemy
         {
             get
             {
                 if (actor.isControllable())
-                    return BattleManager.instance.EnemyActors.OrderBy(enemyActor => (enemyActor.transform.position - actor.transform.position).magnitude).First();
+                    return BattleManager.instance.EnemyActors.OrderBy(enemyActor => (enemyActor.transform.position - actor.transform.position).magnitude).Where(actor => actor.state.IsAlive()).First();
                 else
-                    return BattleManager.instance.PlayerActors.OrderBy(playerActor => (playerActor.transform.position - actor.transform.position).magnitude).First();
+                    return BattleManager.instance.PlayerActors.OrderBy(playerActor => (playerActor.transform.position - actor.transform.position).magnitude).Where(actor => actor.state.IsAlive()).First();
             }
         }
 
@@ -49,14 +61,17 @@ namespace Assets.Scripts.Battle.Components.Target
 
         internal void Update()
         {
+            if (!actor.isControllable()) target = ClosestEnemy;
             //if it has no target
             if (target == null)
             {
                 //get the closest enemy 
-                var possibleTargets = BattleManager.instance.EnemyActors.Where(actor => actor.state.CurrentState != actor.state.deathState).ToList();
+                var possibleTargets = BattleManager.instance.EnemyActors.Where(actor => actor.state.IsAlive()).ToList();
                 var closestTarget = possibleTargets.OrderBy(actor => actor.target.DistanceToClosestEnemy).FirstOrDefault();
                 if (closestTarget != null) target = closestTarget;
                 if (actor.isControllable()) selectionCircle.target = actor.transform;
+                else
+                    target = BattleManager.instance.PlayerActors[0];
             }
             else
             {
@@ -68,21 +83,11 @@ namespace Assets.Scripts.Battle.Components.Target
                     .OrderBy(actor => actor.target.DistanceToClosestEnemy)
                     .FirstOrDefault();
 
-                if (closestTarget != null)
-                {
-                    float currentTargetDistance = target.target.DistanceToClosestEnemy;
-                    float closestTargetDistance = closestTarget.target.DistanceToClosestEnemy;
-
-                    // Switch to the closer target if it's significantly closer
-                    if (closestTargetDistance < currentTargetDistance)
-                    {
-                        target = closestTarget;
-                    }
-                }
-                if (actor.isControllable()) selectionCircle.target = target.transform;
-
+                target = closestTarget;
             }
-            //if it's has a target but another enemy is even closer
+            if (actor.isControllable()) selectionCircle.target = target.transform;
+
         }
+        //if it's has a target but another enemy is even closer
     }
 }

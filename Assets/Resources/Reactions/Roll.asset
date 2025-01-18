@@ -16,7 +16,7 @@ MonoBehaviour:
   Name: Roll
   Rarity: 0
   Description: 
-  CooldownTimer: 1
+  CooldownTimer: 2
   TotalUses: 0
   remainingUses: 0
   BuildupCost: 0
@@ -31,5 +31,5 @@ MonoBehaviour:
   SlowDownMeterGainOnPress: 0
   SlowdownMeterGainOnRelease: 0
   Animation: 13
-  force: 4
-  time: 0.7
+  force: 3
+  time: 0.85
