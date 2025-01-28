@@ -1,13 +1,14 @@
 using Assets;
 using Assets.Scripts.Actions;
+using Assets.Scripts.Battle;
+using Assets.Scripts.Battle.Actions.Skills;
 using Assets.Scripts.Utility;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UIElements;
-using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
@@ -15,9 +16,11 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI TopTextbox;
     [SerializeField] private TextMeshProUGUI MiddleTextbox;
     [SerializeField] private TextMeshProUGUI StoneSlab;
-    [SerializeField] private TextMeshProUGUI TurnText;
     [SerializeField] private UnityEngine.UI.Image fadeImage;
-    [Range(0, 1)] public float letterPause = 0.1f;
+    [SerializeField] private CanvasGroup actionHolder;
+    [SerializeField] private UnityEngine.UI.Slider SlowdownMeter;
+
+    [Range(0, 1)] public float letterPause = 0.01f;
     [Range(0, 1)] public float fadeSpeed;
     public AudioClip typeSound1;
     public AudioClip typeSound2;
@@ -26,17 +29,18 @@ public class UIManager : MonoBehaviour
     [HideInInspector] public BaseAction selectedAction;
     [HideInInspector] public BaseSkill selectedSkill;
 
-    private static UIManager instance;
+    public static UIManager instance;
     private float fadeduration = 1;
     private float timer = 0f;
     private bool waitingForAction = false;
     private Action onActionSelected;
     public GameObject OriginPoint;
     public GameObject ActionsHolder;
-    public GameObject ActionSlot;
-    public GameObject EndButton;
-    public GameObject Slider;
-    public GameObject Knob;
+    public GameObject SkillHolder;
+    private bool effectActive;
+    [SerializeField] private AnimationCurve startCurve;
+    [SerializeField] private AnimationCurve endCurve;
+    private float totalEffectTime;
 
     public Action<Assets.BaseAction> OnActionSelected { get; private set; }
     public Action<BaseReaction> OnReactionSelected { get; private set; }
@@ -48,42 +52,100 @@ public class UIManager : MonoBehaviour
     public void Awake()
     {
         instance = this;
+        effectActive = true;
     }
 
     public void Start()
     {
         OriginPoint = GameObject.FindGameObjectWithTag("OriginPoint");
+    }
 
-        EndButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(delegate ()
+    void Update()
+    {
+        if (SlowdownMeter.value > 0)
         {
-            if (ActionSlot.transform.childCount > 0)
+            if (Time.unscaledDeltaTime > 0.1) return;
+            SlowdownMeter.value -= 0.2f * Time.unscaledDeltaTime; // Decrease slider value over time
+            if (!effectActive)
             {
-                if(OnActionSelected != null)
-                {
-                    OnActionSelected(ActionSlot.GetComponentInChildren<ButtonHandler>().referencedAction);
-                    OnActionSelected = null;
-                }
+                StartCoroutine(StartEffect()); // Trigger effect when value is above 0 and effect is not active
             }
-            else
+
+            SlowdownMeter.gameObject.SetActive(true);
+        }
+        else
+        {
+            Debug.Log("SlowdownMeter.value reached 0");
+            if (effectActive)
             {
-                if(OnActionSelected != null)
-                {
-                    OnActionSelected(null);
-                    OnActionSelected = null;
-                }
+                StartCoroutine(StopEffect(0.1f)); // Stop the effect when slider reaches 0
             }
-            ButtonHandler.KillAll();
-            EndButton.SetActive(false);
-            ActionSlot.SetActive(false);
-            Slider.SetActive(false);
-            Knob.SetActive(false);
-            LeanTween.scale(ActionsHolder, new Vector3(1, 0, 1), 0.1f).setEaseOutCubic().setIgnoreTimeScale(true);
-        });
+            if (SlowdownMeter.gameObject == true)
+            {
+                SlowdownMeter.value = 0; // Ensure the value doesn't go below 0
+                SlowdownMeter.gameObject.SetActive(false);
+            }
+        }
+    }
+
+    // Method to start the effect
+
+    public IEnumerator StartEffect()
+    {
+        effectActive = true;
+        float elapsedTime = 0f;
+
+        while (elapsedTime < totalEffectTime)
+        {
+            elapsedTime += Time.unscaledDeltaTime;
+            Time.timeScale = startCurve.Evaluate(elapsedTime / totalEffectTime);
+            Time.fixedDeltaTime = Time.timeScale * .02f;
+
+            yield return null;
+        }
+    }
+
+    // Method to stop the effect
+    public IEnumerator StopEffect(float duration)
+    {
+        float elapsedTime = 0f;
+
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.unscaledDeltaTime;
+            Time.timeScale = endCurve.Evaluate(elapsedTime / duration);
+            Time.fixedDeltaTime = Time.timeScale * .02f;
+
+            yield return null;
+        }
+
+        Time.timeScale = 1f;  // Ensure time scale is back to normal (1)
+        Time.fixedDeltaTime = Time.timeScale * .02f;
+        effectActive = false; // Mark the effect as inactive
+    }
+
+    public void GainMeter(float seconds)
+    {
+        totalEffectTime = seconds + SlowdownMeter.value * 5;
+        SlowdownMeter.gameObject.SetActive(true);
+        SlowdownMeter.value += seconds / 5;
+
+        Debug.Log($"GainMeter called: SlowdownMeter.value is now {SlowdownMeter.value}");
+        // Recalculate the total effect time based on the new SlowdownMeter value
+
+        // If the effect is active, stop the current coroutine and restart it
+        if (effectActive)
+        {
+            StopAllCoroutines();  // Stop the currently running effect
+        }
+
+        // Start the effect with the updated duration
+        StartCoroutine(StartEffect());
     }
 
     public void ChangeStatus(string status)
     {
-        TopTextbox.text = status;
+        MiddleTextbox.text = status;
     }
 
     public void AddToStoneSlab(string textToAdd)
@@ -93,11 +155,11 @@ public class UIManager : MonoBehaviour
         StoneSlab.text += previous;
     }
 
-    public List<ButtonHandler> DrawActionsRadiallyOnScreenPoint(List<Assets.BaseAction> actions)
+    public List<ActionButtonHandler> DrawActionsRadiallyOnScreenPoint(List<Assets.BaseAction> actions)
     {
         LeanTween.scale(ActionsHolder, Vector3.one, 0.2f).setEaseOutCubic().setIgnoreTimeScale(true);
         float radius = 100f;
-        var handlers = new List<ButtonHandler>();
+        var handlers = new List<ActionButtonHandler>();
 
         float anglestep = 360f / actions.Count;
         for (int i = 0; i < actions.Count; i++)
@@ -105,135 +167,38 @@ public class UIManager : MonoBehaviour
             float angle = i * anglestep;
             float x = radius * Mathf.Cos(Mathf.Deg2Rad * angle);
             float y = radius * Mathf.Sin(Mathf.Deg2Rad * angle);
-            Vector2 position = new Vector2(x, y);
+            Vector2 position = new(x, y);
 
             GameObject UISkill = Instantiate(buttonPrefab, position, Quaternion.identity);
-            UISkill.transform.SetParent(ActionsHolder.transform);
+            if (actions[i] is AttackSkill)
+                UISkill.transform.SetParent(SkillHolder.transform);
+            else
+                UISkill.transform.SetParent(ActionsHolder.transform);
+
             UISkill.GetComponent<RectTransform>().localPosition = position;
-            var handler = UISkill.GetComponent<ButtonHandler>();
-            handler.referencedAction = actions[i];
-            handler.Init();
+            var handler = UISkill.GetComponent<ActionButtonHandler>();
+            handler.Initialize(actions[i]);
             handlers.Add(handler);
         }
-        EndButton.SetActive(true);
-        ActionSlot.SetActive(true);
+        //EndButton.gameObject.SetActive(true);
+        //ActionSlot.SetActive(true);
         return handlers;
     }
 
-    public void CancelAll()
+
+
+
+
+
+
+
+
+
+
+    public void DrawActions(List<Assets.BaseAction> ActionsToDraw)
     {
-        ButtonHandler.KillAll();
-        selectedAction = null;
-        selectedSkill = null;
-        selectedReaction = null;
-        waitingForAction = false;
-        onActionSelected = null;
-    }
-
-    public void DrawActiveActorSkills(Action onSkillSelected)
-    {
-
-        List<Assets.BaseAction> fakeActions = new List<Assets.BaseAction>();
-            var activeChar = BattleManager.instance.GetActiveActor();
-            var skills = activeChar.Actor.skills;
-
-            foreach (var skill in skills)
-            {
-                fakeActions.Add(skill);
-            }
-
-            var buttonHandlers = DrawActionsRadiallyOnScreenPoint(fakeActions);
-            for (int i = 0; i < skills.Count; i++)
-            {
-                var invalidReason = "";
-
-                buttonHandlers[i].referencedAction = null;
-                buttonHandlers[i].SetButtonInteractable(skills[i].IsValid(activeChar, out invalidReason));
-                if (invalidReason != string.Empty) buttonHandlers[i].SetRemainingUsesText(invalidReason);
-            }
-            this.onActionSelected = onSkillSelected;
-            this.waitingForAction = true;
-    }
-
-    public void DrawAllActorReactions(BaseActorBattler actor, Action onReactionSelected)
-    {
-        if (!waitingForAction)
-        {
-            List<Assets.BaseAction> fakeReactions = new List<Assets.BaseAction>();
-            var reactions = actor.Actor.reactions;
-
-            foreach (var reaction in reactions)
-            {
-                fakeReactions.Add(reaction);
-            }
-
-            var buttonHandlers = DrawActionsRadiallyOnScreenPoint(fakeReactions);
-            for (int i = 0; i < reactions.Count; i++)
-            {
-                buttonHandlers[i].referencedReaction = reactions[i];
-                buttonHandlers[i].referencedAction = null;
-            }
-            this.onActionSelected = onReactionSelected;
-            this.waitingForAction = true;
-        }
-    }
-    
-
-
-    internal void DrawActionAboveHead(BaseActorBattler actor, BaseAction action)
-    {
-            GameObject drawnSkill = Instantiate(buttonPrefab, actor.transform.position, Quaternion.identity);
-            drawnSkill.transform.SetParent(actor.originPointInUI.transform);
-            drawnSkill.transform.localPosition = Vector3.zero;
-            drawnSkill.GetComponent<RectTransform>().localPosition = Vector3.zero;
-            var handler = drawnSkill.GetComponent<ButtonHandler>();
-            handler.referencedAction = action;
-            handler.Init();
-            handler.SetDraggable(false);
-            LeanTween.scale(actor.originPointInUI.transform.gameObject, new Vector3(1, 1, 1), 0.3f).setEaseOutBack().setIgnoreTimeScale(true);
-    }
-
-    internal void KillActionAboveHead(BaseActorBattler actor)
-    {
-        var obj = actor.originPointInUI.transform;
-        if (obj.childCount > 0)
-        {
-            LeanTween.scale(obj.gameObject, new Vector3(1, 0, 1), 0.3f).setEaseOutBack().setIgnoreTimeScale(true).setOnComplete(() => { Destroy(obj.GetChild(0).gameObject); });
-        }
-        else
-            LeanTween.scale(obj.gameObject, new Vector3(1, 0, 1), 0.3f).setEaseOutBack().setIgnoreTimeScale(true);
-    }
-
-    public void DrawAllActorReactionsAboveSpeed(BaseActorBattler actor, int minimumSpeed, Action onReactionSelected)
-    {
-
-        List<Assets.BaseAction> fakeReactions = new List<Assets.BaseAction>();
-            List<BaseReaction> chosenReactions = new List<BaseReaction>();
-            var reactions = actor.Actor.reactions;
-
-
-            foreach (var reaction in reactions)
-            {
-                if (reaction.Speed >= minimumSpeed)
-                    fakeReactions.Add(reaction);
-                chosenReactions.Add(reaction);
-            }
-
-            var buttonHandlers = DrawActionsRadiallyOnScreenPoint(fakeReactions);
-            for (int i = 0; i < fakeReactions.Count; i++)
-            {
-                buttonHandlers[i].referencedReaction = chosenReactions[i];
-                buttonHandlers[i].referencedAction = null;
-            }
-            this.onActionSelected = onReactionSelected;
-            this.waitingForAction = true;
-    }
-
-    public void DrawActionsAndWaitForSelectionOrNull(List<Assets.BaseAction> ActionsToDraw, Action<Assets.BaseAction> onActionSelected)
-    {
-        this.OnActionSelected = onActionSelected;
         var buttonHandlers = DrawActionsRadiallyOnScreenPoint(ActionsToDraw);
-        
+
         for (int i = 0; i < ActionsToDraw.Count; i++)
         {
             buttonHandlers[i].referencedAction = ActionsToDraw[i];
@@ -241,37 +206,11 @@ public class UIManager : MonoBehaviour
     }
 
 
-    public void ReturnNullSkill(Vector2 position)
-    {
-        InputHandler.instance.OnHold -= ReturnNullSkill;
-        ButtonHandler.KillAll();
-        this.OnActionSelected(null);
-    }
 
 
 
 
-    public static Vector2 rotate(Vector2 v, float delta)
-    {
-        return new Vector2(
-            v.x * Mathf.Cos(delta) - v.y * Mathf.Sin(delta),
-            v.x * Mathf.Sin(delta) + v.y * Mathf.Cos(delta)
-        );
-    }
 
-    public void SetText(string text)
-    {
-        TopTextbox.text = text;
-
-    }
-
-    internal void SetTextThenFade(string texttobeshown, float fadeduration)
-    {
-        TopTextbox.text = texttobeshown;
-        TopTextbox.color = new Color(1, 1, 1, 1);
-        this.fadeduration = fadeduration;
-        timer = 0f;
-    }
 
     public IEnumerator TypeTextMiddleLetterByLetter(string text, Action onTypingComplete)
     {
@@ -290,7 +229,7 @@ public class UIManager : MonoBehaviour
     public IEnumerator FadeMiddleText(float fadeDuration)
     {
         Color originalColor = MiddleTextbox.color;
-        Color targetColor = new Color(originalColor.r, originalColor.g, originalColor.b, 0f); // Fade to transparent
+        Color targetColor = new(originalColor.r, originalColor.g, originalColor.b, 0f); // Fade to transparent
 
         float elapsedTime = 0f;
 
@@ -306,36 +245,89 @@ public class UIManager : MonoBehaviour
         MiddleTextbox.text = string.Empty;
     }
 
-    public IEnumerator Fade(bool fadeIn, Action onFadeComplete)
+    public void Fade(bool fadeIn, Action onFadeComplete)
     {
-        //var imgColor = fadeImage.color;
-        //float startAlpha = imgColor.a;
-        //float targetAlpha = fadeIn ? 1.0f : 0.0f;
-
-        //float elapsedTime = 0f;
-
-        //while (elapsedTime < fadeSpeed)
-        //{
-        //    float t = elapsedTime / fadeSpeed;
-        //    imgColor.a = Mathf.Lerp(startAlpha, targetAlpha, t);
-        //    fadeImage.color = imgColor;
-
-        //    elapsedTime += Time.deltaTime;
-        yield return null;
-        //}
-
-        //imgColor.a = targetAlpha;
-        //fadeImage.color = imgColor;
-
-        onFadeComplete?.Invoke();
+        if (!fadeIn)
+        {
+            LeanTween.alphaCanvas(actionHolder, 1f, 0.5f);
+            LeanTween.alpha(fadeImage.rectTransform, 0f, 0.5f).setOnComplete(onFadeComplete);
+        }
+        else
+        {
+            LeanTween.alphaCanvas(actionHolder, 0f, 0.5f);
+            LeanTween.alpha(fadeImage.rectTransform, 1f, 0.5f).setOnComplete(onFadeComplete);
+        }
     }
 
-    public void SetTurn(uint turn)
+    public void HideAllButThis(BaseAction action)
     {
-        TurnText.text = "Turn " + turn.ToString();
+        var leftContainerChildren = GetAllChildren(ActionsHolder);
+        var rightContainer = GetAllChildren(SkillHolder);
+        HideUI();
+        HideIfNotMatch(leftContainerChildren.Concat(rightContainer).ToList(), action);
     }
+    public void HideIfNotMatch(List<GameObject> children, BaseAction action)
+    {
+        // Loop through the children to find the one with the correct ButtonHandler
+        foreach (GameObject child in children)
+        {
+            ActionButtonHandler buttonHandler = child.GetComponent<ActionButtonHandler>();
 
+            // Check if the child has a ButtonHandler and if its referencedSkill matches the action
+            if (buttonHandler != null && buttonHandler.referencedAction == action)
+            {
+                Debug.Log("Found child with matching referencedSkill: " + child.name);
+            }
+            else
+            {
+                buttonHandler.Disabled = true;
+                LeanTween.scale(buttonHandler.gameObject, new Vector3(1,0,1), 0.1f).setEaseInOutCubic();
+            }
+                
+        }
 
+        Debug.Log("No child with the matching referencedSkill found.");
+    }
+    public List<GameObject> GetAllChildren(GameObject parent)
+    {
+        List<GameObject> children = new List<GameObject>();
+
+        // Loop through each child of the parent
+        foreach (Transform child in parent.transform)
+        {
+            children.Add(child.gameObject); // Add child to list
+        }
+
+        return children;
+    }
+    public void HideUI()
+    {
+        LeanTween.scale(ActionsHolder.gameObject, new Vector3(1, 0, 1), 0.15f).setEaseInOutCubic().setIgnoreTimeScale(true);
+        LeanTween.scale(SkillHolder.gameObject, new Vector3(1, 0, 1), 0.15f).setEaseInOutCubic().setIgnoreTimeScale(true);
+        //ActionsHolder.transform.parent.gameObject.SetActive(false);
+    }
+    public void ShowUI()
+    {
+        ActionsHolder.transform.parent.gameObject.SetActive(true);
+
+        var leftContainerChildren = GetAllChildren(ActionsHolder);
+        var rightContainer = GetAllChildren(SkillHolder);
+        
+        foreach(var child in leftContainerChildren.Concat(rightContainer))
+        {
+            child.GetComponent<ActionButtonHandler>().Disabled = false;
+            LeanTween.scale(child.gameObject, Vector3.one, 0.4f).setEaseOutBack().setIgnoreTimeScale(true);
+        }
+        LeanTween.scale(ActionsHolder.gameObject, Vector3.one, 0.15f).setEaseInOutCubic().setIgnoreTimeScale(true);
+        LeanTween.scale(SkillHolder.gameObject, Vector3.one, 0.15f).setEaseInOutCubic().setIgnoreTimeScale(true);
+    }
+    internal void ResetMeter()
+    {
+        SlowdownMeter.value = 0f;
+        Debug.Log("ResetMeter called: SlowdownMeter.value set to 0");
+        StopAllCoroutines();
+        StartCoroutine(StopEffect(0.05f));
+    }
 
     //1. Attack or Move or Skill // MoveWithingRange if able;
     //2. Reaction Check > Give control to the enemy. Allow him to chose from his reactions (Skill used for mitigation damage)

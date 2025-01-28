@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Assets.Scripts.Battle;
+using UnityEngine;
 
 namespace Assets.Scripts.Utility
 {
@@ -16,11 +17,11 @@ namespace Assets.Scripts.Utility
             rb = gameObject.GetComponent<Rigidbody>();
         }
 
-        private void OnCollisionEnter(Collision other)
+        private void OnTriggerEnter(Collider other)
         {
             Debug.Log("Entered trigger zone with: " + other.gameObject.name);
 
-            BaseActorBattler enemyBattler = other.gameObject.GetComponent<BaseActorBattler>();
+            Actor enemyBattler = other.gameObject.GetComponent<Actor>();
 
 
             if (enemyBattler != null)
@@ -34,10 +35,10 @@ namespace Assets.Scripts.Utility
             }
         }
 
-        public void ApplyDamageEffects(BaseActorBattler targetActor)
+        public void ApplyDamageEffects(Actor targetActor)
         {
             // Apply Damage
-            var damage = Damage - targetActor.Actor.DEF;
+            var damage = Damage - targetActor.ActorData.DEF;
             if (damage > 0)
             {
                 targetActor.ApplyDamage(damage);

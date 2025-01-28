@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e110cd302acb85459812d80addcbd30, type: 3}
+  m_Name: Old Prisoner
+  m_EditorClassIdentifier: 
+  Name: Old Prisoner
+  maxHp: 60
+  maxBuildup: 0
+  maxPosture: 12
+  maxStamina: 100
+  Controllable: 0
+  ruleset: 1
+  mainColor: {r: 0, g: 0, b: 0, a: 0}
+  secondaryColor: {r: 0, g: 0, b: 0, a: 0}
+  baseActions:
+  - {fileID: 11400000, guid: eb94d8da9dbb0de4f9022395c5c28ce9, type: 2}
+  - {fileID: 11400000, guid: 8944dff4634e45d4bbb0765034e3c880, type: 2}
+  - {fileID: 11400000, guid: d4852d63a398314488e810be1c412698, type: 2}
+  baseReactions: []
+  basePassives: []
+  baseHpBars:
+  - {fileID: 11400000, guid: 7480a64d72f259342898ac4956c7a727, type: 2}
+  actions:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  reactions: []
+  hpBars:
+  - {fileID: 0}
+  currentBuildup: 0
+  currentPosture: 12
+  currentStamina: 100
+  postureRegenRate: 1
+  staminaRegenRate: 1
+  ATK: 1
+  DEF: 1
+  AGI: 1
+  Spirit: 0

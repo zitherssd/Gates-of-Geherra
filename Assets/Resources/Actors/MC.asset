@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e110cd302acb85459812d80addcbd30, type: 3}
+  m_Name: MC
+  m_EditorClassIdentifier: 
+  Name: Player
+  maxHp: 10
+  maxBuildup: 50
+  maxPosture: 25
+  maxStamina: 50
+  Controllable: 1
+  ruleset: 0
+  mainColor: {r: 1, g: 1, b: 1, a: 0}
+  secondaryColor: {r: 0, g: 0, b: 0, a: 1}
+  baseActions:
+  - {fileID: 11400000, guid: 498ba4be69212c045ad9de12e867357c, type: 2}
+  - {fileID: 11400000, guid: 923e559ba7ce6f94abcdc40b245da779, type: 2}
+  - {fileID: 11400000, guid: 3aa89802a1ec30d48b32f497ba10ce82, type: 2}
+  - {fileID: 11400000, guid: 3a2fead6c4e4bd14e975cc8e422006e4, type: 2}
+  - {fileID: 11400000, guid: 6b798446413f4794088292db8b471646, type: 2}
+  - {fileID: 11400000, guid: 84039c0611ba36841b126f1d365eb783, type: 2}
+  - {fileID: 11400000, guid: f931b69ae9e3a26468a97a337c927f76, type: 2}
+  - {fileID: 11400000, guid: d4852d63a398314488e810be1c412698, type: 2}
+  - {fileID: 11400000, guid: 25c16194e242f234a95100260c6fe954, type: 2}
+  - {fileID: 11400000, guid: 531d3672a77fe614eae5b3d8ea0ea885, type: 2}
+  baseReactions: []
+  basePassives: []
+  baseHpBars:
+  - {fileID: 11400000, guid: f273e92b83c897a48b992d9fefe2c87e, type: 2}
+  - {fileID: 11400000, guid: 844423a2bec91434bb166f8390aa80f8, type: 2}
+  actions:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  reactions: []
+  hpBars:
+  - {fileID: 0}
+  - {fileID: 0}
+  currentBuildup: 28
+  currentPosture: 20.837614
+  currentStamina: 13.407128
+  postureRegenRate: 1
+  staminaRegenRate: 1
+  ATK: 1
+  DEF: 1
+  AGI: 5
+  Spirit: 0

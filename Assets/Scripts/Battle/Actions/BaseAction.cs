@@ -1,74 +1,93 @@
-﻿using Assets.Scripts.Actions;
+﻿using Assets.Scripts.Battle;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets
 {
-    [CreateAssetMenu(fileName = "Action", menuName = "ScriptableObjects/Action", order = 1)]
-
     public class BaseAction : ScriptableObject
     {
+        public BUTTONTYPE Type;
         public string Name;
         public RARITY Rarity;
-        public int cooldownTurns;
+        public string Description;
+        public float CooldownTimer;
         public int TotalUses;
+        public int remainingUses;
         //public int Range;
         //public SpriteRenderer sprite;
-        public int remainingUses;
         public int BuildupCost;
         public int BuildupGain;
+        public int StaminaCost;
         public int Speed;
         public List<TAG> Tags;
-        public float SliderValue;
-        public Vector2 StickValue;
-        [HideInInspector] public int currentCooldownTurns = 0;
+        [HideInInspector] public Vector3 Direction;
+        public float currentCooldownTimer = 0;
+        public float StickMult = 1;
+        public float SlowdownMeterGain;
+        public float SlowDownMeterGainOnPress;
+        public float SlowdownMeterGainOnRelease;
+        public Action cancel;
 
-        public virtual void Perform(BaseActorBattler casterActor, Action onPerformEnd)
+        public enum BUTTONTYPE { INSTANT, VECTOR, CONTINNUOUS, CONTINUOUS_VECTOR };
+
+        public virtual void Perform(Actor casterActor, Action onPerformEnd)
         {
-            UpdateRemainingUses();
-            ResetCooldown();
-            casterActor.Actor.ChangeBuildup(BuildupGain);
-            casterActor.Actor.ChangeBuildup(-BuildupCost);
-            PerformSpecific(casterActor, onPerformEnd);
+            //ResetCooldown();
+
+            if (Tags.Contains(TAG.KILLMOMENTUM)) casterActor.movement.ResetMomentum();
+
+            casterActor.ActorData.DealStaminaDamage(StaminaCost);
+            casterActor.ActorData.ChangeBuildup(BuildupGain);
+            casterActor.ActorData.ChangeBuildup(-BuildupCost);
+
+            PerformSpecific(casterActor, () =>
+            {
+                UpdateRemainingUses(); onPerformEnd?.Invoke();
+            });
         }
 
-        protected virtual void PerformSpecific(BaseActorBattler casterActor, Action onPerformEnd) { }
+        protected virtual void PerformSpecific(Actor casterActor, Action onPerformEnd) { }
 
-        public virtual void UpdateCooldown()
+        public virtual void UpdateCooldown() //runs every frame
         {
-            if (currentCooldownTurns > 0)
-                currentCooldownTurns--;
-
-            if (Tags.Contains(TAG.RECHARGE_USES) && remainingUses < TotalUses)
+            if (TotalUses != 0) //limited number of uses or recharges uses
             {
-                if (currentCooldownTurns == 0)
+                if (Tags.Contains(TAG.RECHARGE_TOTAL_USES)) //recharges uses
                 {
-                    remainingUses++;
-                    currentCooldownTurns = cooldownTurns;
+                    if (remainingUses < TotalUses && currentCooldownTimer == 0)
+                    {
+                        currentCooldownTimer = CooldownTimer;
+                    }
                 }
             }
+
+
+            if (currentCooldownTimer > 0)
+                currentCooldownTimer = currentCooldownTimer -= Time.deltaTime;
+            else
+                currentCooldownTimer = 0f;
+
+
+            if (Tags != null)
+                if (TotalUses != 0) //limited number of uses or recharges uses
+                {
+                    if (Tags.Contains(TAG.RECHARGE_TOTAL_USES)) //recharges uses
+                    {
+                        if (remainingUses < TotalUses && currentCooldownTimer == 0)
+                        {
+                            remainingUses++;
+                        }
+                    }
+                }
         }
 
         public bool IsSkillOnCooldown()
         {
-            if (Tags.Contains(TAG.RECHARGE_USES)) return false;
-            return currentCooldownTurns > 0;
+            if (Tags.Contains(TAG.RECHARGE_TOTAL_USES)) return false;
+            return currentCooldownTimer > 0;
         }
 
-        //
-        public void ResetCooldown()
-        {
-            if(Tags.Contains(TAG.RECHARGE_USES))
-                {
-
-                }
-            else
-
-            currentCooldownTurns = cooldownTurns;
-
-        }
-        
         public virtual bool HasUsesLeft()
         {
             if (TotalUses == 0) return true;
@@ -76,7 +95,13 @@ namespace Assets
             else return false;
         }
 
-        public virtual bool IsValid(BaseActorBattler caster, out string InvalidReason)
+        internal void Refresh()
+        {
+            remainingUses = TotalUses;
+            currentCooldownTimer = 0;
+        }
+
+        public virtual bool IsValid(Actor caster, out string InvalidReason)
         {
             InvalidReason = "";
 
@@ -87,42 +112,63 @@ namespace Assets
             }
             if (IsSkillOnCooldown())
             {
-                InvalidReason = $"usable in {currentCooldownTurns}";
+                InvalidReason = $"usable in {currentCooldownTimer}";
                 return false;
             }
-            if (caster.Actor.currentBuildup < BuildupCost)
+            if (caster.ActorData.currentBuildup < BuildupCost)
             {
                 InvalidReason = "Not enough Buildup!";
                 return false;
             }
-            return true;
-        }
-
-        public virtual bool IsValidAndInRange(BaseActorBattler caster)
-        {
-            return true;
-        }
-
-        public void UpdateRemainingUses()
-        {
-            if(remainingUses == TotalUses && Tags.Contains(TAG.RECHARGE_USES))
+            if (caster.ActorData.currentStamina < StaminaCost)
             {
-                remainingUses -= 1;
-                currentCooldownTurns = cooldownTurns;
+                InvalidReason = "Not enough Stamina!";
+                return false;
             }
-            else 
-            if (TotalUses != 0)
-                remainingUses -= 1;
+            return true;
+        }
+
+        public virtual bool IsValidAndInRange(Actor caster)
+        {
+            return false;
+        }
+
+        public void UpdateRemainingUses() //Runs when animation ends
+        {
+            if (TotalUses != 0) //limited number of uses or recharges uses
+            {
+                remainingUses--;
+
+                if (!Tags.Contains(TAG.RECHARGE_TOTAL_USES))
+                {
+                    currentCooldownTimer = CooldownTimer;
+                }
+                else if (remainingUses <= 0 && currentCooldownTimer == 0)
+                {
+                    // Start the recharge cycle only when remaining uses reach 0
+                    currentCooldownTimer = CooldownTimer;
+                }
+            }
+            else
+            {
+                currentCooldownTimer = CooldownTimer;
+            }
+        }
+
+        public enum TAG
+        {
+            PROJECTILE, KNOCKBACK_AIR, KNOCKBACK_FRONT, KNOCKBACK_BACK, NO_REACTION, FREE, STARTER, FINISHER, COUNTER, USESTICK, RECHARGE_TOTAL_USES,
+            APPLYROOTMOTION,
+            KILLMOMENTUM, KILL_TRACKING, PLAY_WHILE_SELECTING,
+            TECH, FACECLOSEST
         }
     }
 
 
 
 
-    public enum TAG { MOVE_NEAR_ENEMY_BEFORE_ATTACK, PROJECTILE, KNOCKBACK_AIR, KNOCKBACK_FRONT, KNOCKBACK_BACK, MOVE_OFFSET_BEHIND, MOVE_OFFSET_INFRONT, NO_REACTION, REPEAT_TURN, STARTER, FINISHER, COUNTER, USESLIDER, USEKNOB, RECHARGE_USES,
-        APPLYROOTMOTION,
-        KILLMOMENTUM
-    }
 
     public enum RARITY { COMMON, UNCOMMON, RARE, EPIC, LEGENDARY };
+    public enum ANIMATION { NONE, Punch, Kick, Shuriken, Highkick, PalmStrike, Ninjutsu, ForwardPunch, ThrowStar, ForwardKick, ShadowStep, Taunt, Dash, Roll, Step }
+
 }

@@ -1,4 +1,5 @@
 using Assets;
+using Assets.Scripts.Battle;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,7 +15,7 @@ public class OriginPointHandler : MonoBehaviour
 
     void Start()
     {
-        target.gameObject.GetComponent<BaseActorBattler>().originPointInUI = this;
+        target.gameObject.GetComponent<Actor>().originPointInUI = this;
         rtransform = GetComponent<RectTransform>();
         camera = Camera.main;
     }

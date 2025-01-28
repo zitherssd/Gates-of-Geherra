@@ -7,16 +7,19 @@ namespace Assets.Scripts.Battle.Actions.Skills
     [CreateAssetMenu(fileName = "Taunt", menuName = "ScriptableObjects/Skills/Taunt")]
     public class Taunt : BaseSkill
     {
-        protected override void PerformSpecific(BaseActorBattler casterActor, Action onPerformEnd)
+        private Actor casterActor;
+
+        protected override void PerformSpecific(Actor casterActor, Action onPerformEnd)
         {
-            casterActor.PlayAnimation("Taunt", () =>
-            {
-                casterActor.GetComponentInChildren<ParticleSystem>().Play(); //to b ereplace
-                casterActor.transform.position = casterActor.transform.position + GetRelativeToCamera(StickValue) * 10f;
-                casterActor.GetComponentInChildren<ParticleSystem>().Play();
-                onPerformEnd();
-            }, onPerformEnd);
-            return;
+            this.casterActor = casterActor;
+            casterActor.state.TransitionTo(casterActor.state.actingState.Set(this, onPerformEnd));
+        }
+
+        public override void OnHit()
+        {
+            casterActor.GetComponentInChildren<ParticleSystem>().Play(); //to b ereplace
+            casterActor.transform.position = casterActor.transform.position + GetRelativeToCamera(Direction) * 10f;
+            casterActor.GetComponentInChildren<ParticleSystem>().Play();
         }
     }
 }

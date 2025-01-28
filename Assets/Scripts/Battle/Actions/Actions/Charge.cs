@@ -1,30 +1,41 @@
-﻿using System;
+﻿using Assets.Scripts.Actions;
+using System;
 using UnityEngine;
 
 namespace Assets.Scripts.Battle.Actions
 {
     [CreateAssetMenu(fileName = "Charge", menuName = "ScriptableObjects/Action/Charge", order = 1)]
-    public class Charge : BaseAction
+    public class Charge : BaseSkill
     {
-        protected override void PerformSpecific(BaseActorBattler casterActor, Action onPerformEnd)
+        public float power;
+        private Vector3 chargeVector;
+        private Actor casterActor;
+        protected override void PerformSpecific(Actor casterActor, Action onPerformEnd)
         {
-            if (casterActor.isControllable())
-            {
-                InputManager.instance.WaitForTargetActor(targetActor =>
+            this.casterActor = casterActor;
+            casterActor.state.TransitionTo(casterActor.state.actingState.Set(this, () => {
+                if (casterActor.isControllable())
                 {
-                    var casterToTarget = (targetActor.transform.position - casterActor.transform.position).normalized;
-                    casterActor.GetComponent<Rigidbody>().AddForce(casterToTarget * 100 * 4);
-                    casterActor.PlayAnimation("Run", onPerformEnd, onPerformEnd);
-                });
+                    UIManager.instance.GainMeter(SlowdownMeterGain);
+                }
+                casterActor.movement.SetFriction(); onPerformEnd?.Invoke(); }));
+        }
 
+        public override void OnHit()
+        {
+            casterActor.movement.SetFriction(0);
+            if (Tags.Contains(TAG.USESTICK))
+            {
+                casterActor.movement.AddForce(Direction * power * StickMult);
+                casterActor.movement.FaceDirection(Direction);
             }
             else
             {
-                var targetActor = BattleManager.instance.PlayerActors[0];
-                var casterToTarget = (targetActor.transform.position - casterActor.transform.position).normalized;
-                casterActor.GetComponent<Rigidbody>().AddForce(casterToTarget * 100 * 4);
-                casterActor.PlayAnimation("Run", onPerformEnd, onPerformEnd);
+                casterActor.movement.AddForce(casterActor.target.DirectionToClosestEnemy * power);
+                casterActor.movement.FaceDirection(casterActor.target.DirectionToClosestEnemy);
+
             }
         }
+
     }
 }

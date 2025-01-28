@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using static Assets.BaseAction;
 
 public class ActionSlot : MonoBehaviour
 {
@@ -15,45 +16,4 @@ public class ActionSlot : MonoBehaviour
         }
     }
 
-    public void OnDrop()
-    {
-        if (!skill)
-        {
-            UIManager.GetInstance().Slider.SetActive(false);
-            UIManager.GetInstance().Knob.SetActive(false);
-        }
-        else
-        {
-            GameObject dropped = skill.gameObject;
-            var handler = skill.GetComponent<ButtonHandler>();
-            if (handler.referencedAction != null)
-            {
-                if (handler.referencedAction.Tags.Contains(Assets.TAG.USESLIDER))
-                    UIManager.GetInstance().Slider.SetActive(true);
-                else
-                    UIManager.GetInstance().Slider.SetActive(false);
-
-                if (handler.referencedAction.Tags.Contains(Assets.TAG.USEKNOB))
-                    UIManager.GetInstance().Knob.SetActive(true);
-                else
-                    UIManager.GetInstance().Knob.SetActive(false);
-
-            }
-            if (handler.referencedReaction != null)
-            {
-                if (handler.referencedReaction.Tags.Contains(Assets.TAG.USESLIDER))
-                    UIManager.GetInstance().Slider.SetActive(true);
-                else
-                    UIManager.GetInstance().Slider.SetActive(false);
-
-                if (handler.referencedReaction.Tags.Contains(Assets.TAG.USEKNOB))
-                    UIManager.GetInstance().Knob.SetActive(true);
-                else
-                    UIManager.GetInstance().Knob.SetActive(false);
-
-            }
-        }
-        ExecuteEvents.ExecuteHierarchy<IHasChanged>(gameObject, null, (x, y) => x.HasChanged());
-
-    }
 }

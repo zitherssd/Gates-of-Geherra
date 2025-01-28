@@ -7,9 +7,9 @@ public class FloorManager : MonoBehaviour
     public int currentFloor = 1;
     private UIManager uiManager;
 
-    public List<Actor> secondFloorEnemies;
-    public List<Actor> thirdFloorEnemies;
-    public List<Actor> fourthFloorEnemies;
+    public List<ActorData> secondFloorEnemies;
+    public List<ActorData> thirdFloorEnemies;
+    public List<ActorData> fourthFloorEnemies;
 
     private static FloorManager instance;
     public static FloorManager GetInstance()
@@ -29,7 +29,7 @@ public class FloorManager : MonoBehaviour
     public void ProgressToNextFloor()
     {
         currentFloor++;
-        StartCoroutine(uiManager.Fade(true, () =>
+        uiManager.Fade(true, () =>
         {
             var random = new System.Random();
             var line = lines[Random.Range(0, lines.Length)];
@@ -40,28 +40,32 @@ public class FloorManager : MonoBehaviour
             bm.EnemyActors[0].transform.position = Vector3.right * 10;
             bm.EnemyActors[0].PlayAnimation("Idle");
 
-            SkillGenerator.GetInstance().GenerateOptionsForCurrentFloorAndWaitForSelection(() =>
+            StartCoroutine(uiManager.TypeTextMiddleLetterByLetter(line, () =>
             {
-                StartCoroutine(uiManager.TypeTextMiddleLetterByLetter(line, () =>
-                {
-                    StartCoroutine(uiManager.FadeMiddleText(1));
-                    StartCoroutine(uiManager.Fade(false, () =>
-                    {
-                        bm.SetupBattleWithEnemy(GetCurrentFloorActor());
-                    }));
-                }));
-            });
-        }));
+                StartCoroutine(uiManager.FadeMiddleText(1));
+                bm.SetupBattleWithEnemies(GetActorsForFloor());
+
+
+            }));
+        });
     }
 
-    public Actor GetCurrentFloorActor()
+    public List<ActorData> GetActorsForFloor()
     {
+        List<ActorData> result = new List<ActorData>();
         if (currentFloor == 2)
-            return secondFloorEnemies[Random.Range(0, secondFloorEnemies.Count)];
+            result.Add(secondFloorEnemies[Random.Range(0, secondFloorEnemies.Count)]);
         else if (currentFloor == 3)
-            return thirdFloorEnemies[Random.Range(0, thirdFloorEnemies.Count)];
+        {
+            result.Add(thirdFloorEnemies[Random.Range(0, thirdFloorEnemies.Count)]);
+            result.Add(thirdFloorEnemies[Random.Range(0, thirdFloorEnemies.Count)]);
+        }
         else
-            return fourthFloorEnemies[Random.Range(0, fourthFloorEnemies.Count)];
+        {
+            result.Add(fourthFloorEnemies[Random.Range(0, fourthFloorEnemies.Count)]);
+        }
+        result.ForEach(result => result.Reset());
+        return result;
     }
 
 
@@ -103,7 +107,5 @@ public class FloorManager : MonoBehaviour
                 return number + "th";
         }
     }
-
-
 
 }

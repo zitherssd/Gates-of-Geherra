@@ -1,3 +1,4 @@
+using Assets.Scripts.Battle;
 using UnityEngine;
 
 public class VelocityIndicator : MonoBehaviour
@@ -23,12 +24,14 @@ public class VelocityIndicator : MonoBehaviour
 
         // Always enable the LineRenderer
         arrowLineRenderer.enabled = true;
-        arrowLineRenderer.SetWidth(0.1f, 0.01f);
+        arrowLineRenderer.startWidth = 0.1f;
+        arrowLineRenderer.endWidth = 0.01f;
     }
 
     void LateUpdate()
     {
         UpdateArrow();
+        //UpdateForwardArrow();
     }
 
     void UpdateArrow()
@@ -46,5 +49,23 @@ public class VelocityIndicator : MonoBehaviour
         arrowLineRenderer.SetPosition(1, arrowEnd);
         arrowLineRenderer.startColor = startColor;
         arrowLineRenderer.endColor = endColor;
+    }
+
+    void UpdateForwardArrow()
+    {
+        Vector3 velocity = transform.forward;
+        float arrowLength = 2f;
+        if(GetComponentInParent<Actor>().isControllable())
+        Debug.Log(transform.forward);
+
+        // Calculate the arrow end position based on the magnitude of the velocity
+        Vector3 arrowEnd = transform.position + velocity.normalized * arrowLength;
+
+        // Update the LineRenderer to draw the arrow with startColor and endColor
+        arrowLineRenderer.positionCount = 2;
+        arrowLineRenderer.SetPosition(0, transform.position);
+        arrowLineRenderer.SetPosition(1, arrowEnd);
+        arrowLineRenderer.startColor = Color.blue;
+        arrowLineRenderer.endColor = Color.green;
     }
 }

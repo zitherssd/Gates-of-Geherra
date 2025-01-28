@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 public class SkillGenerator : MonoBehaviour
 {
-    public List<BaseAction> BaseSkillsForGeneration;
+    //public List<BaseAction> ActionsPool;
     public GameObject CardPrefab;
     private static SkillGenerator instance;
     public static SkillGenerator GetInstance()
@@ -21,26 +21,21 @@ public class SkillGenerator : MonoBehaviour
     {
         instance = this;
     }
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 
     public void GenerateOptionsForCurrentFloorAndWaitForSelection(Action onSelectionComplete)
     {
         var floorManager = FloorManager.GetInstance();
         if (floorManager.currentFloor <= 5)
         {
-            var skill1 = GenerateSkillFromBase();
-            var skill2 = GenerateSkillFromBase();
-            var skill3 = GenerateSkillFromBase();
+            var drops =  Resources.LoadAll<BaseAction>("Crawler/Droptables/1-5");
+            var ActionsPool = drops.ToList();
+
+            int randomIndex = UnityEngine.Random.Range(0, ActionsPool.Count);
+            var skill1 = ActionsPool[randomIndex];
+            randomIndex = UnityEngine.Random.Range(0, ActionsPool.Count);
+            var skill2 = ActionsPool[randomIndex];
+            randomIndex = UnityEngine.Random.Range(0, ActionsPool.Count);
+            var skill3 = ActionsPool[randomIndex];
 
             GenerateSkillsAndWaitForSelection(skill1, skill2, skill3, onSelectionComplete);
         }
@@ -48,40 +43,60 @@ public class SkillGenerator : MonoBehaviour
 
     public void GenerateSkillsAndWaitForSelection(BaseAction skill1, BaseAction skill2, BaseAction skill3, Action onSelectionComplete)
     {
-        var UICard = Instantiate(CardPrefab, Vector2.zero, Quaternion.identity);
-        UICard.transform.SetParent(GameObject.FindGameObjectWithTag("MainCanvas").transform);
-        UICard.GetComponent<RectTransform>().localPosition = Vector3.zero;
-        UICard.GetComponent<Button>().onClick.AddListener(()=> onClickCardHandler(skill1));
-        UICard.GetComponent<Button>().onClick.AddListener(() => onSelectionComplete.Invoke());
-        var handler = UICard.GetComponent<ButtonHandler>();
+        var UICard1 = Instantiate(CardPrefab, Vector2.zero, Quaternion.identity);
+        UICard1.transform.SetParent(GameObject.FindGameObjectWithTag("MainCanvas").transform);
+        UICard1.GetComponent<RectTransform>().localPosition = Vector3.zero;
+        var handler = UICard1.GetComponent<ActionButtonHandler>();
         handler.referencedAction = skill1;
         handler.InitCard();
 
-        UICard = Instantiate(CardPrefab, Vector2.zero, Quaternion.identity);
-        UICard.transform.SetParent(GameObject.FindGameObjectWithTag("MainCanvas").transform);
-        UICard.GetComponent<RectTransform>().localPosition = Vector3.right * 250;
-        UICard.GetComponent<Button>().onClick.AddListener(() => onClickCardHandler(skill2));
-        UICard.GetComponent<Button>().onClick.AddListener(() => onSelectionComplete.Invoke());
-        handler = UICard.GetComponent<ButtonHandler>();
+        var UICard2 = Instantiate(CardPrefab, Vector2.zero, Quaternion.identity);
+        UICard2.transform.SetParent(GameObject.FindGameObjectWithTag("MainCanvas").transform);
+        UICard2.GetComponent<RectTransform>().localPosition = Vector3.right * 250;
+        handler = UICard2.GetComponent<ActionButtonHandler>();
         handler.referencedAction = skill2;
         handler.InitCard();
 
-        UICard = Instantiate(CardPrefab, Vector2.zero, Quaternion.identity);
-        UICard.transform.SetParent(GameObject.FindGameObjectWithTag("MainCanvas").transform);
-        UICard.GetComponent<RectTransform>().localPosition = Vector3.right * -250;
-        UICard.GetComponent<Button>().onClick.AddListener(() => onClickCardHandler(skill3));
-        UICard.GetComponent<Button>().onClick.AddListener(() => onSelectionComplete.Invoke());
-        handler = UICard.GetComponent<ButtonHandler>();
+        var UICard3 = Instantiate(CardPrefab, Vector2.zero, Quaternion.identity);
+        UICard3.transform.SetParent(GameObject.FindGameObjectWithTag("MainCanvas").transform);
+        UICard3.GetComponent<RectTransform>().localPosition = Vector3.right * -250;
+        handler = UICard3.GetComponent<ActionButtonHandler>();
         handler.referencedAction = skill3;
         handler.InitCard();
+
+        UICard1.GetComponent<Button>().onClick.AddListener(() =>
+        {
+            onClickCardHandler(skill1);
+            Destroy(UICard1.gameObject);
+            Destroy(UICard2.gameObject);
+            Destroy(UICard3.gameObject);
+            onSelectionComplete.Invoke();
+        });
+
+        UICard2.GetComponent<Button>().onClick.AddListener(() =>
+        {
+            onClickCardHandler(skill2);
+            Destroy(UICard1.gameObject);
+            Destroy(UICard2.gameObject);
+            Destroy(UICard3.gameObject);
+            onSelectionComplete.Invoke();
+        });
+
+        UICard3.GetComponent<Button>().onClick.AddListener(() =>
+        {
+            onClickCardHandler(skill3);
+            Destroy(UICard1.gameObject);
+            Destroy(UICard2.gameObject);
+            Destroy(UICard3.gameObject);
+            onSelectionComplete.Invoke();
+        });
 
         //muhahaha
     }
 
-    void onClickCardHandler(BaseAction skill)
+    void onClickCardHandler(BaseAction action)
     {
-        ButtonHandler.KillAll();
-        BattleManager.instance.PlayerActors[0].Actor.baseActions.Add(skill);
+            BattleManager.instance.PlayerActors[0].ActorData.actions.Add(action);
     }
 
     void ModifyFloats(ref float field1, ref float field2, ref float field3)

@@ -31,7 +31,7 @@ namespace Assets.Scripts.Utility
         {
 			System.Random random = new System.Random();
 			int randomIndex = random.Next(music.Count);
-			musicSource.volume = 1.0f; // Reset volume to 1.0f before playing
+			//musicSource.volume = 0.5f; // Reset volume to 1.0f before playing
 			musicSource.clip = music[randomIndex];
 			musicSource.Play();
         }
@@ -56,25 +56,5 @@ namespace Assets.Scripts.Utility
         {
 			return soundEffects.First(item => item.name == name);
         }
-
-		public void FadeOutMusic()
-		{
-			StartCoroutine(FadeOut(musicSource, fadeOutDuration));
-		}
-
-		private IEnumerator FadeOut(AudioSource audioSource, float duration)
-		{
-			float startVolume = audioSource.volume;
-
-			for (float t = 0; t < duration; t += Time.deltaTime)
-			{
-				audioSource.volume = Mathf.Lerp(startVolume, 0, t / duration);
-				yield return null;
-			}
-
-			audioSource.volume = 0;
-			audioSource.Stop();
-		}
-
 	}
 }
