@@ -57,12 +57,13 @@ namespace Assets.Scripts.Battle
         public new Rigidbody rigidbody { get; set; }
 
 
-        private void Awake()
+        public void Initialize(ActorData actorData)
         {
+            if(actorData != null)
+                this.ActorData = actorData;
             ActorData.Reset();
             rigidbody = gameObject.GetComponent<Rigidbody>();
             animator = gameObject.GetComponent<Animator>();
-
             state = new ActorStateMachine(this);
             audio = new AudioManager(this);
             statusManager = new StatusManager(this);
@@ -70,16 +71,10 @@ namespace Assets.Scripts.Battle
             ai = new AIComponent(this);
             target = new TargetingManager(this);
             movement = new MovementManager(this);
-
+            gameObject.GetComponentInChildren<BarsHandler>().Initialize(this);
         }
 
-        private void Start()
-        {
-            if (!isControllable())
-                if (!BattleManager.instance.EnemyActors.Contains(this)) BattleManager.instance.EnemyActors.Add(this);
-                //do nothing
 
-        }
         public void UseAction(BaseAction action, Action onActionComplete) //Perform an action
         {
             if (isControllable())
@@ -246,6 +241,7 @@ namespace Assets.Scripts.Battle
         }
         private void OnCollisionEnter(Collision collision)
         {
+            if(state!=null)
             state.OnCollisionEnter(collision);
         }
 

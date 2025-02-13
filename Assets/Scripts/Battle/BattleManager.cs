@@ -8,12 +8,14 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using static Assets.BaseAction;
+using static UnityEngine.EventSystems.EventTrigger;
 
 namespace Assets
 {
 
     public class BattleManager : MonoBehaviour
     {
+        public GameObject enemyPrefab;
         public Action<uint> OnNewTurn;
         public static BattleManager instance = null;
         [SerializeField] public List<Actor> PlayerActors;
@@ -43,6 +45,9 @@ namespace Assets
                 StartCoroutine(UIManager.instance.FadeMiddleText(1));
                 UIManager.instance.Fade(false, () =>
                 {
+
+
+
                     StartCoroutine(WaitForSeconds(2f, () =>
                     {
                         StartBattle();
@@ -51,54 +56,43 @@ namespace Assets
             }));
         }
 
-        //Starts a battle with current PlayerActors and EnemyActors
+        //Start floor 1 
         void StartBattle()
         {
             foreach (var actor in PlayerActors.Concat(EnemyActors))
             {
-                //actor.ActorData.Reset();
+                actor.Initialize(actor.ActorData);
                 actor.state.TransitionToIdle();
             }
             UIManager.instance.DrawActions(PlayerActors[0].ActorData.actions);
             UIManager.instance.GainMeter(4f);
-            Debug.Log("Gained meter!");
-            //SwitchToNextTurn();
         }
 
-
-
-        public void SetupBattleWithEnemies(List<ActorData> enemy) //Floor 1,2 etc setup
+        public void SetupBattleWithEnemies(List<ActorData> newEnemies) //Floor 1,2 etc setup
         {
+            foreach(var enemy in EnemyActors)
+            {
+                Destroy(enemy.gameObject);
+            }
+            EnemyActors.Clear();
+
+            foreach (var enemy in newEnemies)
+            {
+                var enemyGameObject = Instantiate(enemyPrefab, new Vector3(10, 0, -3), Quaternion.identity);
+                var enemyActor = enemyGameObject.GetComponent<Actor>();
+                enemyActor.Initialize(enemy);
+                EnemyActors.Add(enemyActor);
+            }
+
+            PlayerActors[0].ActorData.Refresh();
+            CameraManager.instance.ResetForNewBattle();
             UIManager.instance.Fade(false, () =>
             {
-
-                EnemyActors[0].ActorData = enemy[0];
-                EnemyActors[0].ActorData.Reset();
-                EnemyActors[0].transform.Find("UI Elements").GetComponent<BarsHandler>().Reset();
-                PlayerActors[0].ActorData.Refresh();
-                CameraManager.instance.ResetForNewBattle();
                 foreach (var actor in PlayerActors.Concat(EnemyActors))
                 {
                     actor.state.TransitionTo(actor.state.idleState);
                 }
             });
-
-            //PlayerActors[0].GetBaseActor().currentPosture = PlayerActors[0].GetBaseActor().basePosture;
-
-            //uiManager = UIManager.GetInstance();
-            //StartCoroutine(uiManager.TypeTextMiddleLetterByLetter($"{PlayerActors[0].GetBaseActor().Name} vs {EnemyActors[0].GetBaseActor().Name}", () =>
-            //{
-            //    StartCoroutine(uiManager.FadeMiddleText(1));
-            //    StartCoroutine(WaitForSeconds(0.5f, () =>
-            //    {
-            //        PlayerActors[0].GetBaseActor().Initialize();
-
-            //        if (PlayerActors[0].GetBaseActor().AGI >= EnemyActors[0].GetBaseActor().AGI)
-            //            StartPlayerTurn();
-            //        else
-            //            StartEnemyTurn();
-            //    }));
-            //}));
         }
 
         IEnumerator WaitForSeconds(float seconds, Action onFinishedWaiting)
@@ -119,7 +113,6 @@ namespace Assets
             {
                 PlayerActors[0].state.TransitionTo(PlayerActors[0].state.blockState);
                 PlayerActors[0].PlayAnimation("Victory");
-                //SoundManager.instance.PlaySingle(SoundManager.instance.GetAudioClipByName("Like"));
                 UIManager.GetInstance().ChangeStatus("YOU WIN!!");
                 UIManager.instance.HideUI();
                 FloorManager.GetInstance().ProgressToNextFloor();

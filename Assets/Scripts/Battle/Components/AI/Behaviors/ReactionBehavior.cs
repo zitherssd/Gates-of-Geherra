@@ -38,6 +38,7 @@ namespace Assets.Scripts.Battle.Components.AI.Behaviors
                     var reaction = ChooseReaction(actor, incomingAttack);
                     if (reaction != null)
                     {
+                        if(reaction is Block)
                         // Set up the delay and store the action
                         cooldown = UnityEngine.Random.Range(0f, 0.05f);
                         pendingAction = reaction;

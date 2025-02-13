@@ -661,7 +661,7 @@ CanvasGroup:
   m_Alpha: 1
   m_Interactable: 1
   m_BlocksRaycasts: 1
-  m_IgnoreParentGroups: 1
+  m_IgnoreParentGroups: 0
 --- !u!114 &1382667342022522120
 MonoBehaviour:
   m_ObjectHideFlags: 0

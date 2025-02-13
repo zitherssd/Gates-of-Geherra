@@ -31,22 +31,25 @@ public class FloorManager : MonoBehaviour
         currentFloor++;
         uiManager.Fade(true, () =>
         {
-            var random = new System.Random();
-            var line = lines[Random.Range(0, lines.Length)];
-            line = line.Replace("{numberth}", GetOrdinal(currentFloor));
-
-            var bm = BattleManager.instance;
-            bm.PlayerActors[0].transform.position = Vector3.zero;
-            bm.EnemyActors[0].transform.position = Vector3.right * 10;
-            bm.EnemyActors[0].PlayAnimation("Idle");
-
-            StartCoroutine(uiManager.TypeTextMiddleLetterByLetter(line, () =>
+            SkillGenerator.instance.DrawSkillsFromSelectionAndWaitForSelection(SkillGenerator.instance.GetRandomActions(currentFloor - 1), () =>
             {
-                StartCoroutine(uiManager.FadeMiddleText(1));
-                bm.SetupBattleWithEnemies(GetActorsForFloor());
+                var random = new System.Random();
+                var line = lines[Random.Range(0, lines.Length)];
+                line = line.Replace("{numberth}", GetOrdinal(currentFloor));
+
+                var bm = BattleManager.instance;
+                bm.PlayerActors[0].transform.position = Vector3.zero;
+                bm.EnemyActors[0].transform.position = Vector3.right * 10;
+                bm.EnemyActors[0].PlayAnimation("Idle");
+
+                StartCoroutine(uiManager.TypeTextMiddleLetterByLetter(line, () =>
+                {
+                    StartCoroutine(uiManager.FadeMiddleText(1));
+                    bm.SetupBattleWithEnemies(GetActorsForFloor());
 
 
-            }));
+                }));
+            });
         });
     }
 
@@ -79,7 +82,8 @@ public class FloorManager : MonoBehaviour
             "On the {numberth} floor, an adversary appears.",
             "Someone on the {numberth} floor steps up to the challenge.",
             "A foe confronts me on the {numberth} floor.",
-            "An opponent stands ready on the {numberth} floor."
+            "An opponent stands ready on the {numberth} floor.",
+            "Bla bla bla"
         };
 
     static string GetOrdinal(int number)

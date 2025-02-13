@@ -15,21 +15,21 @@ MonoBehaviour:
   Type: 1
   Name: Sidestep
   Rarity: 0
-  Description: 
-  CooldownTimer: 7
+  Description: Do a cool shuffle
+  CooldownTimer: 1
   TotalUses: 0
   remainingUses: 0
   BuildupCost: 0
   BuildupGain: 0
-  StaminaCost: 7
+  StaminaCost: 1
   Speed: 0
   Tags: 0d000000090000000c000000
-  Direction: {x: -0.9121839, y: -0, z: 0.40978083}
+  Direction: {x: 0.2250584, y: -0, z: 0.9743453}
   currentCooldownTimer: 0
   StickMult: 1
   SlowdownMeterGain: 1
   SlowDownMeterGainOnPress: 1
   SlowdownMeterGainOnRelease: 0
   Animation: 14
-  force: 4
-  time: 2
+  force: 3.1
+  time: 6

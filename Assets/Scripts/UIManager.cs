@@ -65,7 +65,7 @@ public class UIManager : MonoBehaviour
         if (SlowdownMeter.value > 0)
         {
             if (Time.unscaledDeltaTime > 0.1) return;
-            SlowdownMeter.value -= 0.2f * Time.unscaledDeltaTime; // Decrease slider value over time
+            SlowdownMeter.value -= 0.1f * Time.unscaledDeltaTime; // Decrease slider value over time
             if (!effectActive)
             {
                 StartCoroutine(StartEffect()); // Trigger effect when value is above 0 and effect is not active
@@ -157,6 +157,11 @@ public class UIManager : MonoBehaviour
 
     public List<ActionButtonHandler> DrawActionsRadiallyOnScreenPoint(List<Assets.BaseAction> actions)
     {
+        foreach(Transform child in ActionsHolder.transform)
+        {
+            Destroy(child.gameObject);
+        }
+        foreach (Transform child in SkillHolder.transform) { Destroy(child.gameObject); }
         LeanTween.scale(ActionsHolder, Vector3.one, 0.2f).setEaseOutCubic().setIgnoreTimeScale(true);
         float radius = 100f;
         var handlers = new List<ActionButtonHandler>();
@@ -184,13 +189,6 @@ public class UIManager : MonoBehaviour
         //ActionSlot.SetActive(true);
         return handlers;
     }
-
-
-
-
-
-
-
 
 
 

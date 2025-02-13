@@ -55,29 +55,14 @@ namespace Assets.Scripts.Battle.Actions.Skills
         }
         public void ApplyDamageEffects(Actor casterActor, Actor targetActor, BaseReaction targetReaction, Action onDamageEffectsApplied)
         {
-
-            //Apply posture
-            if (PostureDamage > 0)
-            {
-                targetActor.ApplyPosture(PostureDamage);
-                if (casterActor.isControllable() && targetActor.state.CurrentState != targetActor.state.blockState)
-                {
-                    UIManager.instance.GainMeter(SlowdownMeterGain);
-                }
-            }
-
-            // Apply Damage
-            var damage = Damage + casterActor.ActorData.ATK - targetActor.ActorData.DEF;
-            if (damage > 0)
-            {
-                var hitstop = StaticHelpers.LinearMap(damage, 0.2f, 15, 0.083f, 0.420f);
-                targetActor.ApplyDamage(damage);
-            };
-
             // Apply Knockback
             if (KnockbackForce > 0)
             {
-                var direction = (targetActor.transform.position - casterActor.transform.position).normalized;
+                Vector3 direction;
+                if (Tags.Contains(TAG.USESTICK))
+                    direction = Direction.normalized;
+                else
+                    direction = (targetActor.transform.position - casterActor.transform.position).normalized;
                 if (this.Tags.Contains(TAG.KNOCKBACK_BACK))
                 {
                     Vector3 cameraForward = Camera.main.transform.forward;
@@ -107,6 +92,25 @@ namespace Assets.Scripts.Battle.Actions.Skills
                 targetActor.ApplyKnockback(direction, KnockbackForce);
             }
 
+            //Apply posture
+            if (PostureDamage > 0)
+            {
+                targetActor.ApplyPosture(PostureDamage);
+                if (casterActor.isControllable() && targetActor.state.CurrentState != targetActor.state.blockState)
+                {
+                    UIManager.instance.GainMeter(SlowdownMeterGain);
+                }
+            }
+
+            // Apply Damage
+            var damage = Damage + casterActor.ActorData.ATK - targetActor.ActorData.DEF;
+            if (damage > 0)
+            {
+                var hitstop = StaticHelpers.LinearMap(damage, 0.2f, 15, 0.083f, 0.420f);
+                targetActor.ApplyDamage(damage);
+            };
+
+   
 
 
             onDamageEffectsApplied?.Invoke();

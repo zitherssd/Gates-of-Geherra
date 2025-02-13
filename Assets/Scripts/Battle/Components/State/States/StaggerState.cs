@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Pattern;
+using System;
 using UnityEngine;
 
 namespace Assets.Scripts.Battle.Components.State.States
@@ -9,6 +10,8 @@ namespace Assets.Scripts.Battle.Components.State.States
         private float timer = 0f;
         private bool collisionOccured;
         private float duration = 0f;
+
+        public event Action<float> OnStaggerStateEntered;
 
         public StaggerState(Battle.Actor actor)
         {
@@ -24,6 +27,7 @@ namespace Assets.Scripts.Battle.Components.State.States
 
         public void Enter()
         {
+            OnStaggerStateEntered?.Invoke(duration);
             if (actor.isControllable())
             {
                 UIManager.GetInstance().HideUI();

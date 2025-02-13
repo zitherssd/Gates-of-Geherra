@@ -279,6 +279,7 @@ public class ActionButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerU
                 break;
             case BUTTONTYPE.CONTINNUOUS:
                 referencedAction.cancel?.Invoke();
+                EnableJoystick(false);
                 break;
             case BUTTONTYPE.CONTINUOUS_VECTOR:
                 referencedAction.cancel?.Invoke();

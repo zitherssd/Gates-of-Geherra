@@ -85,7 +85,7 @@ namespace Assets.Scripts.Battle.Components.Target
 
                 target = closestTarget;
             }
-            if (actor.isControllable()) selectionCircle.target = target.transform;
+            if (actor.isControllable() && target) selectionCircle.target = target.transform;
 
         }
         //if it's has a target but another enemy is even closer

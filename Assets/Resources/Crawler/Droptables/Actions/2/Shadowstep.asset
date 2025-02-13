@@ -12,19 +12,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52b87df2ff1781e46b25805e4c47ad87, type: 3}
   m_Name: Shadowstep
   m_EditorClassIdentifier: 
+  Type: 1
   Name: ShadowStep
   Rarity: 0
-  cooldownTurns: 0
+  Description: 
+  CooldownTimer: 0
   TotalUses: 6
+  remainingUses: 6
   BuildupCost: 0
   BuildupGain: 7
   StaminaCost: 5
   Speed: 0
   Tags: 0d0000000800000010000000
-  SliderValue: 0
-  StickValue: {x: 0, y: 0}
-  currentCooldownTurns: 0
-  remainingUses: 0
+  Direction: {x: 0.78912467, y: 0, z: -0.6142332}
+  currentCooldownTimer: 0
   StickMult: 3
-  type: 1
+  SlowdownMeterGain: 0
+  SlowDownMeterGainOnPress: 0
+  SlowdownMeterGainOnRelease: 0
+  Animation: 10
   Distance: 3

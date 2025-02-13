@@ -46,11 +46,10 @@ namespace Assets.Scripts.Battle.Components.State
 
         public void Enter()
         {
-            Debug.Log(actor.ActorData.name + " entered MoveState");
             actor.audio.PlayAudio("Move2");
             actor.PlayAnimation("Run");
             lastSqrMag = Mathf.Infinity;
-            actor.movement.ResetMomentum();
+            //actor.movement.ResetMomentum();
             actor.movement.SetFriction(0);
             if (!continousAction)
             {

@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,87 +12,65 @@ public class SkillGenerator : MonoBehaviour
 {
     //public List<BaseAction> ActionsPool;
     public GameObject CardPrefab;
-    private static SkillGenerator instance;
-    public static SkillGenerator GetInstance()
-    {
-        return instance;
-    }
+    public static SkillGenerator instance;
+    public string resourcePath = "Crawler/Droptables/Actions/";
+    public Canvas chooseSkillsUI;
 
     private void Awake()
     {
         instance = this;
     }
 
-    public void GenerateOptionsForCurrentFloorAndWaitForSelection(Action onSelectionComplete)
+    public BaseAction[] GetRandomActions(int floor)
     {
-        var floorManager = FloorManager.GetInstance();
-        if (floorManager.currentFloor <= 5)
+        // Load all ScriptableObjects from the specified folder
+        BaseAction[] allActions = Resources.LoadAll<BaseAction>(resourcePath + floor.ToString());
+
+        if (allActions.Length == 0)
         {
-            var drops =  Resources.LoadAll<BaseAction>("Crawler/Droptables/1-5");
-            var ActionsPool = drops.ToList();
-
-            int randomIndex = UnityEngine.Random.Range(0, ActionsPool.Count);
-            var skill1 = ActionsPool[randomIndex];
-            randomIndex = UnityEngine.Random.Range(0, ActionsPool.Count);
-            var skill2 = ActionsPool[randomIndex];
-            randomIndex = UnityEngine.Random.Range(0, ActionsPool.Count);
-            var skill3 = ActionsPool[randomIndex];
-
-            GenerateSkillsAndWaitForSelection(skill1, skill2, skill3, onSelectionComplete);
+            Debug.LogWarning("No actions found in the folder: " + resourcePath + floor.ToString());
+            return new BaseAction[0]; // Return empty array if no actions exist
         }
+
+        // Shuffle the array and pick up to 3 actions
+        return allActions.OrderBy(a => UnityEngine.Random.value).Take(Mathf.Min(3, allActions.Length)).ToArray();
     }
 
-    public void GenerateSkillsAndWaitForSelection(BaseAction skill1, BaseAction skill2, BaseAction skill3, Action onSelectionComplete)
+    public void DrawSkillsFromSelectionAndWaitForSelection(BaseAction[] skills, Action onSelectionComplete)
     {
-        var UICard1 = Instantiate(CardPrefab, Vector2.zero, Quaternion.identity);
-        UICard1.transform.SetParent(GameObject.FindGameObjectWithTag("MainCanvas").transform);
-        UICard1.GetComponent<RectTransform>().localPosition = Vector3.zero;
-        var handler = UICard1.GetComponent<ActionButtonHandler>();
-        handler.referencedAction = skill1;
-        handler.InitCard();
-
-        var UICard2 = Instantiate(CardPrefab, Vector2.zero, Quaternion.identity);
-        UICard2.transform.SetParent(GameObject.FindGameObjectWithTag("MainCanvas").transform);
-        UICard2.GetComponent<RectTransform>().localPosition = Vector3.right * 250;
-        handler = UICard2.GetComponent<ActionButtonHandler>();
-        handler.referencedAction = skill2;
-        handler.InitCard();
-
-        var UICard3 = Instantiate(CardPrefab, Vector2.zero, Quaternion.identity);
-        UICard3.transform.SetParent(GameObject.FindGameObjectWithTag("MainCanvas").transform);
-        UICard3.GetComponent<RectTransform>().localPosition = Vector3.right * -250;
-        handler = UICard3.GetComponent<ActionButtonHandler>();
-        handler.referencedAction = skill3;
-        handler.InitCard();
-
-        UICard1.GetComponent<Button>().onClick.AddListener(() =>
+        if (skills == null || skills.Length == 0)
         {
-            onClickCardHandler(skill1);
-            Destroy(UICard1.gameObject);
-            Destroy(UICard2.gameObject);
-            Destroy(UICard3.gameObject);
-            onSelectionComplete.Invoke();
-        });
+            Debug.LogWarning("No skills available for selection.");
+            onSelectionComplete?.Invoke();
+            return;
+        }
 
-        UICard2.GetComponent<Button>().onClick.AddListener(() =>
+        // UI Parent
+        Transform parent = chooseSkillsUI.transform;
+
+        for (int i = 0; i < skills.Length; i++)
         {
-            onClickCardHandler(skill2);
-            Destroy(UICard1.gameObject);
-            Destroy(UICard2.gameObject);
-            Destroy(UICard3.gameObject);
-            onSelectionComplete.Invoke();
-        });
+            var UICard = Instantiate(CardPrefab, Vector3.zero, Quaternion.identity, parent);
+            UICard.transform.localScale = new Vector3(1, 0, 1);
+            var handler = UICard.GetComponent<ActionCardHandler>();
+            handler.ReferencedAction = skills[i];
 
-        UICard3.GetComponent<Button>().onClick.AddListener(() =>
-        {
-            onClickCardHandler(skill3);
-            Destroy(UICard1.gameObject);
-            Destroy(UICard2.gameObject);
-            Destroy(UICard3.gameObject);
-            onSelectionComplete.Invoke();
-        });
+            // Assign button click event
+            UICard.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                BattleManager.instance.PlayerActors[0].ActorData.actions.Add(handler.ReferencedAction);
+                UIManager.instance.DrawActions(BattleManager.instance.PlayerActors[0].ActorData.actions);
 
-        //muhahaha
+                // Destroy all skill cards after selection
+                foreach (Transform child in parent)
+                {
+                    Destroy(child.gameObject);
+                }
+
+                onSelectionComplete?.Invoke();
+            });
+            LeanTween.scale(UICard.gameObject, Vector3.one, 0.55f).setEaseInBounce().setIgnoreTimeScale(true);
+        }
     }
 
     void onClickCardHandler(BaseAction action)
@@ -126,15 +105,6 @@ public class SkillGenerator : MonoBehaviour
             field3 *= 1.2f;
             field1 *= 0.9f;
         }
-    }
-
-    public BaseAction GenerateSkillFromBase()
-    {
-        //var random = new System.Random();
-        //var baseSkill = BaseSkillsForGeneration[random.Next(BaseSkillsForGeneration.Count)];
-        //var clone = Instantiate(baseSkill);
-        //ModifyFloats(ref clone.Damage, ref clone.PostureDamage, ref clone.KnockbackForce);
-        return null;
     }
 
     //public void UpgradeSkillAtRandom(ref Assets.Scripts.Actions.BaseAction skill)

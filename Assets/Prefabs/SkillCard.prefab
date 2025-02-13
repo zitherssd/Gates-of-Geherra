@@ -1109,7 +1109,7 @@ RectTransform:
   m_GameObject: {fileID: 8179543391653594742}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 0, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8179543391122266250}
@@ -1223,15 +1223,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32f7b714a0a0fb64483279790ccf1a2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skillName: {fileID: 0}
-  description: {fileID: 0}
-  cooldown: {fileID: 0}
-  staminaCost: {fileID: 0}
-  buildupcost: {fileID: 0}
-  uses: {fileID: 0}
-  power: {fileID: 0}
-  posture: {fileID: 0}
-  buildupGain: {fileID: 0}
+  skillName: {fileID: 8179543391122266251}
+  description: {fileID: 4458088668519190419}
+  cooldown: {fileID: 6090502008719441571}
+  staminaCost: {fileID: 6008930447428798633}
+  buildupcost: {fileID: 3672931040356440010}
+  uses: {fileID: 8487735505529228304}
+  power: {fileID: 8654911025930560400}
+  posture: {fileID: 3870532617569365390}
+  buildupGain: {fileID: 2850757370607253943}
 --- !u!1 &8492956811992140225
 GameObject:
   m_ObjectHideFlags: 0

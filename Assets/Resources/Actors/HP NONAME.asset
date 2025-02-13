@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc1fc7a1ac76d6f42841406faf2a9802, type: 3}
   m_Name: HP NONAME
   m_EditorClassIdentifier: 
+  _currentHp: 0
   Name: LOW
-  maxHp: 20
+  maxHp: 10
   alive: 1

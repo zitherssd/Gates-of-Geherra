@@ -28,7 +28,7 @@ public class ActionCardHandler : MonoBehaviour
     public void Initialize()
     {
         skillName.text = ReferencedAction.Name.ToUpper();
-        description.text = ReferencedAction.Description.ToUpper();
+        description.text = ReferencedAction.Description?.ToUpper();
         cooldown.text = ReferencedAction.CooldownTimer.ToString();
         if (ReferencedAction.BuildupGain != 0) buildupGain.text = "+" + ReferencedAction.BuildupGain.ToString() + " buildup".ToUpper(); else buildupGain.text = string.Empty;
         if (ReferencedAction.StaminaCost != 0) staminaCost.text = ReferencedAction.StaminaCost.ToString(); else staminaCost.text = string.Empty;

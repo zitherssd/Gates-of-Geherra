@@ -14,6 +14,7 @@ namespace Assets.Scripts.Battle.Actions.Reactions
         [Range(0, 2)] public float KnockbackModifier = 1f;
         public float duration;
         public float startupDelay;
+        public Action onSucessfulBlock;
         protected override void PerformSpecific(Actor actor, Action onReactionComplete)
         {
             cancel = onReactionComplete;

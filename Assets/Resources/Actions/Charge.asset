@@ -20,13 +20,15 @@ MonoBehaviour:
   TotalUses: 0
   remainingUses: 0
   BuildupCost: 0
-  BuildupGain: 5
+  BuildupGain: 30
   StaminaCost: 0
   Speed: 5
   Tags: 09000000
   Direction: {x: 0.8048138, y: 0, z: -0.42691037}
   currentCooldownTimer: 0
-  StickMult: 3
+  StickMult: 1.5
   SlowdownMeterGain: 5
+  SlowDownMeterGainOnPress: 0
+  SlowdownMeterGainOnRelease: 0
   Animation: 12
-  power: 2
+  power: 2.5

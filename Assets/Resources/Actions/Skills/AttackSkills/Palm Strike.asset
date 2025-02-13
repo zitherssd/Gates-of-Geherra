@@ -27,8 +27,8 @@ MonoBehaviour:
   Direction: {x: -0.1656936, y: 0, z: -0.98617727}
   currentCooldownTimer: 0
   StickMult: 2
-  SlowdownMeterGain: 0
-  SlowDownMeterGainOnPress: 0
+  SlowdownMeterGain: 1
+  SlowDownMeterGainOnPress: 2
   SlowdownMeterGainOnRelease: 0
   Animation: 5
   Range: 1

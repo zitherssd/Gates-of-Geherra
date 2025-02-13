@@ -89,8 +89,11 @@ namespace Assets.Scripts.Battle.Components.State.States
             duration -= Time.deltaTime;
             if (duration < 0)
             {
-                skill.cancel?.Invoke();
-                duration = 0;
+                if(skill)
+                {
+                    skill.cancel?.Invoke();
+                    duration = 0;
+                }
             }
         }
 

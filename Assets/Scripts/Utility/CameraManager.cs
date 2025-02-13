@@ -62,7 +62,11 @@ namespace Assets
         void Update()
         {
             Vector3 targetpos;
-            var playerTarget = playerActor.target.TargetPosition;
+            Vector3 playerTarget;
+            if (playerActor.target.TargetPosition != null)
+                playerTarget = playerActor.target.TargetPosition;
+            else
+                playerTarget = playerTransform.position + playerTransform.forward * 3f;
 
             distvector = (playerTarget + playerTransform.position) / 2; //start point 
             distvector = new Vector3(distvector.x, 0, distvector.z);
