@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using static Assets.BaseAction;
-using static UnityEngine.EventSystems.EventTrigger;
 
 namespace Assets
 {
@@ -21,6 +20,7 @@ namespace Assets
         [SerializeField] public List<Actor> PlayerActors;
         [SerializeField] public List<Actor> EnemyActors;
         public STATE state = STATE.READY;
+        [SerializeField] private GameObject SpawnerParent;
 
         private Queue<Actor> turnQueue = new Queue<Actor>();
         private bool repeatTurn;
@@ -39,20 +39,12 @@ namespace Assets
         {
             Application.targetFrameRate = 60;
             Physics.gravity = new Vector3(0, -6f, 0);
-            StartCoroutine(UIManager.instance.TypeTextMiddleLetterByLetter($"{PlayerActors[0].ActorData.Name} vs {EnemyActors[0].ActorData.Name}", () =>
+
+
+            SoundManager.instance.PlayMusic(null);
+            StartCoroutine(WaitForSeconds(2f, () =>
             {
-                SoundManager.instance.PlayMusic(null);
-                StartCoroutine(UIManager.instance.FadeMiddleText(1));
-                UIManager.instance.Fade(false, () =>
-                {
-
-
-
-                    StartCoroutine(WaitForSeconds(2f, () =>
-                    {
-                        StartBattle();
-                    }));
-                });
+                StartBattle();
             }));
         }
 
@@ -70,7 +62,7 @@ namespace Assets
 
         public void SetupBattleWithEnemies(List<ActorData> newEnemies) //Floor 1,2 etc setup
         {
-            foreach(var enemy in EnemyActors)
+            foreach (var enemy in EnemyActors)
             {
                 Destroy(enemy.gameObject);
             }
@@ -78,9 +70,11 @@ namespace Assets
 
             foreach (var enemy in newEnemies)
             {
-                var enemyGameObject = Instantiate(enemyPrefab, new Vector3(10, 0, -3), Quaternion.identity);
+                var clone = Instantiate(enemy);
+                var randomSpawner = GetRandomChild(SpawnerParent);
+                var enemyGameObject = Instantiate(enemyPrefab, randomSpawner.position, Quaternion.identity);
                 var enemyActor = enemyGameObject.GetComponent<Actor>();
-                enemyActor.Initialize(enemy);
+                enemyActor.Initialize(clone);
                 EnemyActors.Add(enemyActor);
             }
 
@@ -103,20 +97,35 @@ namespace Assets
 
         public void End()
         {
-            if (PlayerActors.TrueForAll(actor => actor.state.CurrentState == actor.state.deathState))
+            if (PlayerActors.TrueForAll(actor => !actor.state.IsAlive()))
             {
                 EnemyActors[0].PlayAnimation("Victory");
-                UIManager.GetInstance().ChangeStatus("YOU LOSE");
+                UIManager.GetInstance().ChangeStatus("Defeat");
                 SoundManager.instance.PlaySingle(SoundManager.instance.GetAudioClipByName("Curse2"));
             }
-            if (EnemyActors.TrueForAll(actor => actor.state.CurrentState == actor.state.deathState))
+            if (EnemyActors.TrueForAll(actor => !actor.state.IsAlive()))
             {
                 PlayerActors[0].state.TransitionTo(PlayerActors[0].state.blockState);
                 PlayerActors[0].PlayAnimation("Victory");
-                UIManager.GetInstance().ChangeStatus("YOU WIN!!");
                 UIManager.instance.HideUI();
-                FloorManager.GetInstance().ProgressToNextFloor();
+                UIManager.instance.Fade(true, () =>
+                {
+                    SkillGenerator.instance.DrawSkillsFromSelectionAndWaitForSelection(SkillGenerator.instance.GetRandomActions(FloorManager.instance.currentFloor), () =>
+                    {
+                        UIManager.instance.ShowRestingUI();
+                    });
+                });
             }
+        }
+
+        public static Transform GetRandomChild(GameObject list)
+        {
+            // Make sure the list is not empty
+            if (list.transform.childCount == 0)
+                throw new InvalidOperationException("Cannot retrieve a random element from an empty list.");
+
+            return list.transform.GetChild(UnityEngine.Random.Range(0, list.transform.childCount));
+            // Return the element at the random index
         }
     }
 

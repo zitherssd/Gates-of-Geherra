@@ -13,34 +13,32 @@ MonoBehaviour:
   m_Name: Old Prisoner
   m_EditorClassIdentifier: 
   Name: Old Prisoner
-  maxHp: 60
+  hpBars:
+  - maxHp: 10
+    alive: 0
   maxBuildup: 0
   maxPosture: 12
   maxStamina: 100
   Controllable: 0
-  ruleset: 1
+  AIRuleset: 1
   mainColor: {r: 0, g: 0, b: 0, a: 0}
   secondaryColor: {r: 0, g: 0, b: 0, a: 0}
   baseActions:
   - {fileID: 11400000, guid: eb94d8da9dbb0de4f9022395c5c28ce9, type: 2}
   - {fileID: 11400000, guid: 8944dff4634e45d4bbb0765034e3c880, type: 2}
-  - {fileID: 11400000, guid: d4852d63a398314488e810be1c412698, type: 2}
+  - {fileID: 11400000, guid: be9840726ece9af4da2e39dbbed43c1b, type: 2}
   baseReactions: []
   basePassives: []
-  baseHpBars:
-  - {fileID: 11400000, guid: 7480a64d72f259342898ac4956c7a727, type: 2}
   actions:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   reactions: []
-  hpBars:
-  - {fileID: 0}
-  currentBuildup: 0
+  currentBuildup: 19.5
   currentPosture: 12
-  currentStamina: 100
+  currentStamina: 91.55761
   postureRegenRate: 1
-  staminaRegenRate: 1
+  staminaRegenRate: 10
   ATK: 1
   DEF: 1
   AGI: 1

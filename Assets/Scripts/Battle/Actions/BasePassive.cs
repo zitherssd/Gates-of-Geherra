@@ -14,13 +14,13 @@ public class BasePassive : BaseAction
     //public void Remove();
     
 
-    protected void PerformSpecific(Actor casterActor, Action onPerformEnd)
-    {
-        //Should never run
-        PerformEffect();
-        //Remove();
-        onPerformEnd();
-    }
+    //protected void PerformSpecific(Actor casterActor, Action onPerformEnd)
+    //{
+    //    //Should never run
+    //    PerformEffect();
+    //    //Remove();
+    //    onPerformEnd();
+    //}
 
     private void PerformEffect()
     {

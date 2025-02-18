@@ -1,17 +1,17 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 namespace Assets.Scripts.Utility
 {
-    [CreateAssetMenu(fileName = "HpBar", menuName = "ScriptableObjects/HpBar", order = 2)]
-    public class HpBar : ScriptableObject
+    [Serializable]
+    public class HpBar
     {
-        public float _currentHp;
+        private float _currentHp;
 
-
-        public string Name;
         public float maxHp;
 
+        [HideInInspector]
         public float currentHp
         {
             get => _currentHp; set
@@ -20,8 +20,8 @@ namespace Assets.Scripts.Utility
                 _currentHp = Mathf.Clamp(_currentHp, 0, maxHp);
                 if (_currentHp == 0) alive = false;
             }
-        } 
-        
+        }
+        [HideInInspector]
         public bool alive;
     }
 }

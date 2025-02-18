@@ -2,6 +2,7 @@
 using Assets.Scripts.Utility;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Assets.Scripts.Battle.Actions.Skills
@@ -22,13 +23,14 @@ namespace Assets.Scripts.Battle.Actions.Skills
         private Actor casterActor;
         public float windupPostureDamageMult = 1f;
         public float recoveryPostureDamageMult = 1f;
+        public float BuildupGainOnHit;
 
         protected override void PerformSpecific(Actor casterActor, Action onPerformEnd)
         {
             //1. Get Target
             //2. Continuously Rotate Incrementally so you are facing target //more work
             //3. Move towards the Direction
-            cancel = onPerformEnd;
+            OnCancel = onPerformEnd;
             this.casterActor = casterActor;
             casterActor.state.TransitionTo(casterActor.state.actingState.Set(this, onPerformEnd));
             if (Type == BUTTONTYPE.VECTOR)
@@ -55,6 +57,14 @@ namespace Assets.Scripts.Battle.Actions.Skills
         }
         public void ApplyDamageEffects(Actor casterActor, Actor targetActor, BaseReaction targetReaction, Action onDamageEffectsApplied)
         {
+            var targetBlocking = targetActor.state.IsBlocking();
+            if (casterActor.isControllable && !targetBlocking)
+                UIManager.instance.GainMeter(SlowdownMeterGain);
+            if (targetBlocking)
+                casterActor.ActorData.ChangeBuildup(BuildupGainOnHit / 2);
+            else
+                casterActor.ActorData.ChangeBuildup(BuildupGainOnHit);
+
             // Apply Knockback
             if (KnockbackForce > 0)
             {
@@ -96,10 +106,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
             if (PostureDamage > 0)
             {
                 targetActor.ApplyPosture(PostureDamage);
-                if (casterActor.isControllable() && targetActor.state.CurrentState != targetActor.state.blockState)
-                {
-                    UIManager.instance.GainMeter(SlowdownMeterGain);
-                }
+
             }
 
             // Apply Damage
@@ -110,7 +117,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
                 targetActor.ApplyDamage(damage);
             };
 
-   
+
 
 
             onDamageEffectsApplied?.Invoke();
@@ -137,10 +144,10 @@ namespace Assets.Scripts.Battle.Actions.Skills
 
 
             var hits = CheckEnemiesInsideHitbox();
-            foreach(var hit in hits)
+            foreach (var hit in hits)
             {
-                if (Tags.Contains(TAG.TECH) && target.state.CurrentState != target.state.blockState)
-                    ApplyDamageEffects(casterActor, hit, BaseReaction.NoReaction, cancel);
+                if (Tags.Contains(TAG.TECH) && !target.state.IsBlocking())
+                    ApplyDamageEffects(casterActor, hit, BaseReaction.NoReaction, OnCancel);
                 else
                     ApplyDamageEffects(casterActor, hit, BaseReaction.NoReaction, null);
             }
@@ -194,15 +201,15 @@ namespace Assets.Scripts.Battle.Actions.Skills
                 transformedPoints.Add(worldPoint);
             }
 
-            List<Actor> enemyActors = casterActor.isControllable()
+            List<Actor> enemyActors = casterActor.isControllable
                 ? BattleManager.instance.EnemyActors
                 : BattleManager.instance.PlayerActors;
 
 
-            foreach (var enemy in enemyActors)
+            foreach (var enemy in enemyActors.Where(actor => actor.state.IsAlive()))
             {
                 Vector3 enemyPosition = enemy.transform.position;
-                
+
 
                 // Check if the center of the capsule is inside
                 if (IsPointInsidePolygon(enemyPosition, transformedPoints))
@@ -275,7 +282,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
 
             return false;
         }
-        private bool IsCircleIntersectingLine(Vector3 circleCenter, float radius, Vector3 lineStart, Vector3 lineEnd)
+        public static bool IsCircleIntersectingLine(Vector3 circleCenter, float radius, Vector3 lineStart, Vector3 lineEnd)
         {
             // Project the circle center onto the line segment and find the closest point
             Vector3 lineDir = lineEnd - lineStart;
@@ -298,10 +305,10 @@ namespace Assets.Scripts.Battle.Actions.Skills
 
         public float ApplyPostureModifier(float posture)
         {
-            if(state == STATE.windup)
-               return posture * windupPostureDamageMult;
-            if(state == STATE.recovery)
-                return posture * recoveryPostureDamageMult; 
+            if (state == STATE.windup)
+                return posture * windupPostureDamageMult;
+            if (state == STATE.recovery)
+                return posture * recoveryPostureDamageMult;
             return posture;
         }
     }

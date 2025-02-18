@@ -5,6 +5,7 @@ using Assets.Scripts.Utility;
 using System;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -209,7 +210,11 @@ public class ActionButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerU
 
     public void OnPointerDown(PointerEventData pointerEventData)
     {
-        if (Disabled) return;
+        if (Disabled)
+        {
+             
+            return;
+        }
 
         if (button.IsInteractable() == false) return;
 
@@ -224,9 +229,9 @@ public class ActionButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerU
         {
             case BUTTONTYPE.INSTANT:
                 //UseSkill nothing else
-                return;
                 break;
             case BUTTONTYPE.VECTOR:
+                CameraManager.instance.SlowTrack = false;
                 UIManager.instance.HideAllButThis(referencedAction);
                 UIManager.instance.GainMeter(referencedAction.SlowDownMeterGainOnPress);
                 EnableJoystick(true);
@@ -244,7 +249,8 @@ public class ActionButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerU
                 isPressed = true;
                 pointerDownPosition = Input.touchCount > 0 ? Input.GetTouch(0).position : (Vector2)Input.mousePosition;
                 EnableJoystick(true);
-                guide.GetComponent<ParticleSystem>().Play();
+                //guide.GetComponent<ParticleSystem>().Play();
+                referencedAction.OnCancel += DisableJoystick; 
 
                 joystickBase.position = pointerDownPosition;
                 break;
@@ -255,7 +261,12 @@ public class ActionButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerU
         //Output the name of the GameObject that is being clicked
     }
 
-    private void EnableJoystick(bool active)
+    public static void DisableJoystick()
+    {
+        joystickBase.gameObject.SetActive(false);
+        joystickKnob.gameObject.SetActive(false);
+    }
+    public static void EnableJoystick(bool active)
     {
         joystickBase.gameObject.SetActive(active);
         joystickKnob.gameObject.SetActive(active);
@@ -278,14 +289,16 @@ public class ActionButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerU
                 guide.GetComponent<ParticleSystem>().Stop();
                 break;
             case BUTTONTYPE.CONTINNUOUS:
-                referencedAction.cancel?.Invoke();
+                referencedAction.OnCancel?.Invoke();
                 EnableJoystick(false);
                 break;
             case BUTTONTYPE.CONTINUOUS_VECTOR:
-                referencedAction.cancel?.Invoke();
+                referencedAction.OnCancel?.Invoke();
                 UIManager.instance.GainMeter(referencedAction.SlowdownMeterGainOnRelease);
                 EnableJoystick(false);
                 guide.GetComponent<ParticleSystem>().Stop();
+                referencedAction.OnCancel -= DisableJoystick;
+
 
 
                 break;

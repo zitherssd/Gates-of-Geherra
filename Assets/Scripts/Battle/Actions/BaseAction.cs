@@ -27,7 +27,7 @@ namespace Assets
         public float SlowdownMeterGain;
         public float SlowDownMeterGainOnPress;
         public float SlowdownMeterGainOnRelease;
-        public Action cancel;
+        public Action OnCancel;
 
         public enum BUTTONTYPE { INSTANT, VECTOR, CONTINNUOUS, CONTINUOUS_VECTOR };
 
@@ -64,7 +64,13 @@ namespace Assets
 
 
             if (currentCooldownTimer > 0)
-                currentCooldownTimer = currentCooldownTimer -= Time.deltaTime;
+            {
+                if (Tags.Contains(TAG.RECHARGE_DURING_SLOWDOWN))
+                    currentCooldownTimer = currentCooldownTimer -= Time.unscaledDeltaTime;
+                else
+                    currentCooldownTimer = currentCooldownTimer -= Time.deltaTime;
+
+            }
             else
                 currentCooldownTimer = 0f;
 
@@ -160,7 +166,7 @@ namespace Assets
             PROJECTILE, KNOCKBACK_AIR, KNOCKBACK_FRONT, KNOCKBACK_BACK, NO_REACTION, FREE, STARTER, FINISHER, COUNTER, USESTICK, RECHARGE_TOTAL_USES,
             APPLYROOTMOTION,
             KILLMOMENTUM, KILL_TRACKING, PLAY_WHILE_SELECTING,
-            TECH, FACECLOSEST
+            TECH, FACECLOSEST, RECHARGE_DURING_SLOWDOWN
         }
     }
 

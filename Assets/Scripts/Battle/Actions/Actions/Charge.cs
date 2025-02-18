@@ -14,7 +14,7 @@ namespace Assets.Scripts.Battle.Actions
         {
             this.casterActor = casterActor;
             casterActor.state.TransitionTo(casterActor.state.actingState.Set(this, () => {
-                if (casterActor.isControllable())
+                if (casterActor.isControllable)
                 {
                     UIManager.instance.GainMeter(SlowdownMeterGain);
                 }

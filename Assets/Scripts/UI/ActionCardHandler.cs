@@ -51,7 +51,8 @@ public class ActionCardHandler : MonoBehaviour
         {
             power.text = (ReferencedAction as AttackSkill).Damage.ToString() + " damage".ToUpper();
             posture.text = (ReferencedAction as AttackSkill).PostureDamage.ToString() + " posture damage".ToUpper();
-
+            buildupGain.text = "+" + (ReferencedAction as AttackSkill).BuildupGainOnHit.ToString() + " buildup".ToUpper();
+            if (ReferencedAction.Tags.Contains(BaseAction.TAG.TECH)) description.text += "\n[TECH]";
         }
         else
             posture.text = string.Empty;

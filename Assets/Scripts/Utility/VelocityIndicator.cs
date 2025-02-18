@@ -55,7 +55,7 @@ public class VelocityIndicator : MonoBehaviour
     {
         Vector3 velocity = transform.forward;
         float arrowLength = 2f;
-        if(GetComponentInParent<Actor>().isControllable())
+        if(GetComponentInParent<Actor>().isControllable)
         Debug.Log(transform.forward);
 
         // Calculate the arrow end position based on the magnitude of the velocity

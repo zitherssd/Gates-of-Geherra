@@ -16,18 +16,18 @@ MonoBehaviour:
   Name: Move
   Rarity: 0
   Description: 
-  CooldownTimer: 0.5
+  CooldownTimer: 3
   TotalUses: 0
   remainingUses: 0
   BuildupCost: 0
   BuildupGain: 0
   StaminaCost: 0
   Speed: 0
-  Tags: 09000000
+  Tags: 0900000011000000
   Direction: {x: -0.56206256, y: -0, z: 0.13260877}
   currentCooldownTimer: 0
   StickMult: 0
   SlowdownMeterGain: 0
   SlowDownMeterGainOnPress: 0
   SlowdownMeterGainOnRelease: 1
-  duration: 19.4
+  duration: 10

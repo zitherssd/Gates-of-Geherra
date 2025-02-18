@@ -37,6 +37,7 @@ public class UIManager : MonoBehaviour
     public GameObject OriginPoint;
     public GameObject ActionsHolder;
     public GameObject SkillHolder;
+    public GameObject RestingUI;
     private bool effectActive;
     [SerializeField] private AnimationCurve startCurve;
     [SerializeField] private AnimationCurve endCurve;
@@ -212,6 +213,7 @@ public class UIManager : MonoBehaviour
 
     public IEnumerator TypeTextMiddleLetterByLetter(string text, Action onTypingComplete)
     {
+        MiddleTextbox.text = string.Empty;
         MiddleTextbox.color = new Color(MiddleTextbox.color.r, MiddleTextbox.color.g, MiddleTextbox.color.b, 1);
         foreach (char letter in text.ToCharArray())
         {
@@ -325,6 +327,11 @@ public class UIManager : MonoBehaviour
         Debug.Log("ResetMeter called: SlowdownMeter.value set to 0");
         StopAllCoroutines();
         StartCoroutine(StopEffect(0.05f));
+    }
+
+    internal void ShowRestingUI()
+    {
+        RestingUI.SetActive(true);
     }
 
     //1. Attack or Move or Skill // MoveWithingRange if able;

@@ -10,7 +10,9 @@ namespace Assets.Scripts.Battle.Actions.Reactions
     {
         [Range(0, 10)]
         public float force;
-        public float time;
+        public float recoveryTimeMult;
+        public float windupTimeMult;
+        public float friction;
         private Actor owner;
 
         protected override void PerformSpecific(Actor actor, Action onActionComplete)
@@ -29,11 +31,12 @@ namespace Assets.Scripts.Battle.Actions.Reactions
 
         public override void OnEnterWindup(Animator animator)
         {
-            animator.speed = time;
+            animator.speed = windupTimeMult;
         }
         public override void OnEnterRecovery(Animator animator)
         {
-            owner.movement.SetFriction(1.5f);
+            animator.speed = recoveryTimeMult;
+            owner.movement.SetFriction(friction);
         }
     }
 

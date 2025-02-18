@@ -13,7 +13,7 @@ public class SkillGenerator : MonoBehaviour
     //public List<BaseAction> ActionsPool;
     public GameObject CardPrefab;
     public static SkillGenerator instance;
-    public string resourcePath = "Crawler/Droptables/Actions/";
+    public string resourcePath = "Crawler/Droptables/Actions";
     public Canvas chooseSkillsUI;
 
     private void Awake()
@@ -24,11 +24,11 @@ public class SkillGenerator : MonoBehaviour
     public BaseAction[] GetRandomActions(int floor)
     {
         // Load all ScriptableObjects from the specified folder
-        BaseAction[] allActions = Resources.LoadAll<BaseAction>(resourcePath + floor.ToString());
+        BaseAction[] allActions = Resources.LoadAll<BaseAction>(resourcePath);
 
         if (allActions.Length == 0)
         {
-            Debug.LogWarning("No actions found in the folder: " + resourcePath + floor.ToString());
+            Debug.LogWarning("No actions found in the folder: " + resourcePath);
             return new BaseAction[0]; // Return empty array if no actions exist
         }
 
@@ -69,7 +69,7 @@ public class SkillGenerator : MonoBehaviour
 
                 onSelectionComplete?.Invoke();
             });
-            LeanTween.scale(UICard.gameObject, Vector3.one, 0.55f).setEaseInBounce().setIgnoreTimeScale(true);
+            LeanTween.scale(UICard.gameObject, Vector3.one * 2, 1f).setEaseOutBack().setIgnoreTimeScale(true);
         }
     }
 

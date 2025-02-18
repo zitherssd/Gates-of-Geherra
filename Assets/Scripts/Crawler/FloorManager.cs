@@ -7,15 +7,11 @@ public class FloorManager : MonoBehaviour
     public int currentFloor = 1;
     private UIManager uiManager;
 
-    public List<ActorData> secondFloorEnemies;
-    public List<ActorData> thirdFloorEnemies;
-    public List<ActorData> fourthFloorEnemies;
+    [Header("Floor Enemies")]
+    public List<FloorEnemies> floorEnemiesList; // List of all floors and their enemies
 
-    private static FloorManager instance;
-    public static FloorManager GetInstance()
-    {
-        return instance;
-    }
+    public static FloorManager instance;
+
     private void Awake()
     {
         instance = this;
@@ -26,52 +22,43 @@ public class FloorManager : MonoBehaviour
         uiManager = UIManager.GetInstance();
     }
 
+
     public void ProgressToNextFloor()
     {
         currentFloor++;
-        uiManager.Fade(true, () =>
+
+        var random = new System.Random();
+        var line = lines[Random.Range(0, lines.Length)];
+        line = line.Replace("{numberth}", GetOrdinal(currentFloor));
+
+        var bm = BattleManager.instance;
+        bm.PlayerActors[0].transform.position = Vector3.zero;
+        bm.EnemyActors[0].transform.position = Vector3.right * 10;
+        bm.EnemyActors[0].PlayAnimation("Idle");
+
+        StartCoroutine(uiManager.TypeTextMiddleLetterByLetter(line, () =>
         {
-            SkillGenerator.instance.DrawSkillsFromSelectionAndWaitForSelection(SkillGenerator.instance.GetRandomActions(currentFloor - 1), () =>
-            {
-                var random = new System.Random();
-                var line = lines[Random.Range(0, lines.Length)];
-                line = line.Replace("{numberth}", GetOrdinal(currentFloor));
+            StartCoroutine(uiManager.FadeMiddleText(1));
+            bm.SetupBattleWithEnemies(GetActorsForFloor());
+        }));
 
-                var bm = BattleManager.instance;
-                bm.PlayerActors[0].transform.position = Vector3.zero;
-                bm.EnemyActors[0].transform.position = Vector3.right * 10;
-                bm.EnemyActors[0].PlayAnimation("Idle");
-
-                StartCoroutine(uiManager.TypeTextMiddleLetterByLetter(line, () =>
-                {
-                    StartCoroutine(uiManager.FadeMiddleText(1));
-                    bm.SetupBattleWithEnemies(GetActorsForFloor());
-
-
-                }));
-            });
-        });
     }
 
     public List<ActorData> GetActorsForFloor()
     {
-        List<ActorData> result = new List<ActorData>();
-        if (currentFloor == 2)
-            result.Add(secondFloorEnemies[Random.Range(0, secondFloorEnemies.Count)]);
-        else if (currentFloor == 3)
+        // Find the floor in the list and return its enemies
+        FloorEnemies floorData = floorEnemiesList.Find(f => f.floorNumber == currentFloor);
+
+        if (floorData != null)
         {
-            result.Add(thirdFloorEnemies[Random.Range(0, thirdFloorEnemies.Count)]);
-            result.Add(thirdFloorEnemies[Random.Range(0, thirdFloorEnemies.Count)]);
+            return floorData.enemies;
         }
         else
         {
-            result.Add(fourthFloorEnemies[Random.Range(0, fourthFloorEnemies.Count)]);
+            // If the floor is not found, return an empty list or handle as needed
+            return new List<ActorData>();
         }
-        result.ForEach(result => result.Reset());
-        return result;
     }
-
-
 
     string[] lines = {
             "A combatant approaches...",
@@ -111,5 +98,12 @@ public class FloorManager : MonoBehaviour
                 return number + "th";
         }
     }
-
 }
+
+[System.Serializable]
+public class FloorEnemies
+{
+    public int floorNumber; // The floor number (e.g., 2 for second floor, etc.)
+    public List<ActorData> enemies; // List of enemies for this floor
+}
+

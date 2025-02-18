@@ -21,22 +21,36 @@ namespace Assets.Scripts.Battle.Actions.Skills
         public float PostureDamage;
         public float KnockbackForce;
         public float SelfForce;
+        public float ThrowSpeed = 3f;
+        public float SizeMultiplier = 1f;
+
         private Actor caster;
+        private Action _onPerformEnd;
 
         
         protected override void PerformSpecific(Actor casterActor, Action onPerformEnd)
         {
             caster = casterActor;
-
+            _onPerformEnd = onPerformEnd;
             casterActor.state.TransitionTo(casterActor.state.actingState.Set(this, onPerformEnd));
             casterActor.movement.FaceTarget(caster.target.target);
         }
         public override void OnHit()
         {
             caster.movement.AddForce(caster.target.DirectionToClosestEnemy * SelfForce);
-            GameObject projectile = Instantiate(projectilePrefab, caster.transform.position + caster.transform.forward * 1f + Vector3.up * 0.5f, caster.transform.rotation, caster.transform);
-            projectile.GetComponent<Rigidbody>().AddForce(caster.transform.forward * 3, ForceMode.Impulse);
-
+            GameObject projectile = Instantiate(projectilePrefab, caster.transform.position + caster.transform.forward * 1f + Vector3.up * 0.5f, caster.transform.rotation);
+            projectile.GetComponent<ProjectileHandler>().Initialize(caster, this);
+            
+            if(Type == BUTTONTYPE.VECTOR)
+            {
+                projectile.GetComponent<Rigidbody>().AddForce(Direction * ThrowSpeed, ForceMode.Impulse);
+            }
+            else
+                projectile.GetComponent<Rigidbody>().AddForce(caster.transform.forward * ThrowSpeed, ForceMode.Impulse);
+            if(Tags.Contains(TAG.TECH))
+            {
+                _onPerformEnd.Invoke();
+            }
         }
 
         public override bool IsValidAndInRange(Actor caster)
@@ -48,7 +62,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
             var potentialTargets = new List<Actor>();
 
             //Get all active
-            if (caster.isControllable())
+            if (caster.isControllable)
                 potentialTargets = BattleManager.instance.EnemyActors;
             else
                 potentialTargets = BattleManager.instance.PlayerActors;

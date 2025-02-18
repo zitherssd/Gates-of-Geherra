@@ -1,0 +1,22 @@
+START WITH ACTOR PREFAB
+
+ACTOR is consistent.
+Actor is the script that makes the prefab playable.
+What is an actor?
+Actor is class that handles:
+- health (Dealing/healing damage)
+- posture (dealing/healing)
+- knockback (dealing) they hold events for when stuff liek this happens so you can keep track
+- hold events for initialization/reset (called on changing actorData or spawning)
+- other components subscribe to this do their own reset logic
+- Hold ActorData stats
+	- This means ACTIONS (ATTACKS, SKILLS, etc) + stats
+- HOLDS the stateMachine (needs to be cleaned up and implement isIdle type methods
+- 
+
+Player should be separate class that 
+	
+
+
+
+ACOT

@@ -30,4 +30,5 @@ MonoBehaviour:
   SlowdownMeterGain: 0
   SlowDownMeterGainOnPress: 2
   SlowdownMeterGainOnRelease: 2
-  power: 3.5
+  power: 2
+  vertpower: 3

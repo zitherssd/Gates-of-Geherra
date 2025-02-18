@@ -16,12 +16,12 @@ MonoBehaviour:
   Name: Sweep
   Rarity: 0
   Description: 
-  CooldownTimer: 4
+  CooldownTimer: 10
   TotalUses: 2
-  remainingUses: 1
-  BuildupCost: 0
-  BuildupGain: 7
-  StaminaCost: 10
+  remainingUses: 2
+  BuildupCost: 10
+  BuildupGain: 0
+  StaminaCost: 8
   Speed: 0
   Tags: 01000000090000000300000010000000
   Direction: {x: 0, y: 0, z: 0}
@@ -32,13 +32,13 @@ MonoBehaviour:
   SlowdownMeterGainOnRelease: 0
   Animation: 2
   Range: 1.5
-  Damage: 0
-  PostureDamage: 0
-  KnockbackForce: 0
-  windupTimeMult: 0.5
-  recoveryTimeMult: 0.3
+  Damage: 4
+  PostureDamage: 10
+  KnockbackForce: 1
+  windupTimeMult: 0.55
+  recoveryTimeMult: 0.45
   state: 0
-  SelfForce: 3
+  SelfForce: 1
   HitboxPoints:
   - {x: 0, y: 0, z: 0}
   - {x: -1.3334, y: 0, z: 1.4908}
@@ -47,5 +47,6 @@ MonoBehaviour:
   - {x: 0.6666, y: 0, z: 1.8856}
   - {x: 1.3334, y: 0, z: 1.4908}
   - {x: 2, y: 0, z: 1.4908}
-  windupPostureDamageMult: 4
-  recoveryPostureDamageMult: 4
+  windupPostureDamageMult: 1
+  recoveryPostureDamageMult: 1
+  BuildupGainOnHit: 5

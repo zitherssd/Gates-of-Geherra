@@ -13,12 +13,18 @@ MonoBehaviour:
   m_Name: Boxer
   m_EditorClassIdentifier: 
   Name: Boxer
-  maxHp: 30
+  hpBars:
+  - maxHp: 8
+    alive: 0
+  - maxHp: 8
+    alive: 0
+  - maxHp: 8
+    alive: 0
   maxBuildup: 30
   maxPosture: 30
-  maxStamina: 0
+  maxStamina: 50
   Controllable: 0
-  ruleset: 0
+  AIRuleset: 2
   mainColor: {r: 0, g: 0, b: 0, a: 0}
   secondaryColor: {r: 0, g: 0, b: 0, a: 0}
   baseActions:
@@ -26,19 +32,16 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 32aec34b3154f8d4f911f18b56484c67, type: 2}
   - {fileID: 11400000, guid: 3f869f152f955e64e9475dcf2c667237, type: 2}
   - {fileID: 11400000, guid: 3aa89802a1ec30d48b32f497ba10ce82, type: 2}
+  - {fileID: 11400000, guid: e1dd5f1ba77a8a147ada505d02ffc4f1, type: 2}
   baseReactions: []
   basePassives: []
-  baseHpBars:
-  - {fileID: 11400000, guid: 7480a64d72f259342898ac4956c7a727, type: 2}
   actions:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   reactions: []
-  hpBars:
-  - {fileID: 0}
-  currentBuildup: 21
+  currentBuildup: 0
   currentPosture: 30
   currentStamina: 0
   postureRegenRate: 1

@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94ee0db516bd2344ebc0a36825941aa7, type: 3}
+  m_Name: Sidestep
+  m_EditorClassIdentifier: 
+  Type: 1
+  Name: Sidestep
+  Rarity: 1
+  Description: Do a cool shuffle
+  CooldownTimer: 6
+  TotalUses: 2
+  remainingUses: 2
+  BuildupCost: 0
+  BuildupGain: 4
+  StaminaCost: 4
+  Speed: 0
+  Tags: 0d000000090000000c000000110000000a000000
+  Direction: {x: -0.8831618, y: 0, z: 0.4690684}
+  currentCooldownTimer: 0
+  StickMult: 1
+  SlowdownMeterGain: 0.5
+  SlowDownMeterGainOnPress: 1
+  SlowdownMeterGainOnRelease: 0
+  Animation: 14
+  force: 2.8
+  recoveryTimeMult: 3.5
+  windupTimeMult: 3.5
+  friction: 0.5

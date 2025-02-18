@@ -12,12 +12,13 @@ namespace Assets.Scripts.Battle.Actions.Reactions
         [Range(0, 2)] public float DamageModifier = 1f;
         [Range(0, 2)] public float PostureModifier = 1f;
         [Range(0, 2)] public float KnockbackModifier = 1f;
+        public float StaminaCostMult = 1f;
         public float duration;
         public float startupDelay;
         public Action onSucessfulBlock;
         protected override void PerformSpecific(Actor actor, Action onReactionComplete)
         {
-            cancel = onReactionComplete;
+            OnCancel = onReactionComplete;
             actor.state.TransitionTo(actor.state.blockState.Set(this)); //this should pass ReactionComplete
         }
     }
