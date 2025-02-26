@@ -1,16 +1,15 @@
-﻿using Assets.Scripts.Actions;
-using System;
+﻿using System;
 using UnityEngine;
 
-namespace Assets.Scripts.Battle.Actions
+namespace Assets.Scripts.Battle.Actions.Actions
 {
     [CreateAssetMenu(fileName = "Charge", menuName = "ScriptableObjects/Action/Charge", order = 1)]
     public class Charge : BaseSkill
     {
         public float power;
         private Vector3 chargeVector;
-        private Actor casterActor;
-        protected override void PerformSpecific(Actor casterActor, Action onPerformEnd)
+        private Actor.Actor casterActor;
+        protected override void PerformSpecific(Actor.Actor casterActor, Action onPerformEnd)
         {
             this.casterActor = casterActor;
             casterActor.state.TransitionTo(casterActor.state.actingState.Set(this, () => {

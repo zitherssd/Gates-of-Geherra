@@ -26,12 +26,12 @@ MonoBehaviour:
   mainColor: {r: 0, g: 0, b: 0, a: 0}
   secondaryColor: {r: 0, g: 0, b: 0, a: 0}
   baseActions:
-  - {fileID: 11400000, guid: 3f869f152f955e64e9475dcf2c667237, type: 2}
-  - {fileID: 11400000, guid: 6b798446413f4794088292db8b471646, type: 2}
+  - {fileID: 11400000, guid: e50784aadad8cdb459c92505f169fb00, type: 2}
+  - {fileID: 11400000, guid: bbf04903c613b684fbee4bea1e99fc92, type: 2}
   - {fileID: 11400000, guid: eb94d8da9dbb0de4f9022395c5c28ce9, type: 2}
-  - {fileID: 11400000, guid: 84039c0611ba36841b126f1d365eb783, type: 2}
-  baseReactions:
-  - {fileID: 0}
+  - {fileID: 11400000, guid: bee8d5fdedd9f2441991e17989df781b, type: 2}
+  - {fileID: 11400000, guid: 65e0cd7e139f4c54b9327beabbe9aa28, type: 2}
+  baseReactions: []
   basePassives: []
   actions:
   - {fileID: 0}

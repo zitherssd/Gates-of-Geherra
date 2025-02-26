@@ -1,10 +1,8 @@
 ﻿using Assets.Scripts.Battle;
-using System.Collections;
-using System.Linq;
+using Assets.Scripts.Battle.Actor;
 using UnityEngine;
-using UnityEngine.Windows;
 
-namespace Assets
+namespace Assets.Scripts.Utility
 {
     public class CameraManager : MonoBehaviour
     {

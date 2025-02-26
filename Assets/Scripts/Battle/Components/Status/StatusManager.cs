@@ -7,10 +7,10 @@ namespace Assets.Scripts.Battle.Components.Status
 {
     public class StatusManager
     {
-        private Actor owner;
+        private Actor.Actor owner;
         public List<BaseStatus> activeStatuses; 
 
-        public StatusManager(Actor owner)
+        public StatusManager(Actor.Actor owner)
         {
             this.owner = owner;
             activeStatuses = new List<BaseStatus>();

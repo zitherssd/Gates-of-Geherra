@@ -26,11 +26,10 @@ MonoBehaviour:
   mainColor: {r: 0, g: 0, b: 0, a: 0}
   secondaryColor: {r: 0, g: 0, b: 0, a: 0}
   baseActions:
-  - {fileID: 11400000, guid: 3a2fead6c4e4bd14e975cc8e422006e4, type: 2}
-  - {fileID: 11400000, guid: 3aa89802a1ec30d48b32f497ba10ce82, type: 2}
-  - {fileID: 11400000, guid: 6b798446413f4794088292db8b471646, type: 2}
+  - {fileID: 11400000, guid: 6156ef38c6ee2b647849b0a5cf9a53e3, type: 2}
+  - {fileID: 11400000, guid: aae9dbed006f82f4086140a65bee5c06, type: 2}
+  - {fileID: 11400000, guid: 5b9d2d0224c0bfa418627da8e495eadc, type: 2}
   - {fileID: 11400000, guid: eb94d8da9dbb0de4f9022395c5c28ce9, type: 2}
-  - {fileID: 11400000, guid: 84039c0611ba36841b126f1d365eb783, type: 2}
   baseReactions: []
   basePassives: []
   actions:
@@ -47,5 +46,5 @@ MonoBehaviour:
   staminaRegenRate: 2
   ATK: 2
   DEF: 0
-  AGI: 3
+  AGI: 8
   Spirit: 0

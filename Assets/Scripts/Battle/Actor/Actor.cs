@@ -1,16 +1,14 @@
-﻿using Assets.Scripts.Battle.Actions.Skills;
-using Assets.Scripts.Battle.Components;
-using Assets.Scripts.Battle.Components.AI;
+﻿using System;
+using Assets.Scripts.Battle.Actions;
+using Assets.Scripts.Battle.Actor.AI;
+using Assets.Scripts.Battle.Actor.Systems;
 using Assets.Scripts.Battle.Components.Audio;
 using Assets.Scripts.Battle.Components.Effects;
-using Assets.Scripts.Battle.Components.State;
 using Assets.Scripts.Battle.Components.Status;
-using Assets.Scripts.Battle.Components.Target;
 using Assets.Scripts.Utility;
-using System;
 using UnityEngine;
 
-namespace Assets.Scripts.Battle
+namespace Assets.Scripts.Battle.Actor
 {
     public class Actor : MonoBehaviour
     {

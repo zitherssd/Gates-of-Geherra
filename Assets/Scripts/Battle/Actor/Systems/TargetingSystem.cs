@@ -1,8 +1,8 @@
-using Assets.Scripts.Utility;
 using System.Linq;
+using Assets.Scripts.Utility;
 using UnityEngine;
 
-namespace Assets.Scripts.Battle.Components.Target
+namespace Assets.Scripts.Battle.Actor.Systems
 {
     public class TargetingSystem
     {

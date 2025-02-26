@@ -1,14 +1,13 @@
-﻿using Assets.Scripts.Battle.Actions.Skills;
+﻿using System;
+using Assets.Scripts.Battle.Actions;
 using Assets.Scripts.Pattern;
-using System;
-using UnityEditor;
 using UnityEngine;
 
-namespace Assets.Scripts.Battle.Components.State
+namespace Assets.Scripts.Battle.Actor.States
 {
     public class MoveState : IState
     {
-        private Battle.Actor actor;
+        private Actor actor;
         private Vector3 destination;
         private Action onMoveComplete;
         private float sqrMag;

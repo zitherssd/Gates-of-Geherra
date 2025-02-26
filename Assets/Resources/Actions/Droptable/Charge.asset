@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d2c66b39a75e8e4c810a8e1f12fbd1b, type: 3}
+  m_Name: Charge
+  m_EditorClassIdentifier: 
+  Type: 0
+  Name: Charge
+  Rarity: 0
+  Description: Charge towards closest enemy
+  CooldownTimer: 10
+  TotalUses: 0
+  remainingUses: 0
+  BuildupCost: 0
+  BuildupGain: 6
+  StaminaCost: 10
+  Speed: 0
+  Tags: 
+  Direction: {x: 0, y: 0, z: 0}
+  currentCooldownTimer: 0
+  StickMult: 1
+  SlowdownMeterGain: 1
+  SlowDownMeterGainOnPress: 0
+  SlowdownMeterGainOnRelease: 0
+  Animation: 12
+  power: 2.5

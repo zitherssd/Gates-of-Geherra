@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29bf3ed8153f62c41a58d7707b5ac266, type: 3}
+  m_Name: Roll_Shuffle
+  m_EditorClassIdentifier: 
+  Type: 1
+  Name: Shuffle
+  Rarity: 0
+  Description: Do a cool sidestep
+  CooldownTimer: 10
+  TotalUses: 2
+  remainingUses: 2
+  BuildupCost: 4
+  BuildupGain: 6
+  StaminaCost: 4
+  Speed: 0
+  Tags: 0a0000000c00000011000000
+  Direction: {x: -0.7281511, y: -0, z: 0.6854167}
+  currentCooldownTimer: 0
+  StickMult: 1
+  SlowdownMeterGain: 0.75
+  SlowDownMeterGainOnPress: 2
+  SlowdownMeterGainOnRelease: 0
+  Animation: 14
+  force: 2.8
+  recoveryTimeMult: 3.5
+  windupTimeMult: 3.5
+  friction: 0.5

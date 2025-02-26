@@ -25,7 +25,6 @@ namespace Assets.Scripts.Utility
 			else if (instance != this)
 				Destroy(gameObject);
 
-			DontDestroyOnLoad(gameObject);
 		}
 		public void PlayMusic(AudioClip clip)
         {

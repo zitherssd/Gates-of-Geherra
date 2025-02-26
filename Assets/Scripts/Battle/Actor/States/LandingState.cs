@@ -1,9 +1,7 @@
-﻿using UnityEditor;
+﻿using Assets.Scripts.Pattern;
 using UnityEngine;
-using Assets.Scripts.Pattern;
 
-
-namespace Assets.Scripts.Battle.Components.State.States
+namespace Assets.Scripts.Battle.Actor.States
 {
     public class LandingState : IState
     {

@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using TMPro;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Assets.Scripts.Utility
@@ -17,10 +15,7 @@ namespace Assets.Scripts.Utility
             if (instance == null) instance = this;
         }
     }
-}
 
-namespace UnityEngine.EventSystems
-{
     public interface IHasChanged : IEventSystemHandler
     {
         void HasChanged();

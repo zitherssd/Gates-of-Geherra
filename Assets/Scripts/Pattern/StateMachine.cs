@@ -1,5 +1,4 @@
-﻿using Assets.Scripts.Battle.Components.State.States;
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace Assets.Scripts.Pattern

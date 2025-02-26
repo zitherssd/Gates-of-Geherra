@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5a2e800b20efe647a3894bd700a7333, type: 3}
+  m_Name: Focus
+  m_EditorClassIdentifier: 
+  Type: 0
+  Name: Focus
+  Rarity: 0
+  Description: Gain stamina and meter
+  CooldownTimer: 10
+  TotalUses: 0
+  remainingUses: 0
+  BuildupCost: 0
+  BuildupGain: 3
+  StaminaCost: 0
+  Speed: 0
+  Tags: 0f000000
+  Direction: {x: 0, y: 0, z: 0}
+  currentCooldownTimer: 0
+  StickMult: 1
+  SlowdownMeterGain: 0
+  SlowDownMeterGainOnPress: 0
+  SlowdownMeterGainOnRelease: 0
+  Animation: 6
+  OnStartEffects:
+  - rid: 8685422100207370263
+  OnHitEffects:
+  - rid: 8685422100207370259
+  - rid: 8685422100207370260
+  - rid: 8685422100207370261
+  - rid: 8685422100207370262
+  OnEndEffeects: []
+  windupTimeMult: 0.4
+  recoveryTimeMult: 0.2
+  references:
+    version: 2
+    RefIds:
+    - rid: 8685422100207370259
+      type: {class: StaminaHealEffect, ns: Assets.Scripts.Battle.Actions.Skills, asm: Assembly-CSharp}
+      data:
+        HealAmount: 15
+    - rid: 8685422100207370260
+      type: {class: MeterGainEffect, ns: Assets.Scripts.Battle.Actions.Skills, asm: Assembly-CSharp}
+      data:
+        MeterGainValue: 5
+    - rid: 8685422100207370261
+      type: {class: FlashColor, ns: Assets.Scripts.Battle.Actions.Skills, asm: Assembly-CSharp}
+      data:
+        intensity: 3
+    - rid: 8685422100207370262
+      type: {class: SlowTrack, ns: Assets.Scripts.Battle.Actions.Skills, asm: Assembly-CSharp}
+      data:
+        active: 0
+    - rid: 8685422100207370263
+      type: {class: FlashColor, ns: Assets.Scripts.Battle.Actions.Skills, asm: Assembly-CSharp}
+      data:
+        intensity: 1

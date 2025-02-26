@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.Pattern;
 using UnityEngine;
-namespace Assets.Scripts.Battle.Components.State.States
+
+namespace Assets.Scripts.Battle.Actor.States
 {
     public class AirNeutralState : IState
     {

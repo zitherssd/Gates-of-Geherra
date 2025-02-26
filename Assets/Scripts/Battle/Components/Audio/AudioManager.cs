@@ -6,10 +6,10 @@ namespace Assets.Scripts.Battle.Components.Audio
 {
     public class AudioManager
     {
-        private Battle.Actor owner;
+        private Actor.Actor owner;
         private AudioSource audioSource;
 
-        public AudioManager(Battle.Actor owner)
+        public AudioManager(Actor.Actor owner)
         {
             this.owner = owner;
             audioSource = owner.GetComponent<AudioSource>();

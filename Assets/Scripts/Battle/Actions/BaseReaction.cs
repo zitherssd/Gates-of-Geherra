@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using UnityEngine;
-
-namespace Assets.Scripts.Actions
+﻿namespace Assets.Scripts.Battle.Actions
 {
     public class BaseReaction : BaseAction
     {

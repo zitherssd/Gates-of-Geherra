@@ -1,8 +1,7 @@
-﻿using Assets.Scripts.Battle.Actions;
-using System;
-using System.Linq;
+﻿using System.Linq;
+using Assets.Scripts.Battle.Actions.Actions;
 
-namespace Assets.Scripts.Battle.Components.AI.Behaviors
+namespace Assets.Scripts.Battle.Actor.AI.Behaviors
 {
     public class ApproachBehavior : IAIBehavior
     {

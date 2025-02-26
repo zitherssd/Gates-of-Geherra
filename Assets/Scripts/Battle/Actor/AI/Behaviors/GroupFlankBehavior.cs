@@ -1,9 +1,9 @@
-﻿using Assets.Scripts.Battle.Actions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Assets.Scripts.Battle.Actions.Actions;
 using UnityEngine;
 
-namespace Assets.Scripts.Battle.Components.AI.Behaviors
+namespace Assets.Scripts.Battle.Actor.AI.Behaviors
 {
     public class GroupFlankBehavior : IAIBehavior
     {

@@ -1,17 +1,16 @@
 ﻿using Assets.Scripts.Pattern;
 using UnityEngine;
 
-
-namespace Assets.Scripts.Battle.Components.State
+namespace Assets.Scripts.Battle.Actor.States
 {
     public class FumbleState : IState
     {
-        private Battle.Actor actor;
+        private Actor actor;
         private float timer = 0f;
         private bool collisionOccured;
         private float duration = 0f;
 
-        public FumbleState(Battle.Actor actor)
+        public FumbleState(Actor actor)
         {
             this.actor = actor;
         }

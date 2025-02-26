@@ -1,10 +1,11 @@
-using UnityEngine.EventSystems;
-using UnityEngine.Serialization;
-using UnityEngine.InputSystem.Layouts;
-using System;
+using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.Layouts;
+using UnityEngine.InputSystem.OnScreen;
+using UnityEngine.Serialization;
 
-namespace UnityEngine.InputSystem.OnScreen
+namespace Assets.Scripts.Utility
 {
     public class ModifiedOnScreenStick : OnScreenControl, IPointerDownHandler, IPointerUpHandler, IDragHandler
     {

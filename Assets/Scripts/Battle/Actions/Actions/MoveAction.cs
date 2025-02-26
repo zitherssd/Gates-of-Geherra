@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Assets.Scripts.Battle.Actions
+namespace Assets.Scripts.Battle.Actions.Actions
 {
     [CreateAssetMenu(fileName = "Move", menuName = "ScriptableObjects/Action/Move", order = 1)]
     public class MoveAction : BaseAction
@@ -9,7 +9,7 @@ namespace Assets.Scripts.Battle.Actions
         public static MoveAction instance;
         public float duration;
 
-        protected override void PerformSpecific(Actor casterActor, Action onPerformEnd)
+        protected override void PerformSpecific(Actor.Actor casterActor, Action onPerformEnd)
         {
             OnCancel += onPerformEnd;
             StickMult = 1 + casterActor.ActorData.AGI / 10;

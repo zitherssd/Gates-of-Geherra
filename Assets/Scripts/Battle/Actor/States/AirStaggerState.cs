@@ -1,16 +1,14 @@
-﻿using System.Collections;
-using Assets.Scripts.Pattern;
-
+﻿using Assets.Scripts.Pattern;
 using UnityEngine;
 
-namespace Assets.Scripts.Battle.Components.State
+namespace Assets.Scripts.Battle.Actor.States
 {
     public class AirStaggerState : IState
     {
-        private Battle.Actor actor;
+        private Actor actor;
         private SpriteRenderer selectionCircleSR;
 
-        public AirStaggerState(Battle.Actor actor)
+        public AirStaggerState(Actor actor)
         {
             this.actor = actor;
             //selectionCircleSR = actor.transform.Find("SelectionCircle").GetComponent<SpriteRenderer>();

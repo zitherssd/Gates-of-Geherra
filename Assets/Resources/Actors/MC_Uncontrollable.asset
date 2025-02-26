@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e110cd302acb85459812d80addcbd30, type: 3}
   m_Name: MC_Uncontrollable
   m_EditorClassIdentifier: 
-  Name: Player
+  Name: Evil Player
   hpBars:
   - maxHp: 10
     alive: 1
@@ -26,13 +26,13 @@ MonoBehaviour:
   mainColor: {r: 1, g: 1, b: 1, a: 0}
   secondaryColor: {r: 0, g: 0, b: 0, a: 1}
   baseActions:
-  - {fileID: 11400000, guid: 498ba4be69212c045ad9de12e867357c, type: 2}
-  - {fileID: 11400000, guid: 41212e7c50bded74f9ccbdc5f66fee94, type: 2}
-  - {fileID: 11400000, guid: 3aa89802a1ec30d48b32f497ba10ce82, type: 2}
-  - {fileID: 11400000, guid: 3a2fead6c4e4bd14e975cc8e422006e4, type: 2}
-  - {fileID: 11400000, guid: 6b798446413f4794088292db8b471646, type: 2}
-  - {fileID: 11400000, guid: 84039c0611ba36841b126f1d365eb783, type: 2}
-  - {fileID: 11400000, guid: d4852d63a398314488e810be1c412698, type: 2}
+  - {fileID: 11400000, guid: eb94d8da9dbb0de4f9022395c5c28ce9, type: 2}
+  - {fileID: 11400000, guid: bee8d5fdedd9f2441991e17989df781b, type: 2}
+  - {fileID: 11400000, guid: 5b9d2d0224c0bfa418627da8e495eadc, type: 2}
+  - {fileID: 11400000, guid: 7a9771d855ce02343aea8b6afd56e150, type: 2}
+  - {fileID: 11400000, guid: e50784aadad8cdb459c92505f169fb00, type: 2}
+  - {fileID: 11400000, guid: bbf04903c613b684fbee4bea1e99fc92, type: 2}
+  - {fileID: 11400000, guid: aae9dbed006f82f4086140a65bee5c06, type: 2}
   baseReactions: []
   basePassives: []
   actions:

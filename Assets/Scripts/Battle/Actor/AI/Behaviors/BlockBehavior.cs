@@ -1,12 +1,11 @@
-﻿using Assets.Scripts.Battle.Actions.Reactions;
-using Assets.Scripts.Battle.Actions.Skills;
-using Assets.Scripts.Battle.Components.AI;
-using Assets.Scripts.Battle.Components.AI.Behaviors;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Assets.Scripts.Battle.Actions;
+using Assets.Scripts.Battle.Actions.Reactions;
+using Assets.Scripts.Battle.Actions.Skills;
 using UnityEngine;
 
-namespace Assets.Scripts.Battle.Components.State
+namespace Assets.Scripts.Battle.Actor.AI.Behaviors
 
 {
     public class BlockBehavior : IAIBehavior

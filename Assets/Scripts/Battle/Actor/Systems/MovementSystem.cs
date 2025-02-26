@@ -1,7 +1,6 @@
-﻿using UnityEditor;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace Assets.Scripts.Battle.Components
+namespace Assets.Scripts.Battle.Actor.Systems
 {
     public class MovementSystem
     {

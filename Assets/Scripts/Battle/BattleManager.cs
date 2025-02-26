@@ -1,15 +1,17 @@
-﻿using Assets.Scripts.Actions;
-using Assets.Scripts.Battle;
-using Assets.Scripts.Battle.Actions;
-using Assets.Scripts.Utility;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Assets.Scripts.Battle.Actions;
+using Assets.Scripts.Battle.Actions.Actions;
+using Assets.Scripts.Battle.Actor;
+using Assets.Scripts.Crawler;
+using Assets.Scripts.Utility;
 using UnityEngine;
-using static Assets.BaseAction;
+using UnityEngine.SceneManagement;
+using static Assets.Scripts.Battle.Actions.BaseAction;
 
-namespace Assets
+namespace Assets.Scripts.Battle
 {
 
     public class BattleManager : MonoBehaviour
@@ -17,12 +19,12 @@ namespace Assets
         public GameObject enemyPrefab;
         public Action<uint> OnNewTurn;
         public static BattleManager instance = null;
-        [SerializeField] public List<Actor> PlayerActors;
-        [SerializeField] public List<Actor> EnemyActors;
+        [SerializeField] public List<Actor.Actor> PlayerActors;
+        [SerializeField] public List<Actor.Actor> EnemyActors;
         public STATE state = STATE.READY;
         [SerializeField] private GameObject SpawnerParent;
 
-        private Queue<Actor> turnQueue = new Queue<Actor>();
+        private Queue<Actor.Actor> turnQueue = new Queue<Actor.Actor>();
         private bool repeatTurn;
         private uint currentTurn;
         private void Awake()
@@ -73,7 +75,7 @@ namespace Assets
                 var clone = Instantiate(enemy);
                 var randomSpawner = GetRandomChild(SpawnerParent);
                 var enemyGameObject = Instantiate(enemyPrefab, randomSpawner.position, Quaternion.identity);
-                var enemyActor = enemyGameObject.GetComponent<Actor>();
+                var enemyActor = enemyGameObject.GetComponent<Actor.Actor>();
                 enemyActor.Initialize(clone);
                 EnemyActors.Add(enemyActor);
             }
@@ -101,7 +103,8 @@ namespace Assets
             {
                 EnemyActors[0].PlayAnimation("Victory");
                 UIManager.GetInstance().ChangeStatus("Defeat");
-                SoundManager.instance.PlaySingle(SoundManager.instance.GetAudioClipByName("Curse2"));
+                //SoundManager.instance.PlaySingle(SoundManager.instance.GetAudioClipByName("Curse2"));
+                StartCoroutine(WaitForSeconds(2f, () => { SceneManager.LoadScene("TitleScene"); }));
             }
             if (EnemyActors.TrueForAll(actor => !actor.state.IsAlive()))
             {

@@ -1,10 +1,9 @@
-﻿using UnityEditor;
-using UnityEngine;
-using Assets.Scripts.Pattern;
-using System;
+﻿using System;
 using Assets.Scripts.Battle.Actions.Reactions;
+using Assets.Scripts.Pattern;
+using UnityEngine;
 
-namespace Assets.Scripts.Battle.Components.State.States
+namespace Assets.Scripts.Battle.Actor.States
 {
     public class BlockState : IState
     {

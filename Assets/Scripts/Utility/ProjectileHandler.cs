@@ -1,8 +1,9 @@
-﻿using Assets.Scripts.Actions;
-using Assets.Scripts.Battle;
+﻿using Assets.Scripts.Battle;
+using Assets.Scripts.Battle.Actions;
 using Assets.Scripts.Battle.Actions.Skills;
+using Assets.Scripts.Battle.Actor;
 using UnityEngine;
-using static Assets.BaseAction;
+using static Assets.Scripts.Battle.Actions.BaseAction;
 
 namespace Assets.Scripts.Utility
 {

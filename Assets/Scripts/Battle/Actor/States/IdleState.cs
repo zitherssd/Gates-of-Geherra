@@ -1,19 +1,18 @@
-﻿using Assets.Scripts.Pattern;
-using System;
+﻿using System;
+using Assets.Scripts.Pattern;
 using UnityEngine;
-using static Assets.BaseAction;
 
-namespace Assets.Scripts.Battle.Components.State
+namespace Assets.Scripts.Battle.Actor.States
 {
     public class IdleState : IState //Ready state
     {
-        private Battle.Actor actor;
+        private Actor actor;
         private SpriteRenderer spriteRenderer;
         private float rampupfactor;
         public event Action OnEnterIdle;
 
 
-        public IdleState(Battle.Actor actor)
+        public IdleState(Actor actor)
         {
             this.actor = actor;
             spriteRenderer = actor.GetComponent<SpriteRenderer>();

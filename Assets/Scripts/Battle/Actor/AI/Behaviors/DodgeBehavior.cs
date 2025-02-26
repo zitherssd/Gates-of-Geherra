@@ -1,10 +1,11 @@
-﻿using Assets.Scripts.Battle.Actions.Reactions;
-using Assets.Scripts.Battle.Actions.Skills;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Assets.Scripts.Battle.Actions;
+using Assets.Scripts.Battle.Actions.Reactions;
+using Assets.Scripts.Battle.Actions.Skills;
 using UnityEngine;
 
-namespace Assets.Scripts.Battle.Components.AI.Behaviors
+namespace Assets.Scripts.Battle.Actor.AI.Behaviors
 {
     public class DodgeBehavior : IAIBehavior
     {

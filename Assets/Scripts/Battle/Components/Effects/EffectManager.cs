@@ -8,12 +8,12 @@ namespace Assets.Scripts.Battle.Components.Effects
 {
     public class EffectManager
     {
-        private readonly Actor owner;
+        private readonly Actor.Actor owner;
         public LineRenderer lineRenderer;
         private List<Vector3> points;
         private bool drawing;
 
-        public EffectManager(Actor owner)
+        public EffectManager(Actor.Actor owner)
         {
             this.owner = owner;
             owner.DamageApplied += ShowDamagePopup;
@@ -39,7 +39,7 @@ namespace Assets.Scripts.Battle.Components.Effects
             popup.GetComponentInChildren<DamagePopup>().Initialize(damageAmount);
         }
 
-        private void FlashWhite(float damageAmount)
+        public void FlashWhite(float damageAmount)
         {
             var cc = owner.GetComponentInChildren<ColorController>();
 

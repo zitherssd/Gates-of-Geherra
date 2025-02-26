@@ -1,9 +1,8 @@
-﻿using Assets.Scripts.Battle;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Assets
+namespace Assets.Scripts.Battle.Actions
 {
     public class BaseAction : ScriptableObject
     {
@@ -31,7 +30,7 @@ namespace Assets
 
         public enum BUTTONTYPE { INSTANT, VECTOR, CONTINNUOUS, CONTINUOUS_VECTOR };
 
-        public virtual void Perform(Actor casterActor, Action onPerformEnd)
+        public virtual void Perform(Actor.Actor casterActor, Action onPerformEnd)
         {
             //ResetCooldown();
 
@@ -47,7 +46,7 @@ namespace Assets
             });
         }
 
-        protected virtual void PerformSpecific(Actor casterActor, Action onPerformEnd) { }
+        protected virtual void PerformSpecific(Actor.Actor casterActor, Action onPerformEnd) { }
 
         public virtual void UpdateCooldown() //runs every frame
         {
@@ -107,7 +106,7 @@ namespace Assets
             currentCooldownTimer = 0;
         }
 
-        public virtual bool IsValid(Actor caster, out string InvalidReason)
+        public virtual bool IsValid(Actor.Actor caster, out string InvalidReason)
         {
             InvalidReason = "";
 
@@ -134,7 +133,7 @@ namespace Assets
             return true;
         }
 
-        public virtual bool IsValidAndInRange(Actor caster)
+        public virtual bool IsValidAndInRange(Actor.Actor caster)
         {
             return false;
         }

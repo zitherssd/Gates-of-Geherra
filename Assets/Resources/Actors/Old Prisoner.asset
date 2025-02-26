@@ -15,7 +15,7 @@ MonoBehaviour:
   Name: Old Prisoner
   hpBars:
   - maxHp: 10
-    alive: 0
+    alive: 1
   maxBuildup: 0
   maxPosture: 12
   maxStamina: 100
@@ -25,8 +25,8 @@ MonoBehaviour:
   secondaryColor: {r: 0, g: 0, b: 0, a: 0}
   baseActions:
   - {fileID: 11400000, guid: eb94d8da9dbb0de4f9022395c5c28ce9, type: 2}
-  - {fileID: 11400000, guid: 8944dff4634e45d4bbb0765034e3c880, type: 2}
-  - {fileID: 11400000, guid: be9840726ece9af4da2e39dbbed43c1b, type: 2}
+  - {fileID: 11400000, guid: e6f5605b38a52a7419d7547b23b1c33c, type: 2}
+  - {fileID: 11400000, guid: bbf04903c613b684fbee4bea1e99fc92, type: 2}
   baseReactions: []
   basePassives: []
   actions:
@@ -34,9 +34,9 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   reactions: []
-  currentBuildup: 19.5
+  currentBuildup: 0
   currentPosture: 12
-  currentStamina: 91.55761
+  currentStamina: 100
   postureRegenRate: 1
   staminaRegenRate: 10
   ATK: 1

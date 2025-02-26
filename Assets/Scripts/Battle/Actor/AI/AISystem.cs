@@ -1,8 +1,7 @@
-﻿using Assets.Scripts.Battle.Components.AI.Behaviors;
-using Assets.Scripts.Battle.Components.State;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Assets.Scripts.Battle.Actor.AI.Behaviors;
 
-namespace Assets.Scripts.Battle.Components.AI
+namespace Assets.Scripts.Battle.Actor.AI
 {
     public enum AiRuleset { DEFAULT, OldMan, Ninja, Maniac, Hungry }
     public enum AIState { Thinking, Acting, Moving }
@@ -29,7 +28,7 @@ namespace Assets.Scripts.Battle.Components.AI
                 {
                     case AiRuleset.DEFAULT:
                         behaviors.Add(new AttackBehavior());
-                        behaviors.Add(new ReactionBehavior());
+                        behaviors.Add(new DodgeBehavior());
                         behaviors.Add(new DashBehavior());
                         behaviors.Add(new ApproachBehavior());
                         break;

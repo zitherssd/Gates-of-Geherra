@@ -6,7 +6,7 @@
 
         //expires dupa 5 runde
 
-        public Poison(Actor owner)
+        public Poison(Actor.Actor owner)
         {
 
         }

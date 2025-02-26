@@ -1,11 +1,7 @@
-﻿using Assets.Scripts.Battle.Actions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
+using Assets.Scripts.Battle.Actions.Actions;
 
-namespace Assets.Scripts.Battle.Components.AI.Behaviors
+namespace Assets.Scripts.Battle.Actor.AI.Behaviors
 {
     public class DashBehavior : IAIBehavior
     {

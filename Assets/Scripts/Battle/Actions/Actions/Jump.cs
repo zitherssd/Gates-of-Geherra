@@ -10,7 +10,7 @@ namespace Assets.Scripts.Battle.Actions.Actions
         public float power;
         public float vertpower;
 
-        protected override void PerformSpecific(Actor casterActor, Action onPerformEnd)
+        protected override void PerformSpecific(Actor.Actor casterActor, Action onPerformEnd)
         {
             var direction = Direction * power;
             direction.y = vertpower;

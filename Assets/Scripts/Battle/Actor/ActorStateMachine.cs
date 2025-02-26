@@ -1,11 +1,11 @@
-﻿using Assets.Scripts.Actions;
-using Assets.Scripts.Battle.Actions;
+﻿using Assets.Scripts.Battle.Actions;
+using Assets.Scripts.Battle.Actions.Actions;
 using Assets.Scripts.Battle.Actions.Skills;
-using Assets.Scripts.Battle.Components.State.States;
+using Assets.Scripts.Battle.Actor.States;
 using Assets.Scripts.Pattern;
 using UnityEngine;
 
-namespace Assets.Scripts.Battle.Components.State
+namespace Assets.Scripts.Battle.Actor
 {
     public class ActorStateMachine : StateMachine
     {

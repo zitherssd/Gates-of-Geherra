@@ -1,49 +1,51 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class ColorController : MonoBehaviour
+namespace Assets.Scripts.Utility
 {
-    public Color mainColor = Color.white;
-    public Color secondaryColor = Color.black;
-    private MaterialPropertyBlock propBlock;
-    public AnimationCurve curve;
-
-    private SpriteRenderer spriteRenderer;
-
-    void Start()
+    public class ColorController : MonoBehaviour
     {
-        propBlock = new MaterialPropertyBlock();
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        public Color mainColor = Color.white;
+        public Color secondaryColor = Color.black;
+        private MaterialPropertyBlock propBlock;
+        public AnimationCurve curve;
 
-        // Set the texture from the sprite
-        propBlock.SetTexture("_MainTex", spriteRenderer.sprite.texture);
+        private SpriteRenderer spriteRenderer;
 
-        // Set the mainColor and secondaryColor properties
-        propBlock.SetColor("_MainColor", mainColor);
-        propBlock.SetColor("_SecondaryColor", secondaryColor);
-
-        // Apply the property block to the renderer
-        spriteRenderer.SetPropertyBlock(propBlock);
-    }
-
-    public IEnumerator FlashWhite(float duration, float intensity)
-    {
-        float currentFlashAmount = 0f;
-        float elapsedTime = 0f;
-
-        while (elapsedTime < duration)
+        void Start()
         {
-            elapsedTime += Time.deltaTime;
-            currentFlashAmount = curve.Evaluate(elapsedTime / duration);
-            currentFlashAmount *= intensity;
-            // Set the flash amount in the property block
-            propBlock.SetFloat("_PostureDamageFlashAmount", currentFlashAmount);
+            propBlock = new MaterialPropertyBlock();
+            spriteRenderer = GetComponent<SpriteRenderer>();
+
+            // Set the texture from the sprite
+            propBlock.SetTexture("_MainTex", spriteRenderer.sprite.texture);
+
+            // Set the mainColor and secondaryColor properties
+            propBlock.SetColor("_MainColor", mainColor);
+            propBlock.SetColor("_SecondaryColor", secondaryColor);
 
             // Apply the property block to the renderer
             spriteRenderer.SetPropertyBlock(propBlock);
+        }
 
-            yield return null;
+        public IEnumerator FlashWhite(float duration, float intensity)
+        {
+            float currentFlashAmount = 0f;
+            float elapsedTime = 0f;
+
+            while (elapsedTime < duration)
+            {
+                elapsedTime += Time.deltaTime;
+                currentFlashAmount = curve.Evaluate(elapsedTime / duration);
+                currentFlashAmount *= intensity;
+                // Set the flash amount in the property block
+                propBlock.SetFloat("_PostureDamageFlashAmount", currentFlashAmount);
+
+                // Apply the property block to the renderer
+                spriteRenderer.SetPropertyBlock(propBlock);
+
+                yield return null;
+            }
         }
     }
 }

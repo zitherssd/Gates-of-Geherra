@@ -1,12 +1,12 @@
-﻿using Assets.Scripts.Pattern;
-using System;
+﻿using System;
+using Assets.Scripts.Pattern;
 using UnityEngine;
 
-namespace Assets.Scripts.Battle.Components.State.States
+namespace Assets.Scripts.Battle.Actor.States
 {
     public class StaggerState : IState
     {
-        private Battle.Actor actor;
+        private Actor actor;
         private float timer = 0f;
         private bool collisionOccured;
         private float duration = 0f;
@@ -14,7 +14,7 @@ namespace Assets.Scripts.Battle.Components.State.States
         public event Action<float> OnStaggerStateEntered;
         public event Action OnStaggerStateExit;
 
-        public StaggerState(Battle.Actor actor)
+        public StaggerState(Actor actor)
         {
             this.actor = actor;
         }
@@ -54,7 +54,7 @@ namespace Assets.Scripts.Battle.Components.State.States
 
         private float Actor_KnockbackApplied(float arg1, Vector3 arg2)
         {
-            return arg1 * 2;
+            return arg1 * 1.5f;
         }
 
         private void ChangeSpriteToDamaged(float damage)

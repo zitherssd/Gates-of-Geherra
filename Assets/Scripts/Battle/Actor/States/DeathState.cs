@@ -1,9 +1,8 @@
-﻿using Assets.Scripts.Pattern;
-using System;
-using UnityEditor;
+﻿using System;
+using Assets.Scripts.Pattern;
 using UnityEngine;
 
-namespace Assets.Scripts.Battle.Components.State.States
+namespace Assets.Scripts.Battle.Actor.States
 {
     public class DeathState : IState
     {

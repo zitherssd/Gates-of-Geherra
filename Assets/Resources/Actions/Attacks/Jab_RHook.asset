@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5f076fb264629d419cdfb2d71f54608, type: 3}
+  m_Name: Jab_RHook
+  m_EditorClassIdentifier: 
+  Type: 0
+  Name: Right Hook
+  Rarity: 0
+  Description: Solid right hook
+  CooldownTimer: 4
+  TotalUses: 0
+  remainingUses: 0
+  BuildupCost: 0
+  BuildupGain: 0
+  StaminaCost: 6
+  Speed: 0
+  Tags: 03000000
+  Direction: {x: 0, y: 0, z: 0}
+  currentCooldownTimer: 0
+  StickMult: 0.5
+  SlowdownMeterGain: 0.5
+  SlowDownMeterGainOnPress: 0
+  SlowdownMeterGainOnRelease: 0
+  Animation: 1
+  Range: 0.5
+  Damage: 2.5
+  PostureDamage: 4
+  KnockbackForce: 1
+  windupTimeMult: 0.39
+  recoveryTimeMult: 1
+  state: 0
+  SelfForce: 1.1
+  HitboxPoints:
+  - {x: -0.4, y: 0, z: 0.1}
+  - {x: -0.4, y: 0, z: 0.5}
+  - {x: 0.4, y: 0, z: 0.5}
+  - {x: 0.4, y: 0, z: 0.1}
+  HitboxScale: 1.2
+  windupPostureDamageMult: 1
+  recoveryPostureDamageMult: 1
+  BuildupGainOnHit: 4
