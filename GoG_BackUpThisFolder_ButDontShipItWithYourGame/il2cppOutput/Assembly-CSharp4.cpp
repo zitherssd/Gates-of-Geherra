@@ -21426,8 +21426,6 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void GenericSkill_OnHit_mEC954D30F6745A3AF7A6
 	}
 	Enumerator_tDCC4E952FE5A6135AA1375BB55921CD5D3D5630F V_0;
 	memset((&V_0), 0, sizeof(V_0));
-	Action_tD00B0A84D7945E50C2DFFC28EFEE6ED44ED2AD07* G_B9_0 = NULL;
-	Action_tD00B0A84D7945E50C2DFFC28EFEE6ED44ED2AD07* G_B8_0 = NULL;
 	{
 		// foreach (var effect in OnHitEffects)
 		List_1_t5BF2BED843F1458C7723EB6590EAEF8497D6C69A* L_0 = __this->___OnHitEffects_27;
@@ -21492,31 +21490,21 @@ IL_003a:
 		L_6 = List_1_Contains_m05B9E2DF4D88C4CBBDD8014DB78A67012D6921BE(L_5, ((int32_t)15), List_1_Contains_m05B9E2DF4D88C4CBBDD8014DB78A67012D6921BE_RuntimeMethod_var);
 		if (!L_6)
 		{
-			goto IL_0059;
+			goto IL_005e;
 		}
 	}
 	{
-		// OnCancel?.Invoke();
-		Action_tD00B0A84D7945E50C2DFFC28EFEE6ED44ED2AD07* L_7 = ((BaseAction_t7B48D4AEC1D6B47113E6A5E475B8BB7107B7526A*)__this)->___OnCancel_22;
-		Action_tD00B0A84D7945E50C2DFFC28EFEE6ED44ED2AD07* L_8 = L_7;
-		G_B8_0 = L_8;
-		if (L_8)
-		{
-			G_B9_0 = L_8;
-			goto IL_0054;
-		}
-	}
-	{
-		return;
+		// casterActor.state.actingState.OnEnd();
+		Actor_t96287760BEBD76F609FF027A97CEEAB725BCCD63* L_7 = __this->___casterActor_24;
+		NullCheck(L_7);
+		ActorStateMachine_t3F90124F8B1B1F308401424DD25AEEABDA26A33B* L_8 = L_7->___state_5;
+		NullCheck(L_8);
+		ActingState_t87BCF2771FCC2A40CFCF6F6354F9C2F0EC566EE3* L_9 = L_8->___actingState_7;
+		NullCheck(L_9);
+		ActingState_OnEnd_m28C2EE2703C2D638F1C84B261656E1A9CA442FF8(L_9, NULL);
 	}
 
-IL_0054:
-	{
-		NullCheck(G_B9_0);
-		Action_Invoke_m7126A54DACA72B845424072887B5F3A51FC3808E_inline(G_B9_0, NULL);
-	}
-
-IL_0059:
+IL_005e:
 	{
 		// }
 		return;

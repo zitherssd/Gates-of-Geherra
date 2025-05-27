@@ -45,7 +45,7 @@ namespace Assets.Scripts.Utility
 
         public void ApplyDamageEffects(Actor casterActor, Actor targetActor)
         {
-            // Apply Knockback
+            // Applyv  Knockback
             if (action.KnockbackForce > 0)
             {
                 Vector3 direction;

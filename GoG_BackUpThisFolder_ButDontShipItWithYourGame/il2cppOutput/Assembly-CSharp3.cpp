@@ -14610,7 +14610,7 @@ IL_021b:
 		}
 	}
 	{
-		// transform.position = Vector3.Lerp(transform.position, targetpos, 0.03f);
+		// transform.position = Vector3.Lerp(transform.position, targetpos, 0.2f);
 		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_72;
 		L_72 = Component_get_transform_m2919A1D81931E6932C7F06D4C2F0AB8DDA9A5371(__this, NULL);
 		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_73;
@@ -14620,7 +14620,7 @@ IL_021b:
 		L_74 = Transform_get_position_m69CD5FA214FDAE7BB701552943674846C220FDE1(L_73, NULL);
 		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_75 = V_0;
 		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_76;
-		L_76 = Vector3_Lerp_m3A906D0530A94FAABB94F0F905E84D99BE85C3F8_inline(L_74, L_75, (0.0299999993f), NULL);
+		L_76 = Vector3_Lerp_m3A906D0530A94FAABB94F0F905E84D99BE85C3F8_inline(L_74, L_75, (0.200000003f), NULL);
 		NullCheck(L_72);
 		Transform_set_position_mA1A817124BB41B685043DED2A9BA48CDF37C4156(L_72, L_76, NULL);
 		goto IL_0283;
@@ -23340,6 +23340,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void FloorManager_ProgressToNextFloor_m9025AB
 		// StartCoroutine(uiManager.TypeTextMiddleLetterByLetter(line, () =>
 		// {
 		//     StartCoroutine(uiManager.FadeMiddleText(1));
+		//     CameraManager.instance.SlowTrack = false;
 		//     bm.SetupBattleWithEnemies(GetActorsForFloor());
 		// }));
 		UIManager_t84B6ED09766EBE0F4048C30EDC68421AB12E967F* L_32 = __this->___uiManager_5;
@@ -23631,6 +23632,12 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3CU3Ec__DisplayClass6_0__ctor_m69C7B79F
 // System.Void Assets.Scripts.Crawler.FloorManager/<>c__DisplayClass6_0::<ProgressToNextFloor>b__0()
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3CU3Ec__DisplayClass6_0_U3CProgressToNextFloorU3Eb__0_mDAB47B7B9B0B7178914C6F5AC96DD17534E3F844 (U3CU3Ec__DisplayClass6_0_t54A77A41724FB75F6C632319BC36E6709570E001* __this, const RuntimeMethod* method) 
 {
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&CameraManager_t4DA5DCD7ACFEF439DEA4296E197BC5076C7367C4_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
 	{
 		// StartCoroutine(uiManager.FadeMiddleText(1));
 		FloorManager_tD93B0EEC3CF6F13BB03044DB4C6B0B92CB808941* L_0 = __this->___U3CU3E4__this_0;
@@ -23643,14 +23650,18 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3CU3Ec__DisplayClass6_0_U3CProgressToNe
 		NullCheck(L_0);
 		Coroutine_t85EA685566A254C23F3FD77AB5BDFFFF8799596B* L_4;
 		L_4 = MonoBehaviour_StartCoroutine_m4CAFF732AA28CD3BDC5363B44A863575530EC812(L_0, L_3, NULL);
-		// bm.SetupBattleWithEnemies(GetActorsForFloor());
-		BattleManager_tF4F8E0BB9BF7540FBB01C55FE78981B49CB91697* L_5 = __this->___bm_1;
-		FloorManager_tD93B0EEC3CF6F13BB03044DB4C6B0B92CB808941* L_6 = __this->___U3CU3E4__this_0;
-		NullCheck(L_6);
-		List_1_t878A41F4BCE0CA1039D4397047F1E33ACBC9AF8C* L_7;
-		L_7 = FloorManager_GetActorsForFloor_m3A3F938D78C356771E282D0B3AC6895A3EE0BDEC(L_6, NULL);
+		// CameraManager.instance.SlowTrack = false;
+		CameraManager_t4DA5DCD7ACFEF439DEA4296E197BC5076C7367C4* L_5 = ((CameraManager_t4DA5DCD7ACFEF439DEA4296E197BC5076C7367C4_StaticFields*)il2cpp_codegen_static_fields_for(CameraManager_t4DA5DCD7ACFEF439DEA4296E197BC5076C7367C4_il2cpp_TypeInfo_var))->___instance_4;
 		NullCheck(L_5);
-		BattleManager_SetupBattleWithEnemies_mF301F7E7133561F4396FC5FD5ACE76B7DE07747B(L_5, L_7, NULL);
+		L_5->___SlowTrack_14 = (bool)0;
+		// bm.SetupBattleWithEnemies(GetActorsForFloor());
+		BattleManager_tF4F8E0BB9BF7540FBB01C55FE78981B49CB91697* L_6 = __this->___bm_1;
+		FloorManager_tD93B0EEC3CF6F13BB03044DB4C6B0B92CB808941* L_7 = __this->___U3CU3E4__this_0;
+		NullCheck(L_7);
+		List_1_t878A41F4BCE0CA1039D4397047F1E33ACBC9AF8C* L_8;
+		L_8 = FloorManager_GetActorsForFloor_m3A3F938D78C356771E282D0B3AC6895A3EE0BDEC(L_7, NULL);
+		NullCheck(L_6);
+		BattleManager_SetupBattleWithEnemies_mF301F7E7133561F4396FC5FD5ACE76B7DE07747B(L_6, L_8, NULL);
 		// }));
 		return;
 	}

@@ -1,4 +1,5 @@
 ﻿using System;
+using Assets.Scripts.Battle.Manager;
 using Assets.Scripts.Pattern;
 using UnityEngine;
 
@@ -38,10 +39,9 @@ namespace Assets.Scripts.Battle.Actor.States
 
         private void DeathCheck()
         {
-            if (actor.ActorData.GetCurrentHP() == 0)
+            if (actor.ActorData.isDead())
             {
                 actor.state.TransitionTo(actor.state.deathState);
-                BattleManager.instance.End();
                 return;
             }
         }

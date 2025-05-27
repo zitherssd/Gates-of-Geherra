@@ -45,7 +45,6 @@ namespace Assets.Scripts.Battle.Actor.States
             if(action.Animation.ToString() == "Roll")
             {
                 float dotProduct = Vector3.Dot(owner.transform.forward, action.Direction);
-                Debug.Log(dotProduct);
                 if (dotProduct < 0)
                     animator.Play("RollBackwards", -1, 0f);
                 else
@@ -105,6 +104,12 @@ namespace Assets.Scripts.Battle.Actor.States
 
         public void Update()
         {
+            if (owner.ActorData.isDead())
+            {
+                owner.movement.AddForce(Vector3.up * 1f);
+                owner.transform.position += Vector3.up * 0.01f;
+                owner.state.TransitionTo(owner.state.airStaggerState);
+            }
         }
 
         public void OnCollisionEnter(Collision collision)

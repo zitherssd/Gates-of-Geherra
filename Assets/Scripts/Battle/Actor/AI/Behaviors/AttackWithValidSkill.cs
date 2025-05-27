@@ -4,18 +4,19 @@ using UnityEngine;
 
 namespace Assets.Scripts.Battle.Actor.AI.Behaviors
 {
-    public class AttackBehavior : IAIBehavior
+    public class AttackWithValidSkill : BTNode
     {
         private float cooldownTimer = 0f;
         private float reactionTimer = 0f;
 
-        public bool Execute(AISystem ai, Actor actor)
+        public override NodeState Execute(AIBT ai, Actor actor)
         {
             // Check if in range for attack
             var skill = ChooseValidSkillInRange(actor);
             if (skill != null)
             {
                 var direction = actor.target.DirectionToClosestEnemy;
+                actor.movement.FaceDirection(actor.target.DirectionToClosestEnemy);
                 skill.Direction = new Vector3(direction.x, 0, direction.z);
                 if(reactionTimer <= 0)
                     reactionTimer = UnityEngine.Random.Range(0.2f, 0.3f);
@@ -35,12 +36,13 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
                     skill = ChooseValidSkillInRange(actor);
                     if (skill != null)
                     {
+                        skill.Direction = actor.target.DirectionToClosestEnemy;
                         actor.UseAction(skill, actor.state.TransitionToIdle);
-                        return true;
+                        return NodeState.Sucess;
                     }
                 }
             }
-            return false;
+            return NodeState.Failure;
         }
 
         private BaseAction ChooseValidSkillInRange(Actor actor)

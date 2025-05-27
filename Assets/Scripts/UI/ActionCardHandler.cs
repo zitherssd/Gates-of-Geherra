@@ -4,6 +4,7 @@ using Assets.Scripts.Battle.Actions.Actions;
 using Assets.Scripts.Battle.Actions.Reactions;
 using Assets.Scripts.Battle.Actions.Skills;
 using Assets.Scripts.Battle.Actor;
+using Assets.Scripts.Battle.Manager;
 using TMPro;
 using UnityEngine;
 

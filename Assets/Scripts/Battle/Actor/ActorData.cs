@@ -20,8 +20,8 @@ namespace Assets.Scripts.Battle.Actor
         public bool Controllable;
         public AiRuleset AIRuleset;
 
-        [HideInInspector] public Color mainColor;
-        [HideInInspector] public Color secondaryColor;
+        public Color mainColor;
+        public Color secondaryColor;
 
         public List<BaseAction> baseActions;
         public List<BaseReaction> baseReactions;
@@ -73,6 +73,7 @@ namespace Assets.Scripts.Battle.Actor
                 OnHpBarLost?.Invoke();
             }
 
+            //If no more alive bars then die
             if(hpBars.Where<HpBar>(item => item.alive).Count() == 0)
             {
                 OnDeath?.Invoke();
@@ -105,6 +106,14 @@ namespace Assets.Scripts.Battle.Actor
         {
             currentBuildup += value;
             Mathf.Clamp(currentBuildup, 0, maxBuildup);
+        }
+
+        public bool isDead()
+        {
+            if (GetCurrentHP() == 0)
+                return true;
+            else
+                return false;
         }
 
         public float GetCurrentHP()

@@ -11,56 +11,60 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using static Assets.Scripts.Battle.Actions.BaseAction;
 
-namespace Assets.Scripts.Battle
+namespace Assets.Scripts.Battle.Manager
 {
 
     public class BattleManager : MonoBehaviour
     {
+        public static BattleManager instance = null;
+
         public GameObject enemyPrefab;
         public Action<uint> OnNewTurn;
-        public static BattleManager instance = null;
+        public BattleStateMachine battleStateMachine;
         [SerializeField] public List<Actor.Actor> PlayerActors;
         [SerializeField] public List<Actor.Actor> EnemyActors;
-        public STATE state = STATE.READY;
         [SerializeField] private GameObject SpawnerParent;
 
         private Queue<Actor.Actor> turnQueue = new Queue<Actor.Actor>();
+
         private bool repeatTurn;
         private uint currentTurn;
+
+
         private void Awake()
         {
             if (instance == null) instance = this;
 
-            BaseReaction.NoReaction = ScriptableObject.CreateInstance<BaseReaction>();
-            BaseReaction.NoReaction.Name = "Nothing";
-            MoveAction.instance = ScriptableObject.CreateInstance<MoveAction>();
-            MoveAction.instance.Name = "Move";
-            MoveAction.instance.Tags = new List<TAG>();
+            battleStateMachine = new BattleStateMachine(this);
         }
         void Start()
         {
-            Application.targetFrameRate = 60;
             Physics.gravity = new Vector3(0, -6f, 0);
 
-
-            SoundManager.instance.PlayMusic(null);
-            StartCoroutine(WaitForSeconds(2f, () =>
-            {
-                StartBattle();
-            }));
-        }
-
-        //Start floor 1 
-        void StartBattle()
-        {
+            // Initialize player only for existing prefabs
             foreach (var actor in PlayerActors.Concat(EnemyActors))
             {
                 actor.Initialize(actor.ActorData);
-                actor.state.TransitionToIdle();
             }
-            UIManager.instance.DrawActions(PlayerActors[0].ActorData.actions);
-            UIManager.instance.GainMeter(4f);
+
+            // Camera pan wait
+            StartCoroutine(WaitForSeconds(2f, () =>
+            {
+                SoundManager.instance.PlayMusic(null);
+                battleStateMachine.Initialize(battleStateMachine.startState); // Start the battle state machine
+            }));
+
+
+
         }
+
+        public void Update()
+        {
+            // Update the battle state machine
+            battleStateMachine.Update();
+        }
+
+
 
         public void SetupBattleWithEnemies(List<ActorData> newEnemies) //Floor 1,2 etc setup
         {
@@ -80,18 +84,17 @@ namespace Assets.Scripts.Battle
                 EnemyActors.Add(enemyActor);
             }
 
+            UIManager.instance.DrawActions(PlayerActors[0].ActorData.actions);
             PlayerActors[0].ActorData.Refresh();
             CameraManager.instance.ResetForNewBattle();
+            
             UIManager.instance.Fade(false, () =>
             {
-                foreach (var actor in PlayerActors.Concat(EnemyActors))
-                {
-                    actor.state.TransitionTo(actor.state.idleState);
-                }
+                battleStateMachine.TransitionTo(battleStateMachine.startState); // Start the battle state machine
             });
         }
 
-        IEnumerator WaitForSeconds(float seconds, Action onFinishedWaiting)
+        public IEnumerator WaitForSeconds(float seconds, Action onFinishedWaiting)
         {
             yield return new WaitForSeconds(seconds);
             onFinishedWaiting();
@@ -111,13 +114,7 @@ namespace Assets.Scripts.Battle
                 PlayerActors[0].state.TransitionTo(PlayerActors[0].state.blockState);
                 PlayerActors[0].PlayAnimation("Victory");
                 UIManager.instance.HideUI();
-                UIManager.instance.Fade(true, () =>
-                {
-                    SkillGenerator.instance.DrawSkillsFromSelectionAndWaitForSelection(SkillGenerator.instance.GetRandomActions(FloorManager.instance.currentFloor), () =>
-                    {
-                        UIManager.instance.ShowRestingUI();
-                    });
-                });
+               
             }
         }
 

@@ -16,14 +16,14 @@ MonoBehaviour:
   Name: Roll
   Rarity: 0
   Description: Inspired by Dark Souls
-  CooldownTimer: 2
-  TotalUses: 0
+  CooldownTimer: 12
+  TotalUses: 2
   remainingUses: 0
   BuildupCost: 0
   BuildupGain: 4
   StaminaCost: 8
   Speed: 0
-  Tags: 0c000000
+  Tags: 0c0000000a000000
   Direction: {x: 0, y: 0, z: 0}
   currentCooldownTimer: 0
   StickMult: 1

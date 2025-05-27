@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Assets.Scripts.Battle.Manager;
+using System.Collections;
 using UnityEngine;
 
 namespace Assets.Scripts.Battle.Components.Status

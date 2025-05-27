@@ -1,3 +1,4 @@
+using Assets.Scripts.Battle.Actor;
 using System.Collections;
 using UnityEngine;
 
@@ -13,6 +14,22 @@ namespace Assets.Scripts.Utility
         private SpriteRenderer spriteRenderer;
 
         void Start()
+        {
+            propBlock = new MaterialPropertyBlock();
+            spriteRenderer = GetComponent<SpriteRenderer>();
+
+            // Set the texture from the sprite
+            propBlock.SetTexture("_MainTex", spriteRenderer.sprite.texture);
+
+            // Set the mainColor and secondaryColor properties
+            propBlock.SetColor("_MainColor", mainColor);
+            propBlock.SetColor("_SecondaryColor", secondaryColor);
+
+            // Apply the property block to the renderer
+            spriteRenderer.SetPropertyBlock(propBlock);
+        }
+
+        public void SetColors(Color mainColor, Color secondaryColor)
         {
             propBlock = new MaterialPropertyBlock();
             spriteRenderer = GetComponent<SpriteRenderer>();

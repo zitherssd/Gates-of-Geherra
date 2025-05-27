@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Utility;
+﻿using Assets.Scripts.Battle.Manager;
+using Assets.Scripts.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,7 +38,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
         public override void OnHit()
         {
             caster.movement.AddForce(caster.target.DirectionToClosestEnemy * SelfForce);
-            GameObject projectile = Instantiate(projectilePrefab, caster.transform.position + caster.transform.forward * 1f + Vector3.up * 0.5f, caster.transform.rotation);
+            GameObject projectile = Instantiate(projectilePrefab, caster.transform.position + caster.target.DirectionToClosestEnemy * 1f + Vector3.up * 0.5f, caster.transform.rotation);
             projectile.GetComponent<ProjectileHandler>().Initialize(caster, this);
             
             if(Type == BUTTONTYPE.VECTOR)
@@ -58,20 +59,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
 
             if (IsSkillOnCooldown()) return false;
 
-            var potentialTargets = new List<Actor.Actor>();
-
-            //Get all active
-            if (caster.isControllable)
-                potentialTargets = BattleManager.instance.EnemyActors;
-            else
-                potentialTargets = BattleManager.instance.PlayerActors;
-            //If any of them are in range return true
-            if (potentialTargets.Any(target => (target.transform.position - caster.transform.position).magnitude < 1 + Range))
-                return true;
-            else
-            {
-                return false;
-            }
+            return true;
         }
     }
 

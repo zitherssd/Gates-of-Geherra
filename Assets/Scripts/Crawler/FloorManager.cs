@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using Assets.Scripts.Battle;
 using Assets.Scripts.Battle.Actor;
+using Assets.Scripts.Battle.Manager;
+using Assets.Scripts.Utility;
 using UnityEngine;
 
 namespace Assets.Scripts.Crawler
@@ -42,6 +44,7 @@ namespace Assets.Scripts.Crawler
             StartCoroutine(uiManager.TypeTextMiddleLetterByLetter(line, () =>
             {
                 StartCoroutine(uiManager.FadeMiddleText(1));
+                CameraManager.instance.SlowTrack = false;
                 bm.SetupBattleWithEnemies(GetActorsForFloor());
             }));
 

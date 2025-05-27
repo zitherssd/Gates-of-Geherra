@@ -1,4 +1,5 @@
 ﻿using System;
+using Assets.Scripts.Battle.Manager;
 using Assets.Scripts.Pattern;
 using UnityEngine;
 
@@ -24,7 +25,19 @@ namespace Assets.Scripts.Battle.Actor.States
             }
             OnDeath?.Invoke();
             owner.PlayAnimation("Down");
+
+            // Ignore collision with all enemy actors
+            foreach (var enemyActor in BattleManager.instance.EnemyActors)
+            {
+                var enemyCollider = enemyActor.GetComponent<CapsuleCollider>();
+                if (enemyCollider != null)
+                {
+                    Physics.IgnoreCollision(cc, enemyCollider);
+                }
+            }
+
             Physics.IgnoreCollision(cc, BattleManager.instance.PlayerActors[0].GetComponent<CapsuleCollider>());
+
         }
 
         public void Exit()

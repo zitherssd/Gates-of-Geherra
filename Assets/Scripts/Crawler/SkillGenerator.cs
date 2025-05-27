@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Assets.Scripts.Battle;
 using Assets.Scripts.Battle.Actions;
+using Assets.Scripts.Battle.Manager;
 using Assets.Scripts.UI;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,16 +16,21 @@ namespace Assets.Scripts.Crawler
         public static SkillGenerator instance;
         public string resourcePath = "Actions/Droptable";
         public Canvas chooseSkillsUI;
+        BaseAction[] allActions; 
 
         private void Awake()
         {
             instance = this;
         }
+        private void Start()
+        {
+            allActions = Resources.LoadAll<BaseAction>(resourcePath);
+
+        }
 
         public BaseAction[] GetRandomActions(int floor)
         {
             // Load all ScriptableObjects from the specified folder
-            BaseAction[] allActions = Resources.LoadAll<BaseAction>(resourcePath);
 
             if (allActions.Length == 0)
             {

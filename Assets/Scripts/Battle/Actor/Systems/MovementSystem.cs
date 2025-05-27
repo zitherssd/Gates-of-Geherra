@@ -11,6 +11,7 @@ namespace Assets.Scripts.Battle.Actor.Systems
         private readonly float normalFriction = 0.5f;
         public bool ApplyForces;
         public bool ApplyGravity;
+        public float speed { get { return rigidbody.velocity.magnitude; } }
         
 
         public MovementSystem(Actor actor)
@@ -51,7 +52,19 @@ namespace Assets.Scripts.Battle.Actor.Systems
             lookrotation.y = 0;
            actor.transform.rotation = Quaternion.LookRotation(lookrotation, Vector3.up);
         }
+        public void AddForceCapped(Vector3 force)
+        {
+            var currentMagnitude = rigidbody.velocity.magnitude;
+            rigidbody.AddForce(force, ForceMode.Impulse);
+            Vector3 newVelocity = rigidbody.velocity;
 
+            float maxSpeed = 5f;
+            if (newVelocity.magnitude > maxSpeed)
+            {
+                // Clamp the velocity to the max speed while maintaining the direction
+                rigidbody.velocity = newVelocity.normalized * currentMagnitude;
+            }
+        }
         public void AddForce(Vector3 force)
         {
             var currentMagnitude = rigidbody.velocity.magnitude;

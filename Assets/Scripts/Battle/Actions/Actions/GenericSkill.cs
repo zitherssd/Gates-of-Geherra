@@ -41,7 +41,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
             }
             if (Tags.Contains(TAG.TECH))
             {
-                OnCancel?.Invoke();
+                casterActor.state.actingState.OnEnd();
             }
         }
         public override void OnEnterWindup(Animator animator)

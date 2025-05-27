@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Battle;
 using Assets.Scripts.Battle.Actor;
+using Assets.Scripts.Battle.Manager;
 using UnityEngine;
 
 namespace Assets.Scripts.Utility
@@ -64,7 +65,7 @@ namespace Assets.Scripts.Utility
             if (playerActor.target.TargetPosition != null)
                 playerTarget = playerActor.target.TargetPosition;
             else
-                playerTarget = playerTransform.position + playerTransform.forward * 3f;
+                playerTarget = playerTransform.position + playerTransform.forward * 1f;
 
             distvector = (playerTarget + playerTransform.position) / 2; //start point 
             distvector = new Vector3(distvector.x, 0, distvector.z);
@@ -109,7 +110,7 @@ namespace Assets.Scripts.Utility
                     // }
                     //else
                     //  {
-                    transform.position = Vector3.Lerp(transform.position, targetpos, 0.03f);
+                    transform.position = Vector3.Lerp(transform.position, targetpos, 0.2f);
                 //  }
                 else
                     transform.position = Vector3.MoveTowards(transform.position, targetpos, 0.1f * Time.unscaledDeltaTime);
@@ -126,6 +127,11 @@ namespace Assets.Scripts.Utility
                 if (playertarget != null)
                 {
                     NEWdistvector = (playertarget.transform.position + playerTransform.position) / 2; //start point 
+                    NEWdistvector = new Vector3(distvector.x, 0, distvector.z);
+                }
+                else
+                {
+                    NEWdistvector = (playerTransform.position + playerTransform.forward);
                     NEWdistvector = new Vector3(distvector.x, 0, distvector.z);
                 }
                 Vector3 targetRotation = (NEWdistvector + Vector3.up * 0.5f) - transform.position;

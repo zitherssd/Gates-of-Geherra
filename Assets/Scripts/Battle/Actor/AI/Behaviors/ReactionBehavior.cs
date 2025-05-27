@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Battle.Actor.AI.Behaviors
 {
-    public class ReactionBehavior : IAIBehavior
+    public class ReactionBehavior : BTNode
     {
         private float reactionTimer = 0f; // Time until AI can react
         private float cooldownTimer = 0f; // Time until AI can react again
@@ -24,7 +24,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
         }
 
 
-        public bool Execute(AISystem ai, Actor actor)
+        public override NodeState Execute(AIBT ai, Actor actor)
         {
             // Check for an incoming attack
             AttackSkill incomingAttack;
@@ -40,7 +40,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
                             actor.UseAction(reaction, actor.state.TransitionToIdle);
 
                             // Set cooldown time (e.g., 0.5s)
-                            return true;
+                            return NodeState.Sucess;
                         }
                         // Set a random thinking delay (50ms to 250ms)
                         //reactionTimer = Random.Range(0.03f, 0.15f);
@@ -66,7 +66,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
             //    }
             //}
 
-            return false;
+            return NodeState.Failure;
         }
 
         private BaseAction ChooseReaction(Actor actor, BaseAction incomingAction)

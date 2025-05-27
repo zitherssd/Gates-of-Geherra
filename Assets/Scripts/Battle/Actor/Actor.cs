@@ -7,6 +7,7 @@ using Assets.Scripts.Battle.Components.Effects;
 using Assets.Scripts.Battle.Components.Status;
 using Assets.Scripts.Utility;
 using UnityEngine;
+using static UnityEngine.UI.GridLayoutGroup;
 
 namespace Assets.Scripts.Battle.Actor
 {
@@ -20,7 +21,7 @@ namespace Assets.Scripts.Battle.Actor
         public StatusManager statusManager;
         public new AudioManager audio; //this too?
         public EffectManager effects; //this can be moved to a different monobehaviour
-        public AISystem ai; //ai
+        public AIBT ai; //ai
         public TargetingSystem target; //this needs to be reworked? we should calculate this kind of stuff on demand?
         public MovementSystem movement; //what is tihs?
 
@@ -59,7 +60,7 @@ namespace Assets.Scripts.Battle.Actor
             audio = new AudioManager(this);
             statusManager = new StatusManager(this); //this needs rework
             effects = new EffectManager(this);
-            ai = new AISystem(this); //this too subscribe
+            ai = new AIBT(this); //this too subscribe
             target = new TargetingSystem(this); //this too subscribe
             movement = new MovementSystem(this); //this too subscribe???
 
@@ -82,6 +83,8 @@ namespace Assets.Scripts.Battle.Actor
                 this.ActorData = actorData;
             ActorData.Reset();
             OnReset?.Invoke();
+            var cc = GetComponentInChildren<ColorController>();
+            //cc.SetColors(ActorData.mainColor, ActorData.secondaryColor);
         }
 
 

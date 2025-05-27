@@ -40,8 +40,10 @@ namespace Assets.Scripts
         public GameObject RestingUI;
         private bool effectActive;
         [SerializeField] private AnimationCurve startCurve;
+        [SerializeField] private AnimationCurve startCurve2;
         [SerializeField] private AnimationCurve endCurve;
         private float totalEffectTime;
+        private bool isLocked = false;
 
         public Action<BaseAction> OnActionSelected { get; private set; }
         public Action<BaseReaction> OnReactionSelected { get; private set; }
@@ -76,7 +78,6 @@ namespace Assets.Scripts
             }
             else
             {
-                Debug.Log("SlowdownMeter.value reached 0");
                 if (effectActive)
                 {
                     StartCoroutine(StopEffect(0.1f)); // Stop the effect when slider reaches 0
@@ -106,6 +107,21 @@ namespace Assets.Scripts
             }
         }
 
+        public IEnumerator StarEffectEnd()
+        {
+            effectActive = true;
+            float elapsedTime = 0f;
+
+            while (elapsedTime < totalEffectTime)
+            {
+                elapsedTime += Time.unscaledDeltaTime;
+                Time.timeScale = startCurve2.Evaluate(elapsedTime / totalEffectTime);
+                Time.fixedDeltaTime = Time.timeScale * .02f;
+
+                yield return null;
+            }
+        }
+
         // Method to stop the effect
         public IEnumerator StopEffect(float duration)
         {
@@ -124,7 +140,7 @@ namespace Assets.Scripts
             Time.fixedDeltaTime = Time.timeScale * .02f;
             effectActive = false; // Mark the effect as inactive
         }
-
+       
         public void GainMeter(float seconds)
         {
             totalEffectTime = seconds + SlowdownMeter.value * 5;
@@ -142,6 +158,22 @@ namespace Assets.Scripts
 
             // Start the effect with the updated duration
             StartCoroutine(StartEffect());
+        }
+
+        public void GainMeterEndBattle(float seconds)
+        {
+            totalEffectTime = 1.5f;
+            SlowdownMeter.gameObject.SetActive(false);
+            //SlowdownMeter.value += seconds / 5;
+
+           
+            if (effectActive)
+            {
+                StopAllCoroutines();  // Stop the currently running effect
+            }
+
+            // Start the effect with the updated duration
+            StartCoroutine(StarEffectEnd());
         }
 
         public void ChangeStatus(string status)
@@ -308,6 +340,7 @@ namespace Assets.Scripts
         }
         public void ShowUI()
         {
+            if (isLocked) return;
             ActionsHolder.transform.parent.gameObject.SetActive(true);
 
             var leftContainerChildren = GetAllChildren(ActionsHolder);
@@ -332,6 +365,18 @@ namespace Assets.Scripts
         internal void ShowRestingUI()
         {
             RestingUI.SetActive(true);
+        }
+
+        public void DisableUI()
+        {
+            HideUI();
+            isLocked = true;
+        }
+
+        public void EnableUI()
+        {
+            ShowUI();
+            isLocked = false;
         }
 
         //1. Attack or Move or Skill // MoveWithingRange if able;

@@ -4,16 +4,16 @@ using UnityEngine;
 
 namespace Assets.Scripts.Battle.Actor.AI.Behaviors
 {
-    public class FlankApproachBehavior : IAIBehavior
+    public class FlankApproachBehavior : BTNode
     {
-        public bool Execute(AISystem ai, Actor actor)
+        public override NodeState Execute(AIBT ai, Actor actor)
         {
             // If already moving or close to the enemy, don't execute
             if (actor.Rb.velocity.magnitude > 0.5f || actor.target.DistanceToClosestEnemy < 1.4f)
-                return false;
+                return NodeState.Failure;
 
             var moveSkill = actor.ActorData.actions.OfType<MoveAction>().FirstOrDefault();
-            if (moveSkill == null) return false;
+            if (moveSkill == null) return NodeState.Failure;
 
             // Get the direction to the closest enemy
             Vector3 toEnemy = actor.target.DirectionToClosestEnemy.normalized;
@@ -29,7 +29,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
 
             moveSkill.Direction = approachDirection;
             actor.UseAction(moveSkill, actor.state.TransitionToIdle);
-            return true;
+            return NodeState.Sucess;
         }
     }
 

@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Utility;
+﻿using Assets.Scripts.Battle.Manager;
+using Assets.Scripts.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -126,13 +127,15 @@ namespace Assets.Scripts.Battle.Actions.Skills
         }
         public override bool IsValidAndInRange(Actor.Actor caster)
         {
-            if (IsValid(caster, out _))
+            string invalidReason;
+            if (IsValid(caster, out invalidReason))
             {
                 if (caster.target.DistanceToClosestEnemy < Range + SelfForce)
                     return true;
                 else
                     return false;
             }
+            Debug.Log(invalidReason);
             return false;
         }
 

@@ -22,6 +22,15 @@ namespace Assets.Scripts.Battle.Components.Audio
             audioSource.Play();
         }
 
+        public void PlayAudioRandomPitch(string clipName, float change)
+        {
+            var clip = SoundManager.instance.GetAudioClipByName(clipName);
+            audioSource.clip = clip;
+            audioSource.pitch = Random.Range(1f - change, 1f + change);
+            audioSource.Play();
+            audioSource.pitch = 1.0f;
+        }
+
         public void PlayDamagedSound(float damage)
         {
             PlayAudio("Blow1");

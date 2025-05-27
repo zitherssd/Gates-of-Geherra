@@ -1,21 +1,22 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.Battle.Actions.Actions;
+using Assets.Scripts.Battle.Manager;
 using UnityEngine;
 
 namespace Assets.Scripts.Battle.Actor.AI.Behaviors
 {
-    public class GroupFlankBehavior : IAIBehavior
+    public class GroupFlankBehavior : BTNode
     {
         private const float FlankRadius = 3f;  // Desired flanking radius
         private const float MaxFlankDistance = 5f; // Distance where full flanking occurs
         private const float SeparationRadius = 1f; // Minimum distance between allies
         private const float SeparationStrength = 1.5f; // How strongly to push away from allies
 
-        public bool Execute(AISystem ai, Actor actor)
+        public override NodeState Execute(AIBT ai, Actor actor)
         {
             if (actor.Rb.velocity.magnitude > 0.5f || actor.target.DistanceToClosestEnemy < 1.4f)
-                return false;
+                return NodeState.Failure;
 
             // Get all allies targeting the same enemy
             List<Actor> allies = BattleManager.instance.EnemyActors
@@ -33,15 +34,15 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
             if (actor.state.IsMoving(out moveAction))
             {
                 moveAction.Direction = approachDirection;
-                return true;
+                return NodeState.Sucess;
             }
 
             // Start moving if not already moving
             moveAction = actor.ActorData.actions.OfType<MoveAction>().FirstOrDefault();
-            if (moveAction == null) return false;
+            if (moveAction == null) return NodeState.Failure;
             moveAction.Direction = approachDirection;
             actor.UseAction(moveAction, actor.state.TransitionToIdle);
-            return true;
+            return NodeState.Sucess;
         }
 
         private Vector3 DetermineFlankDirection(Actor actor, List<Actor> allies, Vector3 toEnemy)

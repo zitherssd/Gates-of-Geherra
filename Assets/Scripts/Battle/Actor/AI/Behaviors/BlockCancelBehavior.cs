@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Assets.Scripts.Battle.Actor.AI.Behaviors
 
 {
-    public class BlockCancelBehavior : IAIBehavior
+    public class BlockCancelBehavior : BTNode
     {
         private float ChanceToBlock;
         private AttackSkill lastAttack;
@@ -17,7 +17,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
             ChanceToBlock = chanceToBlock;
         }
 
-        public bool Execute(AISystem ai, Actor actor)
+        public override NodeState Execute(AIBT ai, Actor actor)
         {
             // Check for an incoming attack
             AttackSkill incomingAttack;
@@ -35,13 +35,13 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
                             if (block)
                             {
                                 actor.UseAction(block, actor.state.TransitionToIdle);
-                                return true;
+                                return NodeState.Sucess;
                             }
                         }
                     }
                 }
             }
-            return false;
+            return NodeState.Failure;
         }
 
         private Block GetBlock(Actor actor, BaseAction incomingAction)

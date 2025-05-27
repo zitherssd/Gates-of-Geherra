@@ -15,16 +15,16 @@ MonoBehaviour:
   Name: Player
   hpBars:
   - maxHp: 10
-    alive: 1
+    alive: 0
   - maxHp: 10
-    alive: 1
+    alive: 0
   maxBuildup: 50
   maxPosture: 25
   maxStamina: 50
   Controllable: 1
   AIRuleset: 0
-  mainColor: {r: 1, g: 1, b: 1, a: 0}
-  secondaryColor: {r: 0, g: 0, b: 0, a: 1}
+  mainColor: {r: 0, g: 0, b: 0, a: 0}
+  secondaryColor: {r: 0.6845144, g: 0.8207547, b: 0.2748754, a: 1}
   baseActions:
   - {fileID: 11400000, guid: 498ba4be69212c045ad9de12e867357c, type: 2}
   - {fileID: 11400000, guid: d71b702805a26db45a66daff55b696d2, type: 2}
@@ -43,14 +43,13 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
   reactions: []
-  currentBuildup: 10
-  currentPosture: 25
-  currentStamina: 50
+  currentBuildup: 16.5
+  currentPosture: 0
+  currentStamina: 33.72153
   postureRegenRate: 1
   staminaRegenRate: 1
   ATK: 1
   DEF: 1
-  AGI: 4
+  AGI: 5
   Spirit: 0

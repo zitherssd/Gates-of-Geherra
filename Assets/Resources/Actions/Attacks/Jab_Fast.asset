@@ -16,14 +16,14 @@ MonoBehaviour:
   Name: Fast Jab
   Rarity: 0
   Description: Reliable jab attack
-  CooldownTimer: 0
+  CooldownTimer: 4
   TotalUses: 3
   remainingUses: 0
   BuildupCost: 0
   BuildupGain: 0
-  StaminaCost: 6
+  StaminaCost: 8
   Speed: 1
-  Tags: 0f000000
+  Tags: 0f0000000a000000
   Direction: {x: 0, y: 0, z: 0}
   currentCooldownTimer: 0
   StickMult: 0.5
@@ -44,6 +44,7 @@ MonoBehaviour:
   - {x: -0.1, y: 0, z: 0.7}
   - {x: 0.1, y: 0, z: 0.7}
   - {x: 0.1, y: 0, z: 0.1}
+  HitboxScale: 1
   windupPostureDamageMult: 1
   recoveryPostureDamageMult: 1
   BuildupGainOnHit: 4

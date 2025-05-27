@@ -1,33 +1,42 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Assets.Scripts.Battle.Actions;
+﻿using Assets.Scripts.Battle.Actions;
 using Assets.Scripts.Battle.Actions.Reactions;
 using Assets.Scripts.Battle.Actions.Skills;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Assets.Scripts.Battle.Actor.AI.Behaviors
 {
-    public class DodgeBehavior : IAIBehavior
+    public class DodgeBehavior : BTNode
     {
-        public bool Execute(AISystem ai, Actor actor)
+        float chance;
+        private AttackSkill lastAttack;
+
+        public DodgeBehavior(float chanceToDodge)
+        {
+            this.chance = chanceToDodge;
+
+        }
+        public override NodeState Execute(AIBT ai, Actor actor)
         {
             // Check for an incoming attack
             AttackSkill incomingAttack;
-            if (actor.target.ClosestEnemy.state.IsAttacking(out incomingAttack))
+            actor.target.ClosestEnemy.state.IsAttacking(out incomingAttack);
+            if (incomingAttack != lastAttack)
             {
-                if (CheckIfInsideHitbox(incomingAttack.HitboxPoints, actor))
+                lastAttack = incomingAttack;
+                if (UnityEngine.Random.value < chance)
                 {
                     var reaction = ChooseDodge(actor, incomingAttack);
                     if (reaction != null)
                     {
                         actor.UseAction(reaction, actor.state.TransitionToIdle);
 
-                        return true;
+                        return NodeState.Sucess;
                     }
                 }
             }
-
-            return false;
+            return NodeState.Failure;
         }
 
         private BaseAction ChooseDodge(Actor actor, BaseAction incomingAction)
@@ -37,7 +46,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
             if (randomDodge != null)
             {
 
-                randomDodge.Direction = -actor.target.DirectionToClosestEnemy;
+                randomDodge.Direction = -(actor.target.DirectionToClosestEnemy + Vector3.Cross(actor.target.DirectionToClosestEnemy, Vector3.up) * UnityEngine.Random.Range(-1f, 1f)).normalized;
                 return randomDodge;
             }
             return null;

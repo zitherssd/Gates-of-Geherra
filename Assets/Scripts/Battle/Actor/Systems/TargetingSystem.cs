@@ -1,5 +1,6 @@
 using System.Linq;
 using Assets.Scripts.Utility;
+using Assets.Scripts.Battle.Manager;
 using UnityEngine;
 
 namespace Assets.Scripts.Battle.Actor.Systems
@@ -27,7 +28,7 @@ namespace Assets.Scripts.Battle.Actor.Systems
                 else
                 {
                     Debug.LogWarning("Target is null! Returning actor's position instead.");
-                    return actor.transform.position; // Fallback to the actor's position or a default value
+                    return actor.transform.position + actor.transform.forward * 2; // Fallback to the actor's position or a default value
                 }
             }
         }
@@ -38,9 +39,9 @@ namespace Assets.Scripts.Battle.Actor.Systems
             get
             {
                 if (actor.isControllable)
-                    return BattleManager.instance.EnemyActors.OrderBy(enemyActor => (enemyActor.transform.position - actor.transform.position).magnitude).Where(actor => actor.state.IsAlive()).First();
+                    return BattleManager.instance.EnemyActors.OrderBy(enemyActor => (enemyActor.transform.position - actor.transform.position).magnitude).Where(actor => !actor.ActorData.isDead()).First();
                 else
-                    return BattleManager.instance.PlayerActors.OrderBy(playerActor => (playerActor.transform.position - actor.transform.position).magnitude).Where(actor => actor.state.IsAlive()).First();
+                    return BattleManager.instance.PlayerActors.OrderBy(playerActor => (playerActor.transform.position - actor.transform.position).magnitude).Where(actor => !actor.ActorData.isDead()).First();
             }
         }
 
@@ -66,7 +67,7 @@ namespace Assets.Scripts.Battle.Actor.Systems
             if (target == null)
             {
                 //get the closest enemy 
-                var possibleTargets = BattleManager.instance.EnemyActors.Where(actor => actor.state.IsAlive()).ToList();
+                var possibleTargets = BattleManager.instance.EnemyActors.Where(actor => !actor.ActorData.isDead()).ToList();
                 var closestTarget = possibleTargets.OrderBy(actor => actor.target.DistanceToClosestEnemy).FirstOrDefault();
                 if (closestTarget != null) target = closestTarget;
                 if (actor.isControllable) selectionCircle.target = actor.transform;
@@ -76,8 +77,9 @@ namespace Assets.Scripts.Battle.Actor.Systems
             else
             {
                 var possibleTargets = BattleManager.instance.EnemyActors
-                    .Where(actor => actor.state.CurrentState != actor.state.deathState)
+                    .Where(actor => !actor.ActorData.isDead())
                     .ToList();
+
 
                 var closestTarget = possibleTargets
                     .OrderBy(actor => actor.target.DistanceToClosestEnemy)

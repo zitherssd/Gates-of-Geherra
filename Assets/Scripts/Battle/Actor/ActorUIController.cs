@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Assets.Scripts.Battle.Actions.Skills;
 using Assets.Scripts.Battle.Components.Status;
+using Assets.Scripts.Battle.Manager;
 using Assets.Scripts.Pattern;
 using Assets.Scripts.Utility;
 using TMPro;
@@ -30,7 +31,7 @@ namespace Assets.Scripts.Battle.Actor
         [SerializeField] private Slider staminaBarEase;
         [SerializeField] private RectTransform hpBarsContainer;
         [SerializeField] private GameObject hpBarPrefab;
-        [SerializeField] private TextMeshProUGUI statesText;
+        [SerializeField] public TextMeshProUGUI statesText;
         [SerializeField] private Slider ccBar;
         [SerializeField] private TextMeshProUGUI ccBarText;
         [SerializeField] private TextMeshProUGUI ccBarDurationText;
@@ -99,7 +100,9 @@ namespace Assets.Scripts.Battle.Actor
         public void Initialize()
         {
             actor.state.stateChanged += OnStateChanged;
-            actor.state.deathState.OnDeath += HideAllBars;
+            actor.ActorData.OnDeath += HideAllBars;
+            BattleManager.instance.battleStateMachine.activeState.FinalHitDealth += HideAllBars;
+            BattleManager.instance.battleStateMachine.startState.OnNewBattle += ShowAllBars;
             actor.state.blockState.OnEnd += HideCC;
             lastStamina = actor.ActorData.currentStamina;
             staminaBar.value = lastStamina;
@@ -126,8 +129,14 @@ namespace Assets.Scripts.Battle.Actor
             if (statesText != null)
             {
                 var name = actor.ActorData.Name.Replace("(Clone)", "").Trim();
-                statesText.text = name;
+                //statesText.text = name;
             }
+        }
+
+        private void OnDestroy()
+        {
+            BattleManager.instance.battleStateMachine.activeState.FinalHitDealth -= HideAllBars;
+            BattleManager.instance.battleStateMachine.startState.OnNewBattle -= ShowAllBars;
         }
 
         private void OnBlabla()
@@ -227,7 +236,11 @@ namespace Assets.Scripts.Battle.Actor
 
         private void HideAllBars()
         {
-            canvasGroup.LeanAlpha(0, 1f).setEaseOutBack();
+            canvasGroup.LeanAlpha(0, 1f).setEaseOutBack().setIgnoreTimeScale(true);
+        }
+        private void ShowAllBars()
+        {
+            canvasGroup.LeanAlpha(1, 1f).setEaseOutBack().setIgnoreTimeScale(true);
         }
     }
 }

@@ -23,8 +23,8 @@ MonoBehaviour:
   maxStamina: 50
   Controllable: 0
   AIRuleset: 0
-  mainColor: {r: 1, g: 1, b: 1, a: 0}
-  secondaryColor: {r: 0, g: 0, b: 0, a: 1}
+  mainColor: {r: 0.6037736, g: 0.6037736, b: 0.6037736, a: 0}
+  secondaryColor: {r: 0.6063935, g: 0.368325, b: 0.8396226, a: 1}
   baseActions:
   - {fileID: 11400000, guid: eb94d8da9dbb0de4f9022395c5c28ce9, type: 2}
   - {fileID: 11400000, guid: bee8d5fdedd9f2441991e17989df781b, type: 2}

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Assets.Scripts.Battle;
+using Assets.Scripts.Battle.Manager;
 using UnityEngine;
 
 namespace Assets.Scripts.Utility

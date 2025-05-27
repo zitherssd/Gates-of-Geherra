@@ -1,6 +1,7 @@
 ﻿using System;
 using Assets.Scripts.Battle.Actions;
 using Assets.Scripts.Pattern;
+using Assets.Scripts.Utility;
 using UnityEngine;
 
 namespace Assets.Scripts.Battle.Actor.States
@@ -30,7 +31,7 @@ namespace Assets.Scripts.Battle.Actor.States
             this.duration = duration;
             this.onMoveComplete = onMoveComplete;
             this.action = action;
-            timer = 0f;
+            timer = 0.2f;
             continousAction = true;
             return this;
         }
@@ -45,7 +46,6 @@ namespace Assets.Scripts.Battle.Actor.States
 
         public void Enter()
         {
-            actor.audio.PlayAudio("Move2");
             actor.PlayAnimation("Run");
             lastSqrMag = Mathf.Infinity;
             //actor.movement.ResetMomentum();
@@ -81,7 +81,9 @@ namespace Assets.Scripts.Battle.Actor.States
                 if (timer < 1f)
                 {
                     var animator = actor.GetAnimator();
-                    animator.speed = timer * 2 / 3 * (1 + (float)actor.ActorData.AGI/10);
+                    //animator.speed = timer * 2 / 3 * (1 + (float)actor.ActorData.AGI/10);
+                    animator.speed = actor.movement.speed;
+                    if (animator.speed > 1) animator.speed = StaticHelpers.LinearMap(animator.speed, 1, 10, 1, 4);
                     //actor.movement.ChangeSpeed((action.Direction.normalized) * (1 + actor.ActorData.AGI/10) * timer);
                     actor.movement.MoveTowardTarget(action.Direction + actor.transform.position, 2f * timer, 1 + (float)actor.ActorData.AGI / 10);
                 }

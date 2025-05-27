@@ -20,6 +20,7 @@ namespace Assets.Scripts.Battle.Components.Effects
             owner.PostureApplied += ShowPosturePopup;
             owner.DamageApplied += FlashWhite;
             lineRenderer = owner.GetComponentsInChildren<LineRenderer>().FirstOrDefault();
+            
         }
 
         private void ShowDamagePopup(float damageAmount)
