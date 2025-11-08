@@ -16,6 +16,11 @@ Actor is class that handles:
 
 Player should be separate class that 
 	
+Events:
+OnDamageTaken
+OnPostureBroken
+OnDeathblowDealt
+OnDeath
 
 
 

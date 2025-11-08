@@ -496,10 +496,8 @@ GameObject:
   - component: {fileID: 4872896927259916123}
   - component: {fileID: 1692058291632444187}
   - component: {fileID: 1382667342022522120}
-  - component: {fileID: 2209118876523239976}
-  - component: {fileID: 2832859882231749792}
   m_Layer: 5
-  m_Name: ActionButton
+  m_Name: ActionButtonMenu
   m_TagString: SkillButton
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -628,6 +626,7 @@ MonoBehaviour:
   image: {fileID: 8699122292447703189}
   cooldownimage: {fileID: 3314215437140176331}
   referencedAction: {fileID: 0}
+  Disabled: 0
   skillName: {fileID: 8699122292997910123}
   remainingUses: {fileID: 8699122293257293797}
   buildupCost: {fileID: 2895288195471317767}
@@ -664,33 +663,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ShowMaskGraphic: 1
---- !u!114 &2209118876523239976
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8699122292447703190}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 39c960dbc78dd7e4498e33230af6daff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  referencedAction: {fileID: 0}
-  cooldownimage: {fileID: 3314215437140176331}
-  Disabled: 0
---- !u!114 &2832859882231749792
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8699122292447703190}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5acec4004b3f04342b7aa517d368a5c0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &8699122292997910125
 GameObject:
   m_ObjectHideFlags: 0

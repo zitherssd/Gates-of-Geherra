@@ -19,6 +19,8 @@ namespace Assets.Scripts.Battle.Manager.States
         {
             UIManager.instance.Fade(true, () =>
             {
+                UIManager.instance.DisableBattleSkills();
+                UIManager.instance.HideUI();
                 SkillGenerator.instance.DrawSkillsFromSelectionAndWaitForSelection(SkillGenerator.instance.GetRandomActions(FloorManager.instance.currentFloor), () =>
                 {
                     UIManager.instance.ShowRestingUI();

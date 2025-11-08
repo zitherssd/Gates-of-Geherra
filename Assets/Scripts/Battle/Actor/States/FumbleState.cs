@@ -38,11 +38,11 @@ namespace Assets.Scripts.Battle.Actor.States
         public void Update()
         {
             if (!actor.grounded)
-                actor.state.TransitionTo(actor.state.airStaggerState);
+                actor.state.TransitionTo<AirStaggerState>();
             duration -= Time.deltaTime;
             if (duration < 0)
             {
-                actor.state.TransitionTo(actor.state.idleState);
+                actor.state.TransitionToIdle();
                 duration = 0;
             }
         }

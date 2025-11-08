@@ -41,7 +41,7 @@ namespace Assets.Scripts.Battle.Actor.States
         {
             if (actor.ActorData.isDead())
             {
-                actor.state.TransitionTo(actor.state.deathState);
+                actor.state.TransitionTo<DeathState>();
                 return;
             }
         }

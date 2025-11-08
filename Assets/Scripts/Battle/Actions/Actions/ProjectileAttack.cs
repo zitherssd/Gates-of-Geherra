@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Battle.Manager;
+﻿using Assets.Scripts.Battle.Actor.States;
+using Assets.Scripts.Battle.Manager;
 using Assets.Scripts.Utility;
 using System;
 using System.Collections.Generic;
@@ -32,7 +33,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
         {
             caster = casterActor;
             _onPerformEnd = onPerformEnd;
-            casterActor.state.TransitionTo(casterActor.state.actingState.Set(this, onPerformEnd));
+            casterActor.state.TransitionTo<ActingState>().Set(this, onPerformEnd);
             casterActor.movement.FaceTarget(caster.target.target);
         }
         public override void OnHit()

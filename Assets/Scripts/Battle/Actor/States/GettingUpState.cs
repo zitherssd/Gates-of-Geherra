@@ -42,7 +42,7 @@ namespace Assets.Scripts.Battle.Actor.States
             {
                 actor.ActorData.currentPosture = actor.ActorData.maxPosture;
                 actor.PlayAnimation("Idle"); // Play the "GetUp" animation
-                actor.state.TransitionTo(actor.state.idleState);
+                actor.state.TransitionTo<IdleState>();
 
             }
             else if (elapsedTime > 0.6f)

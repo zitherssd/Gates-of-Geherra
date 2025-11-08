@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Utility;
+﻿using Assets.Scripts.Battle.Actor.States;
+using Assets.Scripts.Utility;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -29,7 +30,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
                     effect.Eval(casterActor, this);
                 }
             }
-            casterActor.state.TransitionTo(casterActor.state.actingState.Set(this, onPerformEnd));
+            casterActor.state.TransitionTo<ActingState>().Set(this, onPerformEnd);
         }
 
 
@@ -39,9 +40,9 @@ namespace Assets.Scripts.Battle.Actions.Skills
             {
                 effect.Eval(casterActor,this);
             }
-            if (Tags.Contains(TAG.TECH))
+            if (Tags.Contains(TAG.TECH) && casterActor.state.CurrentState is ActingState acting)
             {
-                casterActor.state.actingState.OnEnd();
+                acting.OnEnd();
             }
         }
         public override void OnEnterWindup(Animator animator)

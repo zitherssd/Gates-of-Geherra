@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.Battle.Actor.States;
+using System;
 using UnityEngine;
 
 namespace Assets.Scripts.Battle.Actions.Actions
@@ -12,12 +13,15 @@ namespace Assets.Scripts.Battle.Actions.Actions
         protected override void PerformSpecific(Actor.Actor casterActor, Action onPerformEnd)
         {
             this.casterActor = casterActor;
-            casterActor.state.TransitionTo(casterActor.state.actingState.Set(this, () => {
+
+            var state = casterActor.state.TransitionTo<ActingState>();
+            state.Set(this, () => {
                 if (casterActor.isControllable)
                 {
                     UIManager.instance.GainMeter(SlowdownMeterGain);
                 }
-                casterActor.movement.SetFriction(); onPerformEnd?.Invoke(); }));
+                casterActor.movement.SetFriction(); onPerformEnd?.Invoke();
+            });
         }
 
         public override void OnHit()

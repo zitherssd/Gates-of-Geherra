@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.Battle.Actor.States;
+using System;
 using UnityEngine;
 
 namespace Assets.Scripts.Battle.Actions.Actions
@@ -18,10 +19,10 @@ namespace Assets.Scripts.Battle.Actions.Actions
 
             if (Type == BUTTONTYPE.CONTINUOUS_VECTOR)
             {
-                casterActor.state.TransitionTo(casterActor.state.moveState.Set(duration, OnCancel, this));
+                casterActor.state.TransitionTo<MoveState>().Set(duration, OnCancel, this);
             }
             else
-                casterActor.state.TransitionTo(casterActor.state.moveState.Set(TargetPosition, onPerformEnd));
+                casterActor.state.TransitionTo<MoveState>().Set(TargetPosition, onPerformEnd);
         }
     }
 }

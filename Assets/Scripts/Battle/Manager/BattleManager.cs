@@ -5,6 +5,7 @@ using System.Linq;
 using Assets.Scripts.Battle.Actions;
 using Assets.Scripts.Battle.Actions.Actions;
 using Assets.Scripts.Battle.Actor;
+using Assets.Scripts.Battle.Actor.States;
 using Assets.Scripts.Crawler;
 using Assets.Scripts.Utility;
 using UnityEngine;
@@ -41,20 +42,15 @@ namespace Assets.Scripts.Battle.Manager
         {
             Physics.gravity = new Vector3(0, -6f, 0);
 
-            // Initialize player only for existing prefabs
-            foreach (var actor in PlayerActors.Concat(EnemyActors))
-            {
-                actor.Initialize(actor.ActorData);
-            }
-
             // Camera pan wait
             StartCoroutine(WaitForSeconds(2f, () =>
             {
+
                 SoundManager.instance.PlayMusic(null);
+                UIManager.instance.InitializePlayerActionButtonPrefabs(PlayerActors[0].ActorData.actions);
+                UIManager.instance.MoveActionsToBattleActionContainers();
                 battleStateMachine.Initialize(battleStateMachine.startState); // Start the battle state machine
             }));
-
-
 
         }
 
@@ -80,14 +76,15 @@ namespace Assets.Scripts.Battle.Manager
                 var randomSpawner = GetRandomChild(SpawnerParent);
                 var enemyGameObject = Instantiate(enemyPrefab, randomSpawner.position, Quaternion.identity);
                 var enemyActor = enemyGameObject.GetComponent<Actor.Actor>();
-                enemyActor.Initialize(clone);
+                enemyActor.ActorData = clone;
                 EnemyActors.Add(enemyActor);
             }
 
-            UIManager.instance.DrawActions(PlayerActors[0].ActorData.actions);
+
             PlayerActors[0].ActorData.Refresh();
             CameraManager.instance.ResetForNewBattle();
-            
+
+            UIManager.instance.EnableBattleSkills();
             UIManager.instance.Fade(false, () =>
             {
                 battleStateMachine.TransitionTo(battleStateMachine.startState); // Start the battle state machine
@@ -111,7 +108,7 @@ namespace Assets.Scripts.Battle.Manager
             }
             if (EnemyActors.TrueForAll(actor => !actor.state.IsAlive()))
             {
-                PlayerActors[0].state.TransitionTo(PlayerActors[0].state.blockState);
+                PlayerActors[0].state.TransitionTo<BlockState>();
                 PlayerActors[0].PlayAnimation("Victory");
                 UIManager.instance.HideUI();
                

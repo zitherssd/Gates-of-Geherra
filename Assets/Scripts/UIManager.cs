@@ -6,7 +6,9 @@ using Assets.Scripts.Battle.Actions;
 using Assets.Scripts.Battle.Actions.Skills;
 using Assets.Scripts.Utility;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Assets.Scripts
 {
@@ -37,16 +39,15 @@ namespace Assets.Scripts
         public GameObject OriginPoint;
         public GameObject ActionsHolder;
         public GameObject SkillHolder;
+        public GameObject SkillsInventoryViewport;
         public GameObject RestingUI;
+        public List<GameObject> PlayerActions = new List<GameObject>();
         private bool effectActive;
         [SerializeField] private AnimationCurve startCurve;
         [SerializeField] private AnimationCurve startCurve2;
         [SerializeField] private AnimationCurve endCurve;
         private float totalEffectTime;
         private bool isLocked = false;
-
-        public Action<BaseAction> OnActionSelected { get; private set; }
-        public Action<BaseReaction> OnReactionSelected { get; private set; }
 
         public static UIManager GetInstance()
         {
@@ -188,59 +189,49 @@ namespace Assets.Scripts
             StoneSlab.text += previous;
         }
 
-        public List<ActionButtonHandler> DrawActionsRadiallyOnScreenPoint(List<BaseAction> actions)
+        public void MoveActionsToBattleActionContainers()
         {
-            foreach(Transform child in ActionsHolder.transform)
+            foreach(var action in PlayerActions)
+            {
+                if (action.GetComponent<ActionButtonHandler>().referencedAction is AttackSkill or ProjectileAttack)
+                    action.transform.SetParent(SkillHolder.transform);
+                else
+                    action.transform.SetParent(ActionsHolder.transform);
+                action.transform.localPosition = Vector3.zero;
+            }
+            LeanTween.scale(ActionsHolder, Vector3.one, 0.2f).setEaseOutCubic().setIgnoreTimeScale(true);
+            LeanTween.scale(SkillHolder, Vector3.one, 0.2f).setEaseOutCubic().setIgnoreTimeScale(true);
+
+        }
+
+        public void InitializePlayerActionButtonPrefabs(List <BaseAction> ActionsToInitialize)
+        {
+            //Destory exiting actions
+            foreach (GameObject child in PlayerActions)
             {
                 Destroy(child.gameObject);
             }
-            foreach (Transform child in SkillHolder.transform) { Destroy(child.gameObject); }
-            LeanTween.scale(ActionsHolder, Vector3.one, 0.2f).setEaseOutCubic().setIgnoreTimeScale(true);
-            float radius = 100f;
+
+            //Create new prefabs for exiting actions
             var handlers = new List<ActionButtonHandler>();
-
-            float anglestep = 360f / actions.Count;
-            for (int i = 0; i < actions.Count; i++)
+            for(int i = 0; i < ActionsToInitialize.Count; i++)
             {
-                float angle = i * anglestep;
-                float x = radius * Mathf.Cos(Mathf.Deg2Rad * angle);
-                float y = radius * Mathf.Sin(Mathf.Deg2Rad * angle);
-                Vector2 position = new(x, y);
-
-                GameObject UISkill = Instantiate(buttonPrefab, position, Quaternion.identity);
-                if (actions[i] is AttackSkill or ProjectileAttack)
-                    UISkill.transform.SetParent(SkillHolder.transform);
-                else
-                    UISkill.transform.SetParent(ActionsHolder.transform);
-
-                UISkill.GetComponent<RectTransform>().localPosition = position;
-                var handler = UISkill.GetComponent<ActionButtonHandler>();
-                handler.Initialize(actions[i]);
-                handlers.Add(handler);
+                GameObject ActionButtonGameobject = Instantiate(buttonPrefab, Vector3.zero, Quaternion.identity);
+                ActionButtonGameobject.GetComponent<ActionButtonHandler>().Init(ActionsToInitialize[i]);
+                PlayerActions.Add(ActionButtonGameobject);
             }
-            //EndButton.gameObject.SetActive(true);
-            //ActionSlot.SetActive(true);
-            return handlers;
         }
 
-
-
-
-        public void DrawActions(List<BaseAction> ActionsToDraw)
+        public void CreatePlayerActionButtonPrefab(BaseAction ActionToInitialize)
         {
-            var buttonHandlers = DrawActionsRadiallyOnScreenPoint(ActionsToDraw);
-
-            for (int i = 0; i < ActionsToDraw.Count; i++)
-            {
-                buttonHandlers[i].referencedAction = ActionsToDraw[i];
-            }
+            GameObject ActionButtonGameobject = Instantiate(buttonPrefab, Vector3.zero, Quaternion.identity);
+            ActionButtonGameobject.GetComponent<ActionButtonHandler>().Init(ActionToInitialize);
+            PlayerActions.Add(ActionButtonGameobject);
+            ActionButtonGameobject.transform.SetParent(SkillsInventoryViewport.transform);
+            ActionButtonGameobject.GetComponent<ActionButtonBattle>().enabled = false;
+            ActionButtonGameobject.GetComponent<ActionButtonInventory>().enabled = true;
+            ActionButtonGameobject.GetComponent<ActionButtonInventory>().DisableBattleSkills();
         }
-
-
-
-
-
-
 
 
         public IEnumerator TypeTextMiddleLetterByLetter(string text, Action onTypingComplete)
@@ -286,7 +277,6 @@ namespace Assets.Scripts
             }
             else
             {
-                LeanTween.alphaCanvas(actionHolder, 0f, 0.5f);
                 LeanTween.alpha(fadeImage.rectTransform, 1f, 0.5f).setOnComplete(onFadeComplete);
             }
         }
@@ -303,7 +293,7 @@ namespace Assets.Scripts
             // Loop through the children to find the one with the correct ButtonHandler
             foreach (GameObject child in children)
             {
-                ActionButtonHandler buttonHandler = child.GetComponent<ActionButtonHandler>();
+                ActionButtonBattle buttonHandler = child.GetComponent<ActionButtonBattle>();
 
                 // Check if the child has a ButtonHandler and if its referencedSkill matches the action
                 if (buttonHandler != null && buttonHandler.referencedAction == action)
@@ -340,7 +330,7 @@ namespace Assets.Scripts
         }
         public void ShowUI()
         {
-            if (isLocked) return;
+            //if (isLocked) return;
             ActionsHolder.transform.parent.gameObject.SetActive(true);
 
             var leftContainerChildren = GetAllChildren(ActionsHolder);
@@ -348,7 +338,7 @@ namespace Assets.Scripts
         
             foreach(var child in leftContainerChildren.Concat(rightContainer))
             {
-                child.GetComponent<ActionButtonHandler>().Disabled = false;
+                child.GetComponent<ActionButtonBattle>().Disabled = false;
                 LeanTween.scale(child.gameObject, Vector3.one, 0.4f).setEaseOutBack().setIgnoreTimeScale(true);
             }
             LeanTween.scale(ActionsHolder.gameObject, Vector3.one, 0.15f).setEaseInOutCubic().setIgnoreTimeScale(true);
@@ -377,6 +367,22 @@ namespace Assets.Scripts
         {
             ShowUI();
             isLocked = false;
+        }
+
+        public void DisableBattleSkills()
+        {
+            foreach (var action in PlayerActions)
+            {
+                action.GetComponent<ActionButtonInventory>().DisableBattleSkills();
+            }
+        }
+
+        public void EnableBattleSkills()
+        {
+            foreach (var action in PlayerActions)
+            {
+                action.GetComponent<ActionButtonInventory>().EnableBattleSkills();
+            }
         }
 
         //1. Attack or Move or Skill // MoveWithingRange if able;

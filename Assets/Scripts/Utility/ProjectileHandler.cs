@@ -86,7 +86,7 @@ namespace Assets.Scripts.Utility
             if (action.PostureDamage > 0)
             {
                 targetActor.ApplyPosture(action.PostureDamage);
-                if (casterActor.isControllable && targetActor.state.CurrentState != targetActor.state.blockState)
+                if (casterActor.isControllable && !targetActor.state.IsBlocking())
                 {
                     UIManager.instance.GainMeter(action.SlowdownMeterGain);
                 }

@@ -14,9 +14,9 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
 
         public override NodeState Execute(AIBT ai, Actor actor)
         {
-            if (actor.state.CurrentState == actor.state.moveState)
+            if (actor.state.IsMoving(out MoveAction action))
             {
-                actor.state.moveState.action.Direction = direction;
+                action.Direction = direction;
             }
 
             var moveSkill = actor.ActorData.actions.OfType<MoveAction>().FirstOrDefault();
@@ -74,7 +74,8 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
 
         public override NodeState Execute(AIBT ai, Actor actor)
         {
-            actor.state.moveState.action.Direction = direction;
+            actor.state.IsMoving(out MoveAction moveAction);
+            moveAction.Direction = direction;
             return NodeState.Sucess;
         }
     }
@@ -83,9 +84,9 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
     {
         public override NodeState Execute(AIBT ai, Actor actor)
         {
-            if (actor.state.IsMoving(out _))
+            if (actor.state.IsMoving(out MoveAction moveAction))
             {
-                actor.state.moveState.action.OnCancel?.Invoke();
+                moveAction.OnCancel?.Invoke();
                 return NodeState.Sucess;
             }
             return NodeState.Failure;
@@ -95,30 +96,56 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
 
     public class MoveAwayFromPlayer : BTNode
     {
-        float duration;
-        float timer = 0f;
-        public MoveAwayFromPlayer(float duration)
+        private float moveDuration;     // how long max we can move at once
+        private float moveTimer = 0f;
+
+        private float cooldown = 10f;   // cooldown after finishing
+        private float cooldownTimer = 0f;
+
+        private bool isOnCooldown = false;
+
+        public MoveAwayFromPlayer(float moveDuration, float cooldown = 10f)
         {
-            this.duration = duration;
+            this.moveDuration = moveDuration;
+            this.cooldown = cooldown;
         }
 
         public override NodeState Execute(AIBT ai, Actor actor)
         {
+            // 🔥 check cooldown first
+            if (isOnCooldown)
+            {
+                cooldownTimer += Time.deltaTime;
+                if (cooldownTimer >= cooldown)
+                {
+                    isOnCooldown = false;
+                    cooldownTimer = 0f;
+                }
+                return NodeState.Failure; // not allowed to move away right now
+            }
+
             MoveAction moveAction;
             if (actor.state.IsMoving(out moveAction))
             {
                 moveAction.Direction = actor.target.DirectionToClosestEnemy * -1f;
-                timer += Time.deltaTime;
-                if (timer > duration)
+                moveTimer += Time.deltaTime;
+
+                if (moveTimer > moveDuration)
                 {
                     moveAction.OnCancel?.Invoke();
+                    moveTimer = 0f;
+                    isOnCooldown = true; // 🔥 start cooldown
                     return NodeState.Sucess;
                 }
+
                 return NodeState.Running;
             }
             else
-                timer = 0f;
+            {
+                moveTimer = 0f; // reset if not moving
+            }
 
+            // start moving away
             var moveSkill = actor.ActorData.actions.OfType<MoveAction>().FirstOrDefault();
             if (moveSkill == null) return NodeState.Failure;
 

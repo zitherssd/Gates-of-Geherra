@@ -31,4 +31,4 @@ MonoBehaviour:
   SlowDownMeterGainOnPress: 0
   SlowdownMeterGainOnRelease: 0
   Animation: 12
-  power: 3
+  power: 4

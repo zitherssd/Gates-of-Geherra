@@ -30,7 +30,7 @@ namespace Assets.Scripts.Battle.Actor.States
         {
             if (actor.ActorData.isDead())
             {
-                actor.state.TransitionTo(actor.state.deathState);
+                actor.state.TransitionTo<DeathState>();
                 BattleManager.instance.End();
                 return;
             }
@@ -76,7 +76,7 @@ namespace Assets.Scripts.Battle.Actor.States
         {
             if (!actor.grounded)
             {
-                actor.state.TransitionTo(actor.state.airStaggerState);
+                actor.state.TransitionTo<AirStaggerState>();
                 return;
             }
 
@@ -87,7 +87,7 @@ namespace Assets.Scripts.Battle.Actor.States
             if (timer >= duration)
             {
                 actor.ActorData.currentPosture = actor.ActorData.maxPosture;
-                actor.state.TransitionTo(actor.state.idleState);  // Transition back to idle state
+                actor.state.TransitionToIdle();  // Transition back to idle state
             }
         }
 

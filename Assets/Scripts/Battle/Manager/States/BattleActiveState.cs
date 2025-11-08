@@ -39,7 +39,7 @@ namespace Assets.Scripts.Battle.Manager.States
             {
                 if (battleManager.EnemyActors.TrueForAll(actor => actor.ActorData.isDead())) // Last hit dealt now
                 {
-                    FinalHitDealth.Invoke();
+                    FinalHitDealth?.Invoke();
                     //Gain meter, final hit effects
                     UIManager.instance.ResetMeter();
                     UIManager.instance.GainMeter(2f);

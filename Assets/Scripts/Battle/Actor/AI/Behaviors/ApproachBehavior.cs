@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Assets.Scripts.Battle.Actions.Actions;
+using Assets.Scripts.Pattern;
 
 namespace Assets.Scripts.Battle.Actor.AI.Behaviors
 {
@@ -7,11 +8,11 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
     {
         public override NodeState Execute(AIBT ai, Actor actor)
         {
-
-            if (actor.state.CurrentState == actor.state.moveState)
+            MoveAction moveaction;
+            if (actor.state.IsMoving(out moveaction))
             {
-                actor.state.moveState.action.Direction = actor.target.DirectionToClosestEnemy;
-                if (actor.target.DistanceToClosestEnemy < 1.4f) actor.state.moveState.action.OnCancel?.Invoke();
+                moveaction.Direction = actor.target.DirectionToClosestEnemy;
+                if (actor.target.DistanceToClosestEnemy < 1.4f) moveaction.OnCancel?.Invoke();
             }
 
             if (actor.Rb.velocity.magnitude > 0.5f || actor.target.DistanceToClosestEnemy < 1.1f)

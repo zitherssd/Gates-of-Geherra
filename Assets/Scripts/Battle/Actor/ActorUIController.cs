@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Assets.Scripts.Battle.Actions.Skills;
+using Assets.Scripts.Battle.Actor.States;
 using Assets.Scripts.Battle.Components.Status;
 using Assets.Scripts.Battle.Manager;
 using Assets.Scripts.Pattern;
@@ -35,6 +36,9 @@ namespace Assets.Scripts.Battle.Actor
         [SerializeField] private Slider ccBar;
         [SerializeField] private TextMeshProUGUI ccBarText;
         [SerializeField] private TextMeshProUGUI ccBarDurationText;
+        [SerializeField] private Image windupIndicator;
+        [SerializeField] private CanvasGroup windupCanvasGroup;
+        [SerializeField] private Gradient windupColorOverTime;
         private float lastSetDuration;
         private float trackingCCDuration;
         private float lastStamina;
@@ -94,22 +98,45 @@ namespace Assets.Scripts.Battle.Actor
         {
             canvasGroup = GetComponent<CanvasGroup>();
             actor = GetComponentInParent<Actor>();
-            actor.OnReset += Initialize;
         }
 
-        public void Initialize()
+    public void SetProgress(float t)
+    {
+            if(t != 0)
+            LeanTween.alphaCanvas(windupCanvasGroup, 1f, 0.1f).setIgnoreTimeScale(true);
+            else if(t<=0f)
+            {
+                LeanTween.alphaCanvas(windupCanvasGroup, 0f, 0.5f).setIgnoreTimeScale(true);
+                windupIndicator.color = windupColorOverTime.Evaluate(1);
+            }
+
+            windupIndicator.fillAmount = Mathf.Clamp01(t);
+
+            windupIndicator.color = windupColorOverTime.Evaluate(t);
+    }
+
+    public void ResetIndicator()
+    {
+            LeanTween.alphaCanvas(windupCanvasGroup, 0f, 0.1f).setIgnoreTimeScale(true);
+
+            windupIndicator.fillAmount = 0f;
+            windupIndicator.color = windupColorOverTime.Evaluate(0f);
+    }
+
+        public void Start()
         {
-            actor.state.stateChanged += OnStateChanged;
+            actor.state.StateChanged += OnStateChanged;
             actor.ActorData.OnDeath += HideAllBars;
             BattleManager.instance.battleStateMachine.activeState.FinalHitDealth += HideAllBars;
             BattleManager.instance.battleStateMachine.startState.OnNewBattle += ShowAllBars;
-            actor.state.blockState.OnEnd += HideCC;
+            //actor.state.blockState.OnEnd += HideCC;
             lastStamina = actor.ActorData.currentStamina;
             staminaBar.value = lastStamina;
             staminaBarEase.value = lastStamina;
-            this.actor.state.staggerState.OnStaggerStateEntered += SetStun;
-            this.actor.state.staggerState.OnStaggerStateExit += HideCC;
-
+            var staggerState = actor.state.GetState<StaggerState>();
+            staggerState.OnStaggerStateEntered += SetStun;
+            staggerState.OnStaggerStateExit += HideCC;
+            SetupWindupIndicator(actor.state.GetState<ActingState>());
             foreach (Transform child in hpBarsContainer)
             {
                 Destroy(child.gameObject);
@@ -122,6 +149,15 @@ namespace Assets.Scripts.Battle.Actor
             }
 
             UpdateVisibility();
+        }
+
+        private void SetupWindupIndicator(ActingState actingState)
+        {
+            actingState.onWindupProgress += SetProgress;
+            actingState.onEnterRecovery += _ => ResetIndicator();
+            actingState.onHit += ResetIndicator;
+            actingState.onEnd += ResetIndicator;
+            actingState.onInterrupt += ResetIndicator;
         }
 
         private void OnStateChanged(IState state)

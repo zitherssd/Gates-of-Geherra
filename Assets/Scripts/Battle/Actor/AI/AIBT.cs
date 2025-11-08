@@ -21,8 +21,6 @@ namespace Assets.Scripts.Battle.Actor.AI
             this.actor = actor;
             actor.OnReset += Reset;
             Reset();
-
-
         }
 
         public void Reset()
@@ -106,7 +104,7 @@ namespace Assets.Scripts.Battle.Actor.AI
             new SequenceNode(new List<BTNode>
             {
                 new DistanceToPlayerSmallerThan(3),
-                new MoveAwayFromPlayer(0.2f),
+                new MoveAwayFromPlayer(3, 3),
             }),
 
             new SequenceNode(new List<BTNode>
@@ -124,7 +122,7 @@ namespace Assets.Scripts.Battle.Actor.AI
             //if (aiTickTimer > 0) return;
             //aiTickTimer = aiTickCooldown;
 
-            if (actor.state.IsIdle() || actor.state.CurrentState == actor.state.moveState)
+            if (actor.state.IsIdle() || actor.state.IsMoving(out _))
             {
                 foreach (var behavior in behaviors)
                 {

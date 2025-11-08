@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Battle.Components.Status;
+﻿using Assets.Scripts.Battle.Actor.States;
+using Assets.Scripts.Battle.Components.Status;
 using System;
 using UnityEngine;
 
@@ -18,7 +19,8 @@ namespace Assets.Scripts.Battle.Actions.Reactions
         protected override void PerformSpecific(Actor.Actor actor, Action onReactionComplete)
         {
             OnCancel = onReactionComplete;
-            actor.state.TransitionTo(actor.state.blockState.Set(this)); //this should pass ReactionComplete
+            var blockState = actor.state.TransitionTo<BlockState>();
+            blockState.Set(this);
         }
     }
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.Battle.Actor.States;
+using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -18,9 +19,9 @@ namespace Assets.Scripts.Battle.Actions.Actions
             casterActor.transform.position = new Vector3(casterActor.transform.position.x, casterActor.transform.position.y + 0.011f, casterActor.transform.position.z);
             float dotProduct = Vector3.Dot(casterActor.transform.forward, Direction);
             if (dotProduct > 0)
-                casterActor.state.TransitionTo(casterActor.state.airNeutralState);
+                casterActor.state.TransitionTo<AirNeutralState>();
             else
-                casterActor.state.TransitionTo(casterActor.state.rollState);
+                casterActor.state.TransitionTo<RollState>();
             //casterActor.StartCoroutine(casterActor.WaitForTime(onPerformEnd, 1f));
         }
     }

@@ -21,20 +21,11 @@ namespace Assets.Scripts.Battle.Manager.States
         public void Enter()
         {
             UIManager.instance.EnableUI();
-            OnNewBattle.Invoke();
-
-            //Set all actors to idle
-            foreach (var actor in manager.PlayerActors.Concat(manager.EnemyActors))
-            {
-                actor.state.TransitionTo(actor.state.idleState);
-                actor.GetComponentInChildren<ColorController>().SetColors(actor.ActorData.mainColor, actor.ActorData.secondaryColor);
-            }
+            OnNewBattle?.Invoke();
 
             //Gain meter
             UIManager.instance.GainMeter(4f);
-
-            //Show UI
-            UIManager.instance.DrawActions(manager.PlayerActors[0].ActorData.actions);
+            UIManager.instance.ShowUI();
 
             //Transition to active
             manager.battleStateMachine.TransitionTo(manager.battleStateMachine.activeState);

@@ -47,7 +47,7 @@ namespace Assets.Scripts.Battle.Actor.States
 
             if (actor.grounded)
             {
-                actor.state.TransitionTo(actor.state.landingState);
+                actor.state.TransitionTo<LandingState>();
             }
             else if (actor.Rb.velocity.sqrMagnitude < 0.1f)
             {

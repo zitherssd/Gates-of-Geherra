@@ -40,7 +40,7 @@ namespace Assets.Scripts.Battle.Actor.States
             if (actor.Rb.velocity.sqrMagnitude < Mathf.Epsilon)
             {
                 actor.PlayAnimation("Idle");
-                actor.state.TransitionTo(actor.state.idleState);
+                actor.state.TransitionToIdle();
             }
         }
     }

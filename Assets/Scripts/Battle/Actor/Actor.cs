@@ -1,6 +1,7 @@
 ﻿using System;
 using Assets.Scripts.Battle.Actions;
 using Assets.Scripts.Battle.Actor.AI;
+using Assets.Scripts.Battle.Actor.States;
 using Assets.Scripts.Battle.Actor.Systems;
 using Assets.Scripts.Battle.Components.Audio;
 using Assets.Scripts.Battle.Components.Effects;
@@ -56,18 +57,27 @@ namespace Assets.Scripts.Battle.Actor
         {
             Rb = gameObject.GetComponent<Rigidbody>();
             animator = gameObject.GetComponent<Animator>();
-            state = new ActorStateMachine(this);
+            state = gameObject.GetComponent<ActorStateMachine>();
             audio = new AudioManager(this);
             statusManager = new StatusManager(this); //this needs rework
             effects = new EffectManager(this);
-            ai = new AIBT(this); //this too subscribe
             target = new TargetingSystem(this); //this too subscribe
             movement = new MovementSystem(this); //this too subscribe???
 
         }
+
+        public void Start()
+        {
+            if (ActorData != null)
+            ActorData.Reset();
+            ai = new AIBT(this); //this too subscribe
+            state.Initialize<IdleState>();
+            effects.SetColors();
+        }
+
         public void Update()
         {
-            StaminaRegen();
+             StaminaRegen();
             PostureRegen();
             UpdateActionCooldowns();
 
@@ -76,15 +86,6 @@ namespace Assets.Scripts.Battle.Actor
             ai.Update();
             effects.UpdatePolygon();
             if (isControllable) target.Update(); //this looks wierd
-        }
-        public void Initialize(ActorData actorData)
-        {
-            if (actorData != null)
-                this.ActorData = actorData;
-            ActorData.Reset();
-            OnReset?.Invoke();
-            var cc = GetComponentInChildren<ColorController>();
-            //cc.SetColors(ActorData.mainColor, ActorData.secondaryColor);
         }
 
 
@@ -132,8 +133,8 @@ namespace Assets.Scripts.Battle.Actor
             {
                 // Calculate stagger duration
                 float staggerDuration = StaticHelpers.LinearMap(Mathf.Min(postureLostPercentage), 0, 100, 1f, 2.5f);
-
-                    state.TransitionTo(state.staggerState.Set(staggerDuration));
+                var staggerState = state.TransitionTo<StaggerState>();
+                staggerState.Set(staggerDuration);
             }
         }
         public void ApplyKnockback(Vector3 direction, float force)
@@ -210,7 +211,7 @@ namespace Assets.Scripts.Battle.Actor
         }
         private void StaminaRegen()
         {
-            if (state.CurrentState == state.idleState || state.CurrentState == state.blockState)
+            if (state.IsIdle())
                 ActorData.DealStaminaDamage(-ActorData.staminaRegenRate * 5 * StaminaRegenRate * Time.deltaTime);
         }
         private void UpdateActionCooldowns()
@@ -233,33 +234,5 @@ namespace Assets.Scripts.Battle.Actor
         
         // Public components
         public Rigidbody Rb { get; set; }
-
-
-
-
-        //Animator callback methods - do not touch
-        public void OnHit()
-        {
-            state.OnHit();
-
-        }
-        public void EnterWindup()
-        {
-            state.EnterWindup();
-        }
-        public void EnterRecovery()
-        {
-            state.EnterRecovery();
-        }
-        public void OnEnd()
-        {
-            state.OnEnd();
-
-            //if (onAnimationEndComplete != null)
-            //{
-            //    onAnimationEndComplete();
-            //    onAnimationEndComplete = null;
-            //}
-        }
     }
 }

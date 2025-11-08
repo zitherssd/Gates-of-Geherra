@@ -5,24 +5,24 @@ using Assets.Scripts.Battle.Actions;
 using Assets.Scripts.Battle.Actions.Skills;
 using Assets.Scripts.Battle.Actor;
 using Assets.Scripts.Battle.Manager;
+using Assets.Scripts.Utility;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static Assets.Scripts.Battle.Actions.BaseAction;
 
-namespace Assets.Scripts.Utility
+namespace Assets.Scripts.Battle.Actions
 {
-    public class ActionButtonHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+    public class ActionButtonBattle : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
+        public BaseAction referencedAction;
 
-        public Image image;
         public Image cooldownimage;
         private Transform home;
         private Button button;
-        public BaseAction referencedAction;
-        public Action<BaseAction> Click;
         public bool Disabled = false;
+
         private static float maxJoystickDistance = 100f;
         private static RectTransform joystickBase;
         private static RectTransform joystickKnob;
@@ -33,15 +33,15 @@ namespace Assets.Scripts.Utility
         public void SetInteractable(bool interactable)
         {
             button.interactable = interactable;
-
         }
 
         private void Awake()
         {
             button = gameObject.GetComponent<Button>();
+            rect = gameObject.GetComponent<RectTransform>();
+
             if (actionHolder == null) actionHolder = GameObject.Find("LeftContainer");
             if (skillHolder == null) skillHolder = GameObject.Find("RightContainer");
-            //if (actionSlot == null) actionSlot = GameObject.Find("ActionSlot");
             if (guide == null) guide = GameObject.Find("PlacementGuide");
             if (joystickBase == null) joystickBase = GameObject.Find("VirtualJoystickBase").GetComponent<RectTransform>();
             if (joystickKnob == null) joystickKnob = GameObject.Find("VirtualJoystickKnob").GetComponent<RectTransform>();
@@ -50,24 +50,14 @@ namespace Assets.Scripts.Utility
 
         private void Start()
         {
+            if (referencedAction == null) referencedAction = GetComponent<ActionButtonHandler>().referencedAction;
             if (player == null) player = BattleManager.instance.PlayerActors[0];
-            rect = gameObject.GetComponent<RectTransform>();
             home = transform.parent;
             LeanTween.scale(gameObject, Vector3.one, 0.4f).setEaseOutBack().setIgnoreTimeScale(true);
         }
 
         private void Update()
         {
-            string plusSymbol = "+";
-            if (referencedAction.TotalUses != 0 && referencedAction.remainingUses > 0)
-            {
-                remainingUses.text = ConcatWithPlus(plusSymbol, referencedAction.remainingUses);
-            }
-
-            else
-            {
-                remainingUses.text = string.Empty;
-            }
 
             SetInteractable(referencedAction.IsValid(player, out _));
 
@@ -112,101 +102,11 @@ namespace Assets.Scripts.Utility
             }
         }
 
-        public void Initialize(BaseAction referencedAction) //This can be moved in Start probably
+        private void OnDisable()
         {
-            if (referencedAction != null)
-            {
-                SetUIFromAction(referencedAction);
-                SetInteractable(referencedAction.IsValid(BattleManager.instance.PlayerActors[0], out _));
-            }
+            cooldownimage.fillAmount = 0;
+            button.interactable = true;
         }
-
-        public void InitCard()
-        {
-            skillName.text = referencedAction.Name;
-            buildupCost.text = referencedAction.BuildupCost != 0 ? referencedAction.BuildupCost.ToString() : string.Empty;
-
-            string plusSymbol = "+";
-            remainingUses.text = referencedAction.TotalUses != 0 ? ConcatWithPlus(plusSymbol, referencedAction.TotalUses) : string.Empty;
-            if (referencedAction is AttackSkill)
-            {
-                var skill = referencedAction as AttackSkill;
-                speed.text += skill.Speed;
-                range.text += skill.Range;
-                damage.text += skill.Damage;
-                postureDamage.text += skill.PostureDamage;
-                knockback.text += skill.KnockbackForce;
-                if (referencedAction.Tags != null && referencedAction.Tags.Count > 0)
-                    tags.text = GenerateTagString(referencedAction.Tags);
-            }
-        }
-
-        private string GenerateTagString(List<TAG> tags)
-        {
-            string tagString = string.Empty;
-            foreach (TAG tag in tags)
-            {
-                switch (tag)
-                {
-                    case TAG.FREE:
-                        tagString += "[FREE]";
-                        break;
-                    default:
-                        break;
-                }
-            }
-            return tagString;
-        }
-
-        public void SetUIFromAction(BaseAction action)
-        {
-            var sr = GetComponent<Image>();
-            if (action != null)
-            {
-                switch (action.Type)
-                {
-                    case BUTTONTYPE.INSTANT:
-                        sr.sprite = Resources.Load<Sprite>("Sprites/ButtonBorderInstant");
-                        break;
-                    case BUTTONTYPE.VECTOR:
-                        sr.sprite = Resources.Load<Sprite>("Sprites/ButtonBorderVector");
-                        break;
-                    case BUTTONTYPE.CONTINNUOUS:
-                        sr.sprite = Resources.Load<Sprite>("Sprites/ButtonBorderContinuous");
-                        break;
-                    case BUTTONTYPE.CONTINUOUS_VECTOR:
-                        sr.sprite = Resources.Load<Sprite>("Sprites/ButtonBorderVector");
-                        break;
-                }
-
-
-
-
-
-                skillName.text = action.Name;
-                string plusSymbol = "+";
-                remainingUses.text = action.TotalUses != 0 ? ConcatWithPlus(plusSymbol, action.remainingUses) : string.Empty;
-                buildupCost.text = action.BuildupCost != 0 ? action.BuildupCost.ToString() : string.Empty;
-                staminaCost.text = action.StaminaCost != 0 ? action.StaminaCost.ToString() : string.Empty;
-                tags.text = GenerateTagString(action.Tags);
-                if (description)
-                {
-                    if (String.IsNullOrEmpty(action.Description))
-                    {
-                        description.text = action.Description;
-                    }
-                }
-
-
-                SetInteractable(action);
-            }
-        }
-
-        private string ConcatWithPlus(string symbol, int value)
-        {
-            return new string(symbol[0], value);
-        }
-
         private void MoveToCenter()
         {
             // Calculate the center position of the screen
@@ -335,12 +235,12 @@ namespace Assets.Scripts.Utility
         {
             isPressed = false;
             UIManager.instance.HideUI();
-            player.UseAction(referencedAction, () => { player.state.TransitionTo(player.state.idleState); });
+            player.UseAction(referencedAction, () => { player.state.TransitionToIdle(); });
         }
         public void HideUIExceptThisAndUseAction()
         {
             UIManager.instance.HideAllButThis(referencedAction);
-            player.UseAction(referencedAction, () => { player.state.TransitionTo(player.state.idleState); });
+            player.UseAction(referencedAction, () => { player.state.TransitionToIdle(); });
         }
 
         public Vector3 GetRelativeToCamera(Vector2 direction)
@@ -354,18 +254,7 @@ namespace Assets.Scripts.Utility
             return desiredMoveDirection;
         }
 
-        [SerializeField] private TextMeshProUGUI skillName;
-        [SerializeField] private TextMeshProUGUI remainingUses;
-        [SerializeField] private TextMeshProUGUI buildupCost;
-        [SerializeField] private TextMeshProUGUI staminaCost;
-        [SerializeField] private TextMeshProUGUI speed;
-        [SerializeField] private TextMeshProUGUI range;
-        [SerializeField] private TextMeshProUGUI description;
-        [SerializeField] private TextMeshProUGUI damage;
-        [SerializeField] private TextMeshProUGUI postureDamage;
-        [SerializeField] private TextMeshProUGUI knockback;
-        [SerializeField] private TextMeshProUGUI tags;
-        private static Actor player;
+        private Actor.Actor player;
         private static GameObject actionHolder;
         private static GameObject skillHolder;
         private static GameObject actionSlot;

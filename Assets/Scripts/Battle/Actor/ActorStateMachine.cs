@@ -3,106 +3,151 @@ using Assets.Scripts.Battle.Actions.Actions;
 using Assets.Scripts.Battle.Actions.Skills;
 using Assets.Scripts.Battle.Actor.States;
 using Assets.Scripts.Pattern;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.CullingGroup;
 
 namespace Assets.Scripts.Battle.Actor
 {
-    public class ActorStateMachine : StateMachine
+    public class ActorStateMachine : MonoBehaviour
     {
-        [SerializeField]
-        public IdleState idleState;
-        public FumbleState fumbleState;
-        public AirStaggerState airStaggerState;
-        public AirNeutralState airNeutralState;
-        public LandingState landingState;
-        public ActingState actingState;
-        public RollState rollState;
-        public BlockState blockState;
-        public MoveState moveState;
-        public GettingUpState gettingUpState;
-        public StaggerState staggerState;
-        public DeathState deathState;
+
+        //Public fields
+        public IState CurrentState { get; private set; }
+        public event Action<IState> StateChanged;
         public bool locked;
+
+
+        //Private fields
+        private readonly Dictionary<Type, IState> states = new();
         private Actor actor;
-        public BaseSkill action;
-
-
-        public ActorStateMachine(Actor actor)
+        [Header("Debug")]
+        [SerializeField] private string currentStateName;
+        public T GetState<T>() where T : class, IState
         {
-            this.idleState = new IdleState(actor);
-            this.fumbleState = new FumbleState(actor);
-            this.airStaggerState = new AirStaggerState(actor);
-            this.landingState = new LandingState(actor);
-            this.airNeutralState = new AirNeutralState(actor);
-            this.actingState = new ActingState(actor);
-            this.rollState = new RollState(actor);
-            this.blockState = new BlockState(actor);
-            this.moveState = new MoveState(actor);
-            this.gettingUpState = new GettingUpState(actor);
-            this.staggerState = new StaggerState(actor);
-            this.deathState = new DeathState(actor);
+            if (states.TryGetValue(typeof(T), out var state))
+            {
+                return state as T;
+            }
 
-            this.actor = actor;
-            Initialize(actingState);
+            Debug.LogWarning($"State of type {typeof(T).Name} not found in the state machine.");
+            return null;
         }
 
+        //Public methods
+        public void Awake()
+        {
+            actor = GetComponent<Actor>();
 
-        internal void OnCollisionEnter(Collision collision)
+            RegisterState(new IdleState(actor));
+            RegisterState(new FumbleState(actor));
+            RegisterState(new AirStaggerState(actor));
+            RegisterState(new AirNeutralState(actor));
+            RegisterState(new LandingState(actor));
+            RegisterState(new ActingState(actor));
+            RegisterState(new RollState(actor));
+            RegisterState(new BlockState(actor));
+            RegisterState(new MoveState(actor));
+            RegisterState(new GettingUpState(actor));
+            RegisterState(new StaggerState(actor));
+            RegisterState(new DeathState(actor));
+        }
+        public void Initialize<T>() where T : IState
+        {
+            if (!states.TryGetValue(typeof(T), out var nextState))
+            {
+                Debug.LogError($"State {typeof(T).Name} not registered!");
+                return;
+            }
+
+            CurrentState = nextState;
+            CurrentState.Enter();
+
+            StateChanged?.Invoke(CurrentState);
+        }
+        public void Update()
+        {
+            if (CurrentState != null)
+                CurrentState.Update();
+        }
+        public void OnHit()
+        {
+            if (CurrentState is ActingState actingState)
+            {
+                actingState.OnHit();
+            }
+        }
+        public void OnEnd()
+        {
+            if (CurrentState is ActingState actingState)
+            {
+                actingState.OnEnd();
+            }
+        }
+        public void EnterWindup(int windupFrames)
+        {
+            if (CurrentState is ActingState actingState)
+            {
+                actingState.EnterWindup(windupFrames);
+            }
+        }
+        public void EnterRecovery()
+        {
+            if (CurrentState is ActingState actingState)
+            {
+                actingState.EnterRecovery();
+            }
+        }
+        public void OnCollisionEnter(Collision collision)
         {
             if (CurrentState != null)
                 CurrentState.OnCollisionEnter(collision);
         }
 
 
-
-        public void OnEnd()
+        //Helper methods
+        public void TransitionToIdle()
         {
-            if (CurrentState == actingState)
-            {
-                actingState.OnEnd();
-            }
+                if (!IsAlive())
+                {
+                    TransitionTo<DeathState>();
+                }
+                else
+                {
+                    TransitionTo<IdleState>();
+                }
         }
-
-        public void OnHit()
+        public bool IsIdle()
         {
-            if (CurrentState == actingState)
-            {
-                actingState.OnHit();
-            }
+            if (Is<IdleState>())
+                return true;
+            else
+                return false;
         }
-
-        internal void EnterWindup()
+        public bool IsAlive()
         {
-            if (CurrentState == actingState)
-            {
-                actingState.EnterWindup(actor.GetAnimator());
-            }
+            if (!Is<DeathState>())
+                return true;
+            else
+                return false;
         }
-
         public bool IsStaggered()
         {
-            if (CurrentState == staggerState || CurrentState == fumbleState || CurrentState == airStaggerState)
+            if (CurrentState is ActingState actingState || CurrentState is FumbleState fumbleState || CurrentState is AirStaggerState airStaggerState)
                 return true;
             else return false;
         }
         public bool IsBlocking()
         {
-            if (CurrentState == blockState)
+            if (CurrentState is BlockState)
                 return true;
             else return false;
         }
-        internal void EnterRecovery()
-        {
-            if (CurrentState == actingState)
-            {
-                actingState.EnterRecovery(actor.GetAnimator());
-            }
-        }
-
         public bool IsMoving(out MoveAction moveAction)
         {
             moveAction = null;
-            if (CurrentState == moveState)
+            if (CurrentState is MoveState moveState)
             {
                 moveAction = moveState.action as MoveAction;
                 return true;
@@ -110,26 +155,12 @@ namespace Assets.Scripts.Battle.Actor
             else
                 return false;
         }
-        public bool IsAlive()
-        {
-            if (CurrentState != deathState)
-                return true;
-            else
-                return false;
-        }
-        public bool IsIdle()
-        {
-            if (CurrentState == idleState)
-                return true;
-            else
-                return false;
-        }
         public bool IsAttacking(out AttackSkill attackSkill)
         {
-            if (CurrentState == actingState && actingState.action is AttackSkill skill)
+            if (CurrentState is ActingState actingState && actingState.action is AttackSkill skill)
             {
                 attackSkill = skill;
-                if (attackSkill.state != AttackSkill.STATE.windup) 
+                if (attackSkill.state != AttackSkill.STATE.windup)
                     return false;
                 else
                     return true;
@@ -140,9 +171,29 @@ namespace Assets.Scripts.Battle.Actor
                 return false;
             }
         }
-        public void TransitionToIdle()
+        private void RegisterState(IState state)
         {
-            TransitionTo(idleState);
+            states[state.GetType()] = state;
         }
+    
+
+        public T TransitionTo<T>() where T: IState
+        {
+            if (!states.TryGetValue(typeof(T), out var nextState))
+            {
+                Debug.LogError(IsIdle() + $"State of type {typeof(T)} not found in the state machine.");
+                return default;
+            }
+            if (CurrentState == nextState) return (T)CurrentState;
+            CurrentState.Exit();
+            CurrentState = nextState;
+            currentStateName = nextState.GetType().Name;
+            nextState.Enter();
+
+            StateChanged?.Invoke(nextState);
+
+            return (T)CurrentState;
+        }
+        public bool Is<T>() where T : IState => CurrentState is T;
     }
 }

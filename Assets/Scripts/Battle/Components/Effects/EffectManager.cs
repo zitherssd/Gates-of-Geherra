@@ -40,6 +40,12 @@ namespace Assets.Scripts.Battle.Components.Effects
             popup.GetComponentInChildren<DamagePopup>().Initialize(damageAmount);
         }
 
+        public void SetColors()
+        {
+            var cc = owner.GetComponentInChildren<ColorController>();
+            cc.SetColors(owner.ActorData.mainColor, owner.ActorData.secondaryColor);
+        }
+
         public void FlashWhite(float damageAmount)
         {
             var cc = owner.GetComponentInChildren<ColorController>();
@@ -92,7 +98,7 @@ namespace Assets.Scripts.Battle.Components.Effects
                 lineRenderer.SetPositions(transformedPoints.ToArray());
             }
 
-            if(owner.state.CurrentState != owner.state.actingState)
+            if(!owner.state.IsAttacking(out _))
             {
                 Clear();
             }

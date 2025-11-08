@@ -65,7 +65,7 @@ namespace Assets.Scripts.Crawler
                 UICard.GetComponent<Button>().onClick.AddListener(() =>
                 {
                     BattleManager.instance.PlayerActors[0].ActorData.actions.Add(handler.ReferencedAction);
-                    UIManager.instance.DrawActions(BattleManager.instance.PlayerActors[0].ActorData.actions);
+                    UIManager.instance.CreatePlayerActionButtonPrefab(handler.ReferencedAction);
 
                     // Destroy all skill cards after selection
                     foreach (Transform child in parent)

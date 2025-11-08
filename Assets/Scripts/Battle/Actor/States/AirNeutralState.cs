@@ -37,11 +37,11 @@ namespace Assets.Scripts.Battle.Actor.States
             {
                 if(Mathf.Abs(actor.Rb.velocity.x) > 0.05f)
                 {
-                    actor.state.TransitionTo(actor.state.landingState);
+                    actor.state.TransitionTo<LandingState>();
                 }
                 else
                 {
-                    actor.state.TransitionTo(actor.state.idleState);
+                    actor.state.TransitionToIdle();
                     actor.PlayAnimation("Idle");
                 }
             }

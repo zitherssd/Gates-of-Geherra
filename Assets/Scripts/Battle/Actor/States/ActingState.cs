@@ -1,13 +1,14 @@
-﻿using System;
-using Assets.Scripts.Battle.Actions;
+﻿using Assets.Scripts.Battle.Actions;
 using Assets.Scripts.Battle.Actions.Skills;
 using Assets.Scripts.Pattern;
+using System;
 using UnityEngine;
 
 namespace Assets.Scripts.Battle.Actor.States
 {
-    public class ActingState : IState
+    public class ActingState : IState, IAttack
     {
+        public Action<float> onWindupProgress;
         public Action<Animator> onEnterWindup;
         public Action<Animator> onEnterRecovery;
         public Action onHit;
@@ -24,25 +25,28 @@ namespace Assets.Scripts.Battle.Actor.States
         public BaseSkill action;
         private Actor owner;
 
+        private float windupStartTime;
+        private float windupDuration;
+        private bool isWindingUp;
+
+
         public ActingState(Actor owner)
         {
-            this.animator = owner.GetAnimator();
             this.owner = owner;
         }
 
         public ActingState Set(BaseSkill action, Action onEnd)
         {
-            this.action = action;
-            windupHandler = action.OnEnterWindup;
-            recoveryHandler = action.OnEnterRecovery;
-            hitHandler = action.OnHit;
-            endHandler = onEnd;
+            if (animator == null) animator = owner.GetAnimator();
+            this.onEnterWindup = action.OnEnterWindup;
+            this.onEnterRecovery = action.OnEnterRecovery;
+            this.onHit = action.OnHit;
+            this.onEnd = onEnd;
 
-            this.onEnterWindup += windupHandler;
-            this.onEnterRecovery += recoveryHandler;
-            this.onHit += hitHandler;
-            this.onEnd += endHandler;
-            if(action.Animation.ToString() == "Roll")
+            this.action = action;
+
+
+            if (action.Animation.ToString() == "Roll")
             {
                 float dotProduct = Vector3.Dot(owner.transform.forward, action.Direction);
                 if (dotProduct < 0)
@@ -57,43 +61,46 @@ namespace Assets.Scripts.Battle.Actor.States
 
         public void Enter()
         {
+            isWindingUp = false;
         }
 
         public void Exit()
         {
             animator.speed = 1f;
-            if(action is AttackSkill)
+            if (action is AttackSkill)
             {
                 var asa = action as AttackSkill;
                 asa.Unsubscribe();
-            }    
-            if (windupHandler != null)
-                onEnterWindup -= windupHandler;
+            }
 
-            if (recoveryHandler != null)
-                onEnterRecovery -= recoveryHandler;
-
-            if (hitHandler != null)
-                onHit -= hitHandler;
-
-            if (endHandler != null)
-                onEnd -= endHandler;
+            onEnterWindup = null;
+            onEnterRecovery = null;
+            onHit = null;
+            onEnd = null;
+            onWindupProgress?.Invoke(0);
 
             if (!ended) onInterrupt?.Invoke();
         }
 
-        public void EnterWindup(Animator animator)
+        public void EnterWindup(int windupFrames)
         {
+            if (windupFrames == 0) isWindingUp = false;
             onEnterWindup?.Invoke(animator);
+
+            windupDuration = windupFrames / 60f;
+            windupStartTime = Time.time;
+            isWindingUp = true;
         }
-        public void EnterRecovery(Animator animator)
+        public void EnterRecovery()
         {
             onEnterRecovery?.Invoke(animator);
+            isWindingUp = false;
         }
 
         public void OnHit()
         {
             onHit?.Invoke();
+            isWindingUp = false;
         }
 
         public void OnEnd()
@@ -106,10 +113,19 @@ namespace Assets.Scripts.Battle.Actor.States
         {
             if (owner.ActorData.isDead())
             {
-                owner.movement.AddForce(Vector3.up * 1f);
+                owner.movement.AddForce(Vector3.up * 1.5f);
                 owner.transform.position += Vector3.up * 0.01f;
-                owner.state.TransitionTo(owner.state.airStaggerState);
+                owner.state.TransitionTo<AirStaggerState>();
             }
+
+            if (isWindingUp && windupDuration > 0f)
+            {
+                float elapsed = (Time.time - windupStartTime) * animator.speed;
+                float t = Mathf.Clamp01(elapsed / windupDuration);
+                onWindupProgress?.Invoke(t); // fire event with normalized 0–1
+            }
+            else
+                onWindupProgress?.Invoke(0f);
         }
 
         public void OnCollisionEnter(Collision collision)

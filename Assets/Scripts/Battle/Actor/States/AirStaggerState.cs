@@ -64,7 +64,7 @@ namespace Assets.Scripts.Battle.Actor.States
             if (actor.grounded)
             {
                 actor.PlayAnimation("Down");
-                actor.state.TransitionTo(actor.state.gettingUpState);
+                actor.state.TransitionTo<GettingUpState>();
             }
 
             //transition to landing > idle
