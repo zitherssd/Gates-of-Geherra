@@ -88,6 +88,11 @@ namespace Assets.Scripts.Battle.Actor
             if (isControllable) target.Update(); //this looks wierd
         }
 
+        public void Init()
+        {
+            effects.SetColors();
+        }
+
 
         public void UseAction(BaseAction action, Action onActionComplete) 
         {
@@ -133,9 +138,13 @@ namespace Assets.Scripts.Battle.Actor
             {
                 // Calculate stagger duration
                 float staggerDuration = StaticHelpers.LinearMap(Mathf.Min(postureLostPercentage), 0, 100, 1f, 2.5f);
-                var staggerState = state.TransitionTo<StaggerState>();
-                staggerState.Set(staggerDuration);
+                state.TransitionTo<StaggerState>().Set(staggerDuration);
+                return;
             }
+
+            if (ActorData.isDead())
+                state.TransitionTo<StaggerState>().Set(2f);
+
         }
         public void ApplyKnockback(Vector3 direction, float force)
         {
@@ -149,6 +158,8 @@ namespace Assets.Scripts.Battle.Actor
                     postMitigationForce = KnockbackRecieved(force, direction);
                 }
                 if (!state.IsStaggered()) direction.y = 0;
+                if (ActorData.isDead()) direction = direction * 1.2f;
+                if (direction.y < 0.3f) direction.y = 0.3f;
                 movement.AddForce(postMitigationForce * direction);
                 KnockbackApplied?.Invoke(postMitigationForce, direction);
 

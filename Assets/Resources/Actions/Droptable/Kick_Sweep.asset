@@ -24,10 +24,11 @@ MonoBehaviour:
   StaminaCost: 10
   Speed: 0
   Tags: 0c0000001000000001000000
-  Direction: {x: 0.2889404, y: -0, z: -0.9573471}
+  Direction: {x: -0.50078166, y: 0, z: 0.8655736}
   currentCooldownTimer: 0
   StickMult: 1.2
   SlowdownMeterGain: 0.3
+  SlowdownMeterGainOnEnd: 0.75
   SlowDownMeterGainOnPress: 0
   SlowdownMeterGainOnRelease: 0
   Animation: 2

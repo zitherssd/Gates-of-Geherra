@@ -31,6 +31,8 @@ namespace Assets.Scripts.Utility
 
         public void SetColors(Color mainColor, Color secondaryColor)
         {
+            this.mainColor = mainColor;
+            this.secondaryColor = secondaryColor;
             propBlock = new MaterialPropertyBlock();
             spriteRenderer = GetComponent<SpriteRenderer>();
 

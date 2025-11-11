@@ -24,6 +24,7 @@ namespace Assets.Scripts.Battle.Actions
         public float currentCooldownTimer = 0;
         public float StickMult = 1;
         public float SlowdownMeterGain;
+        public float SlowdownMeterGainOnEnd;
         public float SlowDownMeterGainOnPress;
         public float SlowdownMeterGainOnRelease;
         public Action OnCancel;
@@ -42,6 +43,7 @@ namespace Assets.Scripts.Battle.Actions
 
             PerformSpecific(casterActor, () =>
             {
+                if(casterActor.isControllable) UIManager.instance.GainMeter(SlowdownMeterGainOnEnd);
                 UpdateRemainingUses(); onPerformEnd?.Invoke();
             });
         }

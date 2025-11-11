@@ -69,14 +69,20 @@ namespace Assets.Scripts.Battle.Actions.Skills
             else
                 casterActor.ActorData.ChangeBuildup(BuildupGainOnHit);
 
-           
-
             //Apply posture
             if (PostureDamage > 0)
             {
                 targetActor.ApplyPosture(PostureDamage);
 
             }
+
+            // Apply Damage
+            var damage = Damage + casterActor.ActorData.ATK - targetActor.ActorData.DEF;
+            if (damage > 0)
+            {
+                var hitstop = StaticHelpers.LinearMap(damage, 0.2f, 15, 0.083f, 0.420f);
+                targetActor.ApplyDamage(damage);
+            };
 
             // Apply Knockback
             if (KnockbackForce > 0)
@@ -115,13 +121,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
                 targetActor.ApplyKnockback(direction, KnockbackForce);
             }
 
-            // Apply Damage
-            var damage = Damage + casterActor.ActorData.ATK - targetActor.ActorData.DEF;
-            if (damage > 0)
-            {
-                var hitstop = StaticHelpers.LinearMap(damage, 0.2f, 15, 0.083f, 0.420f);
-                targetActor.ApplyDamage(damage);
-            };
+
 
 
 

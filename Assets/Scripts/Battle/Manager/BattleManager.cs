@@ -77,6 +77,7 @@ namespace Assets.Scripts.Battle.Manager
                 var enemyGameObject = Instantiate(enemyPrefab, randomSpawner.position, Quaternion.identity);
                 var enemyActor = enemyGameObject.GetComponent<Actor.Actor>();
                 enemyActor.ActorData = clone;
+                enemyActor.Init();
                 EnemyActors.Add(enemyActor);
             }
 
