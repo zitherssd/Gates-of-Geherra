@@ -22,7 +22,6 @@ namespace Assets.Scripts.Battle.Actor.States
         public void Enter()
         {
             //deathcheck this needs to be moved
-            DeathCheck();
             if (actor.isControllable)
             {
                 //  var AvaliableSkills = actor.ActorData.actions;  //This should be read at the beginning of the fight?
@@ -57,6 +56,7 @@ namespace Assets.Scripts.Battle.Actor.States
 
         public void Update()
         {
+            DeathCheck();
         }
     }
 }

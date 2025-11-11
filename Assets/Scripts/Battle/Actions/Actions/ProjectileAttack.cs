@@ -34,7 +34,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
             caster = casterActor;
             _onPerformEnd = onPerformEnd;
             casterActor.state.TransitionTo<ActingState>().Set(this, onPerformEnd);
-            casterActor.movement.FaceTarget(caster.target.target);
+            casterActor.movement.FaceDirection(caster.target.DirectionToClosestEnemy);
         }
         public override void OnHit()
         {

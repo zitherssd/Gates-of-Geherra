@@ -38,6 +38,12 @@ namespace Assets.Scripts.Battle.Actor.States
         {
             elapsedTime += Time.deltaTime; // Increment the elapsed time by the time since the last frame
 
+            if (actor.ActorData.isDead())
+            {
+                actor.state.TransitionTo<DeathState>();
+                return;
+            }
+
             if (elapsedTime > 1.2f)
             {
                 actor.ActorData.currentPosture = actor.ActorData.maxPosture;

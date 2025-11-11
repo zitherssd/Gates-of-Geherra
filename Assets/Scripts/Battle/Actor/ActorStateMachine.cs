@@ -175,24 +175,38 @@ namespace Assets.Scripts.Battle.Actor
         {
             states[state.GetType()] = state;
         }
-    
 
-        public T TransitionTo<T>() where T: IState
+
+        public T TransitionTo<T>() where T : class, IState
         {
             if (!states.TryGetValue(typeof(T), out var nextState))
             {
-                Debug.LogError(IsIdle() + $"State of type {typeof(T)} not found in the state machine.");
+                Debug.LogError($"[{actor.name}] State of type {typeof(T)} not found!");
                 return default;
             }
-            if (CurrentState == nextState) return (T)CurrentState;
+
+            if (nextState == null)
+            {
+                Debug.LogError($"[{actor.name}] NextState for {typeof(T)} is NULL!");
+                return default;
+            }
+
+            if (CurrentState == nextState)
+                return CurrentState as T;
+
+            Debug.Log($"[{actor.name}] Transitioning from {CurrentState?.GetType().Name} to {nextState.GetType().Name}");
+
             CurrentState.Exit();
             CurrentState = nextState;
             currentStateName = nextState.GetType().Name;
             nextState.Enter();
 
-            StateChanged?.Invoke(nextState);
+            if (!(CurrentState is T))
+            {
+                Debug.LogError($"Invalid cast! Expected {typeof(T).Name} but CurrentState is {CurrentState.GetType().Name}");
+            }
 
-            return (T)CurrentState;
+            return CurrentState as T;
         }
         public bool Is<T>() where T : IState => CurrentState is T;
     }
