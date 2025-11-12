@@ -82,7 +82,7 @@ namespace Assets.Scripts.Battle.Actor
 
         private void HandleCCBar()
         {
-            if(ccBar.enabled)
+            if(ccBar.IsActive())
             {
 
                 trackingCCDuration -= Time.deltaTime;

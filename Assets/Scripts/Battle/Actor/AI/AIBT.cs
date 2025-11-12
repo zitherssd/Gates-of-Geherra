@@ -30,7 +30,7 @@ namespace Assets.Scripts.Battle.Actor.AI
                 switch (actor.ActorData.AIRuleset)
                 {
                     case AiRuleset.DEFAULT:
-                        behaviors = OldManBehavior;
+                        behaviors = SandboxGuy;
                         break;
                     case AiRuleset.OldMan:
                         behaviors = OldManBehavior;
@@ -49,6 +49,15 @@ namespace Assets.Scripts.Battle.Actor.AI
                 }
             }
         }
+
+        private static readonly List<BTNode> SandboxGuy = new List<BTNode>
+        {
+            new SequenceNode(new List<BTNode>
+            {
+                new MoveAwayFromLevel(0.3f,2f)
+            }),
+        };
+
 
         private static readonly List<BTNode> EngragedManiac = new List<BTNode>
         {
@@ -73,7 +82,6 @@ namespace Assets.Scripts.Battle.Actor.AI
                 new MoveTowardsPlayer(.5f)
             }),
         };
-
 
         private static readonly List<BTNode> OldManBehavior = new List<BTNode>
         {

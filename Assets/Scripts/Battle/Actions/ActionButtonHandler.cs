@@ -6,6 +6,7 @@ using Assets.Scripts.Battle.Actions.Skills;
 using Assets.Scripts.Battle.Actor;
 using Assets.Scripts.Battle.Manager;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -38,6 +39,15 @@ namespace Assets.Scripts.Utility
             if (referencedAction)
                 cooldownimage.fillAmount = Mathf.Clamp(referencedAction.currentCooldownTimer / referencedAction.CooldownTimer, 0, 1);
             SetUIFromAction(action);
+        }
+
+        public void Update()
+        {
+            if (referencedAction)
+            {
+                string plusSymbol = "+";
+                remainingUses.text = referencedAction.TotalUses != 0 ? ConcatWithPlus(plusSymbol, referencedAction.remainingUses) : string.Empty;
+            }
         }
 
         private string GenerateTagString(List<TAG> tags)

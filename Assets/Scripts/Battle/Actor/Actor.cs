@@ -82,7 +82,6 @@ namespace Assets.Scripts.Battle.Actor
             UpdateActionCooldowns();
 
             //subcomponents update
-            state.Update();
             ai.Update();
             effects.UpdatePolygon();
             if (isControllable) target.Update(); //this looks wierd
@@ -138,7 +137,8 @@ namespace Assets.Scripts.Battle.Actor
             {
                 // Calculate stagger duration
                 float staggerDuration = StaticHelpers.LinearMap(Mathf.Min(postureLostPercentage), 0, 100, 1f, 2.5f);
-                state.TransitionTo<StaggerState>().Set(staggerDuration);
+                state.GetState<StaggerState>().Set(staggerDuration);
+                state.TransitionTo<StaggerState>();
                 return;
             }
 
@@ -148,7 +148,6 @@ namespace Assets.Scripts.Battle.Actor
         }
         public void ApplyKnockback(Vector3 direction, float force)
         {
-            var animator = this.GetComponent<Animator>();
             if (force > 0)
             {
                 float postMitigationForce = force;
@@ -157,9 +156,17 @@ namespace Assets.Scripts.Battle.Actor
                 {
                     postMitigationForce = KnockbackRecieved(force, direction);
                 }
-                if (!state.IsStaggered()) direction.y = 0;
-                if (ActorData.isDead()) direction = direction * 1.2f;
-                if (direction.y < 0.3f) direction.y = 0.3f;
+
+                if(!ActorData.isDead())
+                {
+                    if (!state.IsStaggered())
+                        direction.y = 0;
+                }
+                else
+                {
+                    direction = direction * 1.2f;
+                    if (direction.y < 0.3f) direction.y = 0.3f;
+                }
                 movement.AddForce(postMitigationForce * direction);
                 KnockbackApplied?.Invoke(postMitigationForce, direction);
 

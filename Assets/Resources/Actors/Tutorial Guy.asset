@@ -13,39 +13,26 @@ MonoBehaviour:
   m_Name: Tutorial Guy
   m_EditorClassIdentifier: 
   Name: Player
-  maxHp: 10
+  hpBars:
+  - maxHp: 50
+    alive: 1
   maxBuildup: 30
-  maxPosture: 25
+  maxPosture: 10
   maxStamina: 50
-  Controllable: 1
-  ruleset: 0
+  Controllable: 0
+  AIRuleset: 0
   mainColor: {r: 1, g: 1, b: 1, a: 0}
   secondaryColor: {r: 0, g: 0, b: 0, a: 1}
   baseActions:
-  - {fileID: 11400000, guid: 498ba4be69212c045ad9de12e867357c, type: 2}
+  - {fileID: 11400000, guid: eb94d8da9dbb0de4f9022395c5c28ce9, type: 2}
   baseReactions: []
   basePassives: []
-  baseHpBars:
-  - {fileID: 11400000, guid: f273e92b83c897a48b992d9fefe2c87e, type: 2}
-  - {fileID: 11400000, guid: 844423a2bec91434bb166f8390aa80f8, type: 2}
   actions:
   - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   reactions: []
-  hpBars:
-  - {fileID: 0}
-  - {fileID: 0}
-  currentBuildup: 0
-  currentPosture: 25
-  currentStamina: 13.407128
+  currentBuildup: 29
+  currentPosture: 6
+  currentStamina: 50
   postureRegenRate: 1
   staminaRegenRate: 1
   ATK: 1

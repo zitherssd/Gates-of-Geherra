@@ -24,4 +24,9 @@ public class MainMenuController : MonoBehaviour
     {
         SceneManager.LoadScene("DebugScene");
     }
+    public void StartSandbox()
+    {
+        SceneManager.LoadScene("PhysicsDebug" +
+            "");
+    }
 }

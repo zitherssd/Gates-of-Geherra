@@ -133,7 +133,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
             string invalidReason;
             if (IsValid(caster, out invalidReason))
             {
-                if (caster.target.DistanceToClosestEnemy < Range + SelfForce)
+                if (caster.target.DistanceToClosestEnemy < HitboxPoints.Max(point => point.z) + SelfForce / 2)
                     return true;
                 else
                     return false;
@@ -159,19 +159,6 @@ namespace Assets.Scripts.Battle.Actions.Skills
                 else
                     ApplyDamageEffects(casterActor, hit, BaseReaction.NoReaction, null);
             }
-            //Debug.DrawRay(casterActor.transform.position + Vector3.up * 0.6f, targetDir * Range, Color.green, 1f, false);
-            //if (Physics.SphereCast(casterActor.transform.position + Vector3.up * 0.6f, 0.1f, targetDir, out hit, Range))
-            //{
-            //    if (Tags.Contains(TAG.TECH))
-            //        ApplyDamageEffects(casterActor, target, BaseReaction.NoReaction, cancel);
-            //    else
-            //        ApplyDamageEffects(casterActor, target, BaseReaction.NoReaction, null);
-            //    return;
-            //}
-            //else
-            //{
-            //    Debug.Log($"{casterActor.ActorData.name} missed performing {this.Name}!");
-            //}
         }
 
         public override void OnEnterWindup(Animator animator)

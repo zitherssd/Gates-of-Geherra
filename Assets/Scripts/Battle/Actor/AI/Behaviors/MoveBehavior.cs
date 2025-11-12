@@ -154,4 +154,76 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
             return NodeState.Running;
         }
     }
+
+    public class MoveAwayFromLevel : BTNode
+    {
+        private float moveDuration;
+        private float moveTimer = 0f;
+        private float rayLength;
+
+        private readonly Vector3[] directions = new Vector3[]
+        {
+            Vector3.forward,
+            Vector3.back,
+            Vector3.left,
+            Vector3.right,
+            (Vector3.forward + Vector3.left).normalized,
+            (Vector3.forward + Vector3.right).normalized,
+            (Vector3.back + Vector3.left).normalized,
+            (Vector3.back + Vector3.right).normalized
+        };
+
+        public MoveAwayFromLevel(float moveDuration = 1f, float rayLength = 3f)
+        {
+            this.moveDuration = moveDuration;
+            this.rayLength = rayLength;
+        }
+
+        public override NodeState Execute(AIBT ai, Actor actor)
+        {
+            MoveAction moveAction;
+            if (actor.state.IsMoving(out moveAction))
+            {
+                moveTimer += Time.deltaTime;
+                if (moveTimer > moveDuration)
+                {
+                    moveAction.OnCancel?.Invoke();
+                    moveTimer = 0f;
+                    return NodeState.Sucess;
+                }
+                return NodeState.Running;
+            }
+
+            // Find the nearest "Level" obstacle
+            Transform transform = actor.transform;
+            Vector3 bestDir = Vector3.zero;
+            float closestDist = float.MaxValue;
+
+            foreach (var dir in directions)
+            {
+                if (Physics.Raycast(transform.position, dir, out RaycastHit hit, rayLength))
+                {
+                    if (hit.collider.CompareTag("Level") && hit.distance < closestDist)
+                    {
+                        closestDist = hit.distance;
+                        bestDir = dir;
+                    }
+                }
+            }
+
+            // Move away from the nearest detected obstacle
+            if (bestDir != Vector3.zero)
+            {
+                var moveSkill = actor.ActorData.actions.OfType<MoveAction>().FirstOrDefault();
+                if (moveSkill == null) return NodeState.Failure;
+
+                moveSkill.Direction = -bestDir;
+                actor.UseAction(moveSkill, actor.state.TransitionToIdle);
+                return NodeState.Running;
+            }
+
+            // No nearby obstacle
+            return NodeState.Sucess;
+        }
+    }
 }

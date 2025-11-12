@@ -88,6 +88,7 @@ namespace Assets.Scripts.Battle.Actor.States
             {
                 actor.ActorData.currentPosture = actor.ActorData.maxPosture;
                 actor.state.TransitionToIdle();  // Transition back to idle state
+                actor.PlayAnimation("Idle");
             }
         }
 

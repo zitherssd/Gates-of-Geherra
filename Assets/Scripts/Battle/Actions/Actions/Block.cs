@@ -19,8 +19,8 @@ namespace Assets.Scripts.Battle.Actions.Reactions
         protected override void PerformSpecific(Actor.Actor actor, Action onReactionComplete)
         {
             OnCancel = onReactionComplete;
+            actor.state.GetState<BlockState>().Set(this);
             var blockState = actor.state.TransitionTo<BlockState>();
-            blockState.Set(this);
         }
     }
 
