@@ -49,6 +49,9 @@ namespace Assets.Scripts
         private float totalEffectTime;
         private bool isLocked = false;
 
+        public static event Action OnHideUI;
+        public static event Action OnShowUI;
+
         public static UIManager GetInstance()
         {
             return instance;
@@ -327,6 +330,7 @@ namespace Assets.Scripts
             LeanTween.scale(ActionsHolder.gameObject, new Vector3(1, 0, 1), 0.15f).setEaseInOutCubic().setIgnoreTimeScale(true);
             LeanTween.scale(SkillHolder.gameObject, new Vector3(1, 0, 1), 0.15f).setEaseInOutCubic().setIgnoreTimeScale(true);
             //ActionsHolder.transform.parent.gameObject.SetActive(false);
+            OnHideUI?.Invoke();
         }
         public void ShowUI()
         {
@@ -343,6 +347,7 @@ namespace Assets.Scripts
             }
             LeanTween.scale(ActionsHolder.gameObject, Vector3.one, 0.15f).setEaseInOutCubic().setIgnoreTimeScale(true);
             LeanTween.scale(SkillHolder.gameObject, Vector3.one, 0.15f).setEaseInOutCubic().setIgnoreTimeScale(true);
+            OnShowUI?.Invoke();
         }
         internal void ResetMeter()
         {

@@ -38,8 +38,14 @@ namespace Assets.Scripts.Crawler
                 return new BaseAction[0]; // Return empty array if no actions exist
             }
 
-            // Shuffle the array and pick up to 3 actions
-            return allActions.OrderBy(a => UnityEngine.Random.value).Take(Mathf.Min(3, allActions.Length)).ToArray();
+            var selected = allActions
+                .OrderBy(a => UnityEngine.Random.value)
+                .Take(Mathf.Min(3, allActions.Length));
+
+            // Return clones instead of references
+            return selected
+                .Select(a => ScriptableObject.Instantiate(a))
+                .ToArray();
         }
 
         public void DrawSkillsFromSelectionAndWaitForSelection(BaseAction[] skills, Action onSelectionComplete)
@@ -70,6 +76,8 @@ namespace Assets.Scripts.Crawler
                     // Destroy all skill cards after selection
                     foreach (Transform child in parent)
                     {
+                        var cardHandler = child.GetComponent<ActionCardHandler>();
+                        if (cardHandler.ReferencedAction != handler.ReferencedAction) Destroy(cardHandler.ReferencedAction);
                         Destroy(child.gameObject);
                     }
 
