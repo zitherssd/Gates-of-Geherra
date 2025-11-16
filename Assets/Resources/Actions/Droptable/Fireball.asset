@@ -40,7 +40,10 @@ MonoBehaviour:
   SelfForce: -0.8
   ThrowSpeed: 3
   SizeMultiplier: 1
-  OnProjectileHitEffects: []
+  OnStartEffects:
+  - rid: 6357899973538611201
+  OnProjectileHitEffects:
+  - rid: 6357899973538611200
   OnHitEffects:
   - rid: 6357899952368123908
   windupTimeMult: 0.35
@@ -52,3 +55,13 @@ MonoBehaviour:
       type: {class: BuildupGain, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
       data:
         BuildupAmount: 5
+    - rid: 6357899973538611200
+      type: {class: PlayParticleEffect, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      data:
+        psPrefab: {fileID: 4596544553357837919, guid: 8eb503696b886e04faff8fc0f480d473, type: 3}
+        OnPlayer: 0
+    - rid: 6357899973538611201
+      type: {class: PlayParticleEffect, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      data:
+        psPrefab: {fileID: 8225998914541537083, guid: 2ef14b77c5927a4439a217a8818a39b6, type: 3}
+        OnPlayer: 1

@@ -13,6 +13,7 @@ namespace Assets.Scripts.Utility
         private Actor owner;
         private ProjectileAttack action;
         private Rigidbody rb;
+        [SerializeField] private Transform vfxRoot;
 
         public void Start()
         {
@@ -28,21 +29,19 @@ namespace Assets.Scripts.Utility
 
         private void OnTriggerEnter(Collider other)
         {
-
             Actor enemyBattler = other.gameObject.GetComponent<Actor>();
 
+            // --- Detach travel particles BEFORE destroying the projectile ---
+            DetachAndLetVFXFinish();
 
             if (enemyBattler != null)
             {
                 action.OnProjectileHitEffects.ForEach(effect => effect.Eval(owner, action, this.gameObject));
-                action.OnHitEffects.ForEach(effect => effect.Eval(enemyBattler, action));
+                action.OnHitEffects.ForEach(effect => effect.Eval(owner, action));
                 ApplyDamageEffects(owner, enemyBattler, action);
-                Destroy(this.gameObject);
             }
-            else
-            {
-                Destroy(this.gameObject);
-            }
+
+            Destroy(this.gameObject);
         }
 
         public void ApplyDamageEffects(Actor casterActor, Actor targetActor, ProjectileAttack action)
@@ -101,6 +100,29 @@ namespace Assets.Scripts.Utility
                 var hitstop = StaticHelpers.LinearMap(damage, 0.2f, 15, 0.083f, 0.420f);
                 targetActor.ApplyDamage(damage);
             };
+        }
+
+        private void DetachAndLetVFXFinish()
+        {
+            if (vfxRoot == null) return;
+
+            // Detach the particle VFX from projectile
+            vfxRoot.SetParent(null, true);
+
+            // Destroy all particle systems after they finish
+            foreach (var ps in vfxRoot.GetComponentsInChildren<ParticleSystem>())
+            {
+                float maxLifetime = ps.main.duration + ps.main.startLifetime.constantMax;
+                Destroy(ps.gameObject, maxLifetime);
+                ps.Stop();  // prevents looping particles from staying alive forever
+            }
+
+            // Handle Trail Renderers too
+            foreach (var tr in vfxRoot.GetComponentsInChildren<TrailRenderer>())
+            {
+                tr.autodestruct = true;
+                tr.transform.parent = null;
+            }
         }
     }
 }

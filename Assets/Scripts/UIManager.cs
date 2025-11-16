@@ -326,7 +326,7 @@ namespace Assets.Scripts
         }
         public void ShowUI()
         {
-            //if (isLocked) return;
+            if (isLocked) return;
             ActionsHolder.transform.parent.gameObject.SetActive(true);
 
             var leftContainerChildren = GetAllChildren(ActionsHolder);

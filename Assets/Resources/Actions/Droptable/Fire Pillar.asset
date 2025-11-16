@@ -26,7 +26,7 @@ MonoBehaviour:
   Tags: 
   Direction: {x: 0, y: 0, z: 0}
   currentCooldownTimer: 0
-  StickMult: 3
+  StickMult: 4
   SlowdownMeterGain: 0
   SlowdownMeterGainOnEnd: 1
   SlowDownMeterGainOnPress: 1
@@ -35,6 +35,7 @@ MonoBehaviour:
   OnStartEffects:
   - rid: 6357899949336690688
   - rid: 6357899949336690694
+  - rid: 6357899973538611203
   OnHitEffects:
   - rid: 6357899949336690690
   - rid: 6357899949336690695
@@ -83,3 +84,8 @@ MonoBehaviour:
         AutoGetHitbox: 0
     - rid: 6357899952368123906
       type: {class: ClearHitbox, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+    - rid: 6357899973538611203
+      type: {class: PlayParticleEffect, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      data:
+        psPrefab: {fileID: 8225998914541537083, guid: 2ef14b77c5927a4439a217a8818a39b6, type: 3}
+        OnPlayer: 1

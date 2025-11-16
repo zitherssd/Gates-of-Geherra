@@ -26,6 +26,8 @@ namespace Assets.Scripts.Battle.Actions.Skills
         public float ThrowSpeed = 3f;
         public float SizeMultiplier = 1f;
         [SerializeReference, SubclassSelector]
+        public List<IEffect> OnStartEffects = new List<IEffect>();
+        [SerializeReference, SubclassSelector]
         public List<IProjectileEffect> OnProjectileHitEffects = new List<IProjectileEffect>();
         [SerializeReference, SubclassSelector]
         public List<IEffect> OnHitEffects = new List<IEffect>();
@@ -39,6 +41,12 @@ namespace Assets.Scripts.Battle.Actions.Skills
         {
             caster = casterActor;
             _onPerformEnd = onPerformEnd;
+            foreach (var effect in OnStartEffects)
+            {
+                {
+                    effect.Eval(casterActor, this);
+                }
+            }
             casterActor.state.TransitionTo<ActingState>().Set(this, onPerformEnd);
             casterActor.movement.FaceDirection(caster.target.DirectionToClosestEnemy);
         }

@@ -9,7 +9,7 @@ using UnityEngine;
 namespace Assets.Scripts.Battle.Actions.Actions.Effects
 {
     [Serializable]
-    public class PlayParticleEffect : IEffect, IEndableEffect
+    public class PlayParticleEffect : IEffect, IEndableEffect, IProjectileEffect
     {
         public ParticleSystem psPrefab;
         private ParticleSystem instance;
@@ -46,6 +46,22 @@ namespace Assets.Scripts.Battle.Actions.Actions.Effects
                 instance.transform.position = HitboxEffect.point;
             }
             instance.Play();
+        }
+
+        public void Eval(Actor.Actor actor, ProjectileAttack action, GameObject projectile)
+        {
+            if (psPrefab == null) return;
+            if (instance == null)
+            {
+                instance = GameObject.Instantiate(psPrefab, projectile.transform.position, projectile.transform.rotation);
+            }
+            else
+            {
+                instance.transform.position = projectile.transform.position;
+                instance.transform.rotation = projectile.transform.rotation;
+            }
+                instance.Play();
+
         }
     }
 }

@@ -33,8 +33,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: bee8d5fdedd9f2441991e17989df781b, type: 2}
   - {fileID: 11400000, guid: 5b9d2d0224c0bfa418627da8e495eadc, type: 2}
   - {fileID: 11400000, guid: 7a9771d855ce02343aea8b6afd56e150, type: 2}
-  - {fileID: 11400000, guid: 73d11a4d079983942bb6c9479b47c2c2, type: 2}
-  - {fileID: 11400000, guid: 37e5b136dca9c114ab3b7b61a6b3c714, type: 2}
   basePassives: []
   actions:
   - {fileID: 0}
@@ -46,8 +44,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
-  currentBuildup: 14
+  currentBuildup: 17
   currentPosture: 25
   currentStamina: 50
   postureRegenRate: 1
