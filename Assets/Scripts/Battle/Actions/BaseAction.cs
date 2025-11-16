@@ -169,6 +169,11 @@ namespace Assets.Scripts.Battle.Actions
             KILLMOMENTUM, KILL_TRACKING, PLAY_WHILE_SELECTING,
             TECH, FACECLOSEST, RECHARGE_DURING_SLOWDOWN
         }
+
+        public void OnActionEnd()
+        {
+
+        }
     }
 
 
@@ -176,6 +181,6 @@ namespace Assets.Scripts.Battle.Actions
 
 
     public enum RARITY { COMMON, UNCOMMON, RARE, EPIC, LEGENDARY };
-    public enum ANIMATION { NONE, Punch, Kick, Shuriken, Highkick, PalmStrike, Ninjutsu, ForwardPunch, ThrowStar, ForwardKick, ShadowStep, Taunt, Dash, Roll, Step }
+    public enum ANIMATION { NONE, Punch, Kick, Shuriken, Highkick, PalmStrike, Ninjutsu, ForwardPunch, ThrowStar, ForwardKick, ShadowStep, Taunt, Dash, Roll, Step, Firecast }
 
 }

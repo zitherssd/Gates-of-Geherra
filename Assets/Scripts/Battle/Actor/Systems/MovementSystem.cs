@@ -72,10 +72,10 @@ namespace Assets.Scripts.Battle.Actor.Systems
             Vector3 newVelocity = rigidbody.velocity;
 
             float maxSpeed = 5f;
-            if (newVelocity.magnitude > maxSpeed)
+            if (newVelocity.magnitude > maxSpeed || newVelocity.magnitude > force.magnitude)
             {
                 // Clamp the velocity to the max speed while maintaining the direction
-                rigidbody.velocity = newVelocity.normalized * currentMagnitude;
+                rigidbody.velocity = newVelocity.normalized * force.magnitude;
             }
         }
         public void MoveTowardTarget(Vector3 targetPoint, float acceleration, float maxSpeed)

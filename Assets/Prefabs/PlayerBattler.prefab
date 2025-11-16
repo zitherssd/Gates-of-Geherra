@@ -10853,12 +10853,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ActorData: {fileID: 11400000, guid: b8a7b1ce80f78164f9e1d2631a3c98fa, type: 2}
-  movementForce: {x: 0, y: 0, z: 0}
-  originPointInUI: {fileID: 0}
-  frictionFactor: 5
+  state: {fileID: 0}
   CanRegenPosture: 1
-  postureRegenCooldownDuration: 1
-  staminaRegenRateModifier: 1
+  PostureRegenCooldownDelay: 1
+  StaminaRegenRate: 1
 --- !u!1 &7899857719385047091
 GameObject:
   m_ObjectHideFlags: 0
@@ -16164,7 +16162,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hpBar: {fileID: 7899857719160657854}
   hpBarEase: {fileID: 7899857720160983127}
-  hpBarText: {fileID: 0}
   postureBar: {fileID: 7899857719103228820}
   postureBarEase: {fileID: 7899857719866119735}
   postureBarText: {fileID: 0}
@@ -16176,6 +16173,40 @@ MonoBehaviour:
   hpBarsContainer: {fileID: 7899857719926688980}
   hpBarPrefab: {fileID: 5519019556047621429, guid: f4c62ed87704d7944bcd588f311c166c, type: 3}
   statesText: {fileID: 7899857720819298343}
+  ccBar: {fileID: 0}
+  ccBarText: {fileID: 0}
+  ccBarDurationText: {fileID: 0}
+  windupIndicator: {fileID: 0}
+  windupCanvasGroup: {fileID: 0}
+  windupColorOverTime:
+    serializedVersion: 2
+    key0: {r: 1, g: 1, b: 1, a: 1}
+    key1: {r: 1, g: 1, b: 1, a: 1}
+    key2: {r: 0, g: 0, b: 0, a: 0}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 65535
+    ctime2: 0
+    ctime3: 0
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_NumColorKeys: 2
+    m_NumAlphaKeys: 2
 --- !u!114 &7899857719912904699
 MonoBehaviour:
   m_ObjectHideFlags: 0

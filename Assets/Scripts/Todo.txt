@@ -3,3 +3,14 @@
 
 late spring edition
 hide ui when battle is over
+
+Straight *
+Hook *
+Spartan Kick
+Dropkick
+Roundhouse kick
+Sweep *
+Dash
+Charge
+Flicker (usable only when in melee) (teleports to back of enemy?)
+Project Fire (Continuous aoe 

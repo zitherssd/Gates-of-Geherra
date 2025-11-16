@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f9a88c6dedee5a41b8b98d873cf66ed, type: 3}
+  m_Name: Fireball
+  m_EditorClassIdentifier: 
+  Type: 0
+  Name: Fire bullet
+  Rarity: 0
+  Description: Kill everything with fire
+  CooldownTimer: 15
+  TotalUses: 2
+  remainingUses: 0
+  BuildupCost: 15
+  BuildupGain: 0
+  StaminaCost: 5
+  Speed: 0
+  Tags: 
+  Direction: {x: 0, y: 0, z: 0}
+  currentCooldownTimer: 0
+  StickMult: 1
+  SlowdownMeterGain: 0
+  SlowdownMeterGainOnEnd: 0
+  SlowDownMeterGainOnPress: 0
+  SlowdownMeterGainOnRelease: 0
+  Animation: 15
+  projectilePrefab: {fileID: 23187127587949415, guid: 2ff89f02c334cc24dba91e868d431384, type: 3}
+  Range: 0
+  Damage: 5
+  PostureDamage: 7
+  KnockbackForce: 2.5
+  SelfForce: -0.8
+  ThrowSpeed: 3
+  SizeMultiplier: 1
+  OnProjectileHitEffects: []
+  OnHitEffects:
+  - rid: 6357899952368123908
+  windupTimeMult: 0.35
+  recoveryTimeMult: 0.3
+  references:
+    version: 2
+    RefIds:
+    - rid: 6357899952368123908
+      type: {class: BuildupGain, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      data:
+        BuildupAmount: 5

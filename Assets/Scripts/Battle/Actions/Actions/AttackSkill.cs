@@ -35,6 +35,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
             OnCancel = onPerformEnd;
             this.casterActor = casterActor;
             var actingState = casterActor.state.TransitionTo<ActingState>();
+            
             actingState.Set(this, onPerformEnd);
             casterActor.state.TransitionTo<ActingState>().Set(this, onPerformEnd);
             if (Type == BUTTONTYPE.VECTOR)
@@ -59,7 +60,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
         {
             casterActor.PostureRecieved -= ApplyPostureModifier;
         }
-        public void ApplyDamageEffects(Actor.Actor casterActor, Actor.Actor targetActor, BaseReaction targetReaction, Action onDamageEffectsApplied)
+        public void ApplyDamageEffects(Actor.Actor casterActor, Actor.Actor targetActor, Action onDamageEffectsApplied)
         {
             var targetBlocking = targetActor.state.IsBlocking();
             if (casterActor.isControllable && !targetBlocking)
@@ -148,16 +149,16 @@ namespace Assets.Scripts.Battle.Actions.Skills
 
             //RaycastHit hit;
             //var targetDir = target.transform.position - casterActor.transform.position;
-            casterActor.effects.Clear();
+            casterActor.effects.ClearHitbox();
 
 
             var hits = CheckEnemiesInsideHitbox();
             foreach (var hit in hits)
             {
                 if (Tags.Contains(TAG.TECH) && !target.state.IsBlocking())
-                    ApplyDamageEffects(casterActor, hit, BaseReaction.NoReaction, OnCancel);
+                    ApplyDamageEffects(casterActor, hit, OnCancel);
                 else
-                    ApplyDamageEffects(casterActor, hit, BaseReaction.NoReaction, null);
+                    ApplyDamageEffects(casterActor, hit, null);
             }
         }
 
@@ -206,7 +207,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
 
 
                 // Check if the center of the capsule is inside
-                if (IsPointInsidePolygon(enemyPosition, transformedPoints))
+                if (Intersections.IsPointInsidePolygon(enemyPosition, transformedPoints))
                 {
                     validActors.Add(enemy);
                     continue;
@@ -219,7 +220,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
                     int nextIndex = (transformedPoints.IndexOf(edgeStart) + 1) % transformedPoints.Count;
                     Vector3 edgeEnd = transformedPoints[nextIndex];
 
-                    if (IsCircleIntersectingLine(enemyPosition, capsuleRadius, edgeStart, edgeEnd))
+                    if (Intersections.IsCircleIntersectingLine(enemyPosition, capsuleRadius, edgeStart, edgeEnd))
                     {
                         validActors.Add(enemy);
                         break;
@@ -230,67 +231,6 @@ namespace Assets.Scripts.Battle.Actions.Skills
             return validActors;
         }
 
-        public static bool IsPointInsidePolygon(Vector3 point, List<Vector3> polygon)
-        {
-            if (polygon == null || polygon.Count < 3)
-            {
-                Debug.LogWarning("Polygon must have at least 3 points.");
-                return false;
-            }
-
-            int intersections = 0;
-
-            for (int i = 0; i < polygon.Count; i++)
-            {
-                Vector3 vertex1 = polygon[i];
-                Vector3 vertex2 = polygon[(i + 1) % polygon.Count]; // Wrap around to the first vertex
-
-                // Check if the ray from the point to +X axis intersects the polygon edge
-                if (IsIntersecting(point, vertex1, vertex2))
-                {
-                    intersections++;
-                }
-            }
-
-            // If the number of intersections is odd, the point is inside the polygon
-            return (intersections % 2) == 1;
-        }
-
-        private static bool IsIntersecting(Vector3 point, Vector3 vertex1, Vector3 vertex2)
-        {
-            // Ensure we work in 2D (XZ-plane)
-            point.y = 0;
-            vertex1.y = 0;
-            vertex2.y = 0;
-
-            // Check if the edge straddles the horizontal ray from the point
-            if ((vertex1.z > point.z && vertex2.z <= point.z) || (vertex2.z > point.z && vertex1.z <= point.z))
-            {
-                // Compute the intersection point's X-coordinate
-                float t = (point.z - vertex1.z) / (vertex2.z - vertex1.z);
-                float intersectionX = vertex1.x + t * (vertex2.x - vertex1.x);
-
-                // Check if the intersection is to the right of the point
-                return intersectionX > point.x;
-            }
-
-            return false;
-        }
-        public static bool IsCircleIntersectingLine(Vector3 circleCenter, float radius, Vector3 lineStart, Vector3 lineEnd)
-        {
-            // Project the circle center onto the line segment and find the closest point
-            Vector3 lineDir = lineEnd - lineStart;
-            float lineLength = lineDir.magnitude;
-            lineDir.Normalize();
-
-            Vector3 pointToCircle = circleCenter - lineStart;
-            float t = Mathf.Clamp(Vector3.Dot(pointToCircle, lineDir), 0, lineLength);
-            Vector3 closestPoint = lineStart + t * lineDir;
-
-            // Check the distance from the closest point to the circle's center
-            float distanceSquared = (closestPoint - circleCenter).sqrMagnitude;
-            return distanceSquared <= radius * radius;
-        }
 
         internal bool IsWithinRange(Actor.Actor actor, Actor.Actor target)
         {

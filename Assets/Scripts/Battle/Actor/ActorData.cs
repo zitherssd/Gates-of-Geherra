@@ -24,12 +24,9 @@ namespace Assets.Scripts.Battle.Actor
         public Color secondaryColor;
 
         public List<BaseAction> baseActions;
-        public List<BaseReaction> baseReactions;
         public List<BasePassive> basePassives;
         [HideInInspector]
         public List<BaseAction> actions;
-        [HideInInspector]
-        public List<BaseReaction> reactions;
 
         [HideInInspector]
         public float currentBuildup;
@@ -162,30 +159,17 @@ namespace Assets.Scripts.Battle.Actor
             HealAllAliveBars();
             foreach (var action in actions)
                 action.Refresh();
-            foreach (var reaction in reactions)
-                reaction.Refresh();
         }
 
         public void Initialize()
         {
             actions.Clear();
-            reactions.Clear();
             foreach (var skill in baseActions)
             {
                 var clone = Instantiate(skill);
                 actions.Add(clone);
             }
-            foreach (var reaction in baseReactions)
-            {
-                if(reaction)
-                {
-                    var clone = Instantiate(reaction);
-                    reactions.Add(clone);
-                }
-
-            }
         }
-
     }
 }
 

@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Battle.Actor.States;
+﻿using Assets.Scripts.Battle.Actions.Actions.Effects;
+using Assets.Scripts.Battle.Actor.States;
 using Assets.Scripts.Battle.Manager;
 using Assets.Scripts.Utility;
 using System;
@@ -24,7 +25,12 @@ namespace Assets.Scripts.Battle.Actions.Skills
         public float SelfForce;
         public float ThrowSpeed = 3f;
         public float SizeMultiplier = 1f;
-
+        [SerializeReference, SubclassSelector]
+        public List<IProjectileEffect> OnProjectileHitEffects = new List<IProjectileEffect>();
+        [SerializeReference, SubclassSelector]
+        public List<IEffect> OnHitEffects = new List<IEffect>();
+        public float windupTimeMult = 1f;
+        public float recoveryTimeMult = 1f;
         private Actor.Actor caster;
         private Action _onPerformEnd;
 
@@ -62,10 +68,18 @@ namespace Assets.Scripts.Battle.Actions.Skills
 
             return true;
         }
+
+        public override void OnEnterWindup(Animator animator)
+        {
+            animator.speed = windupTimeMult;
+        }
+        public override void OnEnterRecovery(Animator animator)
+        {
+            animator.speed = recoveryTimeMult;
+        }
     }
 
     public enum PROJECTILETYPE { Shuriken }
-    public enum ANIMATION { NONE, Punch, Kick, Shuriken, Highkick, PalmStrike, Ninjutsu, ForwardPunch, ThrowStar }
 
 
 }

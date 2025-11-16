@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Battle;
 using Assets.Scripts.Battle.Actions;
+using Assets.Scripts.Battle.Actions.Actions.Effects;
 using Assets.Scripts.Battle.Actions.Skills;
 using Assets.Scripts.Battle.Actor;
 using UnityEngine;
@@ -18,23 +19,24 @@ namespace Assets.Scripts.Utility
             rb = gameObject.GetComponent<Rigidbody>();
         }
 
-        public void Initialize(Actor owner, BaseAction action)
+        public void Initialize(Actor owner, ProjectileAttack action)
         {
             this.owner = owner;
-            this.action = action as ProjectileAttack;
+            this.action = action;
             transform.localScale = transform.localScale * this.action.SizeMultiplier;
         }
 
         private void OnTriggerEnter(Collider other)
         {
-            Debug.Log("Entered trigger zone with: " + other.gameObject.name);
 
             Actor enemyBattler = other.gameObject.GetComponent<Actor>();
 
 
             if (enemyBattler != null)
             {
-                ApplyDamageEffects(owner, enemyBattler);
+                action.OnProjectileHitEffects.ForEach(effect => effect.Eval(owner, action, this.gameObject));
+                action.OnHitEffects.ForEach(effect => effect.Eval(enemyBattler, action));
+                ApplyDamageEffects(owner, enemyBattler, action);
                 Destroy(this.gameObject);
             }
             else
@@ -43,7 +45,7 @@ namespace Assets.Scripts.Utility
             }
         }
 
-        public void ApplyDamageEffects(Actor casterActor, Actor targetActor)
+        public void ApplyDamageEffects(Actor casterActor, Actor targetActor, ProjectileAttack action)
         {
             // Applyv  Knockback
             if (action.KnockbackForce > 0)

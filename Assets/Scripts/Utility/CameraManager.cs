@@ -87,8 +87,8 @@ namespace Assets.Scripts.Utility
                 // Flip directionvector to align with cameraMain.right
                 directionvector = -directionvector;
             }
-            if (!SlowTrack)
-                blue = Vector3.Cross(directionvector, Vector3.up).normalized;
+            //if (!SlowTrack)
+            blue = Vector3.Cross(directionvector, Vector3.up).normalized;
             newposition = distvector + Vector3.up * UpDistance + -blue * BackDistance;
 
             if (shakeDuration > 0)
@@ -110,10 +110,10 @@ namespace Assets.Scripts.Utility
                     // }
                     //else
                     //  {
-                    transform.position = Vector3.Lerp(transform.position, targetpos, 0.2f);
+                    transform.position = Vector3.Lerp(transform.position, targetpos, 0.1f);
                 //  }
                 else
-                    transform.position = Vector3.MoveTowards(transform.position, targetpos, 0.1f * Time.unscaledDeltaTime);
+                    transform.position = Vector3.MoveTowards(transform.position, targetpos, 0.3f * Time.unscaledDeltaTime);
 
 
             }

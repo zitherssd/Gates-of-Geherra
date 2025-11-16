@@ -125,7 +125,7 @@ namespace Assets.Scripts.Battle.Actor.AI
         public void Update()
         {
             if (actor.isControllable) return;
-
+            if (actor.ActorData.isDead()) return;
             //aiTickTimer -= Time.deltaTime;
             //if (aiTickTimer > 0) return;
             //aiTickTimer = aiTickCooldown;

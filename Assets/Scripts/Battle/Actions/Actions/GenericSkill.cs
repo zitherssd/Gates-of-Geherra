@@ -1,5 +1,5 @@
-﻿using Assets.Scripts.Battle.Actor.States;
-using Assets.Scripts.Utility;
+﻿using Assets.Scripts.Battle.Actions.Actions.Effects;
+using Assets.Scripts.Battle.Actor.States;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,39 +10,68 @@ namespace Assets.Scripts.Battle.Actions.Skills
     public class GenericSkill : BaseSkill
     {
         private Actor.Actor casterActor;
-        private Action _onPerormEnd;
+        private Action _onPerformEnd;
 
         [SerializeReference, SubclassSelector]
         public List<IEffect> OnStartEffects = new List<IEffect>();
         [SerializeReference, SubclassSelector]
         public List<IEffect> OnHitEffects = new List<IEffect>();
         [SerializeReference, SubclassSelector]
-        public List<IEffect> OnEndEffeects = new List<IEffect>();
+        public List<IEndableEffect> OnEndEffects = new List<IEndableEffect>();
+        [SerializeReference, SubclassSelector]
+        public List<IUpdateableEffect> OnUpdateEffects = new List<IUpdateableEffect>();
+
+        private List<IEndableEffect> runtimeEndEffects;
+        private List<IUpdateableEffect> runtimeUpdateEffects;
+
         public float windupTimeMult = 1f;
         public float recoveryTimeMult = 1f;
         protected override void PerformSpecific(Actor.Actor casterActor, Action onPerformEnd)
         {
-            OnCancel = onPerformEnd;
             this.casterActor = casterActor;
+
+            runtimeEndEffects = new List<IEndableEffect>(OnEndEffects);
+            runtimeUpdateEffects = new List<IUpdateableEffect>(OnUpdateEffects);
+
+            _onPerformEnd = () =>
+            {
+                foreach (var effect in runtimeEndEffects)
+                {
+                    effect.End(casterActor, this);
+                }
+
+                onPerformEnd?.Invoke();
+            };
+
+            OnCancel = _onPerformEnd;
+
             foreach (var effect in OnStartEffects)
             {
                 {
+                    if (effect is IEndableEffect endable) runtimeEndEffects.Add(endable);
                     effect.Eval(casterActor, this);
                 }
             }
-            casterActor.state.TransitionTo<ActingState>().Set(this, onPerformEnd);
+            casterActor.state.TransitionTo<ActingState>().Set(this, _onPerformEnd);
         }
-
-
         public override void OnHit()
         {
             foreach (var effect in OnHitEffects)
             {
+                if(effect is IEndableEffect endable) runtimeEndEffects.Add(endable);
+                if(effect is IUpdateableEffect updatable) runtimeUpdateEffects.Add(updatable);
                 effect.Eval(casterActor,this);
             }
             if (Tags.Contains(TAG.TECH) && casterActor.state.CurrentState is ActingState acting)
             {
                 acting.OnEnd();
+            }
+        }
+        public override void OnUpdate(float dt)
+        {
+            foreach (var effect in runtimeUpdateEffects)
+            {
+                effect.Update(casterActor, this, dt);
             }
         }
         public override void OnEnterWindup(Animator animator)
@@ -54,108 +83,5 @@ namespace Assets.Scripts.Battle.Actions.Skills
             animator.speed = recoveryTimeMult;
         }
     }
-
-    public interface IEffect
-    {
-        void Eval(Actor.Actor actor, BaseAction action);
-    }
-
-    [Serializable]
-    public class StaminaHealEffect : IEffect
-    {
-        public float HealAmount;
-
-        public void Eval(Actor.Actor actor, BaseAction t)
-        {
-            actor.ActorData.DealStaminaDamage(-HealAmount);
-        }
-    }
-
-    [Serializable]
-    public class MeterGainEffect : IEffect
-    {
-        public float MeterGainValue;
-        public void Eval(Actor.Actor actor, BaseAction t)
-        {
-            if (actor.isControllable)
-                UIManager.instance.GainMeter(MeterGainValue);
-        }
-    }
-
-    [Serializable]
-    public class AddForceDirection : IEffect
-    {
-        public float Force;
-
-
-        public void Eval(Actor.Actor actor, BaseAction t)
-        {
-            actor.movement.AddForce(t.Direction.normalized * Force);
-        }
-
-        enum TARGET { }
-    }
-
-    [Serializable]
-    public class FaceDirection : IEffect
-    {
-        public void Eval(Actor.Actor actor, BaseAction t)
-        {
-            actor.movement.FaceDirection(t.Direction.normalized);
-        }
-    }
-
-    [Serializable]
-    public class FlashColor : IEffect
-    {
-        public float intensity;
-
-        public void Eval(Actor.Actor actor, BaseAction t)
-        {
-            actor.effects.FlashWhite(intensity);
-        }
-    }
-
-    [Serializable]
-    public class SlowTrack : IEffect
-    {
-        public bool active;
-
-
-        public void Eval(Actor.Actor actor, BaseAction t)
-        {
-            if (actor.isControllable)
-                CameraManager.instance.SlowTrack = active;
-        }
-    }
-    [Serializable]
-    public class Teleport : IEffect
-    {
-        public void Eval(Actor.Actor actor, BaseAction t)
-        {
-            actor.transform.position += t.Direction * t.StickMult;
-
-        }
-    }
-    [Serializable]
-    public class FaceClosestEnemy : IEffect
-    {
-        public void Eval(Actor.Actor actor, BaseAction t)
-        {
-            actor.movement.FaceTarget(actor.target.ClosestEnemy);
-        }
-    }
-
-    [Serializable]
-    public class KillMomentum : IEffect
-    {
-        public void Eval(Actor.Actor actor, BaseAction t)
-        {
-            actor.movement.ResetMomentum();
-        }
-    }
-
-    enum DirectionType { Joystick, Closest_Enemy}
-
 }
 

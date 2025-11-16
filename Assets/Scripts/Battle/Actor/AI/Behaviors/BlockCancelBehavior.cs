@@ -3,6 +3,7 @@ using System.Linq;
 using Assets.Scripts.Battle.Actions;
 using Assets.Scripts.Battle.Actions.Reactions;
 using Assets.Scripts.Battle.Actions.Skills;
+using Assets.Scripts.Utility;
 using UnityEngine;
 
 namespace Assets.Scripts.Battle.Actor.AI.Behaviors
@@ -69,7 +70,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
             }
 
             // Check if the center of the capsule is inside
-            if (AttackSkill.IsPointInsidePolygon(actor.transform.position, transformedPoints))
+            if (Intersections.IsPointInsidePolygon(actor.transform.position, transformedPoints))
             {
                 return true;
             }
@@ -82,7 +83,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
                 int nextIndex = (transformedPoints.IndexOf(edgeStart) + 1) % transformedPoints.Count;
                 Vector3 edgeEnd = transformedPoints[nextIndex];
 
-                if (AttackSkill.IsCircleIntersectingLine(actor.transform.position, capsuleRadius, edgeStart, edgeEnd))
+                if (Intersections.IsCircleIntersectingLine(actor.transform.position, capsuleRadius, edgeStart, edgeEnd))
                 {
                     return true;
                 }

@@ -165,7 +165,7 @@ namespace Assets.Scripts.Battle.Actor
             if (statesText != null)
             {
                 var name = actor.ActorData.Name.Replace("(Clone)", "").Trim();
-                //statesText.text = name;
+                statesText.text = name;
             }
         }
 
@@ -173,22 +173,6 @@ namespace Assets.Scripts.Battle.Actor
         {
             BattleManager.instance.battleStateMachine.activeState.FinalHitDealth -= HideAllBars;
             BattleManager.instance.battleStateMachine.startState.OnNewBattle -= ShowAllBars;
-        }
-
-        private void OnBlabla()
-        {
-            if (statesText == null) return;
-            AttackSkill skill;
-            
-            if(actor.state.IsAttacking(out skill))
-            {
-                statesText.text = $"ATTACKING with {skill.Name}";
-            }
-            else
-            {
-                statesText.text = "NOT ATTACKING";
-            }
-
         }
 
         void DamageStamina()

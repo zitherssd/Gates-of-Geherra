@@ -238,10 +238,6 @@ namespace Assets.Scripts.Battle.Actor
             {
                 skill.UpdateCooldown();
             }
-            foreach (var reaction in ActorData.reactions)
-            {
-                reaction.UpdateCooldown();
-            }
         }
         private void OnCollisionEnter(Collision collision)
         {

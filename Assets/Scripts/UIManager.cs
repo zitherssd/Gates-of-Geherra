@@ -27,7 +27,6 @@ namespace Assets.Scripts
         public AudioClip typeSound1;
         public AudioClip typeSound2;
 
-        [HideInInspector] public BaseReaction selectedReaction;
         [HideInInspector] public BaseAction selectedAction;
         [HideInInspector] public BaseSkill selectedSkill;
 
@@ -151,16 +150,12 @@ namespace Assets.Scripts
             SlowdownMeter.gameObject.SetActive(true);
             SlowdownMeter.value += seconds / 5;
 
-            Debug.Log($"GainMeter called: SlowdownMeter.value is now {SlowdownMeter.value}");
-            // Recalculate the total effect time based on the new SlowdownMeter value
 
-            // If the effect is active, stop the current coroutine and restart it
             if (effectActive)
             {
-                StopAllCoroutines();  // Stop the currently running effect
+                StopAllCoroutines();  
             }
 
-            // Start the effect with the updated duration
             StartCoroutine(StartEffect());
         }
 
@@ -301,7 +296,6 @@ namespace Assets.Scripts
                 // Check if the child has a ButtonHandler and if its referencedSkill matches the action
                 if (buttonHandler != null && buttonHandler.referencedAction == action)
                 {
-                    Debug.Log("Found child with matching referencedSkill: " + child.name);
                 }
                 else
                 {
@@ -310,8 +304,6 @@ namespace Assets.Scripts
                 }
                 
             }
-
-            Debug.Log("No child with the matching referencedSkill found.");
         }
         public List<GameObject> GetAllChildren(GameObject parent)
         {

@@ -33,6 +33,8 @@ namespace Assets.Scripts.Battle.Actions
         }
         public virtual void OnHit() { }
 
+        public virtual void OnUpdate(float dt) { }
+
         public virtual void OnEnterWindup(Animator animator) { }
 
         public virtual void OnEnterRecovery(Animator animator) { }

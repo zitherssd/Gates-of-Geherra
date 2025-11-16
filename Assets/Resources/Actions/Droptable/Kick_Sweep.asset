@@ -19,9 +19,9 @@ MonoBehaviour:
   CooldownTimer: 16
   TotalUses: 2
   remainingUses: 2
-  BuildupCost: 12
+  BuildupCost: 9
   BuildupGain: 0
-  StaminaCost: 10
+  StaminaCost: 13
   Speed: 0
   Tags: 0c0000001000000001000000
   Direction: {x: -0.50078166, y: 0, z: 0.8655736}
@@ -33,8 +33,8 @@ MonoBehaviour:
   SlowdownMeterGainOnRelease: 0
   Animation: 2
   Range: 1.5
-  Damage: 3.5
-  PostureDamage: 8
+  Damage: 3
+  PostureDamage: 7
   KnockbackForce: 1.2
   windupTimeMult: 0.5
   recoveryTimeMult: 0.45

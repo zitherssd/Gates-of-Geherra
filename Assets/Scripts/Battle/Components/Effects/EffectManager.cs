@@ -11,7 +11,9 @@ namespace Assets.Scripts.Battle.Components.Effects
         private readonly Actor.Actor owner;
         public LineRenderer lineRenderer;
         private List<Vector3> points;
+        private Vector3 originPoint;
         private bool drawing;
+        private bool onPlayer = false;
 
         public EffectManager(Actor.Actor owner)
         {
@@ -58,8 +60,17 @@ namespace Assets.Scripts.Battle.Components.Effects
         {
             this.points = points;
             drawing = true;
+            onPlayer = true;
         }
-        public void Clear()
+
+        public void SetHitbox(List<Vector3> points, Vector3 origin)
+        {
+            this.points = points;
+            this.originPoint = origin;
+            drawing = true;
+            onPlayer = false;
+        }
+        public void ClearHitbox()
         {
             drawing=false;
             points = null;
@@ -68,40 +79,35 @@ namespace Assets.Scripts.Battle.Components.Effects
 
         public void UpdatePolygon()
         {
-            if(drawing == true)
+            if (!drawing || points == null || points.Count < 2)
             {
-                if (points == null) return;
-                if (points.Count < 2)
-                {
-                    lineRenderer.positionCount = 0; // Clear the line if there are not enough points
-                    return;
-                }
-
-                List<Vector3> transformedPoints = new List<Vector3>();
-                foreach (var point in points)
-                {
-                    // Rotate the point relative to the character's forward direction
-                    Vector3 rotatedPoint = owner.transform.TransformDirection(point);
-                    // Offset the point by the character's position
-                    Vector3 worldPoint = owner.transform.position + rotatedPoint;
-                    transformedPoints.Add(worldPoint);
-                }
-
-                // Close the shape by adding the first point at the end
-                if (transformedPoints[0] != transformedPoints[transformedPoints.Count - 1])
-                {
-                    transformedPoints.Add(transformedPoints[0]);
-                }
-
-                // Update the LineRenderer
-                lineRenderer.positionCount = transformedPoints.Count;
-                lineRenderer.SetPositions(transformedPoints.ToArray());
+                lineRenderer.positionCount = 0;
+                return;
             }
 
-            if(!owner.state.IsAttacking(out _))
+            List<Vector3> transformedPoints = new();
+
+            Vector3 hitboxCenter = onPlayer
+                ? owner.transform.position                 // Player-centered hitbox
+                : originPoint;                             // Offset hitbox center
+
+            foreach (var point in points)
             {
-                Clear();
+                // Rotate relative to player's rotation
+                Vector3 rotatedPoint = owner.transform.TransformDirection(point);
+
+                // Place at the center + rotated local point
+                Vector3 worldPoint = hitboxCenter + rotatedPoint;
+
+                transformedPoints.Add(worldPoint);
             }
+
+            // Close polygon
+            if (transformedPoints[0] != transformedPoints[^1])
+                transformedPoints.Add(transformedPoints[0]);
+
+            lineRenderer.positionCount = transformedPoints.Count;
+            lineRenderer.SetPositions(transformedPoints.ToArray());
         }
     }
 }

@@ -52,7 +52,6 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
                 {
                     return NodeState.Failure; // Fail or Running
                 }
-                actor.GetComponentInChildren<ActorUIController>().statesText.text = child.GetType().Name;
             }
             return NodeState.Sucess; // All children succeeded, return success state
         }

@@ -11058,7 +11058,6 @@ MonoBehaviour:
   fadeSpeed: 1
   typeSound1: {fileID: 8300000, guid: eaa9c9746cc1f5d469bd4b3cc7b6495f, type: 3}
   typeSound2: {fileID: 8300000, guid: eaa9c9746cc1f5d469bd4b3cc7b6495f, type: 3}
-  selectedReaction: {fileID: 0}
   selectedAction: {fileID: 0}
   selectedSkill: {fileID: 0}
   OriginPoint: {fileID: 0}

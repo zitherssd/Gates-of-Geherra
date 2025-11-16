@@ -80,6 +80,7 @@ namespace Assets.Scripts.Battle.Actor.States
             onWindupProgress?.Invoke(0);
 
             if (!ended) onInterrupt?.Invoke();
+            owner.effects.ClearHitbox();
         }
 
         public void EnterWindup(int windupFrames)
@@ -126,6 +127,7 @@ namespace Assets.Scripts.Battle.Actor.States
             }
             else
                 onWindupProgress?.Invoke(0f);
+            action.OnUpdate(Time.deltaTime);
         }
 
         public void OnCollisionEnter(Collision collision)

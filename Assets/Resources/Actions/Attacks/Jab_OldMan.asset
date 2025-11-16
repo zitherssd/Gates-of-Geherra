@@ -28,6 +28,7 @@ MonoBehaviour:
   currentCooldownTimer: 0
   StickMult: 0.5
   SlowdownMeterGain: 0.5
+  SlowdownMeterGainOnEnd: 0
   SlowDownMeterGainOnPress: 0
   SlowdownMeterGainOnRelease: 0
   Animation: 1
@@ -40,10 +41,11 @@ MonoBehaviour:
   state: 0
   SelfForce: 1.3
   HitboxPoints:
-  - {x: -0.1, y: 0, z: -0.15}
+  - {x: -0.1, y: 0, z: 0.15}
   - {x: -0.1, y: 0, z: 0.7}
   - {x: 0.1, y: 0, z: 0.7}
   - {x: 0.1, y: 0, z: 0.15}
+  HitboxScale: 1
   windupPostureDamageMult: 1
   recoveryPostureDamageMult: 1
   BuildupGainOnHit: 4

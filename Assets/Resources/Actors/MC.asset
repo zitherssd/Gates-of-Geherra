@@ -15,9 +15,9 @@ MonoBehaviour:
   Name: Player
   hpBars:
   - maxHp: 10
-    alive: 0
+    alive: 1
   - maxHp: 10
-    alive: 0
+    alive: 1
   maxBuildup: 50
   maxPosture: 25
   maxStamina: 50
@@ -33,7 +33,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: bee8d5fdedd9f2441991e17989df781b, type: 2}
   - {fileID: 11400000, guid: 5b9d2d0224c0bfa418627da8e495eadc, type: 2}
   - {fileID: 11400000, guid: 7a9771d855ce02343aea8b6afd56e150, type: 2}
-  baseReactions: []
+  - {fileID: 11400000, guid: 73d11a4d079983942bb6c9479b47c2c2, type: 2}
+  - {fileID: 11400000, guid: 37e5b136dca9c114ab3b7b61a6b3c714, type: 2}
   basePassives: []
   actions:
   - {fileID: 0}
@@ -43,12 +44,14 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  reactions: []
-  currentBuildup: 16.5
-  currentPosture: 0
-  currentStamina: 33.72153
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  currentBuildup: 14
+  currentPosture: 25
+  currentStamina: 50
   postureRegenRate: 1
-  staminaRegenRate: 1
+  staminaRegenRate: 2
   ATK: 1
   DEF: 1
   AGI: 5
