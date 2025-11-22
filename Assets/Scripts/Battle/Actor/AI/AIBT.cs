@@ -112,6 +112,7 @@ namespace Assets.Scripts.Battle.Actor.AI
             new SequenceNode(new List<BTNode>
             {
                 new DistanceToPlayerSmallerThan(3),
+
                 new SelectorNode(new List<BTNode>
                 {
                     new MoveAwayFromPlayer(3, 3),
