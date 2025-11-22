@@ -53,7 +53,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
         public override void OnHit()
         {
             caster.movement.AddForce(caster.target.DirectionToClosestEnemy * SelfForce);
-            GameObject projectile = Instantiate(projectilePrefab, caster.transform.position + caster.target.DirectionToClosestEnemy * 1f + Vector3.up * 0.5f, caster.transform.rotation);
+            GameObject projectile = Instantiate(projectilePrefab, caster.transform.position + caster.target.DirectionToClosestEnemy * 0.5f + Vector3.up * 0.5f, caster.transform.rotation);
             projectile.GetComponent<ProjectileHandler>().Initialize(caster, this);
             
             if(Type == BUTTONTYPE.VECTOR)

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5f076fb264629d419cdfb2d71f54608, type: 3}
   m_Name: Jab_Fast
   m_EditorClassIdentifier: 
+  guid: 6156ef38c6ee2b647849b0a5cf9a53e3
   Type: 0
   Name: Fast Jab
   Rarity: 0

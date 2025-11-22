@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5a2e800b20efe647a3894bd700a7333, type: 3}
   m_Name: Fire Pillar
   m_EditorClassIdentifier: 
+  guid: b9b6791f-1728-4c43-a002-119842189c9a
   Type: 1
   Name: Pillar of Fire
   Rarity: 1
@@ -19,7 +20,7 @@ MonoBehaviour:
   CooldownTimer: 25
   TotalUses: 2
   remainingUses: 0
-  BuildupCost: 18
+  BuildupCost: 2
   BuildupGain: 0
   StaminaCost: 0
   Speed: 0
@@ -80,8 +81,9 @@ MonoBehaviour:
         PostureDamage: 10
         Damage: 8
         KnockbackForce: 0
+        KnockbackForceUp: 1.5
         CasterBuildupGain: 7
-        AutoGetHitbox: 0
+        AutoGetHitbox: 1
     - rid: 6357899952368123906
       type: {class: ClearHitbox, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
     - rid: 6357899973538611203

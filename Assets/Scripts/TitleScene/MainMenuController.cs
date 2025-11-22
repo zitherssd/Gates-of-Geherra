@@ -1,4 +1,5 @@
 using Assets.Scripts.Battle.Actor;
+using Assets.Scripts.Save;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -36,12 +37,20 @@ public class MainMenuController : MonoBehaviour
         }
     }
 
-    public void SaveInSlot(int slotIndex)
+    public void StartGame(int slot)
     {
-        string key = $"SaveSlot_{slotIndex}";
-        var save = JsonUtility.ToJson(Resources.Load<ActorData>(key));
-        PlayerPrefs.SetString(key, save);
+        SceneManager.LoadScene("DebugScene");
+        SaveManager.instance.currentSaveSlot = slot;
 
+        if (SaveManager.instance.SlotExists(slot))
+        {
+            var save = SaveManager.instance.LoadFromSlot(slot);
+            ActorSave.LoadActorFromSave(save.player, SaveManager.instance.actionDatabase);
+        }
+        else
+        {
+            SaveManager.instance.SaveToSlot(slot);
+        }
     }
 
     public void StartFight()

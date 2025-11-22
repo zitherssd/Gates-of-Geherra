@@ -29,6 +29,7 @@ namespace Assets.Scripts.Utility
 
         private void OnTriggerEnter(Collider other)
         {
+            if (other.gameObject == owner.gameObject) return;
             Actor enemyBattler = other.gameObject.GetComponent<Actor>();
 
             // --- Detach travel particles BEFORE destroying the projectile ---

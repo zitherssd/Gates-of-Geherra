@@ -7,6 +7,7 @@ namespace Assets.Scripts.Battle.Actions
     [Serializable]
     public class BaseAction : ScriptableObject
     {
+        public string guid;
         public BUTTONTYPE Type;
         public string Name;
         public RARITY Rarity;

@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Crawler;
 using Assets.Scripts.Pattern;
+using Assets.Scripts.Save;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,7 @@ namespace Assets.Scripts.Battle.Manager.States
                 SkillGenerator.instance.DrawSkillsFromSelectionAndWaitForSelection(SkillGenerator.instance.GetRandomActions(FloorManager.instance.currentFloor), () =>
                 {
                     UIManager.instance.ShowRestingUI();
+                    SaveManager.instance.SaveToSlot(SaveManager.instance.currentSaveSlot);
                 });
             });
         }

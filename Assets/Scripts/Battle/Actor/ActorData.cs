@@ -12,6 +12,7 @@ namespace Assets.Scripts.Battle.Actor
     [CreateAssetMenu(fileName = "Actor", menuName = "ScriptableObjects/Actor", order = 1)]
     public class ActorData : ScriptableObject
     {
+        public string guid;
         public string Name;
         public List<HpBar> hpBars;
         public float maxBuildup;

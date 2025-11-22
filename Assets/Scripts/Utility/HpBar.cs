@@ -7,6 +7,7 @@ namespace Assets.Scripts.Utility
     [Serializable]
     public class HpBar
     {
+        [SerializeField]
         private float _currentHp;
 
         public float maxHp;

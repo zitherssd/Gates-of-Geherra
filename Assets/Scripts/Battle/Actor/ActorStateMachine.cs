@@ -134,7 +134,7 @@ namespace Assets.Scripts.Battle.Actor
         }
         public bool IsStaggered()
         {
-            if (CurrentState is ActingState actingState || CurrentState is FumbleState fumbleState || CurrentState is AirStaggerState airStaggerState)
+            if (CurrentState is StaggerState staggerState || CurrentState is FumbleState fumbleState || CurrentState is AirStaggerState airStaggerState)
                 return true;
             else return false;
         }

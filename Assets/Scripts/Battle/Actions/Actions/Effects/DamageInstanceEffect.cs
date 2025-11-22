@@ -13,6 +13,7 @@ namespace Assets.Scripts.Battle.Actions.Actions.Effects
         public float PostureDamage;
         public float Damage;
         public float KnockbackForce;
+        public float KnockbackForceUp;
         public float CasterBuildupGain;
         public bool AutoGetHitbox;
 
@@ -50,6 +51,12 @@ namespace Assets.Scripts.Battle.Actions.Actions.Effects
                 direction = (targetActor.transform.position - casterActor.transform.position).normalized;
              
                 targetActor.ApplyKnockback(direction, KnockbackForce);
+            }
+
+            if (KnockbackForceUp > 0)
+            {
+                Vector3 upDirection = Vector3.up;
+                targetActor.ApplyKnockback(upDirection, KnockbackForceUp);
             }
         }
     }

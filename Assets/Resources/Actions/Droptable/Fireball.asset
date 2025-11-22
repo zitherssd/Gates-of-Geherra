@@ -16,10 +16,10 @@ MonoBehaviour:
   Name: Fire bullet
   Rarity: 0
   Description: Kill everything with fire
-  CooldownTimer: 15
+  CooldownTimer: 2
   TotalUses: 2
   remainingUses: 0
-  BuildupCost: 15
+  BuildupCost: 0
   BuildupGain: 0
   StaminaCost: 5
   Speed: 0

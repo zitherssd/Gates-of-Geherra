@@ -12,11 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e110cd302acb85459812d80addcbd30, type: 3}
   m_Name: MC_Uncontrollable
   m_EditorClassIdentifier: 
+  guid: 437e4254d6cf35e418344334c5c6bb01
   Name: Evil Player
   hpBars:
-  - maxHp: 10
+  - _currentHp: 0
+    maxHp: 10
     alive: 1
-  - maxHp: 10
+  - _currentHp: 0
+    maxHp: 10
     alive: 1
   maxBuildup: 50
   maxPosture: 25
@@ -33,8 +36,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e50784aadad8cdb459c92505f169fb00, type: 2}
   - {fileID: 11400000, guid: bbf04903c613b684fbee4bea1e99fc92, type: 2}
   - {fileID: 11400000, guid: aae9dbed006f82f4086140a65bee5c06, type: 2}
-  baseReactions: []
-  basePassives: []
   actions:
   - {fileID: 0}
   - {fileID: 0}
@@ -43,7 +44,6 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  reactions: []
   currentBuildup: 0
   currentPosture: 25
   currentStamina: 50

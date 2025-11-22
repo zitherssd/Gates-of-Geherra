@@ -12,12 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e110cd302acb85459812d80addcbd30, type: 3}
   m_Name: MC
   m_EditorClassIdentifier: 
+  guid: b8a7b1ce80f78164f9e1d2631a3c98fa
   Name: Player
   hpBars:
-  - maxHp: 10
+  - _currentHp: 10
+    maxHp: 10
     alive: 1
-  - maxHp: 10
-    alive: 1
+  - _currentHp: 10
+    maxHp: 10
+    alive: 0
   maxBuildup: 50
   maxPosture: 25
   maxStamina: 50
@@ -33,7 +36,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: bee8d5fdedd9f2441991e17989df781b, type: 2}
   - {fileID: 11400000, guid: 5b9d2d0224c0bfa418627da8e495eadc, type: 2}
   - {fileID: 11400000, guid: 7a9771d855ce02343aea8b6afd56e150, type: 2}
-  basePassives: []
   actions:
   - {fileID: 0}
   - {fileID: 0}
@@ -44,9 +46,9 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  currentBuildup: 17
+  currentBuildup: 0
   currentPosture: 25
-  currentStamina: 50
+  currentStamina: 2.2593899
   postureRegenRate: 1
   staminaRegenRate: 2
   ATK: 1
