@@ -33,35 +33,39 @@ MonoBehaviour:
   SlowdownMeterGainOnRelease: 0
   Animation: 6
   OnStartEffects:
-  - rid: 8685422100207370263
+  - rid: 6357900109471809536
+  - rid: 6357900109471809543
   OnHitEffects:
-  - rid: 8685422100207370259
-  - rid: 8685422100207370260
-  - rid: 8685422100207370261
-  - rid: 8685422100207370262
-  OnEndEffeects: []
+  - rid: 6357900109471809537
+  - rid: 6357900109471809538
+  - rid: 6357900109471809539
+  - rid: 6357900109471809542
+  OnEndEffects: []
+  OnUpdateEffects: []
   windupTimeMult: 0.4
   recoveryTimeMult: 0.2
   references:
     version: 2
     RefIds:
-    - rid: 8685422100207370259
-      type: {class: StaminaHealEffect, ns: Assets.Scripts.Battle.Actions.Skills, asm: Assembly-CSharp}
+    - rid: 6357900109471809536
+      type: {class: FlashColor, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
       data:
-        HealAmount: 15
-    - rid: 8685422100207370260
-      type: {class: MeterGainEffect, ns: Assets.Scripts.Battle.Actions.Skills, asm: Assembly-CSharp}
+        intensity: 0.77
+    - rid: 6357900109471809537
+      type: {class: MeterGainEffect, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
       data:
-        MeterGainValue: 5
-    - rid: 8685422100207370261
-      type: {class: FlashColor, ns: Assets.Scripts.Battle.Actions.Skills, asm: Assembly-CSharp}
+        MeterGainValue: 10
+    - rid: 6357900109471809538
+      type: {class: FaceClosestEnemy, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+    - rid: 6357900109471809539
+      type: {class: StaminaHealEffect, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
       data:
-        intensity: 3
-    - rid: 8685422100207370262
-      type: {class: SlowTrack, ns: Assets.Scripts.Battle.Actions.Skills, asm: Assembly-CSharp}
+        HealAmount: 20
+    - rid: 6357900109471809542
+      type: {class: SlowTrack, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
       data:
         active: 0
-    - rid: 8685422100207370263
-      type: {class: FlashColor, ns: Assets.Scripts.Battle.Actions.Skills, asm: Assembly-CSharp}
+    - rid: 6357900109471809543
+      type: {class: SlowTrack, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
       data:
-        intensity: 1
+        active: 1

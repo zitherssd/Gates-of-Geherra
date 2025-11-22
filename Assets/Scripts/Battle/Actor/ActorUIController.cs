@@ -125,6 +125,7 @@ namespace Assets.Scripts.Battle.Actor
 
         public void Start()
         {
+            statesText.text = actor.ActorData.Name;
             actor.state.StateChanged += OnStateChanged;
             actor.ActorData.OnDeath += HideAllBars;
             BattleManager.instance.battleStateMachine.activeState.FinalHitDealth += HideAllBars;

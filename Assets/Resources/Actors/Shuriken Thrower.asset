@@ -25,15 +25,13 @@ MonoBehaviour:
   secondaryColor: {r: 0.5283019, g: 0.102171585, b: 0.102171585, a: 1}
   baseActions:
   - {fileID: 11400000, guid: eb94d8da9dbb0de4f9022395c5c28ce9, type: 2}
-  - {fileID: 11400000, guid: 5e56ae64a0508514885143487d0c12e9, type: 2}
-  - {fileID: 11400000, guid: f16ffd28d0060b64bab67118ca889777, type: 2}
-  baseReactions: []
-  basePassives: []
+  - {fileID: 11400000, guid: 0d03492e6647eeb4890fb05191b5a3c8, type: 2}
+  - {fileID: 11400000, guid: 39104383cbe7ed64080073c8d688ee96, type: 2}
+  - {fileID: 11400000, guid: e6f5605b38a52a7419d7547b23b1c33c, type: 2}
   actions:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  reactions: []
   currentBuildup: 0
   currentPosture: 10
   currentStamina: 100

@@ -16,12 +16,12 @@ MonoBehaviour:
   Name: Big Shuriken
   Rarity: 0
   Description: Throw one huge ass shuriken
-  CooldownTimer: 14
+  CooldownTimer: 15
   TotalUses: 0
   remainingUses: 0
   BuildupCost: 0
   BuildupGain: 5
-  StaminaCost: 8
+  StaminaCost: 15
   Speed: 0
   Tags: 
   Direction: {x: 0, y: 0, z: 0}
@@ -38,5 +38,13 @@ MonoBehaviour:
   PostureDamage: 6
   KnockbackForce: 0.5
   SelfForce: -2
-  ThrowSpeed: 1.8
+  ThrowSpeed: 1.3
   SizeMultiplier: 2
+  OnStartEffects: []
+  OnProjectileHitEffects: []
+  OnHitEffects: []
+  windupTimeMult: 0.45
+  recoveryTimeMult: 0.5
+  references:
+    version: 2
+    RefIds: []

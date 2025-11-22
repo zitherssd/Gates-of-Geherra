@@ -27,7 +27,6 @@ namespace Assets.Scripts.Battle.Actor.Systems
                 }
                 else
                 {
-                    Debug.LogWarning("Target is null! Returning actor's position instead.");
                     return actor.transform.position + actor.transform.forward * 2; // Fallback to the actor's position or a default value
                 }
             }
@@ -41,7 +40,7 @@ namespace Assets.Scripts.Battle.Actor.Systems
                 if (actor.isControllable)
                     return BattleManager.instance.EnemyActors.OrderBy(enemyActor => (enemyActor.transform.position - actor.transform.position).magnitude).Where(actor => !actor.ActorData.isDead()).First();
                 else
-                    return BattleManager.instance.PlayerActors.OrderBy(playerActor => (playerActor.transform.position - actor.transform.position).magnitude).Where(actor => !actor.ActorData.isDead()).First();
+                    return BattleManager.instance.PlayerActors[0];
             }
         }
 

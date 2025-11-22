@@ -146,6 +146,7 @@ namespace Assets.Scripts
        
         public void GainMeter(float seconds)
         {
+            if (isLocked) return;
             totalEffectTime = seconds + SlowdownMeter.value * 5;
             SlowdownMeter.gameObject.SetActive(true);
             SlowdownMeter.value += seconds / 5;
@@ -341,6 +342,24 @@ namespace Assets.Scripts
             LeanTween.scale(SkillHolder.gameObject, Vector3.one, 0.15f).setEaseInOutCubic().setIgnoreTimeScale(true);
             OnShowUI?.Invoke();
         }
+
+        public void ShowUIIgnoreLocked()
+        {
+            ActionsHolder.transform.parent.gameObject.SetActive(true);
+
+            var leftContainerChildren = GetAllChildren(ActionsHolder);
+            var rightContainer = GetAllChildren(SkillHolder);
+
+            foreach (var child in leftContainerChildren.Concat(rightContainer))
+            {
+                child.GetComponent<ActionButtonBattle>().Disabled = false;
+                LeanTween.scale(child.gameObject, Vector3.one, 0.4f).setEaseOutBack().setIgnoreTimeScale(true);
+            }
+            LeanTween.scale(ActionsHolder.gameObject, Vector3.one, 0.15f).setEaseInOutCubic().setIgnoreTimeScale(true);
+            LeanTween.scale(SkillHolder.gameObject, Vector3.one, 0.15f).setEaseInOutCubic().setIgnoreTimeScale(true);
+            OnShowUI?.Invoke();
+        }
+
         internal void ResetMeter()
         {
             SlowdownMeter.value = 0f;

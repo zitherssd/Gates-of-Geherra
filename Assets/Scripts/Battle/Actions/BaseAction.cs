@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Battle.Actions
 {
+    [Serializable]
     public class BaseAction : ScriptableObject
     {
         public BUTTONTYPE Type;

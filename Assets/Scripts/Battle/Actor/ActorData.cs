@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Battle.Actor
 {
+    [System.Serializable]
     [CreateAssetMenu(fileName = "Actor", menuName = "ScriptableObjects/Actor", order = 1)]
     public class ActorData : ScriptableObject
     {
@@ -24,7 +25,6 @@ namespace Assets.Scripts.Battle.Actor
         public Color secondaryColor;
 
         public List<BaseAction> baseActions;
-        public List<BasePassive> basePassives;
         [HideInInspector]
         public List<BaseAction> actions;
 

@@ -10879,7 +10879,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4915d9a2fbf625f4a80174075d70d1a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ActorData: {fileID: 0}
+  ActorData: {fileID: 11400000, guid: f37eb8c8a780f98419ee07350d193ef2, type: 2}
   state: {fileID: 0}
   CanRegenPosture: 1
   PostureRegenCooldownDelay: 1
@@ -11357,7 +11357,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3946902803625474254
 RectTransform:
   m_ObjectHideFlags: 0

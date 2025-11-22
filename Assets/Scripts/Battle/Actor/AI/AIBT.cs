@@ -107,12 +107,16 @@ namespace Assets.Scripts.Battle.Actor.AI
             new SequenceNode(new List<BTNode>
             {
                 new ConditionNode(actor => actor.target.DistanceToClosestEnemy > 3 && actor.target.DistanceToClosestEnemy < 5),
-                new AttackWithValidSkill(),
+                new AttackWithValidProjectileSkill(),
             }),
             new SequenceNode(new List<BTNode>
             {
                 new DistanceToPlayerSmallerThan(3),
-                new MoveAwayFromPlayer(3, 3),
+                new SelectorNode(new List<BTNode>
+                {
+                    new MoveAwayFromPlayer(3, 3),
+                    new AttackWithValidSkill() 
+                })
             }),
 
             new SequenceNode(new List<BTNode>
@@ -125,7 +129,7 @@ namespace Assets.Scripts.Battle.Actor.AI
         public void Update()
         {
             if (actor.isControllable) return;
-            if (actor.ActorData.isDead()) return;
+            if (actor.ActorData.isDead() || actor.state.IsStaggered()) return;
             //aiTickTimer -= Time.deltaTime;
             //if (aiTickTimer > 0) return;
             //aiTickTimer = aiTickCooldown;

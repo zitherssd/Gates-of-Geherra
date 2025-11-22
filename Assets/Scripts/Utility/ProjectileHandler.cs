@@ -36,6 +36,7 @@ namespace Assets.Scripts.Utility
 
             if (enemyBattler != null)
             {
+                if (!enemyBattler.state.IsAlive()) return;
                 action.OnProjectileHitEffects.ForEach(effect => effect.Eval(owner, action, this.gameObject));
                 action.OnHitEffects.ForEach(effect => effect.Eval(owner, action));
                 ApplyDamageEffects(owner, enemyBattler, action);
