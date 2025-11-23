@@ -27,7 +27,6 @@ public class ActionDatabase : ScriptableObject
             lookup[action.guid] = action;
         }
 
-        Debug.Log($"ActionDatabase initialized with {lookup.Count} actions.");
     }
 
     public BaseAction Get(string id)
