@@ -115,7 +115,17 @@ namespace Assets.Scripts.Utility
                     transform.position = Vector3.Lerp(transform.position, targetpos, 0.1f);
                 //  }
                 else
-                    transform.position = Vector3.MoveTowards(transform.position, targetpos, 0.3f * Time.unscaledDeltaTime);
+                {
+                    float distance = Vector3.Distance(transform.position, targetpos);
+                    float speed = Mathf.Lerp(0.03f, 6f, distance / 10f);
+                    // small distance → slow, big distance → fast
+
+                    transform.position = Vector3.MoveTowards(
+                        transform.position,
+                        targetpos,
+                        speed * Time.unscaledDeltaTime
+                    );
+                }
 
 
             }

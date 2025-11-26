@@ -45,7 +45,6 @@ namespace Assets.Scripts.Battle.Manager
             // Camera pan wait
             StartCoroutine(WaitForSeconds(2f, () =>
             {
-
                 SoundManager.instance.PlayMusic(null);
                 UIManager.instance.InitializePlayerActionButtonPrefabs(PlayerActors[0].ActorData.actions);
                 UIManager.instance.MoveActionsToBattleActionContainers();
@@ -103,7 +102,7 @@ namespace Assets.Scripts.Battle.Manager
             if (PlayerActors.TrueForAll(actor => !actor.state.IsAlive()))
             {
                 EnemyActors[0].PlayAnimation("Victory");
-                UIManager.GetInstance().ChangeStatus("Defeat");
+                //UIManager.GetInstance().ChangeStatus("Defeat");
                 //SoundManager.instance.PlaySingle(SoundManager.instance.GetAudioClipByName("Curse2"));
                 StartCoroutine(WaitForSeconds(2f, () => { SceneManager.LoadScene("TitleScene"); }));
             }

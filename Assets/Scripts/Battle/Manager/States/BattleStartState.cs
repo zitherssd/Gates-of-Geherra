@@ -22,6 +22,7 @@ namespace Assets.Scripts.Battle.Manager.States
         {
             UIManager.instance.EnableUI();
             OnNewBattle?.Invoke();
+            ItemEventBus.Raise(ItemTrigger.OnNewBattle);
 
             //Gain meter
             UIManager.instance.GainMeter(4f);
