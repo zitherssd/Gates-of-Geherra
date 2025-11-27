@@ -1,6 +1,8 @@
 ﻿using Assets.Scripts.Crawler;
+using Assets.Scripts.Game;
 using Assets.Scripts.Pattern;
 using Assets.Scripts.Save;
+using Assets.Scripts.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,14 +20,19 @@ namespace Assets.Scripts.Battle.Manager.States
         }
         public void Enter()
         {
+            SoundManager.instance.FadeOutMusic();
             UIManager.instance.Fade(true, () =>
             {
-                UIManager.instance.DisableBattleSkills();
                 UIManager.instance.HideUI();
                 SkillGenerator.instance.DrawSkillsFromSelectionAndWaitForSelection(SkillGenerator.instance.GetRandomActions(FloorManager.instance.currentFloor), () =>
                 {
-                    UIManager.instance.ShowRestingUI();
-                    SaveManager.instance.SaveToSlot(SaveManager.instance.currentSaveSlot);
+                    UIManager.instance.DisableBattleSkills();
+
+                    if (SaveManager.instance != null)
+                    {
+                        SaveManager.instance.SaveToSlot(SaveManager.instance.currentSaveSlot);
+                    }
+                    GameFlowManager.instance.SetMode(GameMode.RestArea);
                 });
             });
         }

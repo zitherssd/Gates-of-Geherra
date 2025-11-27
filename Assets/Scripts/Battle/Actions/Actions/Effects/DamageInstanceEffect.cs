@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Assets.Scripts.Battle.Actions.Actions.Effects
 {
     [Serializable]
-    public class DamageInstanceEffect : IEffect
+    public class DamageInstanceEffect : IEffect, IItemEffect
     {
         public IHitbox HitboxEffect;
         public float PostureDamage;
@@ -24,6 +24,16 @@ namespace Assets.Scripts.Battle.Actions.Actions.Effects
             var enemies = HitboxEffect.CheckEnemiesInsideHitbox(actor);
             foreach (var enemy in enemies)
                 ApplyDamageEffects(actor, enemy);
+        }
+
+        public void Eval(Actor.Actor actor)
+        {
+            ApplyDamageEffects(actor, actor);
+        }
+
+        public void Eval(Actor.Actor owner, ItemEventArgs args)
+        {
+            throw new NotImplementedException();
         }
 
         private void ApplyDamageEffects(Actor.Actor casterActor, Actor.Actor targetActor)

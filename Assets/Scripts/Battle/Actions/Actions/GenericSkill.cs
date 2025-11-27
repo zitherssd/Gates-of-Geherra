@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Battle.Actions.Skills
 {
-    [CreateAssetMenu(fileName = "AnimationAction", menuName = "ScriptableObjects/Actions/Animation")]
+    [CreateAssetMenu(fileName = "AnimationAction", menuName = "ScriptableObjects/Action/Generic")]
     public class GenericSkill : BaseSkill
     {
         private Actor.Actor casterActor;

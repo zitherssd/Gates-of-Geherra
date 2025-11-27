@@ -7,6 +7,7 @@ using Assets.Scripts.Battle.Actions.Actions;
 using Assets.Scripts.Battle.Actor;
 using Assets.Scripts.Battle.Actor.States;
 using Assets.Scripts.Crawler;
+using Assets.Scripts.Game;
 using Assets.Scripts.Utility;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -38,18 +39,61 @@ namespace Assets.Scripts.Battle.Manager
 
             battleStateMachine = new BattleStateMachine(this);
         }
+
+
+
+
+
+        public void Enter(BattleDefinition battleDefinition)
+        {
+            //Should assume that screen is black/fadeimage is active
+            var player = GameFlowManager.instance.playerActor;
+            player.transform.position = battleDefinition.playerStartPosition;
+            player.ActorData.Refresh();
+            SpawnEnemies(battleDefinition);
+            UIManager.instance.Fade(false, null);
+            CameraManager.instance.ResetForNewBattle();
+            UIManager.instance.InitializePlayerActionButtonPrefabs(player.ActorData.actions);
+            StartCoroutine(WaitForSeconds(2f, () =>
+            {
+                SoundManager.instance.PlayMusic(null);
+                //UIManager
+                //.instance.InitializePlayerActionButtonPrefabs(PlayerActors[0].ActorData.actions);
+                //UIManager.instance.MoveActionsToBattleActionContainers();
+                battleStateMachine.Initialize(battleStateMachine.startState); // Start the battle state machine
+            }));
+
+            // Wait 2 seconds while fadeout finishes and camera moves
+            // Going strike
+            // Initialize battle state machine
+        }
+
+        private void SpawnEnemies(BattleDefinition battleDefinition)
+        {
+            foreach (var enemy in EnemyActors)
+            {
+                Destroy(enemy.gameObject);
+            }
+            EnemyActors.Clear();
+
+            foreach (var enemy in battleDefinition.enemyActors)
+            {
+                var clone = Instantiate(enemy);
+                var randomSpawner = GetRandomChild(SpawnerParent);
+                var enemyGameObject = Instantiate(enemyPrefab, randomSpawner.position, Quaternion.identity);
+                var enemyActor = enemyGameObject.GetComponent<Actor.Actor>();
+                enemyActor.ActorData = clone;
+                enemyActor.Init();
+                EnemyActors.Add(enemyActor);
+            }
+        }
+
         void Start()
         {
             Physics.gravity = new Vector3(0, -6f, 0);
 
             // Camera pan wait
-            StartCoroutine(WaitForSeconds(2f, () =>
-            {
-                SoundManager.instance.PlayMusic(null);
-                UIManager.instance.InitializePlayerActionButtonPrefabs(PlayerActors[0].ActorData.actions);
-                UIManager.instance.MoveActionsToBattleActionContainers();
-                battleStateMachine.Initialize(battleStateMachine.startState); // Start the battle state machine
-            }));
+         
 
         }
 
@@ -82,7 +126,6 @@ namespace Assets.Scripts.Battle.Manager
 
 
             PlayerActors[0].ActorData.Refresh();
-            CameraManager.instance.ResetForNewBattle();
 
             UIManager.instance.EnableBattleSkills();
             UIManager.instance.Fade(false, () =>
@@ -97,24 +140,6 @@ namespace Assets.Scripts.Battle.Manager
             onFinishedWaiting();
         }
 
-        public void End()
-        {
-            if (PlayerActors.TrueForAll(actor => !actor.state.IsAlive()))
-            {
-                EnemyActors[0].PlayAnimation("Victory");
-                //UIManager.GetInstance().ChangeStatus("Defeat");
-                //SoundManager.instance.PlaySingle(SoundManager.instance.GetAudioClipByName("Curse2"));
-                StartCoroutine(WaitForSeconds(2f, () => { SceneManager.LoadScene("TitleScene"); }));
-            }
-            if (EnemyActors.TrueForAll(actor => !actor.state.IsAlive()))
-            {
-                PlayerActors[0].state.TransitionTo<BlockState>();
-                PlayerActors[0].PlayAnimation("Victory");
-                UIManager.instance.HideUI();
-               
-            }
-        }
-
         public static Transform GetRandomChild(GameObject list)
         {
             // Make sure the list is not empty
@@ -125,6 +150,5 @@ namespace Assets.Scripts.Battle.Manager
             // Return the element at the random index
         }
     }
-
     public enum STATE { READY, WAITING }
 }

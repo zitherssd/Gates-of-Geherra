@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e110cd302acb85459812d80addcbd30, type: 3}
   m_Name: Old Prisoner
   m_EditorClassIdentifier: 
+  guid: f37eb8c8a780f98419ee07350d193ef2
   Name: Old Prisoner
   hpBars:
-  - maxHp: 10
+  - _currentHp: 0
+    maxHp: 10
     alive: 1
   maxBuildup: 0
   maxPosture: 12
@@ -23,17 +25,15 @@ MonoBehaviour:
   AIRuleset: 1
   mainColor: {r: 0.16037738, g: 0.16037738, b: 0.16037738, a: 1}
   secondaryColor: {r: 0, g: 0, b: 0, a: 1}
+  startingItems: []
   baseActions:
   - {fileID: 11400000, guid: eb94d8da9dbb0de4f9022395c5c28ce9, type: 2}
   - {fileID: 11400000, guid: e6f5605b38a52a7419d7547b23b1c33c, type: 2}
-  - {fileID: 11400000, guid: bbf04903c613b684fbee4bea1e99fc92, type: 2}
-  baseReactions: []
-  basePassives: []
   actions:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  reactions: []
+  items: []
   currentBuildup: 0
   currentPosture: 12
   currentStamina: 100

@@ -100,7 +100,7 @@ namespace Assets.Scripts.Battle.Actor
             actor = GetComponentInParent<Actor>();
         }
 
-    public void SetProgress(float t)
+        public void SetProgress(float t)
     {
             if(t != 0)
             LeanTween.alphaCanvas(windupCanvasGroup, 1f, 0.1f).setIgnoreTimeScale(true);
@@ -115,7 +115,7 @@ namespace Assets.Scripts.Battle.Actor
             windupIndicator.color = windupColorOverTime.Evaluate(t);
     }
 
-    public void ResetIndicator()
+        public void ResetIndicator()
     {
             LeanTween.alphaCanvas(windupCanvasGroup, 0f, 0.1f).setIgnoreTimeScale(true);
 
@@ -172,6 +172,8 @@ namespace Assets.Scripts.Battle.Actor
 
         private void OnDestroy()
         {
+            LeanTween.cancel(gameObject);
+
             BattleManager.instance.battleStateMachine.activeState.FinalHitDealth -= HideAllBars;
             BattleManager.instance.battleStateMachine.startState.OnNewBattle -= ShowAllBars;
         }

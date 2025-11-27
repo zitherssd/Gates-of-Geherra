@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using Assets.Scripts.Battle;
+using Assets.Scripts.Battle.Actions;
 using Assets.Scripts.Battle.Actor;
 using Assets.Scripts.Battle.Manager;
+using Assets.Scripts.Game;
 using Assets.Scripts.Utility;
 using UnityEngine;
 
@@ -9,8 +11,10 @@ namespace Assets.Scripts.Crawler
 {
     public class FloorManager : MonoBehaviour
     {
-        public int currentFloor = 1;
+        public int currentFloor = 0;
         private UIManager uiManager;
+        public List<BattleDefinition> StoryBattles;
+        public List<BattleDefinition> RandomBattles;
 
         [Header("Floor Enemies")]
         public List<FloorEnemies> floorEnemiesList; // List of all floors and their enemies
@@ -30,24 +34,14 @@ namespace Assets.Scripts.Crawler
 
         public void ProgressToNextFloor()
         {
+            SoundManager.instance.PlaySE("Gong");
             currentFloor++;
-
-            var random = new System.Random();
-            var line = lines[Random.Range(0, lines.Length)];
-            line = line.Replace("{numberth}", GetOrdinal(currentFloor));
-
-            var bm = BattleManager.instance;
-            bm.PlayerActors[0].transform.position = Vector3.zero;
-            bm.EnemyActors[0].transform.position = Vector3.right * 10;
-            bm.EnemyActors[0].PlayAnimation("Idle");
-
-            StartCoroutine(uiManager.TypeTextMiddleLetterByLetter(line, () =>
+            SoundManager.instance.FadeOutMusic();
+            UIManager.instance.Fade(true, () =>
             {
-                StartCoroutine(uiManager.FadeMiddleText(1));
-                CameraManager.instance.SlowTrack = false;
-                bm.SetupBattleWithEnemies(GetActorsForFloor());
-            }));
-
+                var battle = StoryBattles[currentFloor - 1];
+                GameFlowManager.instance.EnterBattle(battle);
+            });
         }
 
         public List<ActorData> GetActorsForFloor()

@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Battle.Manager;
 using Assets.Scripts.Crawler;
+using Assets.Scripts.Game;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -32,7 +33,7 @@ namespace Assets.Scripts.Save
 
         public void SaveToSlot(int slot)
         {
-            var actor = BattleManager.instance.PlayerActors[0];
+            var actor = GameFlowManager.instance.playerActor;
             var saveData = new SaveData
             {
                 currentFloor = FloorManager.instance.currentFloor,
@@ -58,8 +59,19 @@ namespace Assets.Scripts.Save
             File.WriteAllText(GetSlotPath(slot), json);
         }
 
+        public void DeleteSave(int slot)
+        {
+            string path = GetSlotPath(slot);
+
+            if (File.Exists(path))
+            {
+                File.Delete(GetSlotPath(slot));
+            }
+        }
+
         public SaveData LoadGame(int slot)
         {
+            currentSaveSlot = slot;
             string path = GetSlotPath(slot);
 
             if (!File.Exists(path))

@@ -12,13 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e110cd302acb85459812d80addcbd30, type: 3}
   m_Name: Boxer
   m_EditorClassIdentifier: 
+  guid: aa59e95a0c89e09478c2c950ba11a89a
   Name: Boxer
   hpBars:
-  - maxHp: 8
+  - _currentHp: 0
+    maxHp: 8
     alive: 0
-  - maxHp: 8
+  - _currentHp: 0
+    maxHp: 8
     alive: 0
-  - maxHp: 8
+  - _currentHp: 0
+    maxHp: 8
     alive: 0
   maxBuildup: 30
   maxPosture: 30
@@ -33,14 +37,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3f869f152f955e64e9475dcf2c667237, type: 2}
   - {fileID: 11400000, guid: 3aa89802a1ec30d48b32f497ba10ce82, type: 2}
   - {fileID: 11400000, guid: e1dd5f1ba77a8a147ada505d02ffc4f1, type: 2}
-  baseReactions: []
-  basePassives: []
   actions:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  reactions: []
   currentBuildup: 0
   currentPosture: 30
   currentStamina: 0

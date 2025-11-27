@@ -1,14 +1,14 @@
-﻿using System;
-using Assets.Scripts.Battle.Actions;
+﻿using Assets.Scripts.Battle.Actions;
 using Assets.Scripts.Battle.Actor.AI;
 using Assets.Scripts.Battle.Actor.States;
 using Assets.Scripts.Battle.Actor.Systems;
 using Assets.Scripts.Battle.Components.Audio;
 using Assets.Scripts.Battle.Components.Effects;
 using Assets.Scripts.Battle.Components.Status;
+using Assets.Scripts.Battle.Manager;
 using Assets.Scripts.Utility;
+using System;
 using UnityEngine;
-using static UnityEngine.UI.GridLayoutGroup;
 
 namespace Assets.Scripts.Battle.Actor
 {
@@ -25,6 +25,7 @@ namespace Assets.Scripts.Battle.Actor
         public AIBT ai; //ai
         public TargetingSystem target; //this needs to be reworked? we should calculate this kind of stuff on demand?
         public MovementSystem movement; //what is tihs?
+        public ActorInventory inventory;
 
         //Delegates
         public delegate float DamageValue(float damage);
@@ -50,7 +51,7 @@ namespace Assets.Scripts.Battle.Actor
         public bool CanRegenPosture = true;
         public float PostureRegenCooldownDelay = 1f;
         public float StaminaRegenRate = 1.0f;
-        public bool isControllable { get { return ActorData.Controllable; } private set { }}
+        public bool isControllable { get { return ActorData.Controllable; } private set { } }
 
         // Public methods
         public void Awake()
@@ -63,21 +64,27 @@ namespace Assets.Scripts.Battle.Actor
             effects = new EffectManager(this);
             target = new TargetingSystem(this); //this too subscribe
             movement = new MovementSystem(this); //this too subscribe???
-
+            inventory = new ActorInventory(this);
         }
 
         public void Start()
         {
             if (ActorData != null)
-            ActorData.Reset();
+            {
+                ActorData.Reset();
+                foreach (var item in ActorData.items)
+                    inventory.AddItem(item);
+            }
             ai = new AIBT(this); //this too subscribe
-            state.Initialize<IdleState>();
+            state.Initialize<InactiveState>();
             effects.SetColors();
         }
 
         public void Update()
         {
-             StaminaRegen();
+            if (BattleManager.instance.enabled == false) return;
+
+            StaminaRegen();
             PostureRegen();
             UpdateActionCooldowns();
 
@@ -90,10 +97,11 @@ namespace Assets.Scripts.Battle.Actor
         public void Init()
         {
             effects.SetColors();
+            //Do other one time things when spawning
         }
 
 
-        public void UseAction(BaseAction action, Action onActionComplete) 
+        public void UseAction(BaseAction action, Action onActionComplete)
         {
             if (isControllable)
                 UIManager.instance.ResetMeter();
@@ -113,6 +121,10 @@ namespace Assets.Scripts.Battle.Actor
 
             DamageApplied?.Invoke(postMitgationDamage);
             ActorData.DealDamage(postMitgationDamage);
+            if (ActorData.isDead())
+            {
+                CameraManager.instance.SlowTrack = true;
+            }
             if (isControllable) UIManager.instance.GainMeter(0.5f);
         }
 
@@ -157,7 +169,7 @@ namespace Assets.Scripts.Battle.Actor
                     postMitigationForce = KnockbackRecieved(force, direction);
                 }
 
-                if(!ActorData.isDead())
+                if (!ActorData.isDead())
                 {
                     if (!state.IsStaggered())
                         direction.y = 0;
@@ -200,7 +212,7 @@ namespace Assets.Scripts.Battle.Actor
             }
             //Debug.Log(ActorData.Name + " NOT GROUNDED");
             return false; // The object is not grounded
-        } 
+        }
         public bool grounded { get { return IsGrounded(); } private set { } }
         public Animator GetAnimator()
         {
@@ -244,8 +256,8 @@ namespace Assets.Scripts.Battle.Actor
             if (state != null)
                 state.OnCollisionEnter(collision);
         }
-        
-        
+
+
         // Public components
         public Rigidbody Rb { get; set; }
     }

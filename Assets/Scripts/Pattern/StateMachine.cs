@@ -19,6 +19,11 @@ namespace Assets.Scripts.Pattern
             stateChanged?.Invoke(state);
         }
 
+        public void Reset()
+        {
+            CurrentState = null;
+        }
+
         public void TransitionTo(IState nextState)
         {
             if (CurrentState == nextState) return;

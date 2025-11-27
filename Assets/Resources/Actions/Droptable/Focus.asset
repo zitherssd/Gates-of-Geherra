@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5a2e800b20efe647a3894bd700a7333, type: 3}
   m_Name: Focus
   m_EditorClassIdentifier: 
+  guid: 2777e9bab12011c4c9e72a69350dbe16
   Type: 0
   Name: Focus
   Rarity: 0
@@ -57,6 +58,7 @@ MonoBehaviour:
         MeterGainValue: 10
     - rid: 6357900109471809538
       type: {class: FaceClosestEnemy, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      data: 
     - rid: 6357900109471809539
       type: {class: StaminaHealEffect, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
       data:

@@ -1,5 +1,8 @@
 -add ninja shuriken thrower or archer oribit behaviour type enemy range
--make camera move less
+
+ActionUIController;
+LoadoutUIController;
+
 
 late spring edition
 hide ui when battle is over

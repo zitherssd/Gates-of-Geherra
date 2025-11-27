@@ -117,7 +117,7 @@ namespace Assets.Scripts.Utility
                 else
                 {
                     float distance = Vector3.Distance(transform.position, targetpos);
-                    float speed = Mathf.Lerp(0.03f, 6f, distance / 10f);
+                    float speed = Mathf.Lerp(0.02f, 12f, distance / 25f);
                     // small distance → slow, big distance → fast
 
                     transform.position = Vector3.MoveTowards(
@@ -163,7 +163,7 @@ namespace Assets.Scripts.Utility
                     Time.unscaledDeltaTime * directionalLightRotationSpeed
                 );
 
-                directionalLight.transform.rotation = Quaternion.Euler(0f, newY, 0f);
+                directionalLight.transform.rotation = Quaternion.Euler(0.5f, newY, 0f);
             }
 
         }

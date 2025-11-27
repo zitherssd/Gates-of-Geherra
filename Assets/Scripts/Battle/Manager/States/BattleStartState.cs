@@ -1,4 +1,6 @@
-﻿using Assets.Scripts.Pattern;
+﻿using Assets.Scripts.Battle.Actions.Actions.Effects;
+using Assets.Scripts.Battle.Actor.States;
+using Assets.Scripts.Pattern;
 using Assets.Scripts.Utility;
 using System;
 using System.Collections.Generic;
@@ -20,6 +22,10 @@ namespace Assets.Scripts.Battle.Manager.States
         }
         public void Enter()
         {
+            foreach (var enemy in manager.EnemyActors)
+            {
+                enemy.state.TransitionTo<IdleState>();
+            }
             UIManager.instance.EnableUI();
             OnNewBattle?.Invoke();
             ItemEventBus.Raise(ItemTrigger.OnNewBattle);

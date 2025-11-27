@@ -30,5 +30,10 @@ namespace Assets.Scripts.Battle.Actions.Actions.Effects
         public List<Actor.Actor> CheckEnemiesInsideHitbox(Actor.Actor casterActor);
     }
 
+    public interface IItemEffect
+    {
+        void Eval(Actor.Actor owner);
+    }
+
 }
 

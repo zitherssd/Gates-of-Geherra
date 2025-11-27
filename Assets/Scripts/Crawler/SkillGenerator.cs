@@ -3,6 +3,7 @@ using System.Linq;
 using Assets.Scripts.Battle;
 using Assets.Scripts.Battle.Actions;
 using Assets.Scripts.Battle.Manager;
+using Assets.Scripts.Game;
 using Assets.Scripts.UI;
 using UnityEngine;
 using UnityEngine.UI;
@@ -71,13 +72,11 @@ namespace Assets.Scripts.Crawler
                 UICard.GetComponent<Button>().onClick.AddListener(() =>
                 {
                     BattleManager.instance.PlayerActors[0].ActorData.actions.Add(handler.ReferencedAction);
-                    UIManager.instance.CreatePlayerActionButtonPrefab(handler.ReferencedAction);
+                    UIManager.instance.InitializePlayerActionButtonPrefabs(GameFlowManager.instance.playerActor.ActorData.actions);
 
                     // Destroy all skill cards after selection
                     foreach (Transform child in parent)
                     {
-                        var cardHandler = child.GetComponent<ActionCardHandler>();
-                        if (cardHandler.ReferencedAction != handler.ReferencedAction) Destroy(cardHandler.ReferencedAction);
                         Destroy(child.gameObject);
                     }
 

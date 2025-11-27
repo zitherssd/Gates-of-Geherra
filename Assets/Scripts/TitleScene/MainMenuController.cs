@@ -1,3 +1,4 @@
+using Assets.Scripts;
 using Assets.Scripts.Battle.Actor;
 using Assets.Scripts.Save;
 using System.Collections;
@@ -13,44 +14,15 @@ public class MainMenuController : MonoBehaviour
     public Image titleScreenImage;
     public Button StartButton;
     public Button SandboxButton;
-    public Button[] Slots ;
 
 
     public void Start()
     {
-        Slots = transform.GetComponentsInChildren<Button>();
         LeanTween.move(titleScreenImage.rectTransform, Vector3.up * -170, 3.5f).setEaseInOutSine().setOnComplete(() =>
         {
             StartButton.gameObject.SetActive(true);
             SandboxButton.gameObject.SetActive(true);
         });
-
-        foreach (var item in Slots)
-        {
-            var text = item.GetComponentInChildren<TextMeshPro>();
-
-            //If save is empty in that slot set item.
-            //text.text = "Empty";
-            //text.fontStyle = FontStyles.Italic;
-
-            //item.onClick += SaveInSlot(slotIndex);
-        }
-    }
-
-    public void StartGame(int slot)
-    {
-        SceneManager.LoadScene("DebugScene");
-        SaveManager.instance.currentSaveSlot = slot;
-
-        if (SaveManager.instance.SlotExists(slot))
-        {
-            var save = SaveManager.instance.LoadFromSlot(slot);
-            ActorSave.LoadActorFromSave(save.player, SaveManager.instance.actionDatabase);
-        }
-        else
-        {
-            SaveManager.instance.SaveToSlot(slot);
-        }
     }
 
     public void StartFight()

@@ -12,11 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e110cd302acb85459812d80addcbd30, type: 3}
   m_Name: MC_Sandbox
   m_EditorClassIdentifier: 
+  guid: 46b7b8aa19f49c14ab391c2fb27c17ba
   Name: Player
   hpBars:
-  - maxHp: 10
+  - _currentHp: 0
+    maxHp: 10
     alive: 1
-  - maxHp: 10
+  - _currentHp: 0
+    maxHp: 10
     alive: 1
   maxBuildup: 50
   maxPosture: 25
@@ -25,6 +28,7 @@ MonoBehaviour:
   AIRuleset: 0
   mainColor: {r: 0, g: 0, b: 0, a: 0}
   secondaryColor: {r: 0.6845144, g: 0.8207547, b: 0.2748754, a: 1}
+  startingItems: []
   baseActions:
   - {fileID: 11400000, guid: 498ba4be69212c045ad9de12e867357c, type: 2}
   - {fileID: 11400000, guid: d71b702805a26db45a66daff55b696d2, type: 2}
@@ -35,7 +39,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 73d11a4d079983942bb6c9479b47c2c2, type: 2}
   - {fileID: 11400000, guid: 37e5b136dca9c114ab3b7b61a6b3c714, type: 2}
   - {fileID: 11400000, guid: 7a9771d855ce02343aea8b6afd56e150, type: 2}
-  basePassives: []
   actions:
   - {fileID: 0}
   - {fileID: 0}
@@ -46,6 +49,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  items: []
   currentBuildup: 0
   currentPosture: 25
   currentStamina: 50

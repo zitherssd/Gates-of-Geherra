@@ -176,48 +176,28 @@ namespace Assets.Scripts
             StartCoroutine(StarEffectEnd());
         }
 
-        public void ChangeStatus(string status)
-        {
-            MiddleTextbox.text = status;
-        }
-
-        public void AddToStoneSlab(string textToAdd)
-        {
-            var previous = StoneSlab.text;
-            StoneSlab.text = textToAdd + Environment.NewLine;
-            StoneSlab.text += previous;
-        }
-
-        public void MoveActionsToBattleActionContainers()
-        {
-            foreach(var action in PlayerActions)
-            {
-                if (action.GetComponent<ActionButtonHandler>().referencedAction is AttackSkill or ProjectileAttack)
-                    action.transform.SetParent(SkillHolder.transform);
-                else
-                    action.transform.SetParent(ActionsHolder.transform);
-                action.transform.localPosition = Vector3.zero;
-            }
-            LeanTween.scale(ActionsHolder, Vector3.one, 0.2f).setEaseOutCubic().setIgnoreTimeScale(true);
-            LeanTween.scale(SkillHolder, Vector3.one, 0.2f).setEaseOutCubic().setIgnoreTimeScale(true);
-
-        }
-
         public void InitializePlayerActionButtonPrefabs(List <BaseAction> ActionsToInitialize)
         {
+            var actions = new List<BaseAction>(ActionsToInitialize);
             //Destory exiting actions
             foreach (GameObject child in PlayerActions)
             {
                 Destroy(child.gameObject);
             }
+            PlayerActions.Clear();
+
 
             //Create new prefabs for exiting actions
             var handlers = new List<ActionButtonHandler>();
-            for(int i = 0; i < ActionsToInitialize.Count; i++)
+            for(int i = 0; i < actions.Count; i++)
             {
                 GameObject ActionButtonGameobject = Instantiate(buttonPrefab, Vector3.zero, Quaternion.identity);
                 ActionButtonGameobject.GetComponent<ActionButtonHandler>().Init(ActionsToInitialize[i]);
                 PlayerActions.Add(ActionButtonGameobject);
+                if (ActionsToInitialize[i] is AttackSkill || ActionsToInitialize[i] is ProjectileAttack)
+                    ActionButtonGameobject.transform.SetParent(SkillHolder.transform);
+                else
+                    ActionButtonGameobject.transform.SetParent(ActionsHolder.transform);
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Battle.Actions;
 using Assets.Scripts.Battle.Actor;
+using Assets.Scripts.Battle.Items;
 using Assets.Scripts.Battle.Manager;
 using Assets.Scripts.Utility;
 using System;
@@ -17,6 +18,11 @@ namespace Assets.Scripts.Save
         public int currentFloor;
         public int silver;
         public ActorSave player;
+
+        public void LoadActor(Actor actorToOverwrite)
+        {
+            ActorSave.LoadActorFromSave(player, actorToOverwrite);
+        }
     }
 
 
@@ -30,6 +36,7 @@ namespace Assets.Scripts.Save
         public float maxPosture;
         public float maxStamina;
         public List<string> actionsIds;
+        public List<BaseItem> items;
 
         public float currentStamina;
         public float currentPosture;
@@ -55,6 +62,7 @@ namespace Assets.Scripts.Save
 
             save.actorId = ad.guid;
             save.Name = ad.Name;
+            save.items = actor.ActorData.items;
 
             save.currentStamina = ad.currentStamina;
             save.currentBuildup = ad.currentBuildup;
@@ -85,14 +93,17 @@ namespace Assets.Scripts.Save
 
             return save;
         }
-        public static void LoadActorFromSave( ActorSave save,  ActionDatabase actionDb)
+        public static void LoadActorFromSave(ActorSave save, Actor actorToOverwrite)
         {
+            var actionDb = SaveManager.instance.actionDatabase;
             // You can rewrite this to your own spawning system
-            Actor actor = BattleManager.instance.PlayerActors[0];
+            Actor actor = actorToOverwrite;
 
             ActorData ad = actor.ActorData;
 
             ad.Name = save.Name;
+
+            ad.items = save.items;
 
             ad.currentStamina = save.currentStamina;
             ad.currentBuildup = save.currentBuildup;
@@ -123,7 +134,6 @@ namespace Assets.Scripts.Save
                 BaseAction clone = UnityEngine.Object.Instantiate(template);
                 ad.actions.Add(clone);
             }
-
         }
 
     }

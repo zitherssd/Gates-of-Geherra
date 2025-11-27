@@ -26,15 +26,7 @@ namespace Assets.Scripts.Battle.Actor.States
                 this.duration = duration;
             return this;
         }
-        private void DeathCheck()
-        {
-            if (actor.ActorData.isDead())
-            {
-                actor.state.TransitionTo<DeathState>();
-                BattleManager.instance.End();
-                return;
-            }
-        }
+
         public void Enter()
         {
             OnStaggerStateEntered?.Invoke(duration);

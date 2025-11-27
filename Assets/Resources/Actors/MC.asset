@@ -20,7 +20,7 @@ MonoBehaviour:
     alive: 1
   - _currentHp: 10
     maxHp: 10
-    alive: 0
+    alive: 1
   maxBuildup: 50
   maxPosture: 25
   maxStamina: 50
@@ -28,6 +28,8 @@ MonoBehaviour:
   AIRuleset: 0
   mainColor: {r: 0, g: 0, b: 0, a: 0}
   secondaryColor: {r: 0.6845144, g: 0.8207547, b: 0.2748754, a: 1}
+  startingItems:
+  - {fileID: 11400000, guid: 662939d5a83c6484aaf6ff0e131d38b7, type: 2}
   baseActions:
   - {fileID: 11400000, guid: 498ba4be69212c045ad9de12e867357c, type: 2}
   - {fileID: 11400000, guid: d71b702805a26db45a66daff55b696d2, type: 2}
@@ -44,11 +46,11 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  items:
+  - {fileID: 11400000, guid: 662939d5a83c6484aaf6ff0e131d38b7, type: 2}
   currentBuildup: 0
   currentPosture: 25
-  currentStamina: 2.2593899
+  currentStamina: 50
   postureRegenRate: 1
   staminaRegenRate: 2
   ATK: 1

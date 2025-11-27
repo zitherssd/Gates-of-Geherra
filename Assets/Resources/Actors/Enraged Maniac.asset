@@ -12,11 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e110cd302acb85459812d80addcbd30, type: 3}
   m_Name: Enraged Maniac
   m_EditorClassIdentifier: 
+  guid: 7b1857963b332e64b87b7f2be2c368a7
   Name: Enraged Maniac
   hpBars:
-  - maxHp: 8
+  - _currentHp: 0
+    maxHp: 8
     alive: 1
-  - maxHp: 8
+  - _currentHp: 0
+    maxHp: 8
     alive: 1
   maxBuildup: 30
   maxPosture: 18
@@ -30,16 +33,13 @@ MonoBehaviour:
   - {fileID: 11400000, guid: aae9dbed006f82f4086140a65bee5c06, type: 2}
   - {fileID: 11400000, guid: 5b9d2d0224c0bfa418627da8e495eadc, type: 2}
   - {fileID: 11400000, guid: eb94d8da9dbb0de4f9022395c5c28ce9, type: 2}
-  baseReactions: []
-  basePassives: []
   actions:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  reactions: []
-  currentBuildup: 19.5
-  currentPosture: 11
+  currentBuildup: 0
+  currentPosture: 18
   currentStamina: 23.712652
   postureRegenRate: 1
   staminaRegenRate: 0.35

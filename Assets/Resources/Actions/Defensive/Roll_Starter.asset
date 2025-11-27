@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29bf3ed8153f62c41a58d7707b5ac266, type: 3}
   m_Name: Roll_Starter
   m_EditorClassIdentifier: 
+  guid: aae9dbed006f82f4086140a65bee5c06
   Type: 1
   Name: Roll
   Rarity: 0
@@ -28,10 +29,11 @@ MonoBehaviour:
   currentCooldownTimer: 0
   StickMult: 1
   SlowdownMeterGain: 0.75
+  SlowdownMeterGainOnEnd: 0
   SlowDownMeterGainOnPress: 1.5
   SlowdownMeterGainOnRelease: 0
   Animation: 13
   force: 3.2
   recoveryTimeMult: 0.8
   windupTimeMult: 1.4
-  friction: 2.5
+  friction: 3.5

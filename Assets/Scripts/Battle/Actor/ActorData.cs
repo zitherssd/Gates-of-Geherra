@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.Battle.Actions;
 using Assets.Scripts.Battle.Actor.AI;
+using Assets.Scripts.Battle.Items;
 using Assets.Scripts.Utility;
 using UnityEngine;
 
@@ -25,9 +26,13 @@ namespace Assets.Scripts.Battle.Actor
         public Color mainColor;
         public Color secondaryColor;
 
+
+        public List<BaseItem> startingItems;
         public List<BaseAction> baseActions;
         [HideInInspector]
         public List<BaseAction> actions;
+        [HideInInspector]
+        public List<BaseItem> items;
 
         [HideInInspector]
         public float currentBuildup;
@@ -169,6 +174,13 @@ namespace Assets.Scripts.Battle.Actor
             {
                 var clone = Instantiate(skill);
                 actions.Add(clone);
+            }
+            items = new List<BaseItem>();
+            foreach (var item in startingItems)
+            {
+                // Items do NOT need Instantiate unless they hold state
+                // So we add the SO directly
+                items.Add(item);
             }
         }
     }

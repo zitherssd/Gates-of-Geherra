@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e110cd302acb85459812d80addcbd30, type: 3}
   m_Name: Shuriken Thrower
   m_EditorClassIdentifier: 
+  guid: 673d60f927db261469da60afc4701909
   Name: Shuriken Thrower
   hpBars:
-  - maxHp: 8
+  - _currentHp: 0
+    maxHp: 8
     alive: 1
   maxBuildup: 0
   maxPosture: 10
@@ -23,6 +25,7 @@ MonoBehaviour:
   AIRuleset: 5
   mainColor: {r: 0.5660378, g: 0.509968, b: 0.38714847, a: 1}
   secondaryColor: {r: 0.5283019, g: 0.102171585, b: 0.102171585, a: 1}
+  startingItems: []
   baseActions:
   - {fileID: 11400000, guid: eb94d8da9dbb0de4f9022395c5c28ce9, type: 2}
   - {fileID: 11400000, guid: 0d03492e6647eeb4890fb05191b5a3c8, type: 2}
@@ -32,6 +35,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  items: []
   currentBuildup: 0
   currentPosture: 10
   currentStamina: 100

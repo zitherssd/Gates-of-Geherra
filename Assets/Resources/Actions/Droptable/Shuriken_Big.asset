@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f9a88c6dedee5a41b8b98d873cf66ed, type: 3}
   m_Name: Shuriken_Big
   m_EditorClassIdentifier: 
+  guid: f16ffd28d0060b64bab67118ca889777
   Type: 0
   Name: Big Shuriken
   Rarity: 0

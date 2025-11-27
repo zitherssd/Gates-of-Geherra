@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f9a88c6dedee5a41b8b98d873cf66ed, type: 3}
   m_Name: Fireball
   m_EditorClassIdentifier: 
+  guid: 73d11a4d079983942bb6c9479b47c2c2
   Type: 0
   Name: Fire bullet
   Rarity: 0

@@ -41,6 +41,7 @@ namespace Assets.Scripts.Battle.Actor
             actor = GetComponent<Actor>();
 
             RegisterState(new IdleState(actor));
+            RegisterState(new InactiveState(actor));
             RegisterState(new FumbleState(actor));
             RegisterState(new AirStaggerState(actor));
             RegisterState(new AirNeutralState(actor));
