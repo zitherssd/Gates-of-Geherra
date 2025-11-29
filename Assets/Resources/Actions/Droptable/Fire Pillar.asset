@@ -17,10 +17,10 @@ MonoBehaviour:
   Name: Pillar of Fire
   Rarity: 1
   Description: Fire AOE Attack extra spicy
-  CooldownTimer: 25
+  CooldownTimer: 15
   TotalUses: 2
   remainingUses: 0
-  BuildupCost: 2
+  BuildupCost: 22
   BuildupGain: 0
   StaminaCost: 8
   Speed: 0

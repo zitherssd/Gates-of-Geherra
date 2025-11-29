@@ -17,8 +17,8 @@ MonoBehaviour:
   Name: Fire Breath
   Rarity: 1
   Description: Sasuke!!!1!
-  CooldownTimer: 5
-  TotalUses: 2
+  CooldownTimer: 25
+  TotalUses: 0
   remainingUses: 0
   BuildupCost: 25
   BuildupGain: 0
