@@ -42,6 +42,7 @@ namespace Assets.Scripts.Battle.Manager.States
                     UIManager.instance.DisableBattleSkills();
 
                     if (SaveManager.instance != null)
+
                     {
                         SaveManager.instance.SaveToSlot(SaveManager.instance.currentSaveSlot);
                     }

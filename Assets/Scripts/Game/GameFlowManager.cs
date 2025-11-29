@@ -37,6 +37,7 @@ namespace Assets.Scripts.Game
             //Now that player is loaded we go to rest
             SetMode(GameMode.RestArea);
             UIManager.instance.InitializePlayerActionButtonPrefabs(playerActor.ActorData.actions);
+            UIManager.instance.DisableBattleSkills();
         }
 
         public GameMode Mode { get; private set; }

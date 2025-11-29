@@ -50,7 +50,6 @@ namespace Assets.Scripts.Utility
         {
             playerTransform = BattleManager.instance.PlayerActors[0].transform;
             playerActor = BattleManager.instance.PlayerActors[0];
-            enemyTransform = BattleManager.instance.EnemyActors[0].transform;
             camera = gameObject.GetComponent<Camera>();
 
         }
