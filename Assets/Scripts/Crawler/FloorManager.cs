@@ -34,12 +34,24 @@ namespace Assets.Scripts.Crawler
 
         public void ProgressToNextFloor()
         {
+            ItemEventBus.Raise(ItemTrigger.OnNewFloor);
             SoundManager.instance.PlaySE("Gong");
             currentFloor++;
             SoundManager.instance.FadeOutMusic();
             UIManager.instance.Fade(true, () =>
             {
                 var battle = StoryBattles[currentFloor - 1];
+                GameFlowManager.instance.EnterBattle(battle);
+            });
+        }
+
+        public void QuickFight()
+        {
+            SoundManager.instance.PlaySE("Gong");
+            SoundManager.instance.FadeOutMusic();
+            UIManager.instance.Fade(true, () =>
+            {
+                var battle = RandomBattles[UnityEngine.Random.Range(0, RandomBattles.Count)];
                 GameFlowManager.instance.EnterBattle(battle);
             });
         }

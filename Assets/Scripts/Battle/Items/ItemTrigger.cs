@@ -5,8 +5,9 @@ public enum ItemTrigger
 {
     OnNewFloor,
     OnNewBattle,
-    OnHpBarLost,
+    OnHpBarBroken,
     OnDamageDealt,
+    OnDamageTaken,
 }
 
 public class ItemEventArgs

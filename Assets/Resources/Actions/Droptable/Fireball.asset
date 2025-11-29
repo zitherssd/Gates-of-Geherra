@@ -20,7 +20,7 @@ MonoBehaviour:
   CooldownTimer: 2
   TotalUses: 2
   remainingUses: 0
-  BuildupCost: 0
+  BuildupCost: 15
   BuildupGain: 0
   StaminaCost: 5
   Speed: 0

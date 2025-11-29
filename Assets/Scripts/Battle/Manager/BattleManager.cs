@@ -27,11 +27,12 @@ namespace Assets.Scripts.Battle.Manager
         [SerializeField] public List<Actor.Actor> EnemyActors;
         [SerializeField] private GameObject SpawnerParent;
 
+
         private Queue<Actor.Actor> turnQueue = new Queue<Actor.Actor>();
 
         private bool repeatTurn;
         private uint currentTurn;
-
+        private BattleDefinition battleDefinition;
 
         private void Awake()
         {
@@ -42,10 +43,17 @@ namespace Assets.Scripts.Battle.Manager
 
 
 
-
+        internal BattleDefinition GetCurrentBattleDefinition()
+        {
+            if(battleDefinition == null)
+                throw new Exception("No current battle definition set in BattleManager");
+            else
+                return battleDefinition;
+        }
 
         public void Enter(BattleDefinition battleDefinition)
         {
+            this.battleDefinition = battleDefinition;
             //Should assume that screen is black/fadeimage is active
             var player = GameFlowManager.instance.playerActor;
             player.transform.position = battleDefinition.playerStartPosition;

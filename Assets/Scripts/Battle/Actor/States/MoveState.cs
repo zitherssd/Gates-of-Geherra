@@ -85,11 +85,14 @@ namespace Assets.Scripts.Battle.Actor.States
                     animator.speed = actor.movement.speed;
                     if (animator.speed > 1) animator.speed = StaticHelpers.LinearMap(animator.speed, 1, 10, 1, 4);
                     //actor.movement.ChangeSpeed((action.Direction.normalized) * (1 + actor.ActorData.AGI/10) * timer);
-                    actor.movement.MoveTowardTarget(action.Direction + actor.transform.position, 2f * timer, 1 + (float)actor.ActorData.AGI / 10);
+                    //actor.movement.MoveTowardTarget(action.Direction + actor.transform.position, 2f * timer, 1 + (float)actor.ActorData.AGI / 10);
+                    actor.movement.MoveInDirection(action.Direction, 2f * timer, 1 + (float)actor.ActorData.AGI / 10);
+
                 }
                 else
                     //actor.movement.ChangeSpeed((action.Direction) * (1 + actor.ActorData.AGI/10));
-                    actor.movement.MoveTowardTarget(action.Direction + actor.transform.position, 2f, 1 + (float)actor.ActorData.AGI / 10);
+                    //actor.movement.MoveTowardTarget(action.Direction + actor.transform.position, 2f, 1 + (float)actor.ActorData.AGI / 10);
+                    actor.movement.MoveInDirection(action.Direction, 2f, 1 + (float)actor.ActorData.AGI / 10);
                 //Show guide and store Direction in skill;
                 //guide.transform.position = player.transform.position + GetRelativeToCamera(deltaScaled * referencedAction.StickMult);
                 //referencedAction.Direction = GetRelativeToCamera(deltaScaled);

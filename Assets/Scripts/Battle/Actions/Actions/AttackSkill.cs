@@ -70,13 +70,6 @@ namespace Assets.Scripts.Battle.Actions.Skills
             else
                 casterActor.ActorData.ChangeBuildup(BuildupGainOnHit);
 
-            //Apply posture
-            if (PostureDamage > 0)
-            {
-                targetActor.ApplyPosture(PostureDamage);
-
-            }
-
             // Apply Damage
             var damage = Damage + casterActor.ActorData.ATK - targetActor.ActorData.DEF;
             if (damage > 0)
@@ -84,6 +77,13 @@ namespace Assets.Scripts.Battle.Actions.Skills
                 var hitstop = StaticHelpers.LinearMap(damage, 0.2f, 15, 0.083f, 0.420f);
                 targetActor.ApplyDamage(damage);
             };
+
+            //Apply posture
+            if (PostureDamage > 0)
+            {
+                targetActor.ApplyPosture(PostureDamage);
+
+            }
 
             // Apply Knockback
             if (KnockbackForce > 0)
@@ -139,7 +139,6 @@ namespace Assets.Scripts.Battle.Actions.Skills
                 else
                     return false;
             }
-            Debug.Log(invalidReason);
             return false;
         }
 
@@ -183,6 +182,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
 
         public enum STATE { uninitialized, windup, recovery };
 
+
         private List<Actor.Actor> CheckEnemiesInsideHitbox()
         {
             // Transform hitbox points to world space based on caster's position and orientation
@@ -209,8 +209,11 @@ namespace Assets.Scripts.Battle.Actions.Skills
                 // Check if the center of the capsule is inside
                 if (Intersections.IsPointInsidePolygon(enemyPosition, transformedPoints))
                 {
-                    validActors.Add(enemy);
-                    continue;
+                    if (!enemy.state.IsKnockedDown())
+                    {
+                        validActors.Add(enemy);
+                        continue;
+                    }
                 }
                 float capsuleRadius = enemy.GetComponent<CapsuleCollider>().radius;
 

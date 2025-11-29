@@ -19,7 +19,6 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
 
         public override NodeState Execute(AIBT ai, Actor actor)
         {
-            Debug.Log("Executing PlayerCloserThan");
             if (actor.target.DistanceToClosestEnemy < maximumDistance)
             {
                     return NodeState.Sucess;

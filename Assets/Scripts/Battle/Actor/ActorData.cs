@@ -142,7 +142,7 @@ namespace Assets.Scripts.Battle.Actor
             Refresh();
         }
 
-        private void HealAllBars()
+        public void HealAllBars()
         {
             foreach (var hpbar in hpBars)
             {
@@ -151,7 +151,7 @@ namespace Assets.Scripts.Battle.Actor
             }
         }
 
-        private void HealAllAliveBars()
+        public void HealAllAliveBars()
         {
             foreach (var hpBar in hpBars)
                 if (hpBar.alive) hpBar.currentHp = hpBar.maxHp;
@@ -162,7 +162,6 @@ namespace Assets.Scripts.Battle.Actor
             currentBuildup = 0;
             currentPosture = maxPosture;
             currentStamina = maxStamina;
-            HealAllAliveBars();
             foreach (var action in actions)
                 action.Refresh();
         }

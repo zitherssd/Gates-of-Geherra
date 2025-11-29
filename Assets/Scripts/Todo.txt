@@ -3,6 +3,9 @@
 ActionUIController;
 LoadoutUIController;
 
+-Make UI for Items
+-Save slots of actions
+
 
 late spring edition
 hide ui when battle is over

@@ -16,13 +16,13 @@ MonoBehaviour:
   Type: 1
   Name: Pillar of Fire
   Rarity: 1
-  Description: Naruto!@!!
+  Description: Fire AOE Attack extra spicy
   CooldownTimer: 25
   TotalUses: 2
   remainingUses: 0
   BuildupCost: 2
   BuildupGain: 0
-  StaminaCost: 0
+  StaminaCost: 8
   Speed: 0
   Tags: 
   Direction: {x: 0, y: 0, z: 0}
@@ -86,6 +86,7 @@ MonoBehaviour:
         AutoGetHitbox: 1
     - rid: 6357899952368123906
       type: {class: ClearHitbox, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      data: 
     - rid: 6357899973538611203
       type: {class: PlayParticleEffect, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
       data:

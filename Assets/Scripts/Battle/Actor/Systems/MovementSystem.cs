@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.AI;
 
 namespace Assets.Scripts.Battle.Actor.Systems
 {
@@ -12,11 +13,14 @@ namespace Assets.Scripts.Battle.Actor.Systems
         public bool ApplyForces;
         public bool ApplyGravity;
         public float speed { get { return rigidbody.velocity.magnitude; } }
-        
+        public NavMeshAgent agent;
 
         public MovementSystem(Actor actor)
         {
             this.actor = actor;
+            agent = actor.GetComponent<NavMeshAgent>();
+            agent.updatePosition = false;
+            agent.updateRotation = false;
             collider = actor.GetComponent<Collider>();
             rigidbody = actor.GetComponent<Rigidbody>();
             if (collider.material == null)
@@ -33,7 +37,7 @@ namespace Assets.Scripts.Battle.Actor.Systems
             // Set initial friction values
             physicMaterial.dynamicFriction = 0.5f;
             physicMaterial.staticFriction = 0;
-            physicMaterial.frictionCombine = PhysicMaterialCombine.Minimum;
+            physicMaterial.frictionCombine = PhysicMaterialCombine.Multiply;
         }
 
         public void FaceDirection(Vector3 direction)
@@ -52,6 +56,7 @@ namespace Assets.Scripts.Battle.Actor.Systems
             lookrotation.y = 0;
            actor.transform.rotation = Quaternion.LookRotation(lookrotation, Vector3.up);
         }
+
         public void AddForceCapped(Vector3 force)
         {
             var currentMagnitude = rigidbody.velocity.magnitude;
@@ -88,6 +93,27 @@ namespace Assets.Scripts.Battle.Actor.Systems
 
             // Calculate the desired velocity (direction * max speed)
             Vector3 desiredVelocity = directionToTarget * maxSpeed;
+
+            // Smoothly interpolate the velocity (acceleration defines how quickly it adjusts)
+            Vector3 newVelocity = Vector3.Lerp(currentVelocity, desiredVelocity, acceleration * Time.fixedDeltaTime);
+
+            // Apply the new velocity
+            rigidbody.velocity = newVelocity;
+
+            // Face the direction of movement
+            if (newVelocity.magnitude > 0.01f)
+            {
+                FaceDirection(newVelocity.normalized);
+            }
+        }
+        public void MoveInDirection(Vector3 direction, float acceleration, float maxSpeed)
+        {
+            // Calculate the desired direction and velocity
+            // Get the current velocity
+            Vector3 currentVelocity = rigidbody.velocity;
+
+            // Calculate the desired velocity (direction * max speed)
+            Vector3 desiredVelocity = direction * maxSpeed;
 
             // Smoothly interpolate the velocity (acceleration defines how quickly it adjusts)
             Vector3 newVelocity = Vector3.Lerp(currentVelocity, desiredVelocity, acceleration * Time.fixedDeltaTime);

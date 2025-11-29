@@ -31,4 +31,13 @@ public static class ItemEventBus
         foreach (var (owner, effect) in listeners[trigger])
             effect.Eval(owner);   // <-- Run effect on the owner
     }
+
+    public static void Raise(ItemTrigger trigger, Actor specificOwner)
+    {
+        if (!listeners.ContainsKey(trigger)) return;
+
+        foreach (var (owner, effect) in listeners[trigger])
+            if (owner == specificOwner)   // <--- only fire for that actor
+                effect.Eval(owner);
+    }
 }

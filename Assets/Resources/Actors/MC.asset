@@ -18,7 +18,7 @@ MonoBehaviour:
   - _currentHp: 10
     maxHp: 10
     alive: 1
-  - _currentHp: 10
+  - _currentHp: 5
     maxHp: 10
     alive: 1
   maxBuildup: 50
@@ -46,11 +46,12 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
   items:
   - {fileID: 11400000, guid: 662939d5a83c6484aaf6ff0e131d38b7, type: 2}
-  currentBuildup: 0
+  currentBuildup: 18
   currentPosture: 25
-  currentStamina: 50
+  currentStamina: 20.770962
   postureRegenRate: 1
   staminaRegenRate: 2
   ATK: 1

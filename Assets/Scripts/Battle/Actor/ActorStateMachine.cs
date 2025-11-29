@@ -126,6 +126,13 @@ namespace Assets.Scripts.Battle.Actor
             else
                 return false;
         }
+        public bool IsKnockedDown()
+        {
+            if (Is<GettingUpState>())
+                return true;
+            else
+                return false;
+        }
         public bool IsAlive()
         {
             if (!Is<DeathState>())
@@ -195,7 +202,6 @@ namespace Assets.Scripts.Battle.Actor
             if (CurrentState == nextState)
                 return CurrentState as T;
 
-            Debug.Log($"[{actor.name}] Transitioning from {CurrentState?.GetType().Name} to {nextState.GetType().Name}");
 
             CurrentState.Exit();
             CurrentState = nextState;

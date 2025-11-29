@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Crawler;
+﻿using Assets.Scripts.Battle.Actions;
+using Assets.Scripts.Crawler;
 using Assets.Scripts.Game;
 using Assets.Scripts.Pattern;
 using Assets.Scripts.Save;
@@ -6,8 +7,6 @@ using Assets.Scripts.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Assets.Scripts.Battle.Manager.States
@@ -16,7 +15,7 @@ namespace Assets.Scripts.Battle.Manager.States
     {
         public BattleEndState(BattleManager manager)
         {
-                
+
         }
         public void Enter()
         {
@@ -24,7 +23,21 @@ namespace Assets.Scripts.Battle.Manager.States
             UIManager.instance.Fade(true, () =>
             {
                 UIManager.instance.HideUI();
-                SkillGenerator.instance.DrawSkillsFromSelectionAndWaitForSelection(SkillGenerator.instance.GetRandomActions(FloorManager.instance.currentFloor), () =>
+                var bd = BattleManager.instance.GetCurrentBattleDefinition();
+                if (bd.RewardPool != null && bd.RewardPool.Actions.Count > 2)
+                {
+                    SkillGenerator.instance.DrawSkillsFromSelectionAndWaitForSelection(Get3RandomFromRewardPool(bd.RewardPool.Actions), () =>
+                    {
+                        UIManager.instance.DisableBattleSkills();
+
+                        if (SaveManager.instance != null)
+                        {
+                            SaveManager.instance.SaveToSlot(SaveManager.instance.currentSaveSlot);
+                        }
+                        GameFlowManager.instance.SetMode(GameMode.RestArea);
+                    });
+                }
+                else
                 {
                     UIManager.instance.DisableBattleSkills();
 
@@ -33,8 +46,20 @@ namespace Assets.Scripts.Battle.Manager.States
                         SaveManager.instance.SaveToSlot(SaveManager.instance.currentSaveSlot);
                     }
                     GameFlowManager.instance.SetMode(GameMode.RestArea);
-                });
+                }
             });
+        }
+
+        private BaseAction[] Get3RandomFromRewardPool(List<BaseAction> actions)
+        {
+            var selected = actions
+            .OrderBy(a => UnityEngine.Random.value)
+            .Take(Mathf.Min(3, actions.Count));
+
+            // Return clones instead of references
+            return selected
+                .Select(a => ScriptableObject.Instantiate(a))
+                .ToArray();
         }
 
         public void Exit()

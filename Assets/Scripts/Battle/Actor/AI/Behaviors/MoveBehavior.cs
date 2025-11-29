@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.Battle.Actions.Actions;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace Assets.Scripts.Battle.Actor.AI.Behaviors
 {
@@ -42,7 +43,8 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
             MoveAction moveAction;
             if (actor.state.IsMoving(out moveAction))
             {
-                moveAction.Direction = actor.target.DirectionToClosestEnemy;
+                actor.movement.agent.SetDestination(actor.target.ClosestEnemy.transform.position);
+                moveAction.Direction = actor.movement.agent.desiredVelocity.normalized;
                 timer += Time.deltaTime;
                 if (timer > duration)
                 {
@@ -57,43 +59,11 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
             var moveSkill = actor.ActorData.actions.OfType<MoveAction>().FirstOrDefault();
             if (moveSkill == null) return NodeState.Failure;
 
-            moveSkill.Direction = actor.target.DirectionToClosestEnemy;
+            moveSkill.Direction = actor.movement.agent.desiredVelocity.normalized;
             actor.UseAction(moveSkill, actor.state.TransitionToIdle);
             return NodeState.Running;
         }
     }
-
-    public class SetMoveDirection : BTNode
-    {
-
-        Vector3 direction;
-        public SetMoveDirection(Vector3 direction)
-        {
-            this.direction = direction;
-        }
-
-        public override NodeState Execute(AIBT ai, Actor actor)
-        {
-            actor.state.IsMoving(out MoveAction moveAction);
-            moveAction.Direction = direction;
-            return NodeState.Sucess;
-        }
-    }
-
-    public class CancelMove : BTNode
-    {
-        public override NodeState Execute(AIBT ai, Actor actor)
-        {
-            if (actor.state.IsMoving(out MoveAction moveAction))
-            {
-                moveAction.OnCancel?.Invoke();
-                return NodeState.Sucess;
-            }
-            return NodeState.Failure;
-        }
-    }
-
-
     public class MoveAwayFromPlayer : BTNode
     {
         private float moveDuration;     // how long max we can move at once
@@ -154,6 +124,39 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
             return NodeState.Running;
         }
     }
+
+
+    public class SetMoveDirection : BTNode
+    {
+
+        Vector3 direction;
+        public SetMoveDirection(Vector3 direction)
+        {
+            this.direction = direction;
+        }
+
+        public override NodeState Execute(AIBT ai, Actor actor)
+        {
+            actor.state.IsMoving(out MoveAction moveAction);
+            moveAction.Direction = direction;
+            return NodeState.Sucess;
+        }
+    }
+
+    public class CancelMove : BTNode
+    {
+        public override NodeState Execute(AIBT ai, Actor actor)
+        {
+            if (actor.state.IsMoving(out MoveAction moveAction))
+            {
+                moveAction.OnCancel?.Invoke();
+                return NodeState.Sucess;
+            }
+            return NodeState.Failure;
+        }
+    }
+
+
 
     public class MoveAwayFromLevel : BTNode
     {
@@ -224,6 +227,48 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
 
             // No nearby obstacle
             return NodeState.Sucess;
+        }
+    }
+
+    public class ApproachPlayerIntelligently : BTNode
+    {
+        private float flankDistance = 2.5f;
+        private float closeRange = 1.5f;
+
+        public override NodeState Execute(AIBT ai, Actor actor)
+        {
+            var agent = actor.GetComponent<NavMeshAgent>();
+            var moveAction = actor.ActorData.actions.OfType<MoveAction>().First();
+
+            Vector3 targetPos = actor.target.ClosestEnemy.transform.position;
+            float dist = Vector3.Distance(actor.transform.position, targetPos);
+
+            // Too close? Try flanking instead of walking straight.
+            if (dist < closeRange)
+            {
+                Vector3 flank = GetFlankPosition(actor);
+                agent.SetDestination(flank);
+            }
+            else
+            {
+                agent.SetDestination(targetPos);
+            }
+
+            moveAction.Direction = agent.desiredVelocity.normalized;
+
+            actor.UseAction(moveAction, actor.state.TransitionToIdle);
+            return NodeState.Running;
+        }
+
+        private Vector3 GetFlankPosition(Actor actor)
+        {
+            Vector3 right = actor.transform.right;
+            Vector3 left = -right;
+
+            // random flank (left or right)
+            Vector3 flankDir = (UnityEngine.Random.value > 0.5f) ? right : left;
+
+            return actor.target.ClosestEnemy.transform.position + flankDir * 2.5f;
         }
     }
 }

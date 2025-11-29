@@ -180,8 +180,6 @@ namespace Assets.Scripts.Battle.Actions
 
 
 
-
-
     public enum RARITY { COMMON, UNCOMMON, RARE, EPIC, LEGENDARY };
     public enum ANIMATION { NONE, Punch, Kick, Shuriken, Highkick, PalmStrike, Ninjutsu, ForwardPunch, ThrowStar, ForwardKick, ShadowStep, Taunt, Dash, Roll, Step, Firecast }
 

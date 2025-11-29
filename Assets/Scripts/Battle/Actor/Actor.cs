@@ -18,7 +18,8 @@ namespace Assets.Scripts.Battle.Actor
         public ActorData ActorData;
 
         //Components
-        public ActorStateMachine state;
+        public ActorStateMachine
+            state;
         public StatusManager statusManager;
         public new AudioManager audio; //this too?
         public EffectManager effects; //this can be moved to a different monobehaviour
@@ -94,6 +95,11 @@ namespace Assets.Scripts.Battle.Actor
             if (isControllable) target.Update(); //this looks wierd
         }
 
+        void FixedUpdate()
+        {
+            movement.agent.nextPosition = transform.position;
+        }
+
         public void Init()
         {
             effects.SetColors();
@@ -120,6 +126,7 @@ namespace Assets.Scripts.Battle.Actor
             }
 
             DamageApplied?.Invoke(postMitgationDamage);
+            ItemEventBus.Raise(ItemTrigger.OnDamageTaken, this);
             ActorData.DealDamage(postMitgationDamage);
             if (ActorData.isDead())
             {

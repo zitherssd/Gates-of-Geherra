@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Battle.Actions.Skills;
+using Assets.Scripts.Battle.Actor;
 using Assets.Scripts.Battle.Actor.AI.Behaviors;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,7 +10,8 @@ namespace Assets.Scripts.Battle.Actions.Actions.Effects
     {
         void Eval(Actor.Actor actor, BaseAction action);
     }
-    
+
+
     public interface IProjectileEffect
     {
         void Eval(Actor.Actor actor, ProjectileAttack action, GameObject projectile);

@@ -16,13 +16,13 @@ MonoBehaviour:
   Type: 2
   Name: Fire Breath
   Rarity: 1
-  Description: Sasuke!!!
+  Description: Sasuke!!!1!
   CooldownTimer: 5
   TotalUses: 2
   remainingUses: 0
-  BuildupCost: 22
+  BuildupCost: 25
   BuildupGain: 0
-  StaminaCost: 0
+  StaminaCost: 5
   Speed: 0
   Tags: 
   Direction: {x: 0, y: 0, z: 0}
@@ -87,6 +87,7 @@ MonoBehaviour:
         HitboxScale: 2.8
     - rid: 6357900109471809577
       type: {class: FaceClosestEnemy, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      data: 
     - rid: 6357900109471809578
       type: {class: SlowTrack, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
       data:

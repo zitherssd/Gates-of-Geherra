@@ -11,7 +11,8 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
             MoveAction moveaction;
             if (actor.state.IsMoving(out moveaction))
             {
-                moveaction.Direction = actor.target.DirectionToClosestEnemy;
+                actor.movement.agent.SetDestination(actor.target.ClosestEnemy.transform.position);
+                moveaction.Direction = actor.movement.agent.desiredVelocity.normalized;
                 if (actor.target.DistanceToClosestEnemy < 1.4f) moveaction.OnCancel?.Invoke();
             }
 

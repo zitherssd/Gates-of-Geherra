@@ -49,12 +49,16 @@ namespace Assets.Scripts.Battle.Actions.Actions.Effects
             foreach (var enemy in enemyActors.Where(actor => actor.state.IsAlive()))
             {
                 Vector3 enemyPosition = enemy.transform.position;
-
+                if (enemy.state.IsKnockedDown()) continue;
+                
                 // Check center inside polygon
                 if (Intersections.IsPointInsidePolygon(enemyPosition, transformedPoints))
                 {
-                    validActors.Add(enemy);
-                    continue;
+                    if (!enemy.state.IsKnockedDown())
+                    {
+                        validActors.Add(enemy);
+                        continue;
+                    }
                 }
 
                 float radius = enemy.GetComponent<CapsuleCollider>().radius;

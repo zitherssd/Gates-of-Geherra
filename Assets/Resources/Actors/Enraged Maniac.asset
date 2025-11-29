@@ -23,11 +23,12 @@ MonoBehaviour:
     alive: 1
   maxBuildup: 30
   maxPosture: 18
-  maxStamina: 40
+  maxStamina: 32
   Controllable: 0
   AIRuleset: 3
   mainColor: {r: 0.7169812, g: 0, b: 0, a: 0}
   secondaryColor: {r: 0.8490566, g: 0.40042827, b: 0.06007475, a: 0}
+  startingItems: []
   baseActions:
   - {fileID: 11400000, guid: 6156ef38c6ee2b647849b0a5cf9a53e3, type: 2}
   - {fileID: 11400000, guid: aae9dbed006f82f4086140a65bee5c06, type: 2}
@@ -38,12 +39,13 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  items: []
   currentBuildup: 0
   currentPosture: 18
   currentStamina: 23.712652
   postureRegenRate: 1
-  staminaRegenRate: 0.35
+  staminaRegenRate: 2
   ATK: 2
   DEF: 0
-  AGI: 8
+  AGI: 7
   Spirit: 0

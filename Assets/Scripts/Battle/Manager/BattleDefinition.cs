@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Assets.Scripts.Battle.Actions;
 using Assets.Scripts.Battle.Actor;
 using UnityEngine;
 
@@ -10,5 +11,6 @@ namespace Assets.Scripts.Battle.Manager
         public List<ActorData> enemyActors;
         public List<Vector3> enemyStartPosition;
         public Vector3 playerStartPosition;
+        public RewardPool RewardPool;
     }
 }

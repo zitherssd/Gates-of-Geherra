@@ -12,22 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d2c66b39a75e8e4c810a8e1f12fbd1b, type: 3}
   m_Name: Charge
   m_EditorClassIdentifier: 
+  guid: 6b10ff94bcb4c55448ad32fd641ab3f4
   Type: 0
   Name: Charge
   Rarity: 0
-  Description: Charge towards closest enemy
+  Description: Maddu-Dassh
   CooldownTimer: 10
   TotalUses: 0
   remainingUses: 0
   BuildupCost: 0
-  BuildupGain: 6
-  StaminaCost: 10
+  BuildupGain: 8
+  StaminaCost: 14
   Speed: 0
   Tags: 
   Direction: {x: 0, y: 0, z: 0}
   currentCooldownTimer: 0
   StickMult: 1
   SlowdownMeterGain: 1
+  SlowdownMeterGainOnEnd: 0
   SlowDownMeterGainOnPress: 0
   SlowdownMeterGainOnRelease: 0
   Animation: 12

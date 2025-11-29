@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e110cd302acb85459812d80addcbd30, type: 3}
   m_Name: Tutorial Guy
   m_EditorClassIdentifier: 
+  guid: 5b523a4d0ce46db4f837f2ec1400e176
   Name: Player
   hpBars:
-  - maxHp: 50
+  - _currentHp: 0
+    maxHp: 50
     alive: 1
   maxBuildup: 30
   maxPosture: 10
@@ -23,15 +25,14 @@ MonoBehaviour:
   AIRuleset: 0
   mainColor: {r: 1, g: 1, b: 1, a: 0}
   secondaryColor: {r: 0, g: 0, b: 0, a: 1}
+  startingItems: []
   baseActions:
   - {fileID: 11400000, guid: eb94d8da9dbb0de4f9022395c5c28ce9, type: 2}
-  baseReactions: []
-  basePassives: []
   actions:
   - {fileID: 0}
-  reactions: []
-  currentBuildup: 29
-  currentPosture: 6
+  items: []
+  currentBuildup: 0
+  currentPosture: 10
   currentStamina: 50
   postureRegenRate: 1
   staminaRegenRate: 1

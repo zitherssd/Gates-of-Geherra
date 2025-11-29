@@ -16,7 +16,7 @@ MonoBehaviour:
   Name: Shuriken Thrower
   hpBars:
   - _currentHp: 0
-    maxHp: 8
+    maxHp: 9
     alive: 1
   maxBuildup: 0
   maxPosture: 10
@@ -43,5 +43,5 @@ MonoBehaviour:
   staminaRegenRate: 1
   ATK: 1
   DEF: 1
-  AGI: 1
+  AGI: 2
   Spirit: 0

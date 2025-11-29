@@ -168,6 +168,8 @@ namespace Assets.Scripts.Battle.Actions
                     HideUIAndUseAction();
                     break;
                 case BUTTONTYPE.CONTINUOUS_VECTOR:
+                    deltaScaled = Vector2.zero;
+                    referencedAction.Direction = Vector3.zero;
                     HideUIExceptThisAndUseAction();
                     isPressed = true;
                     pointerDownPosition = Input.touchCount > 0 ? Input.GetTouch(0).position : (Vector2)Input.mousePosition;

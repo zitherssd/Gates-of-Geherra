@@ -14,18 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ItemName: Inner Fire
   Icon: {fileID: 0}
-  Triggers: 01000000
+  Triggers: 00000000
   Effects:
-  - rid: 6357900207707652097
+  - rid: 6357900270869676033
   references:
     version: 2
     RefIds:
-    - rid: 6357900207707652097
-      type: {class: DamageInstanceEffect, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
-      data:
-        PostureDamage: 0
-        Damage: 0
-        KnockbackForce: 0
-        KnockbackForceUp: 0
-        CasterBuildupGain: 10
-        AutoGetHitbox: 0
+    - rid: 6357900270869676033
+      type: {class: HealLivingBars, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      data: 

@@ -27,6 +27,7 @@ namespace Assets.Scripts.Battle.Actor.States
             return this;
         }
 
+
         public void Enter()
         {
             OnStaggerStateEntered?.Invoke(duration);
@@ -37,9 +38,10 @@ namespace Assets.Scripts.Battle.Actor.States
             }
 
             //actor.KnockbackRecieved += ModifyKnockback;
-            actor.PlayAnimation("HurtGround");
+            actor.PlayAnimation("PostureBroken");
             actor.audio.PlayAudio("Attack1");
             actor.movement.SetFriction(0.33f);
+            actor.DamageApplied += ChangeSpriteToDamaged;
             actor.KnockbackRecieved += Actor_KnockbackApplied;
             collisionOccured = false;
             timer = 0f;

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5f076fb264629d419cdfb2d71f54608, type: 3}
   m_Name: Kick_High
   m_EditorClassIdentifier: 
+  guid: adca9aae-52ce-4ff1-9d8b-6649c30eb0ab
   Type: 1
   Name: High Kick
   Rarity: 0
@@ -21,13 +22,14 @@ MonoBehaviour:
   remainingUses: 0
   BuildupCost: 15
   BuildupGain: 0
-  StaminaCost: 10
+  StaminaCost: 8
   Speed: 0
   Tags: 010000000f000000
   Direction: {x: 0, y: 0, z: 0}
   currentCooldownTimer: 0
   StickMult: 1.2
   SlowdownMeterGain: 1
+  SlowdownMeterGainOnEnd: 0
   SlowDownMeterGainOnPress: 0.75
   SlowdownMeterGainOnRelease: 0
   Animation: 4
@@ -38,7 +40,7 @@ MonoBehaviour:
   windupTimeMult: 0.4
   recoveryTimeMult: 0.3
   state: 0
-  SelfForce: 2.5
+  SelfForce: 2
   HitboxPoints:
   - {x: -0.15, y: 0, z: 0.4}
   - {x: 0.15, y: 0, z: 0.4}
@@ -47,4 +49,4 @@ MonoBehaviour:
   HitboxScale: 1
   windupPostureDamageMult: 1
   recoveryPostureDamageMult: 1
-  BuildupGainOnHit: 4
+  BuildupGainOnHit: 5
