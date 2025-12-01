@@ -38,6 +38,7 @@ namespace Assets.Scripts.Game
                 ActorData template = Resources.Load<ActorData>("Actors/MC");
                 ActorData clone = Instantiate(template);
                 playerActor.ActorData = clone;
+                playerActor.Spawn();
                 SaveManager.instance.SaveToSlot(SaveManager.instance.currentSaveSlot);
             }
 

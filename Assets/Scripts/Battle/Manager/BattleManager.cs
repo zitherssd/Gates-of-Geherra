@@ -98,6 +98,7 @@ namespace Assets.Scripts.Battle.Manager
                 var enemyActor = enemyGameObject.GetComponent<Actor.Actor>();
                 enemyActor.ActorData = clone;
                 enemyActor.Init();
+                enemyActor.Spawn();
                 EnemyActors.Add(enemyActor);
             }
         }

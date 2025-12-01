@@ -70,15 +70,18 @@ namespace Assets.Scripts.Battle.Actor
 
         public void Start()
         {
-            if (ActorData != null)
-            {
-                ActorData.Reset();
-                foreach (var item in ActorData.items)
-                    inventory.AddItem(item);
-            }
             ai = new AIBT(this); //this too subscribe
             state.Initialize<InactiveState>();
             effects.SetColors();
+            foreach (var item in ActorData.items)
+                inventory.AddItem(item);
+        }
+
+        //Should run after 
+        public void Spawn()
+        {
+            ActorData.Reset();
+
         }
 
         public void Update()
