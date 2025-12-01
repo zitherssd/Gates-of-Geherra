@@ -1,4 +1,6 @@
 ﻿using Assets.Scripts.Battle.Actions;
+using Assets.Scripts.Battle.Items;
+using Assets.Scripts.Battle.Items.UI;
 using Assets.Scripts.Crawler;
 using Assets.Scripts.Game;
 using Assets.Scripts.Pattern;
@@ -13,9 +15,10 @@ namespace Assets.Scripts.Battle.Manager.States
 {
     public class BattleEndState : IState
     {
+        private BattleManager manager;
         public BattleEndState(BattleManager manager)
         {
-
+            this.manager = manager;
         }
         public void Enter()
         {
@@ -24,6 +27,27 @@ namespace Assets.Scripts.Battle.Manager.States
             {
                 UIManager.instance.HideUI();
                 var bd = BattleManager.instance.GetCurrentBattleDefinition();
+                foreach (var rewardItemPool in bd.RewardItemsPools)
+                {
+                    if (rewardItemPool.RewardItems != null && rewardItemPool.RewardItems.Count > 0)
+                    {
+
+                        int randomIndex = UnityEngine.Random.Range(0, rewardItemPool.RewardItems.Count);
+                        BaseItem randomItem = rewardItemPool.RewardItems[randomIndex];
+
+                        // Get random item from RewardItems list using bd.ChanceToReward
+                        if (UnityEngine.Random.Range(0f, 1f) <= rewardItemPool.ChanceToReward)
+                        {
+                            // Add using ActorInventory
+                            GameFlowManager.instance.playerActor.inventory.AddItem(randomItem);
+
+                            // Optional: Show some UI feedback that item was awarded
+
+                            TooltipUI.instance.ShowPrompt($"Gained <color=red>{randomItem.ItemName}</color>!");
+                            Debug.Log($"Awarded item: {randomItem.ItemName}");
+                        }
+                    }
+                }
                 if (bd.RewardPool != null && bd.RewardPool.Actions.Count > 2)
                 {
                     SkillGenerator.instance.DrawSkillsFromSelectionAndWaitForSelection(Get3RandomFromRewardPool(bd.RewardPool.Actions), () =>
@@ -34,6 +58,7 @@ namespace Assets.Scripts.Battle.Manager.States
                         {
                             SaveManager.instance.SaveToSlot(SaveManager.instance.currentSaveSlot);
                         }
+                        manager.onBattleEnd?.Invoke();
                         GameFlowManager.instance.SetMode(GameMode.RestArea);
                     });
                 }
@@ -46,6 +71,7 @@ namespace Assets.Scripts.Battle.Manager.States
                     {
                         SaveManager.instance.SaveToSlot(SaveManager.instance.currentSaveSlot);
                     }
+                    manager.onBattleEnd?.Invoke();
                     GameFlowManager.instance.SetMode(GameMode.RestArea);
                 }
             });

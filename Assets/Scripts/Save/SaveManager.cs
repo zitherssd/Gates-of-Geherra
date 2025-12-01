@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Crawler;
 using Assets.Scripts.Game;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
@@ -32,8 +33,11 @@ namespace Assets.Scripts.Save
             var saveData = new SaveData
             {
                 currentFloor = FloorManager.instance.currentFloor,
-                //silver = BattleManager.instance.Silver,
-                player = ActorSave.CreateSaveFromActor(actor)
+                timelocks = GameFlowManager.instance.timelocks ?? new List<TimeLock>(),
+                player = ActorSave.CreateSaveFromActor(actor),
+                trainingsDone = GameFlowManager.instance.trainingsDone,
+                trainingsDoneThisFloor = GameFlowManager.instance.trainingsDoneThisFloor
+
             };
             SaveGame(slot, saveData);
         }
@@ -41,8 +45,11 @@ namespace Assets.Scripts.Save
         public SaveData LoadFromSlot(int slot)
         {
             var save = LoadGame(slot);
-            //ActorSave.LoadActorFromSave(save.player, actionDatabase);
-            //FloorManager.instance.currentFloor = save.currentFloor;
+            FloorManager.instance.currentFloor = save.currentFloor;
+            GameFlowManager.instance.trainingsDone = save.trainingsDone;
+            GameFlowManager.instance.trainingsDoneThisFloor = save.trainingsDoneThisFloor;
+            GameFlowManager.instance.timelocks = save.timelocks ?? new List<TimeLock>();
+
             return save;
 
         }

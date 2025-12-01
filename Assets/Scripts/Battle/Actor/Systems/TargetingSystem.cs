@@ -1,6 +1,6 @@
-using System.Linq;
-using Assets.Scripts.Utility;
 using Assets.Scripts.Battle.Manager;
+using Assets.Scripts.Utility;
+using System.Linq;
 using UnityEngine;
 
 namespace Assets.Scripts.Battle.Actor.Systems
@@ -61,14 +61,22 @@ namespace Assets.Scripts.Battle.Actor.Systems
 
         internal void Update()
         {
-            if (!actor.isControllable) target = ClosestEnemy;
-            //if it has no target
+            var previousTarget = target;
+
+            if (!actor.isControllable)
+            {
+                target = ClosestEnemy;
+                return;
+            }
             if (target == null)
             {
                 //get the closest enemy 
                 var possibleTargets = BattleManager.instance.EnemyActors.Where(actor => !actor.ActorData.isDead()).ToList();
                 var closestTarget = possibleTargets.OrderBy(actor => actor.target.DistanceToClosestEnemy).FirstOrDefault();
-                if (closestTarget != null) target = closestTarget;
+                if (closestTarget != null)
+                {
+                    target = closestTarget;
+                }
                 if (actor.isControllable) selectionCircle.target = actor.transform;
                 else
                     target = BattleManager.instance.PlayerActors[0];
@@ -83,7 +91,7 @@ namespace Assets.Scripts.Battle.Actor.Systems
                 var closestTarget = possibleTargets
                     .OrderBy(actor => actor.target.DistanceToClosestEnemy)
                     .FirstOrDefault();
-
+                if (target != closestTarget) CameraManager.instance.SlowTrack = true;
                 target = closestTarget;
             }
             if (actor.isControllable && target) selectionCircle.target = target.transform;

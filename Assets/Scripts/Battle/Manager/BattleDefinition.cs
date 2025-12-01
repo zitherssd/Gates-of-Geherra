@@ -12,5 +12,8 @@ namespace Assets.Scripts.Battle.Manager
         public List<Vector3> enemyStartPosition;
         public Vector3 playerStartPosition;
         public RewardPool RewardPool;
+        public List<RewardItemsPool> RewardItemsPools;
+
     }
+
 }

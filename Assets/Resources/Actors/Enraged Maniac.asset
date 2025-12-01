@@ -31,7 +31,7 @@ MonoBehaviour:
   startingItems: []
   baseActions:
   - {fileID: 11400000, guid: 6156ef38c6ee2b647849b0a5cf9a53e3, type: 2}
-  - {fileID: 11400000, guid: aae9dbed006f82f4086140a65bee5c06, type: 2}
+  - {fileID: 11400000, guid: dd75cdbaf2f7b9a4095a2d9c82f6a1e2, type: 2}
   - {fileID: 11400000, guid: 5b9d2d0224c0bfa418627da8e495eadc, type: 2}
   - {fileID: 11400000, guid: eb94d8da9dbb0de4f9022395c5c28ce9, type: 2}
   actions:

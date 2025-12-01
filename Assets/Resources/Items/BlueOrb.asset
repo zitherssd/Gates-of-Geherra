@@ -9,23 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 85fc8bb4a9286ae4fad91ee494943c31, type: 3}
+  m_Script: {fileID: 11500000, guid: 761beca3e267e1f4da16a2215337e02d, type: 3}
   m_Name: BlueOrb
   m_EditorClassIdentifier: 
-  ItemName: Orb of Remembrance
-  Icon: {fileID: 0}
-  Triggers: 01000000
-  Effects:
-  - rid: 6357900270869676032
+  ItemName: Memories
+  Description: Start combat with 10 Buildup
+  Icon: {fileID: 21300000, guid: a77395fe01ca1984185c1caee0c689aa, type: 3}
+  stackable: 0
+  Triggers: 
+  Effects: []
   references:
     version: 2
-    RefIds:
-    - rid: 6357900270869676032
-      type: {class: DamageInstanceEffect, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
-      data:
-        PostureDamage: 0
-        Damage: 0
-        KnockbackForce: 0
-        KnockbackForceUp: 0
-        CasterBuildupGain: 8
-        AutoGetHitbox: 0
+    RefIds: []

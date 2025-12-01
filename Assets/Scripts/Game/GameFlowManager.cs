@@ -16,8 +16,13 @@ namespace Assets.Scripts.Game
         public Actor playerActor;
         public RestAreaManager restAreaManager;
         public BattleManager battleManager;
+        public int trainingsDone = 0;
+        public int trainingsDoneThisFloor = 0;
+        public List<TimeLock> timelocks;
+
 
         //Player should be spawned and loaded or created here all other managers assume player exists
+
 
         public void Start()
         {
@@ -25,12 +30,14 @@ namespace Assets.Scripts.Game
 
             if (SaveManager.instance.SlotExists(SaveManager.instance.currentSaveSlot))
             {
-                var save = SaveManager.instance.LoadGame(SaveManager.instance.currentSaveSlot);
+                var save = SaveManager.instance.LoadFromSlot(SaveManager.instance.currentSaveSlot);
                 save.LoadActor(playerActor);
             }
             else
             {
-                //PlayerBattler already exists in scene. do nothing. maybe make new save?
+                ActorData template = Resources.Load<ActorData>("Actors/MC");
+                ActorData clone = Instantiate(template);
+                playerActor.ActorData = clone;
                 SaveManager.instance.SaveToSlot(SaveManager.instance.currentSaveSlot);
             }
 
@@ -42,14 +49,22 @@ namespace Assets.Scripts.Game
 
         public GameMode Mode { get; private set; }
 
-        void Awake() => instance = this;
-
-        public void EnterBattle(BattleDefinition battle)
+        public void Awake()
         {
+            instance = this;
+            if (timelocks == null)
+                timelocks = new List<TimeLock>();
+        }
+
+
+        public void EnterBattle(BattleDefinition battle, Action onBattleEnd )
+        {
+
             Mode = GameMode.Battle;
             restAreaManager.enabled = false;
+            TrainingManager.instance.enabled = false;
             battleManager.enabled = true;
-            battleManager.Enter(battle);
+            battleManager.Enter(battle, onBattleEnd);
         }
 
         public void SetMode(GameMode mode)
@@ -65,10 +80,12 @@ namespace Assets.Scripts.Game
             {
                 case GameMode.RestArea:
                     restAreaManager.enabled = true;
+                    TrainingManager.instance.enabled = true;
                     restAreaManager.Enter();
                     break;
 
                 case GameMode.Training:
+
                     //trainingManager.Enter();
                     break;
 

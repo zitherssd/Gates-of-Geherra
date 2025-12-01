@@ -93,6 +93,8 @@ namespace Assets.Scripts.Battle.Actions.Skills
                     direction = Direction.normalized;
                 else
                     direction = (targetActor.transform.position - casterActor.transform.position).normalized;
+                if(this.Tags.Contains(TAG.KNOCKBACK_AWAY))
+                    direction = (targetActor.transform.position - casterActor.transform.position).normalized;
                 if (this.Tags.Contains(TAG.KNOCKBACK_BACK))
                 {
                     Vector3 cameraForward = Camera.main.transform.forward;

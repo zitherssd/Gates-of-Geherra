@@ -16,8 +16,10 @@ namespace Assets.Scripts.Save
     public class SaveData
     {
         public int currentFloor;
-        public int silver;
+        public int trainingsDone;
+        public int trainingsDoneThisFloor;
         public ActorSave player;
+        public List<TimeLock> timelocks = new List<TimeLock>();
 
         public void LoadActor(Actor actorToOverwrite)
         {
@@ -62,11 +64,14 @@ namespace Assets.Scripts.Save
 
             save.actorId = ad.guid;
             save.Name = ad.Name;
-            save.items = actor.ActorData.items;
+            save.items = actor.inventory.Items;
 
             save.currentStamina = ad.currentStamina;
             save.currentBuildup = ad.currentBuildup;
             save.currentPosture = ad.currentPosture;
+            save.maxStamina = ad.maxStamina;
+            save.maxPosture = ad.maxPosture;
+            save.maxBuildup = ad.maxBuildup;
 
             save.STR = ad.ATK;
             save.CON = ad.DEF;
@@ -108,6 +113,10 @@ namespace Assets.Scripts.Save
             ad.currentStamina = save.currentStamina;
             ad.currentBuildup = save.currentBuildup;
             ad.currentPosture = save.currentPosture;
+            ad.maxStamina = save.maxStamina;
+            ad.maxBuildup = save.maxBuildup;
+            ad.maxPosture = save.maxPosture;
+
 
             ad.ATK = save.STR;
             ad.DEF = save.CON;

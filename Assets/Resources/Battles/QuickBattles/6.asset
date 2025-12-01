@@ -17,3 +17,5 @@ MonoBehaviour:
   enemyStartPosition: []
   playerStartPosition: {x: 1.83, y: 0, z: -0.79}
   RewardPool: {fileID: 0}
+  RewardItemsPools:
+  - {fileID: 11400000, guid: 3ec2e97b6c3eb8f42a37ad763d550b15, type: 2}

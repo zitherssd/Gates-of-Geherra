@@ -18,7 +18,7 @@ MonoBehaviour:
   - _currentHp: 10
     maxHp: 10
     alive: 1
-  - _currentHp: 5
+  - _currentHp: 10
     maxHp: 10
     alive: 1
   maxBuildup: 50
@@ -29,7 +29,9 @@ MonoBehaviour:
   mainColor: {r: 0, g: 0, b: 0, a: 0}
   secondaryColor: {r: 0.6845144, g: 0.8207547, b: 0.2748754, a: 1}
   startingItems:
-  - {fileID: 11400000, guid: 662939d5a83c6484aaf6ff0e131d38b7, type: 2}
+  - {fileID: 11400000, guid: 5b6c739aefd38644ea98ff8f193967b7, type: 2}
+  - {fileID: 11400000, guid: 9929547627aa6c94d840fd5766eb1036, type: 2}
+  - {fileID: 11400000, guid: b5495c701cd7d9040adffb62f79fd415, type: 2}
   baseActions:
   - {fileID: 11400000, guid: 498ba4be69212c045ad9de12e867357c, type: 2}
   - {fileID: 11400000, guid: d71b702805a26db45a66daff55b696d2, type: 2}
@@ -46,15 +48,16 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
   items:
-  - {fileID: 11400000, guid: 662939d5a83c6484aaf6ff0e131d38b7, type: 2}
-  currentBuildup: 18
+  - {fileID: 11400000, guid: 5b6c739aefd38644ea98ff8f193967b7, type: 2}
+  - {fileID: 11400000, guid: 9929547627aa6c94d840fd5766eb1036, type: 2}
+  - {fileID: 11400000, guid: b5495c701cd7d9040adffb62f79fd415, type: 2}
+  currentBuildup: 0
   currentPosture: 25
-  currentStamina: 20.770962
+  currentStamina: 179
   postureRegenRate: 1
   staminaRegenRate: 2
   ATK: 1
   DEF: 1
   AGI: 5
-  Spirit: 0
+  Spirit: 1

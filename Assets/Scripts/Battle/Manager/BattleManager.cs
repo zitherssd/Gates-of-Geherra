@@ -26,6 +26,8 @@ namespace Assets.Scripts.Battle.Manager
         [SerializeField] public List<Actor.Actor> PlayerActors;
         [SerializeField] public List<Actor.Actor> EnemyActors;
         [SerializeField] private GameObject SpawnerParent;
+        internal Action onBattleEnd;
+
 
 
         private Queue<Actor.Actor> turnQueue = new Queue<Actor.Actor>();
@@ -51,8 +53,12 @@ namespace Assets.Scripts.Battle.Manager
                 return battleDefinition;
         }
 
-        public void Enter(BattleDefinition battleDefinition)
+        public void Enter(BattleDefinition battleDefinition, Action onBattleEnd)
         {
+            if (onBattleEnd != null)
+                this.onBattleEnd = onBattleEnd;
+            else
+                this.onBattleEnd = null;
             this.battleDefinition = battleDefinition;
             //Should assume that screen is black/fadeimage is active
             var player = GameFlowManager.instance.playerActor;

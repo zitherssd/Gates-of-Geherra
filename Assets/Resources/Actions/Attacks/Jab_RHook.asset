@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5f076fb264629d419cdfb2d71f54608, type: 3}
   m_Name: Jab_RHook
   m_EditorClassIdentifier: 
+  guid: bee8d5fdedd9f2441991e17989df781b
   Type: 0
   Name: Right Hook
   Rarity: 0

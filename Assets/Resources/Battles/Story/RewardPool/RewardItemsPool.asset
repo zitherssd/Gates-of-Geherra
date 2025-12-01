@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab84e9304150f3b4ca307dc3d2470ad5, type: 3}
+  m_Name: RewardItemsPool
+  m_EditorClassIdentifier: Assembly-CSharp:Assets.Scripts.Battle.Manager:RewardItemsPool
+  RewardItems:
+  - {fileID: 11400000, guid: 2cf7bf973388d4f4b97140f305f21704, type: 2}
+  - {fileID: 11400000, guid: b5495c701cd7d9040adffb62f79fd415, type: 2}
+  - {fileID: 11400000, guid: 413c26fabdc819f4e94f9a71d4f46fd6, type: 2}
+  - {fileID: 11400000, guid: 9929547627aa6c94d840fd5766eb1036, type: 2}
+  ChanceToReward: 1

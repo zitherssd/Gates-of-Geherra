@@ -9,7 +9,7 @@ using UnityEngine;
 namespace Assets.Scripts.Battle.Actions.Actions.Effects
 {
     [Serializable]
-    public class PlayParticleEffect : IEffect, IEndableEffect, IProjectileEffect
+    public class PlayParticleEffect : IEffect, IEndableEffect, IProjectileEffect, IItemEffect
     {
         public ParticleSystem psPrefab;
         private ParticleSystem instance;
@@ -62,6 +62,20 @@ namespace Assets.Scripts.Battle.Actions.Actions.Effects
             }
                 instance.Play();
 
+        }
+
+        public void Eval(Actor.Actor actor)
+        {
+            if (psPrefab == null) return;
+            if (instance == null)
+            {
+                if (OnPlayer)
+                {
+                    instance = GameObject.Instantiate(psPrefab, actor.transform);
+                }
+
+            }
+            instance.Play();
         }
     }
 }

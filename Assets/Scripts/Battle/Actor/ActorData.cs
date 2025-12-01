@@ -174,12 +174,15 @@ namespace Assets.Scripts.Battle.Actor
                 var clone = Instantiate(skill);
                 actions.Add(clone);
             }
-            items = new List<BaseItem>();
-            foreach (var item in startingItems)
+            if(items == null || items.Count == 0)
             {
-                // Items do NOT need Instantiate unless they hold state
-                // So we add the SO directly
-                items.Add(item);
+                items = new List<BaseItem>();
+                foreach (var item in startingItems)
+                {
+                    // Items do NOT need Instantiate unless they hold state
+                    // So we add the SO directly
+                    items.Add(item);
+                }
             }
         }
     }

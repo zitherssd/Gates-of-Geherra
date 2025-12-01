@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Assets.Scripts.Battle;
 using Assets.Scripts.Battle.Actions;
@@ -41,7 +42,7 @@ namespace Assets.Scripts.Crawler
             UIManager.instance.Fade(true, () =>
             {
                 var battle = StoryBattles[currentFloor - 1];
-                GameFlowManager.instance.EnterBattle(battle);
+                GameFlowManager.instance.EnterBattle(battle, null);
             });
         }
 
@@ -52,7 +53,10 @@ namespace Assets.Scripts.Crawler
             UIManager.instance.Fade(true, () =>
             {
                 var battle = RandomBattles[UnityEngine.Random.Range(0, RandomBattles.Count)];
-                GameFlowManager.instance.EnterBattle(battle);
+                GameFlowManager.instance.EnterBattle(battle, () =>
+                {
+                    TimeLockManager.Add("QuickFight", System.TimeSpan.FromMinutes(5));
+                });
             });
         }
 
