@@ -85,8 +85,10 @@ namespace Assets.Scripts.Game
         {
             trainingLock = TimeLockManager.Get("Training");
             var quickFightLock = TimeLockManager.Get("QuickFight");
-
-            if(trainingLock != null || quickFightLock != null)
+            if(quickFightLock != null && quickFightLock.IsDone)
+                TimeLockManager.Remove("QuickFight");
+            
+            if (trainingLock != null || quickFightLock != null)
             {
                 quickFightButton.interactable = false;
             }

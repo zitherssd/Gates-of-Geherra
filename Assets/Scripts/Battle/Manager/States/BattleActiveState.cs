@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Pattern;
+using Assets.Scripts.Save;
 using Assets.Scripts.Utility;
 using System;
 using UnityEngine;
@@ -66,6 +67,7 @@ namespace Assets.Scripts.Battle.Manager.States
                 }
                 else if (battleManager.PlayerActors.TrueForAll(actor => !actor.state.IsAlive())) // All players are in death state
                 {
+                    SaveManager.instance.DeleteSave(SaveManager.instance.currentSaveSlot);
                     battleManager.StartCoroutine(battleManager.WaitForSeconds(2f, () => { SceneManager.LoadScene("TitleScene"); }));
                 }
 
