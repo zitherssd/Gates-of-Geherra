@@ -18,6 +18,9 @@ public class MainMenuSlot : MonoBehaviour
             DeleteButton.SetActive(true);
             var save = saveManager.LoadGame(slotNumber);
             slotText.text = $"{save.player.Name}, {save.currentFloor}";
+            var button = GetComponent<UnityEngine.UI.Button>();
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(SetSlotAndStart);
             //enable delete button
         }
         else
@@ -27,10 +30,36 @@ public class MainMenuSlot : MonoBehaviour
         }
     }
 
+    void Refresh()
+    {
+        slotText = GetComponentInChildren<TMPro.TextMeshProUGUI>();
+        if (saveManager.SlotExists(slotNumber))
+        {
+            DeleteButton.SetActive(true);
+            var save = saveManager.LoadGame(slotNumber);
+            slotText.text = $"{save.player.Name}, {save.currentFloor}";
+            var button = GetComponent<UnityEngine.UI.Button>();
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(SetSlotAndStart);
+            //enable delete button
+        }
+        else
+        {
+            DeleteButton.SetActive(false);
+            slotText.text = "Empty Slot";
+        }
+    }
+
+    public void SetSlotAndStart()
+    {
+        saveManager.currentSaveSlot = slotNumber;
+        UnityEngine.SceneManagement.SceneManager.LoadScene("CaveScene");
+    }
+
     public void Delete()
     {
         saveManager.DeleteSave(slotNumber);
-        Start();
+        Refresh();
     }
 
     // Update is called once per frame

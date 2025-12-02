@@ -11,6 +11,7 @@ namespace Assets.Scripts.Save
         public ActionDatabase actionDatabase;
         public int currentSaveSlot;
         public static SaveManager instance;
+        public string newGamePlayerName;
         void Awake()
         {
             DontDestroyOnLoad(this);

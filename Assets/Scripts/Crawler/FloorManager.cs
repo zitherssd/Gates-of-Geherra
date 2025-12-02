@@ -42,6 +42,7 @@ namespace Assets.Scripts.Crawler
             UIManager.instance.Fade(true, () =>
             {
                 var battle = StoryBattles[currentFloor - 1];
+                GameFlowManager.instance.trainingsDoneThisFloor = 0;
                 GameFlowManager.instance.EnterBattle(battle, null);
             });
         }

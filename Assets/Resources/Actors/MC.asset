@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: MC
   m_EditorClassIdentifier: 
   guid: b8a7b1ce80f78164f9e1d2631a3c98fa
-  Name: Player
+  Name: Gandalf
   hpBars:
   - _currentHp: 10
     maxHp: 10
@@ -21,9 +21,9 @@ MonoBehaviour:
   - _currentHp: 10
     maxHp: 10
     alive: 1
-  maxBuildup: 50
-  maxPosture: 25
-  maxStamina: 50
+  maxBuildup: 35
+  maxPosture: 20
+  maxStamina: 40
   Controllable: 1
   AIRuleset: 0
   mainColor: {r: 0, g: 0, b: 0, a: 0}
@@ -48,13 +48,10 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  items:
-  - {fileID: 11400000, guid: 5b6c739aefd38644ea98ff8f193967b7, type: 2}
-  - {fileID: 11400000, guid: 9929547627aa6c94d840fd5766eb1036, type: 2}
-  - {fileID: 11400000, guid: b5495c701cd7d9040adffb62f79fd415, type: 2}
+  items: []
   currentBuildup: 0
-  currentPosture: 25
-  currentStamina: 179
+  currentPosture: 20
+  currentStamina: 40
   postureRegenRate: 1
   staminaRegenRate: 2
   ATK: 1

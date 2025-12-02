@@ -20,3 +20,11 @@ Dash
 Charge
 Flicker (usable only when in melee) (teleports to back of enemy?)
 Project Fire (Continuous aoe 
+
+
+You step through the Gates for the first time
+Our delusions are our strongest weapons
+
+Your training was futile.
+Your training didn't lead to any results.
+Your training 

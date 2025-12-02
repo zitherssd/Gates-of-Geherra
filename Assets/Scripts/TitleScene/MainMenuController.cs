@@ -14,6 +14,7 @@ public class MainMenuController : MonoBehaviour
     public Image titleScreenImage;
     public Button StartButton;
     public Button SandboxButton;
+    public TMP_InputField NamePromptPanel;
 
     public void Awake()
     {
@@ -31,6 +32,13 @@ public class MainMenuController : MonoBehaviour
     public void StartNewGame(int slot)
     {
         SaveManager.instance.currentSaveSlot = slot;
+
+        //SceneManager.LoadScene("CaveScene");
+    }
+
+    public void StartNewGameForReal()
+    {
+        SaveManager.instance.newGamePlayerName = NamePromptPanel.text;
         SceneManager.LoadScene("CaveScene");
     }
 
