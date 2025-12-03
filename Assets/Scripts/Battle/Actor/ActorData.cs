@@ -16,6 +16,11 @@ namespace Assets.Scripts.Battle.Actor
         public string guid;
         public string Name;
         public List<HpBar> hpBars;
+
+        public float baseMaxBuildup;
+        public float baseMaxPosture;
+        public float baseMaxStamina;
+
         public float maxBuildup;
         public float maxPosture;
         public float maxStamina;
@@ -41,19 +46,16 @@ namespace Assets.Scripts.Battle.Actor
         [HideInInspector]
         public float currentStamina;
 
+        public event Action OnDeath;
 
         public float postureRegenRate = 1f;
         public float staminaRegenRate = 1f;
 
 
-        public int ATK;
-        public int DEF;
-        public int AGI;
+        public int Strength;
+        public int Agility;
+        public int Mind;
         public int Spirit;
-
-        public event Action OnDeath;
-        public event Action OnHpBarLost;
-
 
         private void Awake()
         {
@@ -70,27 +72,10 @@ namespace Assets.Scripts.Battle.Actor
             if (lastBar == null) return;
             lastBar.currentHp -= damage;
 
-            //If no longer alive
-            if (lastBar.alive == false)
-            {
-                OnHpBarLost?.Invoke();
-            }
-
             //If no more alive bars then die
-            if(hpBars.Where<HpBar>(item => item.alive).Count() == 0)
+            if (hpBars.Where<HpBar>(item => item.alive).Count() == 0)
             {
                 OnDeath?.Invoke();
-            }
-
-            //If no more bars are alive invoke onDeath
-            if (!(hpBars.Where<HpBar>(item => item.alive).Count() > 0))
-            {
-                if (lastBar.alive == false)
-                {
-                    OnHpBarLost?.Invoke();
-                }
-                OnDeath?.Invoke();
-                currentPosture = 0;
             }
         }
 
@@ -104,6 +89,8 @@ namespace Assets.Scripts.Battle.Actor
         {
             currentStamina = Mathf.Clamp(currentStamina - damage, 0, maxStamina);
         }
+
+
 
         public void ChangeBuildup(float value)
         {
@@ -130,14 +117,9 @@ namespace Assets.Scripts.Battle.Actor
                 return 0;
         }
 
-        internal float GetCurrentPosture()
-        {
-            return currentPosture;
-        }
-
         public void Reset()
         {
-            Initialize();
+            CloneStartingActionsItems();
             HealAllBars();
             Refresh();
         }
@@ -166,7 +148,7 @@ namespace Assets.Scripts.Battle.Actor
                 action.Refresh();
         }
 
-        public void Initialize()
+        private void CloneStartingActionsItems()
         {
             actions.Clear();
             foreach (var skill in baseActions)

@@ -73,9 +73,9 @@ namespace Assets.Scripts.Save
             save.maxPosture = ad.maxPosture;
             save.maxBuildup = ad.maxBuildup;
 
-            save.STR = ad.ATK;
-            save.CON = ad.DEF;
-            save.AGI = ad.AGI;
+            save.STR = ad.Strength;
+            save.CON = ad.Agility;
+            save.AGI = ad.Mind;
             save.Spirit = ad.Spirit;
 
             // Copy HP Bars
@@ -118,9 +118,9 @@ namespace Assets.Scripts.Save
             ad.maxPosture = save.maxPosture;
 
 
-            ad.ATK = save.STR;
-            ad.DEF = save.CON;
-            ad.AGI = save.AGI;
+            ad.Strength = save.STR;
+            ad.Agility = save.CON;
+            ad.Mind = save.AGI;
             ad.Spirit = save.Spirit;
 
             // Restore HP bars

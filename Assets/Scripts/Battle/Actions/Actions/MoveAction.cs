@@ -13,7 +13,7 @@ namespace Assets.Scripts.Battle.Actions.Actions
         protected override void PerformSpecific(Actor.Actor casterActor, Action onPerformEnd)
         {
             OnCancel += onPerformEnd;
-            StickMult = 1 + casterActor.ActorData.AGI / 10;
+            StickMult = 1 + casterActor.ActorData.Mind / 10;
             var scaledStickMult = Direction * StickMult;
             var TargetPosition = casterActor.transform.position + scaledStickMult;
 

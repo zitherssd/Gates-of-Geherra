@@ -22,17 +22,6 @@ namespace Assets.Scripts.Battle.Actor.States
 
         public void OnCollisionEnter(Collision collision)
         {
-            if (collision.gameObject.CompareTag("Level"))
-            {
-                {
-                    if (collision.gameObject.name == "LandingTrap")
-                    {
-                        Debug.Log($"{actor.ActorData.name} hit trap!");
-                        actor.ApplyDamage(10f);
-                        actor.ApplyPosture(5f);
-                    }
-                }
-            }
         }
 
         public void Update()

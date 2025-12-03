@@ -26,6 +26,12 @@ namespace Assets.Scripts.Battle.Actions.Skills
         public float windupPostureDamageMult = 1f;
         public float recoveryPostureDamageMult = 1f;
         public float BuildupGainOnHit;
+        public float StrengthScaling = 0f;
+        public float AgilityScaling = 0f;
+        public float MindScaling = 0f;
+
+
+
 
         protected override void PerformSpecific(Actor.Actor casterActor, Action onPerformEnd)
         {
@@ -35,7 +41,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
             OnCancel = onPerformEnd;
             this.casterActor = casterActor;
             var actingState = casterActor.state.TransitionTo<ActingState>();
-            
+
             actingState.Set(this, onPerformEnd);
             casterActor.state.TransitionTo<ActingState>().Set(this, onPerformEnd);
             if (Type == BUTTONTYPE.VECTOR)
@@ -62,6 +68,9 @@ namespace Assets.Scripts.Battle.Actions.Skills
         }
         public void ApplyDamageEffects(Actor.Actor casterActor, Actor.Actor targetActor, Action onDamageEffectsApplied)
         {
+
+
+            // Need ro revise
             var targetBlocking = targetActor.state.IsBlocking();
             if (casterActor.isControllable && !targetBlocking)
                 UIManager.instance.GainMeter(SlowdownMeterGain);
@@ -71,64 +80,43 @@ namespace Assets.Scripts.Battle.Actions.Skills
                 casterActor.ActorData.ChangeBuildup(BuildupGainOnHit);
 
             // Apply Damage
-            var damage = Damage + casterActor.ActorData.ATK - targetActor.ActorData.DEF;
-            if (damage > 0)
-            {
-                var hitstop = StaticHelpers.LinearMap(damage, 0.2f, 15, 0.083f, 0.420f);
-                targetActor.ApplyDamage(damage);
-            };
+            var damage = Damage + casterActor.ActorData.Strength * StrengthScaling - targetActor.ActorData.Strength * StrengthScaling / 2 + casterActor.ActorData.Agility * AgilityScaling - targetActor.ActorData.Agility * AgilityScaling / 2 + casterActor.ActorData.Mind * MindScaling;
 
-            //Apply posture
-            if (PostureDamage > 0)
+            Vector3 direction;
+            if (Type is BUTTONTYPE.VECTOR)
+                direction = Direction.normalized;
+            else
+                direction = (targetActor.transform.position - casterActor.transform.position).normalized;
+            if (this.Tags.Contains(TAG.KNOCKBACK_AWAY))
+                direction = (targetActor.transform.position - casterActor.transform.position).normalized;
+            if (this.Tags.Contains(TAG.KNOCKBACK_BACK))
             {
-                targetActor.ApplyPosture(PostureDamage);
+                Vector3 cameraForward = Camera.main.transform.forward;
+                Vector3 aux = Vector3.Cross(direction, -Vector3.up);
 
+                if (Vector3.Dot(aux, cameraForward) < 0f) //if its oppsoite the camera
+                {
+                    aux = -aux; //make it face the camera
+                }
+                direction += aux;
             }
 
-            // Apply Knockback
-            if (KnockbackForce > 0)
+            if (this.Tags.Contains(TAG.KNOCKBACK_FRONT))
             {
-                Vector3 direction;
-                if (Type is BUTTONTYPE.VECTOR)
-                    direction = Direction.normalized;
-                else
-                    direction = (targetActor.transform.position - casterActor.transform.position).normalized;
-                if(this.Tags.Contains(TAG.KNOCKBACK_AWAY))
-                    direction = (targetActor.transform.position - casterActor.transform.position).normalized;
-                if (this.Tags.Contains(TAG.KNOCKBACK_BACK))
+                Vector3 cameraForward = Camera.main.transform.forward;
+                Vector3 aux = Vector3.Cross(direction, Vector3.up);
+
+                if (Vector3.Dot(aux, cameraForward) > 0f) //if it's the same as the camera
                 {
-                    Vector3 cameraForward = Camera.main.transform.forward;
-                    Vector3 aux = Vector3.Cross(direction, -Vector3.up);
-
-                    if (Vector3.Dot(aux, cameraForward) < 0f) //if its oppsoite the camera
-                    {
-                        aux = -aux; //make it face the camera
-                    }
-                    direction += aux;
+                    aux = -aux; //make it opposite
                 }
-
-                if (this.Tags.Contains(TAG.KNOCKBACK_FRONT))
-                {
-                    Vector3 cameraForward = Camera.main.transform.forward;
-                    Vector3 aux = Vector3.Cross(direction, Vector3.up);
-
-                    if (Vector3.Dot(aux, cameraForward) > 0f) //if it's the same as the camera
-                    {
-                        aux = -aux; //make it opposite
-                    }
-                    direction += aux;
-                }
-
-
-                if (this.Tags.Contains(TAG.KNOCKBACK_AIR)) { direction = (direction + Vector3.up).normalized; }
-                targetActor.ApplyKnockback(direction, KnockbackForce);
+                direction += aux;
             }
 
 
+            if (this.Tags.Contains(TAG.KNOCKBACK_AIR)) { direction = (direction + Vector3.up).normalized; }
 
-
-
-
+            targetActor.ApplyDamageInstance(damage, PostureDamage, direction, KnockbackForce);
             onDamageEffectsApplied?.Invoke();
         }
         public override bool IsValidAndInRange(Actor.Actor caster)
@@ -175,11 +163,6 @@ namespace Assets.Scripts.Battle.Actions.Skills
         {
             animator.speed = recoveryTimeMult;
             state = STATE.recovery;
-        }
-
-        public void OnReaction(Animator animator)
-        {
-
         }
 
         public enum STATE { uninitialized, windup, recovery };

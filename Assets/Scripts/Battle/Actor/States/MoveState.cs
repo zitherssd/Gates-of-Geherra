@@ -52,7 +52,7 @@ namespace Assets.Scripts.Battle.Actor.States
             actor.movement.SetFriction(0);
             if (!continousAction)
             {
-                actor.movement.AddForce((destination - actor.transform.position).normalized * (1 + actor.ActorData.AGI / 10));
+                actor.movement.AddForce((destination - actor.transform.position).normalized * (1 + actor.ActorData.Mind / 10));
                 actor.movement.FaceDirection(destination - actor.transform.position);
             }
         }
@@ -86,13 +86,13 @@ namespace Assets.Scripts.Battle.Actor.States
                     if (animator.speed > 1) animator.speed = StaticHelpers.LinearMap(animator.speed, 1, 10, 1, 4);
                     //actor.movement.ChangeSpeed((action.Direction.normalized) * (1 + actor.ActorData.AGI/10) * timer);
                     //actor.movement.MoveTowardTarget(action.Direction + actor.transform.position, 2f * timer, 1 + (float)actor.ActorData.AGI / 10);
-                    actor.movement.MoveInDirection(action.Direction, 2f * timer, 1 + (float)actor.ActorData.AGI / 10);
+                    actor.movement.MoveInDirection(action.Direction, 2f * timer, 1 + (float)actor.ActorData.Mind / 10);
 
                 }
                 else
                     //actor.movement.ChangeSpeed((action.Direction) * (1 + actor.ActorData.AGI/10));
                     //actor.movement.MoveTowardTarget(action.Direction + actor.transform.position, 2f, 1 + (float)actor.ActorData.AGI / 10);
-                    actor.movement.MoveInDirection(action.Direction, 2f, 1 + (float)actor.ActorData.AGI / 10);
+                    actor.movement.MoveInDirection(action.Direction, 2f, 1 + (float)actor.ActorData.Mind / 10);
                 //Show guide and store Direction in skill;
                 //guide.transform.position = player.transform.position + GetRelativeToCamera(deltaScaled * referencedAction.StickMult);
                 //referencedAction.Direction = GetRelativeToCamera(deltaScaled);

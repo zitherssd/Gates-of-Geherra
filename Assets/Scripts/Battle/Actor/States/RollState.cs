@@ -23,21 +23,6 @@ namespace Assets.Scripts.Battle.Actor.States
         {
         }
 
-        public void OnCollisionEnter(Collision collision)
-        {
-            if (collision.gameObject.CompareTag("Level"))
-            {
-
-                if (collision.gameObject.name == "LandingTrap")
-                {
-                    Debug.Log($"{actor.ActorData.name} landed on LandingTrap");
-
-                    actor.ApplyDamage(10f);
-                    actor.ApplyPosture(5f);
-                }
-            }
-        }
-
         public void Update()
         {
             var alphaBasedOnHeight = LinearMap(actor.transform.position.y, 0, 3, 0.33f, 0f);
@@ -57,6 +42,10 @@ namespace Assets.Scripts.Battle.Actor.States
         static float LinearMap(float input, float inputMin, float inputMax, float outputMin, float outputMax)
         {
             return outputMin + (outputMax - outputMin) * ((input - inputMin) / (inputMax - inputMin));
+        }
+
+        public void OnCollisionEnter(Collision collision)
+        {
         }
     }
 }

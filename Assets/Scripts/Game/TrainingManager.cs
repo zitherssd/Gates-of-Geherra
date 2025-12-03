@@ -132,17 +132,17 @@ namespace Assets.Scripts.Game
             switch (roll)
             {
                 case 0:
-                    ad.ATK += 1;
+                    ad.Strength += 1;
                     TooltipUI.instance.ShowPrompt("As a result of your training, you gain +1 STR");
                     Debug.Log("Training Reward: +1 Strength");
                     break;
                 case 1:
-                    ad.DEF += 1;
+                    ad.Agility += 1;
                     TooltipUI.instance.ShowPrompt("As a result of your training, you gain +1 DEF");
                     Debug.Log("Training Reward: +1 Body/Constitution");
                     break;
                 case 2:
-                    ad.AGI += 1;
+                    ad.Mind += 1;
                     TooltipUI.instance.ShowPrompt("As a result of your training, you gain +1 AGI");
                     Debug.Log("Training Reward: +1 Agility");
                     break;

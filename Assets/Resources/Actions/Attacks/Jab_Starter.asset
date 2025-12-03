@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5f076fb264629d419cdfb2d71f54608, type: 3}
   m_Name: Jab_Starter
   m_EditorClassIdentifier: 
+  guid: e50784aadad8cdb459c92505f169fb00
   Type: 0
   Name: Jab
   Rarity: 0
@@ -49,3 +50,6 @@ MonoBehaviour:
   windupPostureDamageMult: 1
   recoveryPostureDamageMult: 1
   BuildupGainOnHit: 4
+  StrengthScaling: 0
+  AgilityScaling: 0
+  MindScaling: 0

@@ -52,6 +52,7 @@ namespace Assets.Scripts.Battle.Actor
         public bool CanRegenPosture = true;
         public float PostureRegenCooldownDelay = 1f;
         public float StaminaRegenRate = 1.0f;
+        public float PostureREgenRate = 1.0f;
         public bool isControllable { get { return ActorData.Controllable; } private set { } }
 
         // Public methods
@@ -119,84 +120,86 @@ namespace Assets.Scripts.Battle.Actor
 
             action.Perform(this, onActionComplete);
         }
-        public void ApplyDamage(float originalDamage)
+
+
+        public void ApplyDamageInstance(float originalDmg, float originalPostureDamage, Vector3 direction, float force)
         {
-            ActorData.ChangeBuildup(Mathf.Max(UnityEngine.Random.Range(2, 3), originalDamage));
-            float postMitgationDamage = originalDamage;
+            //Damage
+            #region damage
+            //Changes buildup by 1% for each 2% of hp lost? not yet
+            ActorData.ChangeBuildup(Mathf.Max(UnityEngine.Random.Range(2, 3), originalDmg));
+
+            float postMitgationDamage = originalDmg;
             if (DamageRecieved != null)
             {
-                postMitgationDamage = DamageRecieved(originalDamage);
+                postMitgationDamage = DamageRecieved(originalDmg);
             }
-
             DamageApplied?.Invoke(postMitgationDamage);
             ItemEventBus.Raise(ItemTrigger.OnDamageTaken, this);
             ActorData.DealDamage(postMitgationDamage);
-            if (ActorData.isDead())
+            var DiedFromThisHit = ActorData.isDead();
+            //
+            #endregion
+            float postMitigationForce = force;
+            if (KnockbackRecieved != null)
+            {
+                postMitigationForce = KnockbackRecieved(force, direction);
+            }
+
+            if (DiedFromThisHit)
             {
                 CameraManager.instance.SlowTrack = true;
-            }
-            if (isControllable) UIManager.instance.GainMeter(0.5f);
-        }
-
-        public void ApplyPosture(float originalPostureDamage)
-        {
-            float postMitigationDamage = originalPostureDamage;
-            if (PostureRecieved != null)
-            {
-                postMitigationDamage = PostureRecieved(originalPostureDamage);
-            }
-
-            PostureApplied.Invoke(postMitigationDamage);
-            var previousPosture = ActorData.currentPosture;
-            ActorData.DealPostureDamage(postMitigationDamage);
-            // Stop posture regeneration and start the cooldown
-            CanRegenPosture = false;
-            postureRegenCooldownTimer = PostureRegenCooldownDelay;
-
-
-            var postureLostPercentage = (Mathf.Min(postMitigationDamage, previousPosture) / ActorData.maxPosture) * 100;
-            if (ActorData.currentPosture <= ActorData.maxPosture / 2)
-            {
-                // Calculate stagger duration
-                float staggerDuration = StaticHelpers.LinearMap(Mathf.Min(postureLostPercentage), 0, 100, 1f, 2.5f);
-                state.GetState<StaggerState>().Set(staggerDuration);
+                state.GetState<StaggerState>().Set(2f);
                 state.TransitionTo<StaggerState>();
-                return;
-            }
-
-            if (ActorData.isDead())
-                state.TransitionTo<StaggerState>().Set(2f);
-
-        }
-        public void ApplyKnockback(Vector3 direction, float force)
-        {
-            if (force > 0)
-            {
-                float postMitigationForce = force;
-
-                if (KnockbackRecieved != null)
+                if (postMitigationForce > 0f)
                 {
-                    postMitigationForce = KnockbackRecieved(force, direction);
+                    direction = direction * 1.2f;
+                    direction.y += 0.3f;
+                    movement.AddForce(postMitigationForce * direction);
+                    KnockbackApplied?.Invoke(postMitigationForce, direction);
+                }
+                //Apply force upwards and back yeah yeah
+
+                //dont care about posture if he didnt died right?
+            }
+            else
+            {
+                //Posture
+                float postMitigationDamage = originalPostureDamage;
+                if (PostureRecieved != null)
+                {
+                    postMitigationDamage = PostureRecieved(originalPostureDamage);
+                }
+                PostureApplied.Invoke(postMitigationDamage);
+                var previousPosture = ActorData.currentPosture;
+                ActorData.DealPostureDamage(postMitigationDamage);
+                // Stop posture regeneration and start the cooldown
+                CanRegenPosture = false;
+                postureRegenCooldownTimer = PostureRegenCooldownDelay;
+
+
+                var postureLostPercentage = (Mathf.Min(postMitigationDamage, previousPosture) / ActorData.maxPosture) * 100;
+                if (ActorData.currentPosture <= ActorData.maxPosture / 2)
+                {
+                    // Calculate stagger duration
+                    float staggerDuration = StaticHelpers.LinearMap(Mathf.Min(postureLostPercentage), 0, 100, 1f, 2.5f);
+                    state.GetState<StaggerState>().Set(staggerDuration);
+                    state.TransitionTo<StaggerState>();
                 }
 
-                if (!ActorData.isDead())
+                if (postMitigationForce > 0)
                 {
                     if (!state.IsStaggered())
                         direction.y = 0;
-                }
-                else
-                {
-                    direction = direction * 1.2f;
-                    if (direction.y < 0.3f) direction.y = 0.3f;
-                }
-                movement.AddForce(postMitigationForce * direction);
-                KnockbackApplied?.Invoke(postMitigationForce, direction);
 
-
-                //this.MoveToPosition(transform.position + direction.normalized * force, MoveState.Sliding, () => { animator.Play("Idle"); onKnockbackFinished(); });
-                //Blood particles
-                //GetComponentInChildren<ParticleSystem>().Play();
+                    movement.AddForce(postMitigationForce * direction);
+                    KnockbackApplied?.Invoke(postMitigationForce, direction);
+                }
             }
+
+
+
+            if (isControllable) UIManager.instance.GainMeter(0.4f);
         }
 
 

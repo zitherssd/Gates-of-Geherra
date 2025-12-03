@@ -34,9 +34,9 @@ public class StatPanelUI : MonoBehaviour
         MaxStamina.text = "<color=green>" + actorData.maxStamina.ToString();
         MaxBuildup.text = "<color=#5ACEFF>" + actorData.maxBuildup.ToString();
         MaxPosture.text = "<color=white>"+ actorData.maxPosture.ToString();
-        STRENGTH.text = "STR: " + actorData.ATK;
-        AGILITY.text = "AGI: " + actorData.AGI;
-        PERCEPTION.text = "PER: " + actorData.DEF;
+        STRENGTH.text = "STR: " + actorData.Strength;
+        AGILITY.text = "AGI: " + actorData.Mind;
+        PERCEPTION.text = "PER: " + actorData.Agility;
         SPIRIT.text = "SPI: " + actorData.Spirit;
 
     }

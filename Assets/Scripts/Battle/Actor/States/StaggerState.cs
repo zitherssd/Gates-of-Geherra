@@ -40,7 +40,7 @@ namespace Assets.Scripts.Battle.Actor.States
             //actor.KnockbackRecieved += ModifyKnockback;
             actor.PlayAnimation("PostureBroken");
             actor.audio.PlayAudio("Attack1");
-            actor.movement.SetFriction(0.33f);
+            actor.movement.SetFriction(0.4f);
             actor.DamageApplied += ChangeSpriteToDamaged;
             actor.KnockbackRecieved += Actor_KnockbackApplied;
             collisionOccured = false;
@@ -90,27 +90,13 @@ namespace Assets.Scripts.Battle.Actor.States
         {
             if (collision.gameObject.CompareTag("Level"))
             {
-                Debug.Log($"Velocity on collision is {actor.Rb.velocity.magnitude}");
-                Debug.Log($"RelativeVel is {collision.relativeVelocity.magnitude}");
-                if (collisionOccured == false)
-                {
-                    if (collision.gameObject.name == "Trap")
-                    {
-                        Debug.Log($"{actor.ActorData.name} hit trap!");
-                        actor.ApplyDamage(10f);
-                        actor.ApplyPosture(5f);
-                    }
-                    else
-                    {
-                        actor.ApplyPosture(5f);
-                    }
-                }
 
                 collisionOccured = true;
 
                 // Check if velocity magnitude is greater than the threshold
                 if (collision.relativeVelocity.magnitude > 0.1f)
                 {
+                    actor.ApplyDamageInstance(2f, 5f, Vector3.zero, 0);
                     // Calculate mirrored velocity (mirror along current velocity)
                     Vector3 mirroredVelocity = Vector3.Reflect(actor.Rb.velocity, collision.GetContact(0).normal);
                     var r = collision.relativeVelocity - 2 * Vector3.Dot(actor.Rb.velocity, collision.GetContact(0).normal) * collision.contacts[0].normal;

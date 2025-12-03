@@ -3,6 +3,7 @@ using Assets.Scripts.Utility;
 using System;
 using System.Linq;
 using UnityEngine;
+using static Assets.Scripts.Battle.Actions.BaseAction;
 
 namespace Assets.Scripts.Battle.Actions.Actions.Effects
 {
@@ -27,6 +28,11 @@ namespace Assets.Scripts.Battle.Actions.Actions.Effects
         public float KnockbackForceUp;
         public float CasterBuildupGain;
         public bool AutoGetHitbox;
+        public float StrengthScaling;
+        public float AgilityScaling;
+        public float MindScaling;
+
+
 
         public void Eval(Actor.Actor actor, BaseAction action)
         {
@@ -34,12 +40,12 @@ namespace Assets.Scripts.Battle.Actions.Actions.Effects
             HitboxEffect = gs.OnStartEffects.Where(item => item is IHitbox).FirstOrDefault() as IHitbox;
             var enemies = HitboxEffect.CheckEnemiesInsideHitbox(actor);
             foreach (var enemy in enemies)
-                ApplyDamageEffects(actor, enemy);
+                ApplyDamageEffects(actor, enemy, action);
         }
 
         public void Eval(Actor.Actor actor)
         {
-            ApplyDamageEffects(actor, actor);
+            ApplyDamageEffects(actor, actor, null);
         }
 
         public void Eval(Actor.Actor owner, ItemEventArgs args)
@@ -47,38 +53,57 @@ namespace Assets.Scripts.Battle.Actions.Actions.Effects
             throw new NotImplementedException();
         }
 
-        private void ApplyDamageEffects(Actor.Actor casterActor, Actor.Actor targetActor)
+        public void ApplyDamageEffects(Actor.Actor casterActor, Actor.Actor targetActor, BaseAction action)
         {
+
+
+            // Need ro revise
             var targetBlocking = targetActor.state.IsBlocking();
-            casterActor.ActorData.ChangeBuildup(CasterBuildupGain);
-            //Apply posture
-            if (PostureDamage > 0)
-            {
-                targetActor.ApplyPosture(PostureDamage);
-            }
+            if (casterActor.isControllable && !targetBlocking)
+                UIManager.instance.GainMeter(action.SlowdownMeterGain);
+            if (targetBlocking)
+                casterActor.ActorData.ChangeBuildup(CasterBuildupGain / 2);
+            else
+                casterActor.ActorData.ChangeBuildup(CasterBuildupGain);
 
             // Apply Damage
-            var damage = Damage + casterActor.ActorData.ATK - targetActor.ActorData.DEF;
-            if (damage > 0)
-            {
-                var hitstop = StaticHelpers.LinearMap(damage, 0.2f, 15, 0.083f, 0.420f);
-                targetActor.ApplyDamage(damage);
-            };
+            var damage = Damage + casterActor.ActorData.Strength * StrengthScaling - targetActor.ActorData.Strength * StrengthScaling / 2 + casterActor.ActorData.Agility * AgilityScaling - targetActor.ActorData.Agility * AgilityScaling / 2 + casterActor.ActorData.Mind * MindScaling;
 
-            // Apply Knockback
-            if (KnockbackForce > 0)
-            {
-                Vector3 direction;
+            Vector3 direction;
+            if (action.Type is BUTTONTYPE.VECTOR)
+                direction = action.Direction.normalized;
+            else
                 direction = (targetActor.transform.position - casterActor.transform.position).normalized;
-             
-                targetActor.ApplyKnockback(direction, KnockbackForce);
+            if (action.Tags.Contains(TAG.KNOCKBACK_AWAY))
+                direction = (targetActor.transform.position - casterActor.transform.position).normalized;
+            if (action.Tags.Contains(TAG.KNOCKBACK_BACK))
+            {
+                Vector3 cameraForward = Camera.main.transform.forward;
+                Vector3 aux = Vector3.Cross(direction, -Vector3.up);
+
+                if (Vector3.Dot(aux, cameraForward) < 0f) //if its oppsoite the camera
+                {
+                    aux = -aux; //make it face the camera
+                }
+                direction += aux;
             }
 
-            if (KnockbackForceUp > 0)
+            if (action.Tags.Contains(TAG.KNOCKBACK_FRONT))
             {
-                Vector3 upDirection = Vector3.up;
-                targetActor.ApplyKnockback(upDirection, KnockbackForceUp);
+                Vector3 cameraForward = Camera.main.transform.forward;
+                Vector3 aux = Vector3.Cross(direction, Vector3.up);
+
+                if (Vector3.Dot(aux, cameraForward) > 0f) //if it's the same as the camera
+                {
+                    aux = -aux; //make it opposite
+                }
+                direction += aux;
             }
+
+
+            if (action.Tags.Contains(TAG.KNOCKBACK_AIR)) { direction = (direction + Vector3.up).normalized; }
+
+            targetActor.ApplyDamageInstance(damage, PostureDamage, direction, KnockbackForce);
         }
     }
 }
