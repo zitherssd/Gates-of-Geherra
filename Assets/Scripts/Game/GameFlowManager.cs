@@ -26,7 +26,15 @@ namespace Assets.Scripts.Game
 
         public void Start()
         {
-            if (SaveManager.instance == null) { SetMode(GameMode.RestArea); return; }
+            if (SaveManager.instance == null) {
+                ActorData template = Resources.Load<ActorData>("Actors/MC");
+                ActorData clone = Instantiate(template);
+                playerActor.ActorData = clone;
+                RollNewstats(playerActor);
+                playerActor.Spawn();
+
+                SetMode(GameMode.RestArea); return; 
+            }
 
             if (SaveManager.instance.SlotExists(SaveManager.instance.currentSaveSlot))
             {
@@ -39,6 +47,7 @@ namespace Assets.Scripts.Game
                 ActorData clone = Instantiate(template);
                 playerActor.ActorData = clone;
                 playerActor.ActorData.Name = SaveManager.instance.newGamePlayerName;
+                RollNewstats(playerActor);
                 playerActor.Spawn();
                 SaveManager.instance.SaveToSlot(SaveManager.instance.currentSaveSlot);
             }
@@ -99,6 +108,19 @@ namespace Assets.Scripts.Game
                     //battleManager.BeginBattle(currentBattle);
                     break;
             }
+        }
+
+        public void RollNewstats(Actor playerActor)
+        {
+            var RandomStr = UnityEngine.Random.Range(1, 7) + UnityEngine.Random.Range(1, 7) + UnityEngine.Random.Range(1, 7);
+            var RandomAgi = UnityEngine.Random.Range(1, 7) + UnityEngine.Random.Range(1, 7) + UnityEngine.Random.Range(1, 7);
+            var RandomMnd = UnityEngine.Random.Range(1, 7) + UnityEngine.Random.Range(1, 7) + UnityEngine.Random.Range(1, 7);
+            var RandomSpi = UnityEngine.Random.Range(1, 7) + UnityEngine.Random.Range(1, 7) + UnityEngine.Random.Range(1, 7);
+
+            playerActor.ActorData.Strength = RandomStr;
+            playerActor.ActorData.Agility = RandomAgi;
+            playerActor.ActorData.Mind = RandomMnd;
+            playerActor.ActorData.Spirit = RandomSpi;
         }
     }
     public enum GameMode

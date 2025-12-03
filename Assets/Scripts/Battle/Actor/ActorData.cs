@@ -6,6 +6,7 @@ using Assets.Scripts.Battle.Actor.AI;
 using Assets.Scripts.Battle.Items;
 using Assets.Scripts.Utility;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Assets.Scripts.Battle.Actor
 {
@@ -20,10 +21,9 @@ namespace Assets.Scripts.Battle.Actor
         public float baseMaxBuildup;
         public float baseMaxPosture;
         public float baseMaxStamina;
-
-        public float maxBuildup;
-        public float maxPosture;
-        public float maxStamina;
+        public float maxBuildup { get { return baseMaxBuildup + Mind; }}
+        public float maxPosture { get { return baseMaxPosture + Strength; }}
+        public float maxStamina { get { return baseMaxStamina + Agility * 2; }}
 
         public bool Controllable;
         public AiRuleset AIRuleset;

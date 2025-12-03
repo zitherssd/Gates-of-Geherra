@@ -23990,7 +23990,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'SPT: 20'
+  m_text: 'SPI: 10'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7862caf7437fe894aa877a750417daab, type: 2}
   m_sharedMaterial: {fileID: -7489232668309123908, guid: 7862caf7437fe894aa877a750417daab, type: 2}
@@ -67223,7 +67223,7 @@ MonoBehaviour:
   MaxPosture: {fileID: 1422392704}
   STRENGTH: {fileID: 1085031071}
   AGILITY: {fileID: 842504183}
-  PERCEPTION: {fileID: 1840978118}
+  MIND: {fileID: 1840978118}
   SPIRIT: {fileID: 119850185}
   actorData: {fileID: 0}
 --- !u!1 &881901934
@@ -98105,7 +98105,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -247.9, y: -8}
+  m_AnchoredPosition: {x: -247.7, y: -15.9}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1636807861
@@ -98128,7 +98128,7 @@ MonoBehaviour:
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 63, y: 22}
+  m_CellSize: {x: 85.4, y: 24.13}
   m_Spacing: {x: 0, y: 0}
   m_Constraint: 2
   m_ConstraintCount: 2
@@ -103076,7 +103076,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'DEF: 9'
+  m_text: 'MND: 9'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7862caf7437fe894aa877a750417daab, type: 2}
   m_sharedMaterial: {fileID: -7489232668309123908, guid: 7862caf7437fe894aa877a750417daab, type: 2}

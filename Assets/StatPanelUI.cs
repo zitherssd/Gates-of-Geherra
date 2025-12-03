@@ -16,7 +16,7 @@ public class StatPanelUI : MonoBehaviour
     public TextMeshProUGUI MaxPosture;
     public TextMeshProUGUI STRENGTH;
     public TextMeshProUGUI AGILITY;
-    public TextMeshProUGUI PERCEPTION;
+    public TextMeshProUGUI MIND;
     public TextMeshProUGUI SPIRIT;
 
     public ActorData actorData;
@@ -35,8 +35,8 @@ public class StatPanelUI : MonoBehaviour
         MaxBuildup.text = "<color=#5ACEFF>" + actorData.maxBuildup.ToString();
         MaxPosture.text = "<color=white>"+ actorData.maxPosture.ToString();
         STRENGTH.text = "STR: " + actorData.Strength;
-        AGILITY.text = "AGI: " + actorData.Mind;
-        PERCEPTION.text = "PER: " + actorData.Agility;
+        AGILITY.text = "AGI: " + actorData.Agility;
+        MIND.text = "MND: " + actorData.Mind;
         SPIRIT.text = "SPI: " + actorData.Spirit;
 
     }

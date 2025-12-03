@@ -69,9 +69,9 @@ namespace Assets.Scripts.Save
             save.currentStamina = ad.currentStamina;
             save.currentBuildup = ad.currentBuildup;
             save.currentPosture = ad.currentPosture;
-            save.maxStamina = ad.maxStamina;
-            save.maxPosture = ad.maxPosture;
-            save.maxBuildup = ad.maxBuildup;
+            save.maxStamina = ad.baseMaxStamina;
+            save.maxPosture = ad.baseMaxPosture;
+            save.maxBuildup = ad.baseMaxBuildup;
 
             save.STR = ad.Strength;
             save.CON = ad.Agility;
@@ -113,9 +113,9 @@ namespace Assets.Scripts.Save
             ad.currentStamina = save.currentStamina;
             ad.currentBuildup = save.currentBuildup;
             ad.currentPosture = save.currentPosture;
-            ad.maxStamina = save.maxStamina;
-            ad.maxBuildup = save.maxBuildup;
-            ad.maxPosture = save.maxPosture;
+            ad.baseMaxStamina = save.maxStamina;
+            ad.baseMaxBuildup = save.maxBuildup;
+            ad.baseMaxPosture = save.maxPosture;
 
 
             ad.Strength = save.STR;

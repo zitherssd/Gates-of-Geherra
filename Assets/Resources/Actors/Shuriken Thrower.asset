@@ -18,9 +18,9 @@ MonoBehaviour:
   - _currentHp: 0
     maxHp: 9
     alive: 1
-  maxBuildup: 0
-  maxPosture: 10
-  maxStamina: 100
+  baseMaxBuildup: 15
+  baseMaxPosture: 10
+  baseMaxStamina: 100
   Controllable: 0
   AIRuleset: 5
   mainColor: {r: 0.5660378, g: 0.509968, b: 0.38714847, a: 1}
@@ -37,11 +37,11 @@ MonoBehaviour:
   - {fileID: 0}
   items: []
   currentBuildup: 0
-  currentPosture: 10
+  currentPosture: 0
   currentStamina: 100
   postureRegenRate: 1
   staminaRegenRate: 1
-  ATK: 1
-  DEF: 1
-  AGI: 2
-  Spirit: 0
+  Strength: 5
+  Agility: 0
+  Mind: 1
+  Spirit: 5

@@ -100,8 +100,7 @@ namespace Assets.Scripts.Battle.Actions.Actions.Effects
                 direction += aux;
             }
 
-
-            if (action.Tags.Contains(TAG.KNOCKBACK_AIR)) { direction = (direction + Vector3.up).normalized; }
+            direction += Vector3.up * KnockbackForceUp;
 
             targetActor.ApplyDamageInstance(damage, PostureDamage, direction, KnockbackForce);
         }

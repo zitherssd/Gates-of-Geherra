@@ -82,7 +82,6 @@ namespace Assets.Scripts.Battle.Actor
         public void Spawn()
         {
             ActorData.Reset();
-
         }
 
         public void Update()
@@ -158,9 +157,6 @@ namespace Assets.Scripts.Battle.Actor
                     movement.AddForce(postMitigationForce * direction);
                     KnockbackApplied?.Invoke(postMitigationForce, direction);
                 }
-                //Apply force upwards and back yeah yeah
-
-                //dont care about posture if he didnt died right?
             }
             else
             {

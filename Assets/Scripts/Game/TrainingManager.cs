@@ -134,34 +134,14 @@ namespace Assets.Scripts.Game
                 case 0:
                     ad.Strength += 1;
                     TooltipUI.instance.ShowPrompt("As a result of your training, you gain +1 STR");
-                    Debug.Log("Training Reward: +1 Strength");
                     break;
                 case 1:
                     ad.Agility += 1;
-                    TooltipUI.instance.ShowPrompt("As a result of your training, you gain +1 DEF");
-                    Debug.Log("Training Reward: +1 Body/Constitution");
+                    TooltipUI.instance.ShowPrompt("As a result of your training, you gain +1 AGI");
                     break;
                 case 2:
                     ad.Mind += 1;
-                    TooltipUI.instance.ShowPrompt("As a result of your training, you gain +1 AGI");
-                    Debug.Log("Training Reward: +1 Agility");
-                    break;
-                case 3:
-                    ad.Spirit += 1;
-                    TooltipUI.instance.ShowPrompt("As a result of your training, you gain +1 Spirit");
-                    Debug.Log("Training Reward: +1 Spirit");
-                    break;
-                case 4:
-                    ad.maxStamina += 3;
-                    TooltipUI.instance.ShowPrompt("As a result of your training, you gain +3 Max Stamina");
-                    break;
-                case 5:
-                    ad.maxBuildup += 3;
-                    TooltipUI.instance.ShowPrompt("As a result of your training, you gain +3 Max Buildup");
-                    break;
-                case 6:
-                    ad.maxPosture += 3;
-                    TooltipUI.instance.ShowPrompt("As a result of your training, you gain +3 Max Posture");
+                    TooltipUI.instance.ShowPrompt("As a result of your training, you gain +1 MND");
                     break;
                     
             }
