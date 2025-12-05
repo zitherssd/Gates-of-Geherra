@@ -343,7 +343,6 @@ namespace Assets.Scripts
         internal void ResetMeter()
         {
             SlowdownMeter.value = 0f;
-            Debug.Log("ResetMeter called: SlowdownMeter.value set to 0");
             StopAllCoroutines();
             StartCoroutine(StopEffect(0.05f));
         }

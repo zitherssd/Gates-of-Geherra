@@ -32,14 +32,14 @@ namespace Assets.Scripts.Battle.Actions
         public Action OnCancel;
 
         public enum BUTTONTYPE { INSTANT, VECTOR, CONTINNUOUS, CONTINUOUS_VECTOR };
-
         public virtual void Perform(Actor.Actor casterActor, Action onPerformEnd)
         {
             //ResetCooldown();
 
-            if (Tags.Contains(TAG.KILLMOMENTUM)) casterActor.movement.ResetMomentum();
+            if (Tags.Contains(TAG.KILLMOMENTUM)) casterActor.movement.ResetMomentum(); //implement as effect
 
-            casterActor.ActorData.DealStaminaDamage(StaminaCost);
+            //costs
+            casterActor.ActorData.DealStaminaDamage(StaminaCost); 
             casterActor.ActorData.ChangeBuildup(BuildupGain);
             casterActor.ActorData.ChangeBuildup(-BuildupCost);
 

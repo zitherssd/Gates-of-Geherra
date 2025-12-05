@@ -61,7 +61,6 @@ namespace Assets.Scripts.Battle.Actions.Skills
             target = casterActor.target.ClosestEnemy;
             casterActor.PostureRecieved += ApplyPostureModifier;
         }
-
         public void Unsubscribe()
         {
             casterActor.PostureRecieved -= ApplyPostureModifier;

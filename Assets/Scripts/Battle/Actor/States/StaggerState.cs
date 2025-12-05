@@ -96,6 +96,7 @@ namespace Assets.Scripts.Battle.Actor.States
                 // Check if velocity magnitude is greater than the threshold
                 if (collision.relativeVelocity.magnitude > 0.1f)
                 {
+                    Debug.Log(collision.relativeVelocity.magnitude);
                     actor.ApplyDamageInstance(2f, 5f, Vector3.zero, 0);
                     // Calculate mirrored velocity (mirror along current velocity)
                     Vector3 mirroredVelocity = Vector3.Reflect(actor.Rb.velocity, collision.GetContact(0).normal);

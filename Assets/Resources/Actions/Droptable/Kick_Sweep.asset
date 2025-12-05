@@ -24,7 +24,7 @@ MonoBehaviour:
   BuildupGain: 0
   StaminaCost: 13
   Speed: 0
-  Tags: 0c0000001000000001000000
+  Tags: 0c000000100000000100000012000000
   Direction: {x: -0.50078166, y: 0, z: 0.8655736}
   currentCooldownTimer: 0
   StickMult: 1.2
@@ -56,3 +56,6 @@ MonoBehaviour:
   windupPostureDamageMult: 1
   recoveryPostureDamageMult: 1
   BuildupGainOnHit: 5
+  StrengthScaling: 0
+  AgilityScaling: 0
+  MindScaling: 0

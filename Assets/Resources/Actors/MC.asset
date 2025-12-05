@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: MC
   m_EditorClassIdentifier: 
   guid: b8a7b1ce80f78164f9e1d2631a3c98fa
-  Name: Gandalf
+  Name: Yamete
   hpBars:
   - _currentHp: 10
     maxHp: 10
@@ -26,12 +26,13 @@ MonoBehaviour:
   baseMaxStamina: 20
   Controllable: 1
   AIRuleset: 0
-  mainColor: {r: 0, g: 0, b: 0, a: 0}
-  secondaryColor: {r: 0.6845144, g: 0.8207547, b: 0.2748754, a: 1}
+  mainColor: {r: 0.83396226, g: 0.83396226, b: 0.83396226, a: 0}
+  secondaryColor: {r: 1, g: 0.05429987, b: 0, a: 1}
   startingItems:
   - {fileID: 11400000, guid: 5b6c739aefd38644ea98ff8f193967b7, type: 2}
   - {fileID: 11400000, guid: 9929547627aa6c94d840fd5766eb1036, type: 2}
   - {fileID: 11400000, guid: b5495c701cd7d9040adffb62f79fd415, type: 2}
+  - {fileID: 11400000, guid: b1cf4dcd96447f643b9838901f8fe9f0, type: 2}
   baseActions:
   - {fileID: 11400000, guid: 498ba4be69212c045ad9de12e867357c, type: 2}
   - {fileID: 11400000, guid: d71b702805a26db45a66daff55b696d2, type: 2}
@@ -49,13 +50,14 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
   items: []
   currentBuildup: 0
-  currentPosture: 22
-  currentStamina: 36
+  currentPosture: 16
+  currentStamina: 44
   postureRegenRate: 1
   staminaRegenRate: 2
-  Strength: 12
+  Strength: 6
   Agility: 12
-  Mind: 12
+  Mind: 15
   Spirit: 12

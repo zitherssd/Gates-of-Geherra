@@ -26,8 +26,6 @@ namespace Assets.Scripts.Battle.Idle
 
             if (currentLock.IsDone)
             {
-                // Unlock finished
-                //TimeLockManager.Remove(timeLockId);
 
                 targetButton.interactable = true;
                 countdownText.text = "";

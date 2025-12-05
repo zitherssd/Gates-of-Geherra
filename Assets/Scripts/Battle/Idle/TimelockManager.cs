@@ -10,7 +10,7 @@ public static class TimeLockManager
 
     public static bool IsLocked(string id)
     {
-        Cleanup();
+        //Cleanup();
         return GameFlowManager.instance.timelocks.Any(t => t.id == id);
     }
 

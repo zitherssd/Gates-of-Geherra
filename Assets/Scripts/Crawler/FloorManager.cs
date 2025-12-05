@@ -56,7 +56,7 @@ namespace Assets.Scripts.Crawler
                 var battle = RandomBattles[UnityEngine.Random.Range(0, RandomBattles.Count)];
                 GameFlowManager.instance.EnterBattle(battle, () =>
                 {
-                    TimeLockManager.Add("QuickFight", System.TimeSpan.FromMinutes(5));
+                    TimeLockManager.Add("QuickFight", System.TimeSpan.FromMinutes(1));
                 });
             });
         }

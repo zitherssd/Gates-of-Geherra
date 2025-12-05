@@ -28,3 +28,7 @@ Our delusions are our strongest weapons
 Your training was futile.
 Your training didn't lead to any results.
 Your training 
+
+Icons for:
+- Posture (shield)
+- HP (heart)

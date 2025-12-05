@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.Battle.Actor;
+using System;
 
 namespace Assets.Scripts.Battle.Actions.Actions.Effects
 {
@@ -13,6 +14,16 @@ namespace Assets.Scripts.Battle.Actions.Actions.Effects
         public void Eval(Actor.Actor owner)
         {
             owner.ActorData.HealAllAliveBars();
+        }
+    }
+    [Serializable]
+    public class GainBuildup : IItemEffect
+    {
+        public float BuildupGain;
+
+        public void Eval(Actor.Actor owner)
+        {
+            owner.ActorData.ChangeBuildup(BuildupGain);
         }
     }
 

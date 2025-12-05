@@ -139,21 +139,22 @@ namespace Assets.Scripts.Battle.Actor
             var DiedFromThisHit = ActorData.isDead();
             //
             #endregion
-            float postMitigationForce = force;
-            if (KnockbackRecieved != null)
-            {
-                postMitigationForce = KnockbackRecieved(force, direction);
-            }
 
             if (DiedFromThisHit)
             {
+
                 CameraManager.instance.SlowTrack = true;
                 state.GetState<StaggerState>().Set(2f);
                 state.TransitionTo<StaggerState>();
+                float postMitigationForce = force;
+                if (KnockbackRecieved != null)
+                {
+                    postMitigationForce = KnockbackRecieved(force, direction);
+                }
                 if (postMitigationForce > 0f)
                 {
-                    direction = direction * 1.2f;
-                    direction.y += 0.3f;
+                    postMitigationForce *= 1.2f;
+                    direction.y += 0.6f;
                     movement.AddForce(postMitigationForce * direction);
                     KnockbackApplied?.Invoke(postMitigationForce, direction);
                 }
@@ -181,6 +182,12 @@ namespace Assets.Scripts.Battle.Actor
                     float staggerDuration = StaticHelpers.LinearMap(Mathf.Min(postureLostPercentage), 0, 100, 1f, 2.5f);
                     state.GetState<StaggerState>().Set(staggerDuration);
                     state.TransitionTo<StaggerState>();
+                }
+
+                float postMitigationForce = force;
+                if (KnockbackRecieved != null)
+                {
+                    postMitigationForce = KnockbackRecieved(force, direction);
                 }
 
                 if (postMitigationForce > 0)

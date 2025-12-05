@@ -11,7 +11,6 @@ namespace Assets.Scripts.Game
         public Button trainingButton;
         public Button quickFightButton;
         public static TrainingManager instance;
-        private TimeLock trainingLock;
         private bool visible;
 
 
@@ -23,20 +22,30 @@ namespace Assets.Scripts.Game
         public void Enter()
         {
             GameFlowManager.instance.playerActor.PlayAnimation("Fire");
-            Refresh();
         }
 
         void Update()
         {
-            Refresh();
+
+            var trainingLock = TimeLockManager.Get("Training");
+            var quickFightLock = TimeLockManager.Get("QuickFight");
+
+            if (quickFightLock != null && quickFightLock.IsDone)
+                TimeLockManager.Remove("QuickFight");
+
+            if (trainingLock != null || quickFightLock != null)
+                quickFightButton.interactable = false;
+            else
+                quickFightButton.interactable = true;
+            
 
             if (trainingLock == null)
             {
+                trainingButton.interactable = true;
                 return;
 
             }
-
-            if (trainingLock.IsDone)
+            else if (trainingLock.IsDone)
             {
                 AwardRandomStat();
                 TimeLockManager.Remove("Training");
@@ -76,37 +85,6 @@ namespace Assets.Scripts.Game
 
             TimeLockManager.Add("Training", timespan);
             GameFlowManager.instance.trainingsDoneThisFloor++;
-            Refresh();
-        }
-
-        void OnEnable() => Refresh();
-
-        public void Refresh()
-        {
-            trainingLock = TimeLockManager.Get("Training");
-            var quickFightLock = TimeLockManager.Get("QuickFight");
-            if(quickFightLock != null && quickFightLock.IsDone)
-                TimeLockManager.Remove("QuickFight");
-            
-            if (trainingLock != null || quickFightLock != null)
-            {
-                quickFightButton.interactable = false;
-            }
-            else
-            {
-                quickFightButton.interactable = true;
-            }
-
-            if (trainingLock != null)
-            {
-                trainingButton.interactable = false;
-                Show();
-            }
-            else
-            {
-                trainingButton.interactable = true;
-                Hide();
-            }
         }
 
         private void Show()
@@ -127,7 +105,7 @@ namespace Assets.Scripts.Game
             var ad = GameFlowManager.instance.playerActor.ActorData;
 
             // Pick a random stat index
-            int roll = UnityEngine.Random.Range(0, 6);
+            int roll = UnityEngine.Random.Range(0, 3);
 
             switch (roll)
             {
@@ -142,6 +120,9 @@ namespace Assets.Scripts.Game
                 case 2:
                     ad.Mind += 1;
                     TooltipUI.instance.ShowPrompt("As a result of your training, you gain +1 MND");
+                    break;
+                case 3:
+                    TooltipUI.instance.ShowPrompt("Your training failed to produce any results");
                     break;
                     
             }
