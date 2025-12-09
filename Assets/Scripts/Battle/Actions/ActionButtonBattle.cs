@@ -214,11 +214,11 @@ namespace Assets.Scripts.Battle.Actions
                     guide.GetComponent<ParticleSystem>().Stop();
                     break;
                 case BUTTONTYPE.CONTINNUOUS:
-                    referencedAction.OnCancel?.Invoke();
+                    referencedAction.Cancel();
                     EnableJoystick(false);
                     break;
                 case BUTTONTYPE.CONTINUOUS_VECTOR:
-                    referencedAction.OnCancel?.Invoke();
+                    referencedAction.Cancel();
                     UIManager.instance.GainMeter(referencedAction.SlowdownMeterGainOnRelease);
                     EnableJoystick(false);
                     guide.GetComponent<ParticleSystem>().Stop();

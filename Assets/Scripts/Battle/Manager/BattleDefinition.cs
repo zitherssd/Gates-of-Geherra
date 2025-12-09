@@ -10,7 +10,8 @@ namespace Assets.Scripts.Battle.Manager
     {
         public List<ActorData> enemyActors;
         public List<Vector3> enemyStartPosition;
-        public Vector3 playerStartPosition;
+        public string Level;
+        public Transform playerStartPosition;
         public RewardPool RewardPool;
         public List<RewardItemsPool> RewardItemsPools;
 

@@ -44,7 +44,7 @@ namespace Assets.Scripts.Battle.Actor.States
             this.onEnd = onEnd;
 
             this.action = action;
-
+            this.onInterrupt = action.OnCancel;
 
             if (action.Animation.ToString() == "Roll")
             {

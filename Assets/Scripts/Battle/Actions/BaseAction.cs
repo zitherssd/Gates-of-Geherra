@@ -172,9 +172,9 @@ namespace Assets.Scripts.Battle.Actions
             TECH, FACECLOSEST, RECHARGE_DURING_SLOWDOWN, KNOCKBACK_AWAY
         }
 
-        public void OnActionEnd()
+        public virtual void Cancel()
         {
-
+            OnCancel?.Invoke();
         }
     }
 

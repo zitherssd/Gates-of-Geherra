@@ -10,30 +10,30 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 29bf3ed8153f62c41a58d7707b5ac266, type: 3}
-  m_Name: Roll_Starter
+  m_Name: Flick_Shuffle
   m_EditorClassIdentifier: 
-  guid: aae9dbed006f82f4086140a65bee5c06
+  guid: 5616ca93a2d8be24ab7510fb48ad3c15
   Type: 1
-  Name: Roll
+  Name: Flick
   Rarity: 0
-  Description: Inspired by Dark Souls
-  CooldownTimer: 12
+  Description: Throw yourself in a direction
+  CooldownTimer: 16
   TotalUses: 2
-  remainingUses: 0
-  BuildupCost: 0
+  remainingUses: 2
+  BuildupCost: 4
   BuildupGain: 4
-  StaminaCost: 8
+  StaminaCost: 6
   Speed: 0
-  Tags: 0c0000000a000000
-  Direction: {x: 0, y: 0, z: 0}
+  Tags: 0a0000000c00000011000000
+  Direction: {x: -0.7281511, y: -0, z: 0.6854167}
   currentCooldownTimer: 0
   StickMult: 1
   SlowdownMeterGain: 0.75
   SlowdownMeterGainOnEnd: 0
-  SlowDownMeterGainOnPress: 1.5
+  SlowDownMeterGainOnPress: 2
   SlowdownMeterGainOnRelease: 0
-  Animation: 13
-  force: 3.3
-  recoveryTimeMult: 0.8
-  windupTimeMult: 1.4
-  friction: 3.5
+  Animation: 14
+  force: 2.8
+  recoveryTimeMult: 3.5
+  windupTimeMult: 3.5
+  friction: 0.5

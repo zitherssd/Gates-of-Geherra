@@ -15,12 +15,21 @@ namespace Assets.Scripts.Battle.Actions.Reactions
         public float StaminaCostMult = 1f;
         public float duration;
         public float startupDelay;
+        public float BuildupGainOnBlock;
+        public BlockType blockType = BlockType.Block;
         public Action onSucessfulBlock;
         protected override void PerformSpecific(Actor.Actor actor, Action onReactionComplete)
         {
             OnCancel = onReactionComplete;
             actor.state.GetState<BlockState>().Set(this);
             var blockState = actor.state.TransitionTo<BlockState>();
+        }
+
+        public enum BlockType
+        {
+            Block,
+            Parry,
+            Guard,
         }
     }
 

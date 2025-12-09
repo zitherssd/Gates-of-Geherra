@@ -1,14 +1,54 @@
 -add ninja shuriken thrower or archer oribit behaviour type enemy range
 
-ActionUIController;
-LoadoutUIController;
 
--Make UI for Items
+
+ActionUIController; //
+LoadoutUIController; //Those are done but under different names
+
 -Save slots of actions
 
+- Make Explore button have 5/5 charges, 30 min recharge. Can lead to fight > stuffidk
+- Train costs 1 nutrition/hour - 50 nutrition total
+- Rest costs 0.5 nutrition/hour - slowly heals hp
 
-late spring edition
-hide ui when battle is over
+- For every 30 minutes spent training you get 1 random stat gain. This works even if the game is off so like idle games if you come back to it after 1 day you get 48 stat gains.
+
+
+- Skills:
+Defensive
+-Block > Transition to BlockState for 1 second. Attacks recieved while blocking deal (40)% less damage. Taking damage extends block state by 0.5s capped to 1 max for first hit 0.33s/12nd hit/0.25 3th hit/etc. If you spend 2.5 seconds in blockstate you knockback and deal posture to everyone around you
+-Parry > Transition to BlockState for 0.4 seconds. Negate attack and deal posture dmg to target. exit BlockState on successful parry.
+-Weave > Negate attacks during animation play. Casting time of 0.3s? multiple charges? no timestop effect?
+-Dodge > You know this one already done.
+-Flick > Quick side-step that leaves your momentum intact
+-Step > Like Dodge but shorter distance and faster?
+
+
+Start with: Jab/Chop - 
++ 2 Random from : Cross, Palm Strike, High Kick
+And 1 defensive skill?
+
+Other skills after
+
+
+
+
+
+
+You step through the Gates for the first time
+Our delusions are our strongest weapons
+
+Icons for:
+- Posture (shield)
+- HP (heart)
+
+
+
+
+
+
+
+
 
 Straight *
 Hook *
@@ -18,17 +58,4 @@ Roundhouse kick
 Sweep *
 Dash
 Charge
-Flicker (usable only when in melee) (teleports to back of enemy?)
 Project Fire (Continuous aoe 
-
-
-You step through the Gates for the first time
-Our delusions are our strongest weapons
-
-Your training was futile.
-Your training didn't lead to any results.
-Your training 
-
-Icons for:
-- Posture (shield)
-- HP (heart)

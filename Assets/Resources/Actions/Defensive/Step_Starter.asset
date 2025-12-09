@@ -10,21 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 29bf3ed8153f62c41a58d7707b5ac266, type: 3}
-  m_Name: Roll_Shuffle
+  m_Name: Step_Starter
   m_EditorClassIdentifier: 
   guid: 5616ca93a2d8be24ab7510fb48ad3c15
   Type: 1
-  Name: Shuffle
+  Name: Step
   Rarity: 0
-  Description: Do a cool sidestep
+  Description: Do a cool sidestep, you kno
   CooldownTimer: 10
-  TotalUses: 2
+  TotalUses: 3
   remainingUses: 2
   BuildupCost: 4
-  BuildupGain: 6
-  StaminaCost: 4
+  BuildupGain: 4
+  StaminaCost: 5
   Speed: 0
-  Tags: 0a0000000c00000011000000
+  Tags: 0a0000000c000000
   Direction: {x: -0.7281511, y: -0, z: 0.6854167}
   currentCooldownTimer: 0
   StickMult: 1
@@ -33,7 +33,7 @@ MonoBehaviour:
   SlowDownMeterGainOnPress: 2
   SlowdownMeterGainOnRelease: 0
   Animation: 14
-  force: 2.8
-  recoveryTimeMult: 3.5
+  force: 4.7
+  recoveryTimeMult: 2.6
   windupTimeMult: 3.5
-  friction: 0.5
+  friction: 3.85

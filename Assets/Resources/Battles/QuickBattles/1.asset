@@ -16,7 +16,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f37eb8c8a780f98419ee07350d193ef2, type: 2}
   - {fileID: 11400000, guid: f37eb8c8a780f98419ee07350d193ef2, type: 2}
   enemyStartPosition: []
-  playerStartPosition: {x: 1.83, y: 0, z: -0.79}
+  Level: Hall
+  playerStartPosition: {fileID: 0}
   RewardPool: {fileID: 0}
   RewardItemsPools:
   - {fileID: 11400000, guid: 3ec2e97b6c3eb8f42a37ad763d550b15, type: 2}

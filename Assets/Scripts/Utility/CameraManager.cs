@@ -54,9 +54,9 @@ namespace Assets.Scripts.Utility
 
         }
 
-        public void ResetForNewBattle()
+        public void ResetForNewBattle(Vector3 position)
         {
-            transform.position = new Vector3(3.68f, 2.4f, -5.17f);
+            transform.position = position;
         }
 
         void Update()

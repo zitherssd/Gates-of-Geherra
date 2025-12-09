@@ -14,8 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyActors:
   - {fileID: 11400000, guid: f37eb8c8a780f98419ee07350d193ef2, type: 2}
-  - {fileID: 11400000, guid: 5c777c1ad3913004aab5763eb39282da, type: 2}
+  - {fileID: 11400000, guid: f37eb8c8a780f98419ee07350d193ef2, type: 2}
+  - {fileID: 11400000, guid: f37eb8c8a780f98419ee07350d193ef2, type: 2}
+  - {fileID: 11400000, guid: f37eb8c8a780f98419ee07350d193ef2, type: 2}
+  - {fileID: 11400000, guid: f37eb8c8a780f98419ee07350d193ef2, type: 2}
   - {fileID: 11400000, guid: f37eb8c8a780f98419ee07350d193ef2, type: 2}
   enemyStartPosition: []
-  playerStartPosition: {x: 1.83, y: 0, z: -0.79}
+  Level: Original
+  playerStartPosition: {fileID: 0}
   RewardPool: {fileID: 11400000, guid: bbcaeb1e490939c44a42b6e43cb7ce24, type: 2}
+  RewardItemsPools: []

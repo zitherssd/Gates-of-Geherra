@@ -26,8 +26,8 @@ MonoBehaviour:
   baseMaxStamina: 30
   Controllable: 0
   AIRuleset: 1
-  mainColor: {r: 0.12575085, g: 0.18867922, b: 0.1219295, a: 0}
-  secondaryColor: {r: 0.26415092, g: 0.19346702, b: 0.15076537, a: 0}
+  mainColor: {r: 0.12376268, g: 0.2679245, b: 0.11475256, a: 0}
+  secondaryColor: {r: 0.3207547, g: 0.19191022, b: 0.113171935, a: 0}
   startingItems: []
   baseActions:
   - {fileID: 11400000, guid: bbf04903c613b684fbee4bea1e99fc92, type: 2}
@@ -41,7 +41,7 @@ MonoBehaviour:
   - {fileID: 0}
   items: []
   currentBuildup: 0
-  currentPosture: 0
+  currentPosture: 18
   currentStamina: 0
   postureRegenRate: 1
   staminaRegenRate: 2

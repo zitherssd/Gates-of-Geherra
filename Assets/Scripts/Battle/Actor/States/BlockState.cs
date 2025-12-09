@@ -14,7 +14,9 @@ namespace Assets.Scripts.Battle.Actor.States
         [Range(0, 2)] public float KnockbackModifier = 1f;
         public Action OnEnd;
         private float duration;
+        private float timeSpentInBlockDuration = 0f;
         private Block skill;
+        private int numberOfHits = 0;
 
         public BlockState(Actor owner)
         {
@@ -23,6 +25,11 @@ namespace Assets.Scripts.Battle.Actor.States
 
         public BlockState Set(Block block)
         {
+            if(block.blockType == Block.BlockType.Block)
+            {
+                timeSpentInBlockDuration = 0f;
+                numberOfHits = 0;
+            }
             this.DamageModifier = block.DamageModifier;
             this.PostureModifier = block.PostureModifier;
             this.KnockbackModifier = block.KnockbackModifier;
@@ -30,37 +37,76 @@ namespace Assets.Scripts.Battle.Actor.States
             this.skill = block;
             return this;
         }
-        public BlockState Set(float DamageModifier, float PostureModifier, float KnockbackModifier, float duration)
-        {
-            this.DamageModifier = DamageModifier;
-            this.PostureModifier = PostureModifier;
-            this.KnockbackModifier = KnockbackModifier;
-            this.duration = duration;
-            return this;
-        }
 
         public void Enter()
         {
+            if(skill.blockType == Block.BlockType.Parry)
+            {
+                owner.DamageApplied += Cancel;
+            }
+            else if (skill.blockType == Block.BlockType.Block)
+            {
+                owner.DamageApplied += IncreaseDuration;
+                timeSpentInBlockDuration = 0f;
+            }
+            else if (skill.blockType == Block.BlockType.Guard)
+            {
+                owner.DamageApplied += GainSlowdownMeter;
+            }
             owner.GetComponentInChildren<ActorUIController>().SetCC(duration, "Block");
             owner.PlayAnimation("Block");
             owner.DamageRecieved += ModifyDamage;
             owner.KnockbackRecieved += ModifyKnockback;
             owner.PostureRecieved += ModifyPosture;
-            owner.DamageApplied += GainSlowdownMeter;
+           
             owner.StaminaRegenRate = 0.5f;
+        }
+
+        private void Cancel(float obj)
+        {
+            skill.Cancel();
+        }
+
+        private void IncreaseDuration(float obj)
+        {
+
+            switch (numberOfHits)
+            {
+                case 0:
+                    duration = Mathf.Max(1, duration + 0.5f);
+                    break;
+                case 1:
+                    duration = Mathf.Max(1, duration + 0.33f);
+                    break;
+                default:
+                    duration = Mathf.Max(1, duration + 0.25f);
+                    break;
+            }
+            owner.GetComponentInChildren<ActorUIController>().SetCC(duration, "Block");
+            owner.ActorData.ChangeBuildup(skill.BuildupGainOnBlock);
+            numberOfHits++;
         }
 
         public void Exit()
         {
+            if (skill.blockType == Block.BlockType.Parry)
+            {
+                owner.DamageApplied -= Cancel;
+                owner.ActorData.ChangeBuildup(skill.BuildupGainOnBlock);
+            }
+            else
+            {
+                owner.DamageApplied -= IncreaseDuration;
+            }
+            owner.GetComponentInChildren<ActorUIController>().HideCC();
             owner.DamageRecieved -= ModifyDamage;
             owner.KnockbackRecieved -= ModifyKnockback;
             owner.PostureRecieved -= ModifyPosture;
-
             owner.PlayAnimation("Idle");
-            owner.DamageApplied -= GainSlowdownMeter;
             owner.StaminaRegenRate = 1f;
             OnEnd?.Invoke();
         }
+
 
         private void GainSlowdownMeter(float damage)
         {
@@ -72,7 +118,7 @@ namespace Assets.Scripts.Battle.Actor.States
         {
             skill.onSucessfulBlock?.Invoke();
             float modifiedDamage = damage * DamageModifier;
-            owner.ActorData.DealStaminaDamage((damage - modifiedDamage) * skill.StaminaCostMult);
+            owner.ActorData.DealStaminaDamage((modifiedDamage) * skill.StaminaCostMult);
             return modifiedDamage;
         }
 
@@ -89,12 +135,20 @@ namespace Assets.Scripts.Battle.Actor.States
 
         public void Update()
         {
+
+            timeSpentInBlockDuration += Time.deltaTime;
+            if (timeSpentInBlockDuration >= 2.5f)
+            {
+                skill.Cancel();
+                GainSlowdownMeter(skill.SlowdownMeterGain);
+                // Do knockback burst
+            }
             duration -= Time.deltaTime;
             if (duration < 0)
             {
                 if(skill)
                 {
-                    skill.OnCancel?.Invoke();
+                    skill.Cancel();
                     duration = 0;
                 }
             }

@@ -15,7 +15,7 @@ namespace Assets.Scripts.Battle.Actions.Actions.Effects
     public class DamageTickEffect : DamageEffect, IEffect, IUpdateableEffect
     {
         float timer;
-        float tickRate;
+        public float tickRate;
 
         public override void Eval(Actor.Actor actor, BaseAction action)
         {

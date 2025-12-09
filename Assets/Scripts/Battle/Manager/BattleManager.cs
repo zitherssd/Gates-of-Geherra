@@ -1,17 +1,11 @@
-﻿using System;
+﻿using Assets.Scripts.Battle.Actor;
+using Assets.Scripts.Game;
+using Assets.Scripts.Utility;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.Scripts.Battle.Actions;
-using Assets.Scripts.Battle.Actions.Actions;
-using Assets.Scripts.Battle.Actor;
-using Assets.Scripts.Battle.Actor.States;
-using Assets.Scripts.Crawler;
-using Assets.Scripts.Game;
-using Assets.Scripts.Utility;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using static Assets.Scripts.Battle.Actions.BaseAction;
 
 namespace Assets.Scripts.Battle.Manager
 {
@@ -47,7 +41,7 @@ namespace Assets.Scripts.Battle.Manager
 
         internal BattleDefinition GetCurrentBattleDefinition()
         {
-            if(battleDefinition == null)
+            if (battleDefinition == null)
                 throw new Exception("No current battle definition set in BattleManager");
             else
                 return battleDefinition;
@@ -62,11 +56,12 @@ namespace Assets.Scripts.Battle.Manager
             this.battleDefinition = battleDefinition;
             //Should assume that screen is black/fadeimage is active
             var player = GameFlowManager.instance.playerActor;
-            player.transform.position = battleDefinition.playerStartPosition;
+            var level = GameObject.Find("Level_" + battleDefinition.Level);
+            player.transform.position = level.transform.GetChild(0).GetChild(0).position; //unholy line
             player.ActorData.Refresh();
             SpawnEnemies(battleDefinition);
             UIManager.instance.Fade(false, null);
-            CameraManager.instance.ResetForNewBattle();
+            CameraManager.instance.ResetForNewBattle(level.transform.Find("CameraTransformPosition").position);
             UIManager.instance.InitializePlayerActionButtonPrefabs(player.ActorData.actions);
             StartCoroutine(WaitForSeconds(2f, () =>
             {
@@ -90,11 +85,19 @@ namespace Assets.Scripts.Battle.Manager
             }
             EnemyActors.Clear();
 
-            foreach (var enemy in battleDefinition.enemyActors)
+            var level = GameObject.Find("Level_" + battleDefinition.Level);
+            var spawners = level.transform.GetChild(0).gameObject;
+            var pspawner = level.transform.GetChild(0).gameObject.transform;
+
+            for (int i = 0; i < battleDefinition.enemyActors.Count(); i++)
             {
+                var enemy = battleDefinition.enemyActors[i];
                 var clone = Instantiate(enemy);
-                var randomSpawner = GetRandomChild(SpawnerParent);
-                var enemyGameObject = Instantiate(enemyPrefab, randomSpawner.position, Quaternion.identity);
+                Vector3 position;
+
+                position = spawners.transform.GetChild(i + 1).position;
+
+                var enemyGameObject = Instantiate(enemyPrefab, position, Quaternion.identity);
                 var enemyActor = enemyGameObject.GetComponent<Actor.Actor>();
                 enemyActor.ActorData = clone;
                 enemyActor.Init();
@@ -108,7 +111,7 @@ namespace Assets.Scripts.Battle.Manager
             Physics.gravity = new Vector3(0, -6f, 0);
 
             // Camera pan wait
-         
+
 
         }
 

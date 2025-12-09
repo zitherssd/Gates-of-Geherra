@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 8930498950455230960}
   m_Layer: 0
   m_Name: Torch
-  m_TagString: Untagged
+  m_TagString: Level_Occlude
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1924,7 +1924,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 3763
+  m_VersionIndex: 3769
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -2202,11 +2202,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4998466031134278832, guid: 5debdae775f62c142a4537ff42a492da, type: 3}
       propertyPath: m_Range
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4998466031134278832, guid: 5debdae775f62c142a4537ff42a492da, type: 3}
       propertyPath: m_Intensity
-      value: 0.96
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 4998466031134278832, guid: 5debdae775f62c142a4537ff42a492da, type: 3}
       propertyPath: m_Shadows.m_Type
@@ -2222,7 +2222,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4998466031612692028, guid: 5debdae775f62c142a4537ff42a492da, type: 3}
       propertyPath: m_Range
-      value: 4
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 4998466031612692028, guid: 5debdae775f62c142a4537ff42a492da, type: 3}
       propertyPath: m_Color.g

@@ -10,34 +10,34 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ddf2061af7deed048bc9f3138d816bc8, type: 3}
-  m_Name: Block_Starter
+  m_Name: Guard_Starter
   m_EditorClassIdentifier: 
   guid: d71b702805a26db45a66daff55b696d2
-  Type: 0
-  Name: Block
+  Type: 2
+  Name: Guard
   Rarity: 0
-  Description: Eat those hits!
-  CooldownTimer: 5
+  Description: Hold up your guard how much you want forever
+  CooldownTimer: 0
   TotalUses: 0
   remainingUses: 0
   BuildupCost: 0
-  BuildupGain: 3
+  BuildupGain: 0
   StaminaCost: 0
   Speed: 0
   Tags: 
   Direction: {x: 0, y: 0, z: 0}
   currentCooldownTimer: 0
   StickMult: 1
-  SlowdownMeterGain: 2
+  SlowdownMeterGain: 0.05
   SlowdownMeterGainOnEnd: 0
   SlowDownMeterGainOnPress: 0
   SlowdownMeterGainOnRelease: 0
   Animation: 0
-  DamageModifier: 0.4
-  PostureModifier: 0.4
-  KnockbackModifier: 0.4
-  StaminaCostMult: 2
-  duration: 1
+  DamageModifier: 0.6
+  PostureModifier: 0.6
+  KnockbackModifier: 0.6
+  StaminaCostMult: 1
+  duration: 0.4
   startupDelay: 0
-  BuildupGainOnBlock: 3
-  blockType: 0
+  BuildupGainOnBlock: 2.5
+  blockType: 1

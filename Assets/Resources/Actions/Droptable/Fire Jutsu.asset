@@ -17,10 +17,10 @@ MonoBehaviour:
   Name: Fire Breath
   Rarity: 1
   Description: Sasuke!!!1!
-  CooldownTimer: 25
+  CooldownTimer: 2
   TotalUses: 0
   remainingUses: 0
-  BuildupCost: 25
+  BuildupCost: 15
   BuildupGain: 0
   StaminaCost: 5
   Speed: 0
@@ -60,20 +60,18 @@ MonoBehaviour:
     - rid: 6357899949336690691
       type: {class: DamageTickEffect, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
       data:
-        HitboxEffect:
-          HitboxPoints:
-          - {x: 0, y: 0, z: 0}
-          - {x: -0.3, y: 0, z: 0.8}
-          - {x: -0.15, y: 0, z: 0.95}
-          - {x: 0, y: 0, z: 1}
-          - {x: 0.15, y: 0, z: 0.95}
-          - {x: 0.3, y: 0, z: 0.8}
-          HitboxScale: 2.8
+        UseHitbox: 1
+        DamageData:
+          Damage: 1.5
+          PostureDamage: 2
+          KnockbackForce: 0.3
+          KnockbackForceUp: 0
+          KnockbackType: 1
+          StrengthScaling: 0
+          AgilityScaling: 0
+          MindScaling: 0.01
+          BuildupGainOnHit: 2
         tickRate: 0.2
-        PostureDamage: 2.5
-        Damage: 1
-        KnockbackForce: 0.5
-        CasterBuildupGain: 1
     - rid: 6357899952368123904
       type: {class: ShowHitboxOnPlayer, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
       data:
