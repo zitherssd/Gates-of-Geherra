@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
-using Assets.Scripts.Battle;
-using Assets.Scripts.Battle.Actions;
 using Assets.Scripts.Battle.Actions.Skills;
 using Assets.Scripts.Battle.Actor;
 using Assets.Scripts.Battle.Manager;
+using Assets.Scripts.UI;
 using Assets.Scripts.Utility;
-using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -23,12 +19,7 @@ namespace Assets.Scripts.Battle.Actions
         private Button button;
         public bool Disabled = false;
 
-        private static float maxJoystickDistance = 100f;
-        private static RectTransform joystickBase;
-        private static RectTransform joystickKnob;
-
         private Vector2 targetPos;
-        private static Vector2 joystickCenter;
 
         public void SetInteractable(bool interactable)
         {
@@ -43,9 +34,6 @@ namespace Assets.Scripts.Battle.Actions
             if (actionHolder == null) actionHolder = GameObject.Find("LeftContainer");
             if (skillHolder == null) skillHolder = GameObject.Find("RightContainer");
             if (guide == null) guide = GameObject.Find("PlacementGuide");
-            if (joystickBase == null) joystickBase = GameObject.Find("VirtualJoystickBase").GetComponent<RectTransform>();
-            if (joystickKnob == null) joystickKnob = GameObject.Find("VirtualJoystickKnob").GetComponent<RectTransform>();
-
         }
 
         private void Start()
@@ -58,47 +46,18 @@ namespace Assets.Scripts.Battle.Actions
 
         private void Update()
         {
-
             SetInteractable(referencedAction.IsValid(player, out _));
 
             if (referencedAction)
                 cooldownimage.fillAmount = Mathf.Clamp(referencedAction.currentCooldownTimer / referencedAction.CooldownTimer, 0, 1);
 
             if (Disabled) return;
-            if (!isPressed) return;
-            // Check if the pointer is currently pressed down
-            if (Input.GetMouseButton(0) || Input.touchCount > 0)
+
+            if (JoystickManager.instance.IsPressed && (referencedAction.Type == BUTTONTYPE.CONTINUOUS_VECTOR || referencedAction.Type == BUTTONTYPE.VECTOR))
             {
-                Vector2 currentPointerPosition;
-
-                // Check if there is touch input
-                if (Input.touchCount > 0)
-                {
-                    // Use the position of the first touch
-                    currentPointerPosition = Input.GetTouch(0).position;
-                }
-                else
-                {
-                    // Use the position of the mouse pointer
-                    currentPointerPosition = (Vector2)Input.mousePosition;
-                }
-
-                if (referencedAction.Type == BUTTONTYPE.CONTINUOUS_VECTOR || referencedAction.Type == BUTTONTYPE.VECTOR)
-                {
-                    Vector2 deltax = currentPointerPosition - new Vector2(joystickBase.position.x, joystickBase.position.y);
-                    float magnitude = deltax.magnitude;
-                    if (magnitude > maxJoystickDistance)
-                    {
-                        deltax = deltax.normalized * maxJoystickDistance;
-                        if (magnitude > 3 * maxJoystickDistance)
-                            joystickBase.position = Vector2.MoveTowards(joystickBase.position, (Vector2)joystickBase.position + deltax, 20 * Time.deltaTime);
-                    }
-                    joystickKnob.localPosition = deltax;
-                
-                    deltaScaled = deltax / 100;
-                    guide.transform.position = player.transform.position + GetRelativeToCamera(deltaScaled * referencedAction.StickMult);
-                    referencedAction.Direction = GetRelativeToCamera(deltaScaled);
-                }
+                var deltaScaled = JoystickManager.instance.Direction;
+                guide.transform.position = player.transform.position + GetRelativeToCamera(deltaScaled * referencedAction.StickMult);
+                referencedAction.Direction = GetRelativeToCamera(deltaScaled);
             }
         }
 
@@ -123,19 +82,16 @@ namespace Assets.Scripts.Battle.Actions
 
         private void MoveToHome()
         {
-            isPressed = false;
             LeanTween.cancel(rect);
             LeanTween.move(rect, homePosition, 0.15f).setEaseOutCubic().setIgnoreTimeScale(true);
             LeanTween.scale(rect, Vector3.one, 0.5f).setEaseOutCubic().setIgnoreTimeScale(true);
             guide.GetComponent<ParticleSystem>().Stop();
-
         }
 
         public void OnPointerDown(PointerEventData pointerEventData)
         {
             if (Disabled)
             {
-             
                 return;
             }
 
@@ -157,50 +113,27 @@ namespace Assets.Scripts.Battle.Actions
                     CameraManager.instance.SlowTrack = false;
                     UIManager.instance.HideAllButThis(referencedAction);
                     UIManager.instance.GainMeter(referencedAction.SlowDownMeterGainOnPress);
-                    EnableJoystick(true);
+                    JoystickManager.instance.EnableJoystick(Input.touchCount > 0 ? Input.GetTouch(0).position : (Vector2)Input.mousePosition);
                     guide.GetComponent<ParticleSystem>().Play();
-
-                    isPressed = true;
-                    pointerDownPosition = Input.touchCount > 0 ? Input.GetTouch(0).position : (Vector2)Input.mousePosition;
-                    joystickBase.position = pointerDownPosition;
                     break;
                 case BUTTONTYPE.CONTINNUOUS:
                     HideUIAndUseAction();
                     break;
                 case BUTTONTYPE.CONTINUOUS_VECTOR:
-                    deltaScaled = Vector2.zero;
                     referencedAction.Direction = Vector3.zero;
                     HideUIExceptThisAndUseAction();
-                    isPressed = true;
-                    pointerDownPosition = Input.touchCount > 0 ? Input.GetTouch(0).position : (Vector2)Input.mousePosition;
-                    EnableJoystick(true);
+                    JoystickManager.instance.EnableJoystick(Input.touchCount > 0 ? Input.GetTouch(0).position : (Vector2)Input.mousePosition);
                     //guide.GetComponent<ParticleSystem>().Play();
-                    referencedAction.OnCancel += DisableJoystick; 
-
-                    joystickBase.position = pointerDownPosition;
+                    referencedAction.OnCancel += () => JoystickManager.instance.DisableJoystick();
                     break;
                 default:
                     break;
             }
-
-            //Output the name of the GameObject that is being clicked
-        }
-
-        public static void DisableJoystick()
-        {
-            joystickBase.gameObject.SetActive(false);
-            joystickKnob.gameObject.SetActive(false);
-        }
-        public static void EnableJoystick(bool active)
-        {
-            joystickBase.gameObject.SetActive(active);
-            joystickKnob.gameObject.SetActive(active);
         }
 
         public void OnPointerUp(PointerEventData pointerEventData)
         {
             if (button.IsInteractable() == false) return;
-            isPressed = false;
             if (Disabled) return;
 
             switch (referencedAction.Type)
@@ -210,32 +143,27 @@ namespace Assets.Scripts.Battle.Actions
                     break;
                 case BUTTONTYPE.VECTOR:
                     HideUIAndUseAction();
-                    EnableJoystick(false);
+                    JoystickManager.instance.DisableJoystick();
                     guide.GetComponent<ParticleSystem>().Stop();
                     break;
                 case BUTTONTYPE.CONTINNUOUS:
                     referencedAction.Cancel();
-                    EnableJoystick(false);
+                    JoystickManager.instance.DisableJoystick();
                     break;
                 case BUTTONTYPE.CONTINUOUS_VECTOR:
                     referencedAction.Cancel();
                     UIManager.instance.GainMeter(referencedAction.SlowdownMeterGainOnRelease);
-                    EnableJoystick(false);
+                    JoystickManager.instance.DisableJoystick();
                     guide.GetComponent<ParticleSystem>().Stop();
-                    referencedAction.OnCancel -= DisableJoystick;
-
-
-
+                    referencedAction.OnCancel -= () => JoystickManager.instance.DisableJoystick();
                     break;
                 default:
                     break;
             }
-            isPressed = false;
         }
 
         public void HideUIAndUseAction()
         {
-            isPressed = false;
             UIManager.instance.HideUI();
             player.UseAction(referencedAction, () => { player.state.TransitionToIdle(); });
         }
@@ -260,13 +188,9 @@ namespace Assets.Scripts.Battle.Actions
         private static GameObject actionHolder;
         private static GameObject skillHolder;
         private static GameObject actionSlot;
-        private static ActionSlot actionSlotScript;
         private static GameObject guide;
 
         private RectTransform rect;
-        private bool isPressed;
-        private Vector2 pointerDownPosition;
         private Vector3 homePosition;
-        private Vector2 deltaScaled;
     }
 }

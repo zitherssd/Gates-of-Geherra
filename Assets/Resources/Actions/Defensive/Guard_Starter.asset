@@ -17,14 +17,14 @@ MonoBehaviour:
   Name: Guard
   Rarity: 0
   Description: Hold up your guard how much you want forever
-  CooldownTimer: 0
+  CooldownTimer: 0.05
   TotalUses: 0
   remainingUses: 0
   BuildupCost: 0
   BuildupGain: 0
   StaminaCost: 0
   Speed: 0
-  Tags: 
+  Tags: 11000000
   Direction: {x: 0, y: 0, z: 0}
   currentCooldownTimer: 0
   StickMult: 1
@@ -37,7 +37,7 @@ MonoBehaviour:
   PostureModifier: 0.6
   KnockbackModifier: 0.6
   StaminaCostMult: 1
-  duration: 0.4
+  duration: 99
   startupDelay: 0
   BuildupGainOnBlock: 2.5
-  blockType: 1
+  blockType: 2
