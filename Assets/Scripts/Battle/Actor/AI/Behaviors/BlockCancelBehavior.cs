@@ -35,7 +35,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
                             block.onSucessfulBlock += actor.state.TransitionToIdle;
                             if (block)
                             {
-                                actor.UseAction(block, actor.state.TransitionToIdle);
+                                actor.UseAction(block);
                                 return NodeState.Sucess;
                             }
                         }

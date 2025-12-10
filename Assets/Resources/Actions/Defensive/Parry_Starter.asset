@@ -37,7 +37,7 @@ MonoBehaviour:
   PostureModifier: 0.2
   KnockbackModifier: 0.2
   StaminaCostMult: 6
-  duration: 0.5
+  duration: 2
   startupDelay: 0
   BuildupGainOnBlock: 5
   blockType: 1

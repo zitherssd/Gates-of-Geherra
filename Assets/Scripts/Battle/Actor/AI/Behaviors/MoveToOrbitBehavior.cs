@@ -32,7 +32,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
 
 
             moveSkill.Direction = offset;
-            actor.UseAction(moveSkill, actor.state.TransitionToIdle);
+            actor.UseAction(moveSkill);
 
             return NodeState.Sucess;
         }

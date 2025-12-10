@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Battle.Actions.Actions;
+﻿using Assets.Scripts.Battle.Actions;
+using Assets.Scripts.Battle.Actions.Actions;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
@@ -24,7 +25,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
             if (moveSkill == null) return NodeState.Failure;
 
             moveSkill.Direction = direction;
-            actor.UseAction(moveSkill, actor.state.TransitionToIdle);
+            actor.UseAction(moveSkill);
             return NodeState.Running;
         }
     }
@@ -48,7 +49,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
                 timer += Time.deltaTime;
                 if (timer > duration)
                 {
-                    moveAction.OnCancel?.Invoke();
+                    moveAction.EndAction(ActionEndReason.Cancelled);
                     return NodeState.Sucess;
                 }
                 return NodeState.Running;
@@ -60,7 +61,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
             if (moveSkill == null) return NodeState.Failure;
 
             moveSkill.Direction = actor.movement.agent.desiredVelocity.normalized;
-            actor.UseAction(moveSkill, actor.state.TransitionToIdle);
+            actor.UseAction(moveSkill);
             return NodeState.Running;
         }
     }
@@ -102,7 +103,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
 
                 if (moveTimer > moveDuration)
                 {
-                    moveAction.OnCancel?.Invoke();
+                    moveAction.EndAction(ActionEndReason.Cancelled);
                     moveTimer = 0f;
                     isOnCooldown = true; // 🔥 start cooldown
                     return NodeState.Sucess;
@@ -120,7 +121,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
             if (moveSkill == null) return NodeState.Failure;
 
             moveSkill.Direction = actor.target.DirectionToClosestEnemy * -1f;
-            actor.UseAction(moveSkill, actor.state.TransitionToIdle);
+            actor.UseAction(moveSkill);
             return NodeState.Running;
         }
     }
@@ -149,7 +150,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
         {
             if (actor.state.IsMoving(out MoveAction moveAction))
             {
-                moveAction.OnCancel?.Invoke();
+                moveAction.EndAction(ActionEndReason.Cancelled);
                 return NodeState.Sucess;
             }
             return NodeState.Failure;
@@ -190,7 +191,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
                 moveTimer += Time.deltaTime;
                 if (moveTimer > moveDuration)
                 {
-                    moveAction.OnCancel?.Invoke();
+                    moveAction.EndAction(ActionEndReason.Completed);
                     moveTimer = 0f;
                     return NodeState.Sucess;
                 }
@@ -221,7 +222,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
                 if (moveSkill == null) return NodeState.Failure;
 
                 moveSkill.Direction = -bestDir;
-                actor.UseAction(moveSkill, actor.state.TransitionToIdle);
+                actor.UseAction(moveSkill);
                 return NodeState.Running;
             }
 
@@ -256,7 +257,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
 
             moveAction.Direction = agent.desiredVelocity.normalized;
 
-            actor.UseAction(moveAction, actor.state.TransitionToIdle);
+            actor.UseAction(moveAction);
             return NodeState.Running;
         }
 

@@ -28,7 +28,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
             Vector3 approachDirection = (toEnemy * 0.5f + flankDirection * 0.5f).normalized;
 
             moveSkill.Direction = approachDirection;
-            actor.UseAction(moveSkill, actor.state.TransitionToIdle);
+            actor.UseAction(moveSkill);
             return NodeState.Sucess;
         }
     }

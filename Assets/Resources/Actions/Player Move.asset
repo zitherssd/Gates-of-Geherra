@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a53caa89e83e055489c03028a676b01e, type: 3}
   m_Name: Player Move
   m_EditorClassIdentifier: 
+  guid: 498ba4be69212c045ad9de12e867357c
   Type: 3
   Name: Move
   Rarity: 0
@@ -28,6 +29,7 @@ MonoBehaviour:
   currentCooldownTimer: 0
   StickMult: 0
   SlowdownMeterGain: 0
+  SlowdownMeterGainOnEnd: 0
   SlowDownMeterGainOnPress: 0
   SlowdownMeterGainOnRelease: 1
   duration: 10

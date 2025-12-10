@@ -15,7 +15,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
             if (chargeSkill == null || actor.Rb.velocity.magnitude > 0.5f || actor.target.DistanceToClosestEnemy < 2.5f)
                 return NodeState.Failure;
 
-            actor.UseAction(chargeSkill, actor.state.TransitionToIdle);
+            actor.UseAction(chargeSkill);
                 return NodeState.Sucess;
         }
     }

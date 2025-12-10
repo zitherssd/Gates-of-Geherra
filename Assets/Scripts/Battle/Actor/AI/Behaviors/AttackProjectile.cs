@@ -35,7 +35,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
                     skill = ChooseValidSkillInRange(actor);
                     if (skill != null)
                     {
-                        actor.UseAction(skill, actor.state.TransitionToIdle);
+                        actor.UseAction(skill);
                         return NodeState.Sucess;
                     }
                 }

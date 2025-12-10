@@ -38,7 +38,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
                     if (skill != null)
                     {
                         skill.Direction = actor.target.DirectionToClosestEnemy;
-                        actor.UseAction(skill, actor.state.TransitionToIdle);
+                        actor.UseAction(skill);
                         return NodeState.Sucess;
                     }
                 }
@@ -85,7 +85,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
                     if (skill != null)
                     {
                         skill.Direction = actor.target.DirectionToClosestEnemy;
-                        actor.UseAction(skill, actor.state.TransitionToIdle);
+                        actor.UseAction(skill);
                         return NodeState.Sucess;
                     }
                 }

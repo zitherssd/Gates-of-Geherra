@@ -47,7 +47,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
                     effect.Eval(casterActor, this);
                 }
             }
-            casterActor.state.TransitionTo<ActingState>().Set(this, onPerformEnd);
+            casterActor.state.TransitionTo<ActingState>().Set(this);
             casterActor.movement.FaceDirection(caster.target.DirectionToClosestEnemy);
         }
         public override void OnHit()
@@ -64,7 +64,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
                 projectile.GetComponent<Rigidbody>().AddForce(caster.transform.forward * ThrowSpeed, ForceMode.Impulse);
             if(Tags.Contains(TAG.TECH))
             {
-                _onPerformEnd.Invoke();
+                this.EndAction(ActionEndReason.Completed);
             }
         }
 

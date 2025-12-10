@@ -30,7 +30,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
                     var reaction = ChooseDodge(actor, incomingAttack);
                     if (reaction != null)
                     {
-                        actor.UseAction(reaction, actor.state.TransitionToIdle);
+                        actor.UseAction(reaction);
 
                         return NodeState.Sucess;
                     }

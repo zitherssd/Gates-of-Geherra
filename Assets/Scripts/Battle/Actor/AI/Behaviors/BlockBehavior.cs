@@ -30,7 +30,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
 
                     if (block)
                     {
-                        actor.UseAction(block, actor.state.TransitionToIdle);
+                        actor.UseAction(block);
                         return NodeState.Sucess;
                     }
                 }

@@ -18,8 +18,7 @@ namespace Assets.Scripts.Battle.Actor
         public ActorData ActorData;
 
         //Components
-        public ActorStateMachine
-            state;
+        public ActorStateMachine state;
         public StatusManager statusManager;
         public new AudioManager audio; //this too?
         public EffectManager effects; //this can be moved to a different monobehaviour
@@ -47,6 +46,7 @@ namespace Assets.Scripts.Battle.Actor
         // Private members
         private Animator animator;
         private float postureRegenCooldownTimer;
+        private BaseAction _currentAction;
 
         // Public properties
         public bool CanRegenPosture = true;
@@ -54,6 +54,8 @@ namespace Assets.Scripts.Battle.Actor
         public float StaminaRegenRate = 1.0f;
         public float PostureREgenRate = 1.0f;
         public bool isControllable { get { return ActorData.Controllable; } private set { } }
+
+        public BaseAction GetCurrentAction() => _currentAction;
 
         // Public methods
         public void Awake()
@@ -110,14 +112,36 @@ namespace Assets.Scripts.Battle.Actor
         }
 
 
-        public void UseAction(BaseAction action, Action onActionComplete)
+        public void UseAction(BaseAction action)
         {
+            if (_currentAction != null && _currentAction != action)
+            {
+                _currentAction.EndAction(ActionEndReason.Interrupted);
+            }
+
             if (isControllable)
                 UIManager.instance.ResetMeter();
             Time.timeScale = 1f;
 
+            _currentAction = action;
+            _currentAction.OnActionEnded += OnActionEnded;
+            _currentAction.Begin(this);
+        }
 
-            action.Perform(this, onActionComplete);
+        private void OnActionEnded(BaseAction action, ActionEndReason reason)
+        {
+            Debug.Log($"Action {action.Name} ended with reason: {reason}");
+
+            // Unsubscribe from the action that ended.
+            action.OnActionEnded -= OnActionEnded;
+
+            // Only null out _currentAction and transition if the action that
+            // ended is the one we currently care about.
+            if (_currentAction == action)
+            {
+                _currentAction = null;
+                state.TransitionToIdle();
+            }
         }
 
 

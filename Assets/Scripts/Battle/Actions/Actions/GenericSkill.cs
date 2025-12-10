@@ -9,9 +9,6 @@ namespace Assets.Scripts.Battle.Actions.Skills
     [CreateAssetMenu(fileName = "AnimationAction", menuName = "ScriptableObjects/Action/Generic")]
     public class GenericSkill : BaseSkill
     {
-        private Actor.Actor casterActor;
-        private Action _onPerformEnd;
-
         [SerializeReference, SubclassSelector]
         public List<IEffect> OnStartEffects = new List<IEffect>();
         [SerializeReference, SubclassSelector]
@@ -28,41 +25,37 @@ namespace Assets.Scripts.Battle.Actions.Skills
         public float recoveryTimeMult = 1f;
         protected override void PerformSpecific(Actor.Actor casterActor, Action onPerformEnd)
         {
-            this.casterActor = casterActor;
-
             runtimeEndEffects = new List<IEndableEffect>(OnEndEffects);
             runtimeUpdateEffects = new List<IUpdateableEffect>(OnUpdateEffects);
-
-            _onPerformEnd = () =>
-            {
-                foreach (var effect in runtimeEndEffects)
-                {
-                    effect.End(casterActor, this);
-                }
-
-                onPerformEnd?.Invoke();
-            };
-
-            OnCancel = _onPerformEnd;
 
             foreach (var effect in OnStartEffects)
             {
                 {
                     if (effect is IEndableEffect endable) runtimeEndEffects.Add(endable);
-                    effect.Eval(casterActor, this);
+                    effect.Eval(_caster, this);
                 }
             }
-            casterActor.state.TransitionTo<ActingState>().Set(this, _onPerformEnd);
+            casterActor.state.TransitionTo<ActingState>().Set(this);
         }
+
+        protected override void Cleanup(ActionEndReason reason)
+        {
+            base.Cleanup(reason);
+            foreach (var effect in runtimeEndEffects)
+            {
+                effect.End(_caster, this);
+            }
+        }
+
         public override void OnHit()
         {
             foreach (var effect in OnHitEffects)
             {
                 if(effect is IEndableEffect endable) runtimeEndEffects.Add(endable);
                 if(effect is IUpdateableEffect updatable) runtimeUpdateEffects.Add(updatable);
-                effect.Eval(casterActor,this);
+                effect.Eval(_caster,this);
             }
-            if (Tags.Contains(TAG.TECH) && casterActor.state.CurrentState is ActingState acting)
+            if (Tags.Contains(TAG.TECH) && _caster.state.CurrentState is ActingState acting)
             {
                 acting.OnEnd();
             }
@@ -71,7 +64,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
         {
             foreach (var effect in runtimeUpdateEffects)
             {
-                effect.Update(casterActor, this, dt);
+                effect.Update(_caster, this, dt);
             }
         }
         public override void OnEnterWindup(Animator animator)

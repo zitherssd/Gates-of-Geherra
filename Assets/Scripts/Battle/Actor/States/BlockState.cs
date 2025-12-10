@@ -1,4 +1,5 @@
 ﻿using System;
+using Assets.Scripts.Battle.Actions;
 using Assets.Scripts.Battle.Actions.Reactions;
 using Assets.Scripts.Pattern;
 using UnityEngine;
@@ -12,7 +13,6 @@ namespace Assets.Scripts.Battle.Actor.States
         [Range(0, 2)] public float DamageModifier = 1f;
         [Range(0, 2)] public float PostureModifier = 1f;
         [Range(0, 2)] public float KnockbackModifier = 1f;
-        public Action OnEnd;
         private float duration;
         private float timeSpentInBlockDuration = 0f;
         private Block skill;
@@ -42,7 +42,8 @@ namespace Assets.Scripts.Battle.Actor.States
         {
             if(skill.blockType == Block.BlockType.Parry)
             {
-                owner.DamageApplied += Cancel;
+                owner.DamageApplied += OnParrySuccess;
+                owner.DamageApplied += GainSlowdownMeter;
             }
             else if (skill.blockType == Block.BlockType.Block)
             {
@@ -62,14 +63,17 @@ namespace Assets.Scripts.Battle.Actor.States
             owner.StaminaRegenRate = 0.5f;
         }
 
-        private void Cancel(float obj)
+        private void OnParrySuccess(float obj)
         {
-            skill.Cancel();
+            if (skill != null)
+            {
+                skill.EndAction(ActionEndReason.Completed);
+            }
         }
 
         private void IncreaseDuration(float obj)
         {
-
+            if (skill == null) return;
             switch (numberOfHits)
             {
                 case 0:
@@ -89,33 +93,46 @@ namespace Assets.Scripts.Battle.Actor.States
 
         public void Exit()
         {
-            if (skill.blockType == Block.BlockType.Parry)
+            if (skill != null)
             {
-                owner.DamageApplied -= Cancel;
-                owner.ActorData.ChangeBuildup(skill.BuildupGainOnBlock);
+                if (skill.blockType == Block.BlockType.Parry)
+                {
+                    owner.DamageApplied -= OnParrySuccess;
+                    owner.DamageApplied -= GainSlowdownMeter;
+                }
+                else if (skill.blockType == Block.BlockType.Block)
+                {
+                    owner.DamageApplied -= IncreaseDuration;
+                }
+                else if (skill.blockType == Block.BlockType.Guard)
+                {
+                    owner.DamageApplied -= GainSlowdownMeter;
+                }
+
+                owner.GetComponentInChildren<ActorUIController>().HideCC();
+                owner.DamageRecieved -= ModifyDamage;
+                owner.KnockbackRecieved -= ModifyKnockback;
+                owner.PostureRecieved -= ModifyPosture;
+                owner.PlayAnimation("Idle");
+                owner.StaminaRegenRate = 1f;
+
+                // If the action is still running when we exit, it means it was interrupted.
+                skill.EndAction(ActionEndReason.Interrupted);
+                skill = null; // Clean up for next use.
             }
-            else
-            {
-                owner.DamageApplied -= IncreaseDuration;
-            }
-            owner.GetComponentInChildren<ActorUIController>().HideCC();
-            owner.DamageRecieved -= ModifyDamage;
-            owner.KnockbackRecieved -= ModifyKnockback;
-            owner.PostureRecieved -= ModifyPosture;
-            owner.PlayAnimation("Idle");
-            owner.StaminaRegenRate = 1f;
-            OnEnd?.Invoke();
         }
 
 
         private void GainSlowdownMeter(float damage)
         {
+            if (skill == null) return;
             if(owner.isControllable)
-            UIManager.instance.GainMeter(skill.SlowdownMeterGain);
+                UIManager.instance.GainMeter(skill.SlowdownMeterGain);
         }
 
         public float ModifyDamage(float damage)
         {
+            if (skill == null) return damage;
             skill.onSucessfulBlock?.Invoke();
             float modifiedDamage = damage * DamageModifier;
             owner.ActorData.DealStaminaDamage((modifiedDamage) * skill.StaminaCostMult);
@@ -124,8 +141,7 @@ namespace Assets.Scripts.Battle.Actor.States
 
         public float ModifyPosture(float damage)
         {
-            float modifiedDamage = damage * PostureModifier;
-            return modifiedDamage;
+            return damage * PostureModifier;
         }
 
         public float ModifyKnockback(float knockback, Vector3 direction)
@@ -135,22 +151,21 @@ namespace Assets.Scripts.Battle.Actor.States
 
         public void Update()
         {
-
-            timeSpentInBlockDuration += Time.deltaTime;
-            if (timeSpentInBlockDuration >= 2.5f)
+            if (skill == null) return;
+            if(skill.blockType == Block.BlockType.Block)
             {
-                skill.Cancel();
-                GainSlowdownMeter(skill.SlowdownMeterGain);
-                // Do knockback burst
+                timeSpentInBlockDuration += Time.deltaTime;
+                if (timeSpentInBlockDuration >= 2.5f)
+                {
+                    skill.EndAction(ActionEndReason.Completed);
+                    return;
+                }
             }
             duration -= Time.deltaTime;
             if (duration < 0)
             {
-                if(skill)
-                {
-                    skill.Cancel();
-                    duration = 0;
-                }
+                skill.EndAction(ActionEndReason.Completed);
+                return;
             }
         }
 

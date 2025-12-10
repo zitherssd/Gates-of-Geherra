@@ -29,26 +29,51 @@ namespace Assets.Scripts.Battle.Actions
         public float SlowdownMeterGainOnEnd;
         public float SlowDownMeterGainOnPress;
         public float SlowdownMeterGainOnRelease;
-        public Action OnCancel;
+
+        private bool _isEnded = false;
+        public event Action<BaseAction, ActionEndReason> OnActionEnded;
+        protected Actor.Actor _caster;
+
 
         public enum BUTTONTYPE { INSTANT, VECTOR, CONTINNUOUS, CONTINUOUS_VECTOR };
-        public virtual void Perform(Actor.Actor casterActor, Action onPerformEnd)
+        
+        public void Begin(Actor.Actor casterActor)
         {
-            //ResetCooldown();
+            _caster = casterActor;
+            _isEnded = false;
 
             if (Tags.Contains(TAG.KILLMOMENTUM)) casterActor.movement.ResetMomentum(); //implement as effect
 
             //costs
-            casterActor.ActorData.DealStaminaDamage(StaminaCost); 
+            casterActor.ActorData.DealStaminaDamage(StaminaCost);
             casterActor.ActorData.ChangeBuildup(BuildupGain);
             casterActor.ActorData.ChangeBuildup(-BuildupCost);
 
             PerformSpecific(casterActor, () =>
             {
-                if(casterActor.isControllable) UIManager.instance.GainMeter(SlowdownMeterGainOnEnd);
-                UpdateRemainingUses(); onPerformEnd?.Invoke();
+                EndAction(ActionEndReason.Completed);
             });
         }
+
+        public void EndAction(ActionEndReason reason)
+        {
+            if (_isEnded) return;
+            _isEnded = true;
+
+            Cleanup(reason);
+
+            OnActionEnded?.Invoke(this, reason);
+        }
+
+        protected virtual void Cleanup(ActionEndReason reason)
+        {
+            if (reason == ActionEndReason.Completed)
+            {
+                if(_caster != null && _caster.isControllable) UIManager.instance.GainMeter(SlowdownMeterGainOnEnd);
+                UpdateRemainingUses();
+            }
+        }
+
 
         protected virtual void PerformSpecific(Actor.Actor casterActor, Action onPerformEnd) { }
 
@@ -171,13 +196,7 @@ namespace Assets.Scripts.Battle.Actions
             KILLMOMENTUM, KILL_TRACKING, PLAY_WHILE_SELECTING,
             TECH, FACECLOSEST, RECHARGE_DURING_SLOWDOWN, KNOCKBACK_AWAY
         }
-
-        public virtual void Cancel()
-        {
-            OnCancel?.Invoke();
-        }
     }
-
 
 
     public enum RARITY { COMMON, UNCOMMON, RARE, EPIC, LEGENDARY };

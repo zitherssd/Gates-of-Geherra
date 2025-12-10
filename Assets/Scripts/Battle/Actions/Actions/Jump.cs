@@ -22,6 +22,7 @@ namespace Assets.Scripts.Battle.Actions.Actions
                 casterActor.state.TransitionTo<AirNeutralState>();
             else
                 casterActor.state.TransitionTo<RollState>();
+            onPerformEnd?.Invoke();
             //casterActor.StartCoroutine(casterActor.WaitForTime(onPerformEnd, 1f));
         }
     }

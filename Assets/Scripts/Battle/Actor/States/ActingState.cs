@@ -13,7 +13,6 @@ namespace Assets.Scripts.Battle.Actor.States
         public Action<Animator> onEnterRecovery;
         public Action onHit;
         public Action onEnd;
-        public Action onInterrupt;
 
         private Animator animator;
         private bool ended;
@@ -22,7 +21,7 @@ namespace Assets.Scripts.Battle.Actor.States
         private Action<Animator> recoveryHandler;
         private Action hitHandler;
         private Action endHandler;
-        public BaseSkill action;
+        public BaseAction action;
         private Actor owner;
 
         private float windupStartTime;
@@ -35,51 +34,62 @@ namespace Assets.Scripts.Battle.Actor.States
             this.owner = owner;
         }
 
-        public ActingState Set(BaseSkill action, Action onEnd)
+        public ActingState Set(BaseAction action)
         {
             if (animator == null) animator = owner.GetAnimator();
-            this.onEnterWindup = action.OnEnterWindup;
-            this.onEnterRecovery = action.OnEnterRecovery;
-            this.onHit = action.OnHit;
-            this.onEnd = onEnd;
-
+            
             this.action = action;
-            this.onInterrupt = action.OnCancel;
 
-            if (action.Animation.ToString() == "Roll")
+            if (action is BaseSkill skill)
             {
-                float dotProduct = Vector3.Dot(owner.transform.forward, action.Direction);
-                if (dotProduct < 0)
-                    animator.Play("RollBackwards", -1, 0f);
+                this.onEnterWindup = skill.OnEnterWindup;
+                this.onEnterRecovery = skill.OnEnterRecovery;
+                this.onHit = skill.OnHit;
+
+                if (skill.Animation.ToString() == "Roll")
+                {
+                    float dotProduct = Vector3.Dot(owner.transform.forward, skill.Direction);
+                    if (dotProduct < 0)
+                        animator.Play("RollBackwards", -1, 0f);
+                    else
+                        animator.Play("Roll", -1, 0f);
+                }
                 else
-                    animator.Play("Roll", -1, 0f);
+                    animator.Play(skill.Animation.ToString(), -1, 0f);
             }
-            else
-                animator.Play(action.Animation.ToString(), -1, 0f);
             return this;
         }
 
         public void Enter()
         {
+            ended = false;
             isWindingUp = false;
         }
 
         public void Exit()
         {
             animator.speed = 1f;
-            if (action is AttackSkill)
+            if (action is AttackSkill attackSkill)
             {
-                var asa = action as AttackSkill;
-                asa.Unsubscribe();
+                attackSkill.Unsubscribe();
             }
 
+            if (!ended)
+            {
+                onEnd?.Invoke(); // An interruption is a form of end for the UI
+                if (action != null)
+                {
+                    action.EndAction(ActionEndReason.Interrupted);
+                }
+            }
+
+            action = null;
             onEnterWindup = null;
             onEnterRecovery = null;
             onHit = null;
             onEnd = null;
             onWindupProgress?.Invoke(0);
-
-            if (!ended) onInterrupt?.Invoke();
+            
             owner.effects.ClearHitbox();
         }
 
@@ -106,8 +116,13 @@ namespace Assets.Scripts.Battle.Actor.States
 
         public void OnEnd()
         {
+            if (ended) return;
             ended = true;
             onEnd?.Invoke();
+            if (action != null)
+            {
+                action.EndAction(ActionEndReason.Completed);
+            }
         }
 
         public void Update()
@@ -127,7 +142,11 @@ namespace Assets.Scripts.Battle.Actor.States
             }
             else
                 onWindupProgress?.Invoke(0f);
-            action.OnUpdate(Time.deltaTime);
+            
+            if (action is BaseSkill skill)
+            {
+                skill.OnUpdate(Time.deltaTime);
+            }
         }
 
         public void OnCollisionEnter(Collision collision)

@@ -46,7 +46,12 @@ namespace Assets.Scripts.Battle.Actions
 
         private void Update()
         {
-            SetInteractable(referencedAction.IsValid(player, out _));
+            bool isCurrentlyRunningContinuous = (player.GetCurrentAction() == referencedAction &&
+                                     (referencedAction.Type == BUTTONTYPE.CONTINNUOUS || referencedAction.Type == BUTTONTYPE.CONTINUOUS_VECTOR));
+
+            bool canBeUsed = referencedAction.IsValid(player, out _);
+
+            SetInteractable(canBeUsed || isCurrentlyRunningContinuous);
 
             if (referencedAction)
                 cooldownimage.fillAmount = Mathf.Clamp(referencedAction.currentCooldownTimer / referencedAction.CooldownTimer, 0, 1);
@@ -65,27 +70,6 @@ namespace Assets.Scripts.Battle.Actions
         {
             cooldownimage.fillAmount = 0;
             button.interactable = true;
-        }
-        private void MoveToCenter()
-        {
-            // Calculate the center position of the screen
-            Vector2 centerPosition = new(Screen.width / 2f, Screen.height / 2f);
-            rect.anchorMin = new Vector2(0.5f, 0.5f);
-            rect.anchorMax = new Vector2(0.5f, 0.5f);
-            rect.pivot = new Vector2(0.5f, 0.5f);
-            targetPos = CanvasHandler.instance.GetComponent<RectTransform>().anchoredPosition;
-            //LeanTween.move(rect, CanvasHandler.instance.GetComponent<RectTransform>().anchoredPosition, 0.15f).setEaseOutBack().setIgnoreTimeScale(true);
-            LeanTween.scale(rect, Vector3.one * 1.5f, 1f).setEaseOutBack().setIgnoreTimeScale(true);
-            if (referencedAction.Tags.Contains(TAG.USESTICK))
-                guide.GetComponent<ParticleSystem>().Play();
-        }
-
-        private void MoveToHome()
-        {
-            LeanTween.cancel(rect);
-            LeanTween.move(rect, homePosition, 0.15f).setEaseOutCubic().setIgnoreTimeScale(true);
-            LeanTween.scale(rect, Vector3.one, 0.5f).setEaseOutCubic().setIgnoreTimeScale(true);
-            guide.GetComponent<ParticleSystem>().Stop();
         }
 
         public void OnPointerDown(PointerEventData pointerEventData)
@@ -117,14 +101,13 @@ namespace Assets.Scripts.Battle.Actions
                     guide.GetComponent<ParticleSystem>().Play();
                     break;
                 case BUTTONTYPE.CONTINNUOUS:
-                    HideUIAndUseAction();
+                    HideUIExceptThisAndUseAction();
                     break;
                 case BUTTONTYPE.CONTINUOUS_VECTOR:
                     referencedAction.Direction = Vector3.zero;
                     HideUIExceptThisAndUseAction();
                     JoystickManager.instance.EnableJoystick(Input.touchCount > 0 ? Input.GetTouch(0).position : (Vector2)Input.mousePosition);
-                    //guide.GetComponent<ParticleSystem>().Play();
-                    referencedAction.OnCancel += () => JoystickManager.instance.DisableJoystick();
+                    referencedAction.OnActionEnded += HandleActionEndForJoystick;
                     break;
                 default:
                     break;
@@ -147,30 +130,40 @@ namespace Assets.Scripts.Battle.Actions
                     guide.GetComponent<ParticleSystem>().Stop();
                     break;
                 case BUTTONTYPE.CONTINNUOUS:
-                    referencedAction.Cancel();
+                    if (player.GetCurrentAction() == referencedAction)
+                    {
+                        referencedAction.EndAction(ActionEndReason.Cancelled);
+                    }
                     JoystickManager.instance.DisableJoystick();
                     break;
                 case BUTTONTYPE.CONTINUOUS_VECTOR:
-                    referencedAction.Cancel();
+                    if (player.GetCurrentAction() == referencedAction)
+                    {
+                        referencedAction.EndAction(ActionEndReason.Cancelled);
+                    }
                     UIManager.instance.GainMeter(referencedAction.SlowdownMeterGainOnRelease);
-                    JoystickManager.instance.DisableJoystick();
                     guide.GetComponent<ParticleSystem>().Stop();
-                    referencedAction.OnCancel -= () => JoystickManager.instance.DisableJoystick();
                     break;
                 default:
                     break;
             }
         }
 
+        private void HandleActionEndForJoystick(BaseAction action, ActionEndReason reason)
+        {
+            JoystickManager.instance.DisableJoystick();
+            referencedAction.OnActionEnded -= HandleActionEndForJoystick;
+        }
+
         public void HideUIAndUseAction()
         {
             UIManager.instance.HideUI();
-            player.UseAction(referencedAction, () => { player.state.TransitionToIdle(); });
+            player.UseAction(referencedAction);
         }
         public void HideUIExceptThisAndUseAction()
         {
             UIManager.instance.HideAllButThis(referencedAction);
-            player.UseAction(referencedAction, () => { player.state.TransitionToIdle(); });
+            player.UseAction(referencedAction);
         }
 
         public Vector3 GetRelativeToCamera(Vector2 direction)

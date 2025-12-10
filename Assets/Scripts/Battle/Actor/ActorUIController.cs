@@ -158,7 +158,6 @@ namespace Assets.Scripts.Battle.Actor
             actingState.onEnterRecovery += _ => ResetIndicator();
             actingState.onHit += ResetIndicator;
             actingState.onEnd += ResetIndicator;
-            actingState.onInterrupt += ResetIndicator;
         }
 
         private void OnStateChanged(IState state)

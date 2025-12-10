@@ -38,7 +38,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
                         var reaction = ChooseReaction(actor, incomingAttack);
                         if (reaction != null)
                         {
-                            actor.UseAction(reaction, actor.state.TransitionToIdle);
+                            actor.UseAction(reaction);
 
                             // Set cooldown time (e.g., 0.5s)
                             return NodeState.Sucess;

@@ -12,17 +12,16 @@ namespace Assets.Scripts.Battle.Actions.Actions
 
         protected override void PerformSpecific(Actor.Actor casterActor, Action onPerformEnd)
         {
-            OnCancel += onPerformEnd;
             StickMult = 1 + casterActor.ActorData.Mind / 10;
             var scaledStickMult = Direction * StickMult;
             var TargetPosition = casterActor.transform.position + scaledStickMult;
 
             if (Type == BUTTONTYPE.CONTINUOUS_VECTOR)
             {
-                casterActor.state.TransitionTo<MoveState>().Set(duration, OnCancel, this);
+                casterActor.state.TransitionTo<MoveState>().Set(duration, this);
             }
             else
-                casterActor.state.TransitionTo<MoveState>().Set(TargetPosition, onPerformEnd);
+                casterActor.state.TransitionTo<MoveState>().Set(TargetPosition, this);
         }
     }
 }

@@ -41,7 +41,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
             moveAction = actor.ActorData.actions.OfType<MoveAction>().FirstOrDefault();
             if (moveAction == null) return NodeState.Failure;
             moveAction.Direction = approachDirection;
-            actor.UseAction(moveAction, actor.state.TransitionToIdle);
+            actor.UseAction(moveAction);
             return NodeState.Sucess;
         }
 

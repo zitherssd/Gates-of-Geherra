@@ -21,13 +21,19 @@ namespace Assets.Scripts.Battle.Actions.Reactions
             CameraManager.instance.SlowTrack = true;
             actor.movement.SetFriction(0);
             actor.movement.AddForce(force * Direction * StickMult);
-            actor.state.TransitionTo<ActingState>().Set(this, () => { 
-                actor.movement.SetFriction();
-                actor.movement.FaceTarget(actor.target.ClosestEnemy);
-                onActionComplete?.Invoke(); 
-                UIManager.instance.GainMeter(SlowdownMeterGain);  
-            });
+            actor.state.TransitionTo<ActingState>().Set(this);
             owner = actor;
+        }
+
+        protected override void Cleanup(ActionEndReason reason)
+        {
+            base.Cleanup(reason);
+            if (reason == ActionEndReason.Completed)
+            {
+                owner.movement.SetFriction();
+                owner.movement.FaceTarget(owner.target.ClosestEnemy);
+                UIManager.instance.GainMeter(SlowdownMeterGain);
+            }
         }
 
         public override void OnEnterWindup(Animator animator)

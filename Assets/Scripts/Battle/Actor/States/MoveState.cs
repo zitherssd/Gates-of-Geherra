@@ -1,8 +1,8 @@
-﻿using System;
-using Assets.Scripts.Battle.Actions;
+using Assets.Scripts.Battle.Actions.Actions;
 using Assets.Scripts.Pattern;
 using Assets.Scripts.Utility;
 using UnityEngine;
+using Assets.Scripts.Battle.Actions;
 
 namespace Assets.Scripts.Battle.Actor.States
 {
@@ -10,7 +10,6 @@ namespace Assets.Scripts.Battle.Actor.States
     {
         private Actor actor;
         private Vector3 destination;
-        private Action onMoveComplete;
         private float sqrMag;
         private float lastSqrMag;
         private float minDistance = 0.1f;
@@ -18,7 +17,7 @@ namespace Assets.Scripts.Battle.Actor.States
         private float duration;
         private bool continousAction;
         private float timer;
-        public BaseAction action;
+        public MoveAction action;
 
 
         public MoveState(Actor actor)
@@ -26,20 +25,19 @@ namespace Assets.Scripts.Battle.Actor.States
             this.actor = actor;
         }
 
-        public MoveState Set(float duration, Action onMoveComplete, BaseAction action)
+        public MoveState Set(float duration, MoveAction action)
         {
             this.duration = duration;
-            this.onMoveComplete = onMoveComplete;
             this.action = action;
             continousAction = true;
             return this;
         }
 
-        public MoveState Set(Vector3 destination, Action onMoveComplete)
+        public MoveState Set(Vector3 destination, MoveAction action)
         {
             this.destination = destination;
+            this.action = action;
             continousAction = false;
-            this.onMoveComplete = onMoveComplete;
             return this;
         }
 
@@ -60,7 +58,11 @@ namespace Assets.Scripts.Battle.Actor.States
 
         public void Exit()
         {
-            onMoveComplete = null;
+            if (action != null)
+            {
+                action.EndAction(ActionEndReason.Interrupted);
+            }
+            action = null;
             actor.movement.SetFriction();
             actor.GetAnimator().speed = 1;
 
@@ -68,14 +70,16 @@ namespace Assets.Scripts.Battle.Actor.States
 
         public void OnCollisionEnter(Collision collision)
         {
-            if (continousAction)
+            if (continousAction && action != null)
             {
-                onMoveComplete.Invoke();
+                action.EndAction(ActionEndReason.Completed);
             }
         }
 
         public void Update()
         {
+            if (action == null) return;
+
             if (continousAction)
             {
                 timer += Time.deltaTime;
@@ -101,7 +105,7 @@ namespace Assets.Scripts.Battle.Actor.States
 
                 if (timer >= duration)
                 {
-                    onMoveComplete.Invoke();
+                    action.EndAction(ActionEndReason.Completed);
                 }
                 return;
             }
@@ -114,7 +118,7 @@ namespace Assets.Scripts.Battle.Actor.States
                 // Check if the actor has reached the destination or is moving away
                 if (sqrMag <= minDistance * minDistance || sqrMag > lastSqrMag)
                 {
-                    onMoveComplete.Invoke();
+                    action.EndAction(ActionEndReason.Completed);
                 }
 
                 // Update the last squared magnitude for future comparison

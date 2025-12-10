@@ -15,13 +15,20 @@ namespace Assets.Scripts.Battle.Actions.Actions
             this.casterActor = casterActor;
 
             var state = casterActor.state.TransitionTo<ActingState>();
-            state.Set(this, () => {
+            state.Set(this);
+        }
+
+        protected override void Cleanup(ActionEndReason reason)
+        {
+            base.Cleanup(reason);
+            if (reason == ActionEndReason.Completed)
+            {
                 if (casterActor.isControllable)
                 {
                     UIManager.instance.GainMeter(SlowdownMeterGain);
                 }
-                casterActor.movement.SetFriction(); onPerformEnd?.Invoke();
-            });
+                casterActor.movement.SetFriction();
+            }
         }
 
         public override void OnHit()
