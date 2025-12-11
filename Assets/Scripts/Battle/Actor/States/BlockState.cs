@@ -43,7 +43,6 @@ namespace Assets.Scripts.Battle.Actor.States
             if(skill.blockType == Block.BlockType.Parry)
             {
                 owner.DamageApplied += OnParrySuccess;
-                owner.DamageApplied += GainSlowdownMeter;
             }
             else if (skill.blockType == Block.BlockType.Block)
             {
@@ -67,6 +66,8 @@ namespace Assets.Scripts.Battle.Actor.States
         {
             if (skill != null)
             {
+                GainSlowdownMeter(skill.SlowdownMeterGain);
+                owner.ActorData.ChangeBuildup(skill.BuildupGainOnBlock);
                 skill.EndAction(ActionEndReason.Completed);
             }
         }
@@ -77,13 +78,13 @@ namespace Assets.Scripts.Battle.Actor.States
             switch (numberOfHits)
             {
                 case 0:
-                    duration = Mathf.Max(1, duration + 0.5f);
+                    duration = Mathf.Min(1, duration + 0.5f);
                     break;
                 case 1:
-                    duration = Mathf.Max(1, duration + 0.33f);
+                    duration = Mathf.Min(1, duration + 0.33f);
                     break;
                 default:
-                    duration = Mathf.Max(1, duration + 0.25f);
+                    duration = Mathf.Min(1, duration + 0.25f);
                     break;
             }
             owner.GetComponentInChildren<ActorUIController>().SetCC(duration, "Block");
@@ -98,7 +99,6 @@ namespace Assets.Scripts.Battle.Actor.States
                 if (skill.blockType == Block.BlockType.Parry)
                 {
                     owner.DamageApplied -= OnParrySuccess;
-                    owner.DamageApplied -= GainSlowdownMeter;
                 }
                 else if (skill.blockType == Block.BlockType.Block)
                 {

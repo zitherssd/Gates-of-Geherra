@@ -20,7 +20,7 @@ MonoBehaviour:
   CooldownTimer: 2
   TotalUses: 0
   remainingUses: 0
-  BuildupCost: 15
+  BuildupCost: 2
   BuildupGain: 0
   StaminaCost: 5
   Speed: 0
@@ -63,8 +63,8 @@ MonoBehaviour:
         UseHitbox: 1
         DamageData:
           Damage: 1.5
-          PostureDamage: 2
-          KnockbackForce: 0.3
+          PostureDamage: 1.5
+          KnockbackForce: 0.1
           KnockbackForceUp: 0
           KnockbackType: 1
           StrengthScaling: 0

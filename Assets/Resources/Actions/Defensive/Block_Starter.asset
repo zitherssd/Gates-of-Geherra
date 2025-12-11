@@ -29,7 +29,7 @@ MonoBehaviour:
   currentCooldownTimer: 0
   StickMult: 1
   SlowdownMeterGain: 2
-  SlowdownMeterGainOnEnd: 0
+  SlowdownMeterGainOnEnd: 1
   SlowDownMeterGainOnPress: 0
   SlowdownMeterGainOnRelease: 0
   Animation: 0
