@@ -62,22 +62,18 @@ namespace Assets.Scripts.Utility
         void Update()
         {
             Vector3 targetpos;
-            Vector3 playerTarget;
-            if (playerActor.target.TargetPosition != null)
-                playerTarget = playerActor.target.TargetPosition;
-            else
-                playerTarget = playerTransform.position + playerTransform.forward * 1f;
+            Vector3 weightedEnemyPosition = playerActor.target.GetWeightedAverageEnemyPosition();
 
-            distvector = (playerTarget + playerTransform.position) / 2; //start point 
+            distvector = (weightedEnemyPosition + playerTransform.position) / 2; //start point 
             distvector = new Vector3(distvector.x, 0, distvector.z);
-            directionvector = (playerTarget - playerTransform.position) / 2;
+            directionvector = (weightedEnemyPosition - playerTransform.position) / 2;
             directionvector = new Vector3(directionvector.x, 0, directionvector.z);
 
             //Debug.Log($"distvector Vector: {directionvector}, directionvector Vector: {directionvector}");
 
             if (!Override)
             {
-                var input = Mathf.Clamp((directionvector * 2).magnitude, 1, 30);
+                var input = Mathf.Clamp( playerActor.target.LargestDirectionFromEnemies().magnitude, 1, 30);
                 UpDistance = LinearMap(input, 1, 30, 1.7f, 8);
                 BackDistance = LinearMap(input, 1, 30, 3.3f, 20);
             }
