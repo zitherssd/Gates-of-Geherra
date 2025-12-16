@@ -1,3 +1,4 @@
+using Assets.Scripts.Battle.Actions;
 using Assets.Scripts.Battle.Actor;
 using System.Collections;
 using System.Collections.Generic;
@@ -22,7 +23,12 @@ public class OutOfBoundsKiller : MonoBehaviour
         var actor = collision.gameObject.GetComponent<Actor>();
         if (actor != null)
         {
-            actor.ApplyDamageInstance(999, 0, Vector3.zero,0);
+            var damageInstance = new DamageInstance
+            {
+                Damage = 999,
+                PostureDamage = 0,
+            };
+            actor.ApplyDamageInstance(damageInstance, null);
         }
     }
 }

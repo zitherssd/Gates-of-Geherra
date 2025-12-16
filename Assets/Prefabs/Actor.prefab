@@ -10711,6 +10711,7 @@ GameObject:
   - component: {fileID: 7611198383580781346}
   - component: {fileID: 4002958033492770288}
   - component: {fileID: 5832880172782262998}
+  - component: {fileID: 4929105012875946850}
   m_Layer: 3
   m_Name: Actor
   m_TagString: Untagged
@@ -10938,6 +10939,7 @@ MonoBehaviour:
   CanRegenPosture: 1
   PostureRegenCooldownDelay: 1
   StaminaRegenRate: 1
+  PostureREgenRate: 1
 --- !u!114 &7611198383580781346
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10986,6 +10988,18 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &4929105012875946850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2098779824770817834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1394f33104af660498a03862d12b1276, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2201109491587270952
 GameObject:
   m_ObjectHideFlags: 0

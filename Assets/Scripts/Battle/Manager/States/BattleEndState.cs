@@ -58,7 +58,7 @@ namespace Assets.Scripts.Battle.Manager.States
                         {
                             SaveManager.instance.SaveToSlot(SaveManager.instance.currentSaveSlot);
                         }
-                        manager.onBattleEnd?.Invoke();
+                            manager.TriggerBattleEnd();
                         GameFlowManager.instance.SetMode(GameMode.RestArea);
                     });
                 }
@@ -71,7 +71,7 @@ namespace Assets.Scripts.Battle.Manager.States
                     {
                         SaveManager.instance.SaveToSlot(SaveManager.instance.currentSaveSlot);
                     }
-                    manager.onBattleEnd?.Invoke();
+                        manager.TriggerBattleEnd();
                     GameFlowManager.instance.SetMode(GameMode.RestArea);
                 }
             });

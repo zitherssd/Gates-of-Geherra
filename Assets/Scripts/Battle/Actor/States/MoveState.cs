@@ -58,7 +58,7 @@ namespace Assets.Scripts.Battle.Actor.States
 
         public void Exit()
         {
-            if (action != null)
+            if (action != null && actor.GetCurrentAction() == action)
             {
                 action.EndAction(ActionEndReason.Interrupted);
             }

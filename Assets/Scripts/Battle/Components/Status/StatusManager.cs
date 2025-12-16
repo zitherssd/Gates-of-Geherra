@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Battle.Components.Status
 {
-    public class StatusManager
+    public class StatusManager : MonoBehaviour
     {
         private Actor.Actor owner;
         public List<BaseStatus> activeStatuses; 
@@ -18,15 +18,13 @@ namespace Assets.Scripts.Battle.Components.Status
 
         public void Add(BaseStatus status)
         {
-            if (status.singleInstance == true && activeStatuses.OfType<Stagger>().Any()) return;
+           // if (status.singleInstance == true && activeStatuses.OfType<Stagger>().Any()) return;
 
             activeStatuses.Add(status);
             status.owner = owner;
             status.Apply();
  
         }
-
-        //Se apeleaza la inceputul fiecartei runde
         public void Tick()
         {
             foreach(var status in activeStatuses)

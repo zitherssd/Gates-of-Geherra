@@ -12,6 +12,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Battle.Actor
 {
+    [RequireComponent(typeof(StatusManager))]
     public class Actor : MonoBehaviour
     {
         //Data
@@ -27,19 +28,13 @@ namespace Assets.Scripts.Battle.Actor
         public MovementSystem movement; //what is tihs?
         public ActorInventory inventory;
 
-        //Delegates
-        public delegate float DamageValue(float damage);
-        public delegate float PostureValue(float damage);
-        public delegate float KnockbackValue(float force, Vector3 direction);
-
-        //Events
-        public event DamageValue DamageRecieved;
-        public event PostureValue PostureRecieved;
-        public event KnockbackValue KnockbackRecieved;
-
-        public event Action<float> DamageApplied;
-        public event Action<float> PostureApplied;
-        public event Action<float, Vector3> KnockbackApplied;
+        // --- New Event System ---
+        public event Action<DamageInstance> OnBeforeTakeDamage;
+        public event Action<DamageInstance> OnAfterTakeDamage;
+        public event Action<DamageInstance> OnBeforeDealDamage;
+        public event Action<DamageInstance> OnAfterDealDamage;
+        public event Action<BaseAction> OnActionUsed;
+        // ------------------------
 
         public event Action OnReset;
 
@@ -64,7 +59,7 @@ namespace Assets.Scripts.Battle.Actor
             animator = gameObject.GetComponent<Animator>();
             state = gameObject.GetComponent<ActorStateMachine>();
             audio = new AudioManager(this);
-            statusManager = new StatusManager(this); //this needs rework
+            statusManager = gameObject.GetComponent<StatusManager>();
             effects = new EffectManager(this);
             target = new TargetingSystem(this); //this too subscribe
             movement = new MovementSystem(this); //this too subscribe???
@@ -93,6 +88,7 @@ namespace Assets.Scripts.Battle.Actor
             StaminaRegen();
             PostureRegen();
             UpdateActionCooldowns();
+            statusManager.Tick();
 
             //subcomponents update
             ai.Update();
@@ -125,6 +121,7 @@ namespace Assets.Scripts.Battle.Actor
 
             _currentAction = action;
             _currentAction.OnActionEnded += OnActionEnded;
+            OnActionUsed?.Invoke(action);
             _currentAction.Begin(this);
         }
 
@@ -145,61 +142,49 @@ namespace Assets.Scripts.Battle.Actor
         }
 
 
-        public void ApplyDamageInstance(float originalDmg, float originalPostureDamage, Vector3 direction, float force)
+        public void ApplyDamageInstance(DamageInstance damageInstance, Actor attacker, BaseAction action = null)
         {
+            var (damage, postureDamage, direction, force) = damageInstance.Calculate(attacker, this, action);
+
+            // 1. Invoke OnBeforeTakeDamage event, allowing listeners to modify the damage.
+            OnBeforeTakeDamage?.Invoke(damageInstance);
+
             //Damage
             #region damage
             //Changes buildup by 1% for each 2% of hp lost? not yet
-            ActorData.ChangeBuildup(Mathf.Max(UnityEngine.Random.Range(2, 3), originalDmg));
+            ActorData.ChangeBuildup(Mathf.Max(UnityEngine.Random.Range(2, 3), damage));
 
-            float postMitgationDamage = originalDmg;
-            if (DamageRecieved != null)
-            {
-                postMitgationDamage = DamageRecieved(originalDmg);
-            }
-            DamageApplied?.Invoke(postMitgationDamage);
             ItemEventBus.Raise(ItemTrigger.OnDamageTaken, this);
-            ActorData.DealDamage(postMitgationDamage);
+            ActorData.DealDamage(damage);
             var DiedFromThisHit = ActorData.isDead();
             //
             #endregion
 
             if (DiedFromThisHit)
             {
-
                 CameraManager.instance.SlowTrack = true;
                 state.GetState<StaggerState>().Set(2f);
                 state.TransitionTo<StaggerState>();
-                float postMitigationForce = force;
-                if (KnockbackRecieved != null)
+
+                if (force > 0f)
                 {
-                    postMitigationForce = KnockbackRecieved(force, direction);
-                }
-                if (postMitigationForce > 0f)
-                {
-                    postMitigationForce *= 1.2f;
-                    direction.y += 0.6f;
-                    movement.AddForce(postMitigationForce * direction);
-                    KnockbackApplied?.Invoke(postMitigationForce, direction);
+                    var newForce = force * 1.2f;
+                    var newDirection = direction;
+                    newDirection.y += 0.6f;
+                    movement.AddForce(newForce * newDirection);
                 }
             }
             else
             {
                 //Posture
-                float postMitigationDamage = originalPostureDamage;
-                if (PostureRecieved != null)
-                {
-                    postMitigationDamage = PostureRecieved(originalPostureDamage);
-                }
-                PostureApplied.Invoke(postMitigationDamage);
                 var previousPosture = ActorData.currentPosture;
-                ActorData.DealPostureDamage(postMitigationDamage);
+                ActorData.DealPostureDamage(postureDamage);
                 // Stop posture regeneration and start the cooldown
                 CanRegenPosture = false;
                 postureRegenCooldownTimer = PostureRegenCooldownDelay;
 
 
-                var postureLostPercentage = (Mathf.Min(postMitigationDamage, previousPosture) / ActorData.maxPosture) * 100;
+                var postureLostPercentage = (Mathf.Min(postureDamage, previousPosture) / ActorData.maxPosture) * 100;
                 if (ActorData.currentPosture <= ActorData.maxPosture / 2)
                 {
                     // Calculate stagger duration
@@ -208,28 +193,32 @@ namespace Assets.Scripts.Battle.Actor
                     state.TransitionTo<StaggerState>();
                 }
 
-                float postMitigationForce = force;
-                if (KnockbackRecieved != null)
-                {
-                    postMitigationForce = KnockbackRecieved(force, direction);
-                }
-
-                if (postMitigationForce > 0)
+                if (force > 0)
                 {
                     if (!state.IsStaggered())
                         direction.y = 0;
 
-                    movement.AddForce(postMitigationForce * direction);
-                    KnockbackApplied?.Invoke(postMitigationForce, direction);
+                    movement.AddForce(force * direction);
                 }
             }
 
-
+            // 2. Invoke OnAfterTakeDamage event
+            OnAfterTakeDamage?.Invoke(damageInstance);
 
             if (isControllable) UIManager.instance.GainMeter(0.4f);
         }
 
+        public void DealDamage(DamageInstance damageInstance, Actor targetActor, BaseAction action)
+        {
+            // 1. Invoke OnBeforeDealDamage event, allowing listeners to modify the damage.
+            OnBeforeDealDamage?.Invoke(damageInstance);
 
+            // 2. Apply the damage to the target.
+            targetActor.ApplyDamageInstance(damageInstance, this, action);
+
+            // 3. Invoke OnAfterDealDamage event.
+            OnAfterDealDamage?.Invoke(damageInstance);
+        }
 
         public void PlayAnimation(string AnimationName)
         {

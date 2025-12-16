@@ -18,9 +18,9 @@ namespace Assets.Scripts.Battle.Components.Effects
         public EffectManager(Actor.Actor owner)
         {
             this.owner = owner;
-            owner.DamageApplied += ShowDamagePopup;
-            owner.PostureApplied += ShowPosturePopup;
-            owner.DamageApplied += FlashWhite;
+            //owner.DamageApplied += ShowDamagePopup;
+            //owner.PostureApplied += ShowPosturePopup;
+            //owner.DamageApplied += FlashWhite;
             lineRenderer = owner.GetComponentsInChildren<LineRenderer>().FirstOrDefault();
             
         }

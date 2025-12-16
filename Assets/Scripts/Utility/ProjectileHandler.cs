@@ -49,50 +49,14 @@ namespace Assets.Scripts.Utility
 
         public void ApplyDamageEffects(Actor casterActor, Actor targetActor, ProjectileAttack action)
         {
-            // Need ro revise
-            var targetBlocking = targetActor.state.IsBlocking();
-            if (casterActor.isControllable && !targetBlocking)
-                UIManager.instance.GainMeter(action.SlowdownMeterGain);
-
-
-            // Apply Damage
-            var damage = action.Damage;
-
-            Vector3 direction;
-            if (action.Type is BUTTONTYPE.VECTOR)
-                direction = action.Direction.normalized;
-            else
-                direction = (targetActor.transform.position - casterActor.transform.position).normalized;
-            if (action.Tags.Contains(TAG.KNOCKBACK_AWAY))
-                direction = (targetActor.transform.position - casterActor.transform.position).normalized;
-            if (action.Tags.Contains(TAG.KNOCKBACK_BACK))
+            var damageInstance = new DamageInstance
             {
-                Vector3 cameraForward = Camera.main.transform.forward;
-                Vector3 aux = Vector3.Cross(direction, -Vector3.up);
+                Damage = action.Damage,
+                PostureDamage = action.PostureDamage,
+                KnockbackForce = action.KnockbackForce,
+            };
 
-                if (Vector3.Dot(aux, cameraForward) < 0f) //if its oppsoite the camera
-                {
-                    aux = -aux; //make it face the camera
-                }
-                direction += aux;
-            }
-
-            if (action.Tags.Contains(TAG.KNOCKBACK_FRONT))
-            {
-                Vector3 cameraForward = Camera.main.transform.forward;
-                Vector3 aux = Vector3.Cross(direction, Vector3.up);
-
-                if (Vector3.Dot(aux, cameraForward) > 0f) //if it's the same as the camera
-                {
-                    aux = -aux; //make it opposite
-                }
-                direction += aux;
-            }
-
-
-            if (action.Tags.Contains(TAG.KNOCKBACK_AIR)) { direction = (direction + Vector3.up).normalized; }
-
-            targetActor.ApplyDamageInstance(damage, action.PostureDamage, direction, action.KnockbackForce);
+            targetActor.ApplyDamageInstance(damageInstance, casterActor, action);
         }
 
         private void DetachAndLetVFXFinish()

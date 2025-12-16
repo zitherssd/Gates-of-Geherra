@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Pattern;
+﻿using Assets.Scripts.Battle.Actions;
+using Assets.Scripts.Pattern;
 using UnityEngine;
 
 namespace Assets.Scripts.Battle.Actor.States
@@ -31,7 +32,12 @@ namespace Assets.Scripts.Battle.Actor.States
                 // Check if velocity magnitude is greater than the threshold
                 if (collision.relativeVelocity.magnitude > 0.1f)
                 {
-                    actor.ApplyDamageInstance(2f, 5f, Vector3.zero, 0);
+                    var damageInstance = new DamageInstance
+                    {
+                        Damage = 2f,
+                        PostureDamage = 5f,
+                    };
+                    actor.ApplyDamageInstance(damageInstance, null,null);
 
                     // Calculate mirrored velocity (mirror along current velocity)
                     Vector3 mirroredVelocity = Vector3.Reflect(actor.Rb.velocity, collision.GetContact(0).normal);

@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Utility;
+﻿using Assets.Scripts.Battle.Actions;
+using Assets.Scripts.Utility;
 using UnityEditor;
 using UnityEngine;
 
@@ -13,7 +14,7 @@ namespace Assets.Scripts.Battle.Components.Audio
         {
             this.owner = owner;
             audioSource = owner.GetComponent<AudioSource>();
-            owner.PostureApplied += PlayDamagedSound;
+            owner.OnAfterTakeDamage += PlayDamagedSound;
         }
         public void PlayAudio(string clipName)
         {
@@ -31,7 +32,7 @@ namespace Assets.Scripts.Battle.Components.Audio
             audioSource.pitch = 1.0f;
         }
 
-        public void PlayDamagedSound(float damage)
+        public void PlayDamagedSound(DamageInstance damage)
         {
             PlayAudio("Blow1");
         }

@@ -20,7 +20,7 @@ namespace Assets.Scripts.Battle.Manager
         [SerializeField] public List<Actor.Actor> PlayerActors;
         [SerializeField] public List<Actor.Actor> EnemyActors;
         [SerializeField] private GameObject SpawnerParent;
-        internal Action onBattleEnd;
+        public event Action OnBattleEnd;
 
 
 
@@ -49,10 +49,10 @@ namespace Assets.Scripts.Battle.Manager
 
         public void Enter(BattleDefinition battleDefinition, Action onBattleEnd)
         {
+            OnBattleEnd = null;
             if (onBattleEnd != null)
-                this.onBattleEnd = onBattleEnd;
-            else
-                this.onBattleEnd = null;
+                OnBattleEnd += onBattleEnd;
+
             this.battleDefinition = battleDefinition;
             //Should assume that screen is black/fadeimage is active
             var player = GameFlowManager.instance.playerActor;
@@ -119,6 +119,11 @@ namespace Assets.Scripts.Battle.Manager
         {
             // Update the battle state machine
             battleStateMachine.Update();
+        }
+
+        public void TriggerBattleEnd()
+        {
+            OnBattleEnd?.Invoke();
         }
 
 

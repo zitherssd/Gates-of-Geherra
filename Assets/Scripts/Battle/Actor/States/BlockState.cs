@@ -25,7 +25,7 @@ namespace Assets.Scripts.Battle.Actor.States
 
         public BlockState Set(Block block)
         {
-            if(block.blockType == Block.BlockType.Block)
+            if (block.blockType == Block.BlockType.Block)
             {
                 timeSpentInBlockDuration = 0f;
                 numberOfHits = 0;
@@ -40,119 +40,95 @@ namespace Assets.Scripts.Battle.Actor.States
 
         public void Enter()
         {
-            if(skill.blockType == Block.BlockType.Parry)
-            {
-                owner.DamageApplied += OnParrySuccess;
-            }
-            else if (skill.blockType == Block.BlockType.Block)
-            {
-                owner.DamageApplied += IncreaseDuration;
-                timeSpentInBlockDuration = 0f;
-            }
-            else if (skill.blockType == Block.BlockType.Guard)
-            {
-                owner.DamageApplied += GainSlowdownMeter;
-            }
             owner.GetComponentInChildren<ActorUIController>().SetCC(duration, "Block");
             owner.PlayAnimation("Block");
-            owner.DamageRecieved += ModifyDamage;
-            owner.KnockbackRecieved += ModifyKnockback;
-            owner.PostureRecieved += ModifyPosture;
-           
+            owner.OnBeforeTakeDamage += ModifyIncomingDamage;
             owner.StaminaRegenRate = 0.5f;
-        }
-
-        private void OnParrySuccess(float obj)
-        {
-            if (skill != null)
-            {
-                GainSlowdownMeter(skill.SlowdownMeterGain);
-                owner.ActorData.ChangeBuildup(skill.BuildupGainOnBlock);
-                skill.EndAction(ActionEndReason.Completed);
-            }
-        }
-
-        private void IncreaseDuration(float obj)
-        {
-            if (skill == null) return;
-            switch (numberOfHits)
-            {
-                case 0:
-                    duration = Mathf.Min(1, duration + 0.5f);
-                    break;
-                case 1:
-                    duration = Mathf.Min(1, duration + 0.33f);
-                    break;
-                default:
-                    duration = Mathf.Min(1, duration + 0.25f);
-                    break;
-            }
-            owner.GetComponentInChildren<ActorUIController>().SetCC(duration, "Block");
-            owner.ActorData.ChangeBuildup(skill.BuildupGainOnBlock);
-            numberOfHits++;
         }
 
         public void Exit()
         {
-            if (skill != null)
+            var action = skill;
+            if (action != null)
             {
-                if (skill.blockType == Block.BlockType.Parry)
-                {
-                    owner.DamageApplied -= OnParrySuccess;
-                }
-                else if (skill.blockType == Block.BlockType.Block)
-                {
-                    owner.DamageApplied -= IncreaseDuration;
-                }
-                else if (skill.blockType == Block.BlockType.Guard)
-                {
-                    owner.DamageApplied -= GainSlowdownMeter;
-                }
-
                 owner.GetComponentInChildren<ActorUIController>().HideCC();
-                owner.DamageRecieved -= ModifyDamage;
-                owner.KnockbackRecieved -= ModifyKnockback;
-                owner.PostureRecieved -= ModifyPosture;
+                owner.OnBeforeTakeDamage -= ModifyIncomingDamage;
                 owner.PlayAnimation("Idle");
                 owner.StaminaRegenRate = 1f;
 
                 // If the action is still running when we exit, it means it was interrupted.
-                skill.EndAction(ActionEndReason.Interrupted);
                 skill = null; // Clean up for next use.
+                if (owner.GetCurrentAction() == action)
+                {
+                    action.EndAction(ActionEndReason.Interrupted);
+                }
             }
         }
 
-
-        private void GainSlowdownMeter(float damage)
+        private void ModifyIncomingDamage(DamageInstance damageInstance)
         {
             if (skill == null) return;
-            if(owner.isControllable)
-                UIManager.instance.GainMeter(skill.SlowdownMeterGain);
-        }
 
-        public float ModifyDamage(float damage)
-        {
-            if (skill == null) return damage;
+            // This is a successful block.
             skill.onSucessfulBlock?.Invoke();
-            float modifiedDamage = damage * DamageModifier;
-            owner.ActorData.DealStaminaDamage((modifiedDamage) * skill.StaminaCostMult);
-            return modifiedDamage;
-        }
 
-        public float ModifyPosture(float damage)
-        {
-            return damage * PostureModifier;
-        }
+            // Apply modifiers
+            float originalDamage = damageInstance.Damage;
+            damageInstance.Damage *= DamageModifier;
+            damageInstance.PostureDamage *= PostureModifier;
+            damageInstance.KnockbackForce *= KnockbackModifier;
 
-        public float ModifyKnockback(float knockback, Vector3 direction)
-        {
-            return knockback * KnockbackModifier;
+            // Consume stamina
+            owner.ActorData.DealStaminaDamage(originalDamage * skill.StaminaCostMult);
+
+            // Handle block-type specific logic
+            if (skill.blockType == Block.BlockType.Parry)
+            {
+                if (owner.isControllable)
+                    UIManager.instance.GainMeter(skill.SlowdownMeterGain);
+                owner.ActorData.ChangeBuildup(skill.BuildupGainOnBlock);
+                skill.EndAction(ActionEndReason.Completed); // Parry ends the block immediately with success.
+            }
+            else if (skill.blockType == Block.BlockType.Block)
+            {
+                // Increase duration logic
+                switch (numberOfHits)
+                {
+                    case 0:
+                        duration = Mathf.Min(1, duration + 0.5f);
+                        break;
+                    case 1:
+                        duration = Mathf.Min(1, duration + 0.33f);
+                        break;
+                    default:
+                        duration = Mathf.Min(1, duration + 0.25f);
+                        break;
+                }
+                owner.GetComponentInChildren<ActorUIController>().SetCC(duration, "Block");
+                owner.ActorData.ChangeBuildup(skill.BuildupGainOnBlock);
+                numberOfHits++;
+            }
+            else if (skill.blockType == Block.BlockType.Guard)
+            {
+                if (owner.isControllable)
+                    UIManager.instance.GainMeter(skill.SlowdownMeterGain);
+            }
         }
 
         public void Update()
         {
-            if (skill == null) return;
-            if(skill.blockType == Block.BlockType.Block)
+            if (skill == null)
+            {
+                // If skill is null, we should not be in this state. Transition to idle.
+                // This can happen if the block action ends for any reason (e.g. successful parry).
+                if (owner.state.CurrentState == this)
+                {
+                    owner.state.TransitionToIdle();
+                }
+                return;
+            }
+
+            if (skill.blockType == Block.BlockType.Block)
             {
                 timeSpentInBlockDuration += Time.deltaTime;
                 if (timeSpentInBlockDuration >= 2.5f)
@@ -161,6 +137,7 @@ namespace Assets.Scripts.Battle.Actor.States
                     return;
                 }
             }
+            
             duration -= Time.deltaTime;
             if (duration < 0)
             {

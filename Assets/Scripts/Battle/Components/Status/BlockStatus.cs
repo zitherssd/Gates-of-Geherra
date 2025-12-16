@@ -20,16 +20,16 @@ namespace Assets.Scripts.Battle.Components.Status
 
         public override void Apply()
         {
-            owner.DamageRecieved += ModifyDamage;
-            owner.KnockbackRecieved += ModifyKnockback;
+            //owner.DamageRecieved += ModifyDamage;
+            //owner.KnockbackRecieved += ModifyKnockback;
             BattleManager.instance.OnNewTurn += Remove;
         }
 
         public void Remove(uint turncount)
         {
             base.Remove();
-            owner.DamageRecieved -= ModifyDamage;
-            owner.KnockbackRecieved -= ModifyKnockback;
+            //owner.DamageRecieved -= ModifyDamage;
+            //owner.KnockbackRecieved -= ModifyKnockback;
         }
 
         public float ModifyDamage(float damage)

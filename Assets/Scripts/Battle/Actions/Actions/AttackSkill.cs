@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Assets.Scripts.Battle.Actions;
 
 namespace Assets.Scripts.Battle.Actions.Skills
 {
@@ -56,63 +57,27 @@ namespace Assets.Scripts.Battle.Actions.Skills
         
                     //var movetween = LeanTween.move(casterActor.gameObject, casterActor.transform.position + Direction * StickMult, tweenduration).setEase(tweenType);
                     target = casterActor.target.ClosestEnemy;
-                    casterActor.PostureRecieved += ApplyPostureModifier;
+                    casterActor.OnBeforeTakeDamage += ApplyPostureModifier;
                 }
                 public void Unsubscribe()
                 {
-                    _caster.PostureRecieved -= ApplyPostureModifier;
+                    _caster.OnBeforeTakeDamage -= ApplyPostureModifier;
                 }
                 public void ApplyDamageEffects(Actor.Actor casterActor, Actor.Actor targetActor, Action onDamageEffectsApplied)
                 {
-        
-        
-                    // Need ro revise
-                    var targetBlocking = targetActor.state.IsBlocking();
-                    if (casterActor.isControllable && !targetBlocking)
-                        UIManager.instance.GainMeter(SlowdownMeterGain);
-                    if (targetBlocking)
-                        casterActor.ActorData.ChangeBuildup(BuildupGainOnHit / 2);
-                    else
-                        casterActor.ActorData.ChangeBuildup(BuildupGainOnHit);
-        
-                    // Apply Damage
-                    var damage = Damage + casterActor.ActorData.Strength * StrengthScaling - targetActor.ActorData.Strength * StrengthScaling / 2 + casterActor.ActorData.Agility * AgilityScaling - targetActor.ActorData.Agility * AgilityScaling / 2 + casterActor.ActorData.Mind * MindScaling;
-        
-                    Vector3 direction;
-                    if (Type is BUTTONTYPE.VECTOR)
-                        direction = Direction.normalized;
-                    else
-                        direction = (targetActor.transform.position - casterActor.transform.position).normalized;
-                    if (this.Tags.Contains(TAG.KNOCKBACK_AWAY))
-                        direction = (targetActor.transform.position - casterActor.transform.position).normalized;
-                    if (this.Tags.Contains(TAG.KNOCKBACK_BACK))
+                    var damageInstance = new DamageInstance
                     {
-                        Vector3 cameraForward = Camera.main.transform.forward;
-                        Vector3 aux = Vector3.Cross(direction, -Vector3.up);
+                        Damage = this.Damage,
+                        PostureDamage = this.PostureDamage,
+                        KnockbackForce = this.KnockbackForce,
+                        StrengthScaling = this.StrengthScaling,
+                        AgilityScaling = this.AgilityScaling,
+                        MindScaling = this.MindScaling,
+                        BuildupGainOnHit = this.BuildupGainOnHit,
+                    };
         
-                        if (Vector3.Dot(aux, cameraForward) < 0f) //if its oppsoite the camera
-                        {
-                            aux = -aux; //make it face the camera
-                        }
-                        direction += aux;
-                    }
-        
-                    if (this.Tags.Contains(TAG.KNOCKBACK_FRONT))
-                    {
-                        Vector3 cameraForward = Camera.main.transform.forward;
-                        Vector3 aux = Vector3.Cross(direction, Vector3.up);
-        
-                        if (Vector3.Dot(aux, cameraForward) > 0f) //if it's the same as the camera
-                        {
-                            aux = -aux; //make it opposite
-                        }
-                        direction += aux;
-                    }
-        
-        
-                    if (this.Tags.Contains(TAG.KNOCKBACK_AIR)) { direction = (direction + Vector3.up).normalized; }
-        
-                    targetActor.ApplyDamageInstance(damage, PostureDamage, direction, KnockbackForce);
+                    casterActor.DealDamage(damageInstance, targetActor, this);
+
                     onDamageEffectsApplied?.Invoke();
                 }
                 public override bool IsValidAndInRange(Actor.Actor caster)
@@ -225,13 +190,12 @@ namespace Assets.Scripts.Battle.Actions.Skills
             throw new NotImplementedException();
         }
 
-        public float ApplyPostureModifier(float posture)
+        public void ApplyPostureModifier(DamageInstance damageInstance)
         {
             if (state == STATE.windup)
-                return posture * windupPostureDamageMult;
+                damageInstance.PostureDamage *= windupPostureDamageMult;
             if (state == STATE.recovery)
-                return posture * recoveryPostureDamageMult;
-            return posture;
+                damageInstance.PostureDamage *= recoveryPostureDamageMult;
         }
     }
 }

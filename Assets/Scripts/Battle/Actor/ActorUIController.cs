@@ -130,7 +130,6 @@ namespace Assets.Scripts.Battle.Actor
             actor.ActorData.OnDeath += HideAllBars;
             BattleManager.instance.battleStateMachine.activeState.FinalHitDealth += HideAllBars;
             BattleManager.instance.battleStateMachine.startState.OnNewBattle += ShowAllBars;
-            //actor.state.blockState.OnEnd += HideCC;
             lastStamina = actor.ActorData.currentStamina;
             staminaBar.value = lastStamina;
             staminaBarEase.value = lastStamina;

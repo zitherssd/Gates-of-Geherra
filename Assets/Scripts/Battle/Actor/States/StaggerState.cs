@@ -1,4 +1,5 @@
 ﻿using System;
+using Assets.Scripts.Battle.Actions;
 using Assets.Scripts.Battle.Manager;
 using Assets.Scripts.Pattern;
 using UnityEngine;
@@ -7,13 +8,15 @@ namespace Assets.Scripts.Battle.Actor.States
 {
     public class StaggerState : IState
     {
+        public event Action<float> OnStaggerStateEntered;
+        public event Action OnStaggerStateExit;
+
         private Actor actor;
         private float timer = 0f;
         private bool collisionOccured;
         private float duration = 0f;
 
-        public event Action<float> OnStaggerStateEntered;
-        public event Action OnStaggerStateExit;
+
 
         public StaggerState(Actor actor)
         {
@@ -30,39 +33,23 @@ namespace Assets.Scripts.Battle.Actor.States
 
         public void Enter()
         {
-            OnStaggerStateEntered?.Invoke(duration);
             if (actor.isControllable)
             {
                 UIManager.GetInstance().HideUI();
                 var Ready = false;
             }
 
-            //actor.KnockbackRecieved += ModifyKnockback;
             actor.PlayAnimation("PostureBroken");
+            OnStaggerStateEntered?.Invoke(duration);
             actor.audio.PlayAudio("Attack1");
             actor.movement.SetFriction(0.4f);
-            actor.DamageApplied += ChangeSpriteToDamaged;
-            actor.KnockbackRecieved += Actor_KnockbackApplied;
             collisionOccured = false;
             timer = 0f;
-        }
-
-        private float Actor_KnockbackApplied(float arg1, Vector3 arg2)
-        {
-            return arg1 * 1.5f;
-        }
-
-        private void ChangeSpriteToDamaged(float damage)
-        {
-            actor.PlayAnimation("HurtGround");
         }
 
         public void Exit()
         {
             OnStaggerStateExit?.Invoke();
-            //actor.KnockbackRecieved -= ModifyKnockback;
-            actor.DamageApplied -= ChangeSpriteToDamaged;
-            actor.KnockbackRecieved -= Actor_KnockbackApplied;
             actor.movement.SetFriction();
         }
 
@@ -97,7 +84,12 @@ namespace Assets.Scripts.Battle.Actor.States
                 if (collision.relativeVelocity.magnitude > 0.1f)
                 {
                     Debug.Log(collision.relativeVelocity.magnitude);
-                    actor.ApplyDamageInstance(2f, 5f, Vector3.zero, 0);
+                    var damageInstance = new DamageInstance
+                    {
+                        Damage = 2f,
+                        PostureDamage = 5f,
+                    };
+                    actor.ApplyDamageInstance(damageInstance, actor, null);
                     // Calculate mirrored velocity (mirror along current velocity)
                     Vector3 mirroredVelocity = Vector3.Reflect(actor.Rb.velocity, collision.GetContact(0).normal);
                     var r = collision.relativeVelocity - 2 * Vector3.Dot(actor.Rb.velocity, collision.GetContact(0).normal) * collision.contacts[0].normal;
