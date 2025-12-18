@@ -77,7 +77,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
                     };
         
                     casterActor.DealDamage(damageInstance, targetActor, this);
-
+                    
                     onDamageEffectsApplied?.Invoke();
                 }
                 public override bool IsValidAndInRange(Actor.Actor caster)
@@ -113,6 +113,8 @@ namespace Assets.Scripts.Battle.Actions.Skills
                         {
                             ApplyDamageEffects(_caster, hit, null);
                         }
+                        _caster.ActorData.ChangeBuildup(BuildupGainOnHit);
+                        if(_caster.isControllable) UIManager.instance.GainMeter(SlowdownMeterGain);
                     }
                 }
         

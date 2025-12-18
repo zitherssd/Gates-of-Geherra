@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.Battle.Actions;
 using Assets.Scripts.Battle.Actions.Skills;
+using Assets.Scripts.Game;
+using Assets.Scripts.Save;
 using Assets.Scripts.Utility;
 using TMPro;
 using Unity.VisualScripting;
@@ -36,8 +38,13 @@ namespace Assets.Scripts
         private bool waitingForAction = false;
         private Action onActionSelected;
         public GameObject OriginPoint;
-        public GameObject ActionsHolder;
-        public GameObject SkillHolder;
+        
+        [Header("Action Containers")]
+        public GameObject ActionsHolder; // Left Main
+        public GameObject LeftSecondaryContainer;
+        public GameObject SkillHolder; // Right Main
+        public GameObject RightSecondaryContainer;
+        
         public GameObject SkillsInventoryViewport;
         public GameObject RestingUI;
         public List<GameObject> PlayerActions = new List<GameObject>();
@@ -176,8 +183,15 @@ namespace Assets.Scripts
             StartCoroutine(StarEffectEnd());
         }
 
-        public void InitializePlayerActionButtonPrefabs(List <BaseAction> ActionsToInitialize)
+        public void InitializePlayerActionButtonPrefabs(List <BaseAction> ActionsToInitialize, List<ActionSlotSaveData> loadout = null)
         {
+            // If we are refreshing the UI and no loadout is provided, capture the current state
+            // so we don't reset everything to default positions.
+            if (loadout == null && PlayerActions.Count > 0)
+            {
+                loadout = GetCurrentLoadout();
+            }
+
             var actions = new List<BaseAction>(ActionsToInitialize);
             //Destory exiting actions
             foreach (GameObject child in PlayerActions)
@@ -189,15 +203,151 @@ namespace Assets.Scripts
 
             //Create new prefabs for exiting actions
             var handlers = new List<ActionButtonHandler>();
+            
+            // Keep track of which actions have been placed
+            HashSet<BaseAction> placedActions = new HashSet<BaseAction>();
+
+            // 1. Place actions based on loadout if available
+            if (loadout != null && loadout.Count > 0)
+            {
+                foreach (var slotData in loadout)
+                {
+                    // Find the action in the player's list that matches the saved GUID
+                    BaseAction action = actions.FirstOrDefault(a => a.guid == slotData.ActionGuid && !placedActions.Contains(a));
+                    
+                    if (action != null)
+                    {
+                        GameObject container = GetContainerByID(slotData.ContainerID);
+                        if (container != null)
+                        {
+                            CreateAndPlaceButton(action, container, slotData.SlotIndex);
+                            placedActions.Add(action);
+                        }
+                    }
+                }
+            }
+
+            // 2. Place remaining actions (newly acquired or if no loadout exists)
+            int defaultPlacedCount = 0;
+            const int maxDefaultActions = 8;
+
             for(int i = 0; i < actions.Count; i++)
             {
-                GameObject ActionButtonGameobject = Instantiate(buttonPrefab, Vector3.zero, Quaternion.identity);
-                ActionButtonGameobject.GetComponent<ActionButtonHandler>().Init(ActionsToInitialize[i]);
-                PlayerActions.Add(ActionButtonGameobject);
-                if (ActionsToInitialize[i] is AttackSkill || ActionsToInitialize[i] is ProjectileAttack)
-                    ActionButtonGameobject.transform.SetParent(SkillHolder.transform);
+                if (placedActions.Contains(actions[i])) continue;
+
+                // Default placement logic if not in loadout
+                if (loadout == null)
+                {
+                    if (defaultPlacedCount < maxDefaultActions)
+                    {
+                        // Legacy default placement
+                        if (actions[i] is AttackSkill || actions[i] is ProjectileAttack)
+                            CreateAndPlaceButton(actions[i], SkillHolder);
+                        else
+                            CreateAndPlaceButton(actions[i], ActionsHolder);
+                        defaultPlacedCount++;
+                    }
+                    else
+                    {
+                        CreateAndPlaceButton(actions[i], SkillsInventoryViewport);
+                    }
+                }
                 else
-                    ActionButtonGameobject.transform.SetParent(ActionsHolder.transform);
+                {
+                    // If we have a loadout but this item wasn't in it, put it in inventory
+                    CreateAndPlaceButton(actions[i], SkillsInventoryViewport);
+                }
+            }
+        }
+
+        private void CreateAndPlaceButton(BaseAction action, GameObject parent, int siblingIndex = -1)
+        {
+            GameObject ActionButtonGameobject = Instantiate(buttonPrefab, Vector3.zero, Quaternion.identity);
+            ActionButtonGameobject.GetComponent<ActionButtonHandler>().Init(action);
+            PlayerActions.Add(ActionButtonGameobject);
+            ActionButtonGameobject.transform.SetParent(parent.transform);
+            if (siblingIndex >= 0)
+            {
+                ActionButtonGameobject.transform.SetSiblingIndex(siblingIndex);
+            }
+        }
+
+        public GameObject GetContainerByID(string id)
+        {
+            switch (id)
+            {
+                case "Left": return ActionsHolder;
+                case "LeftSec": return LeftSecondaryContainer;
+                case "Right": return SkillHolder;
+                case "RightSec": return RightSecondaryContainer;
+                default: return SkillsInventoryViewport;
+            }
+        }
+
+        public string GetIDByContainer(GameObject container)
+        {
+            if (container == ActionsHolder) return "Left";
+            if (container == LeftSecondaryContainer) return "LeftSec";
+            if (container == SkillHolder) return "Right";
+            if (container == RightSecondaryContainer) return "RightSec";
+            return "Inventory";
+        }
+
+        public List<ActionSlotSaveData> GetCurrentLoadout()
+        {
+            List<ActionSlotSaveData> loadout = new List<ActionSlotSaveData>();
+
+            // This is the definitive list of actions the player owns.
+            if (GameFlowManager.instance == null || GameFlowManager.instance.playerActor == null || GameFlowManager.instance.playerActor.ActorData == null)
+            {
+                // Cannot determine owned actions, return empty or log error.
+                Debug.LogError("Could not get player actions to create loadout.");
+                return loadout;
+            }
+
+            var allPlayerOwnedActions = GameFlowManager.instance.playerActor.ActorData.actions;
+
+            // Create a lookup from action to its button GameObject for performance.
+            var actionToButtonMap = PlayerActions
+                .Where(go => go != null && go.GetComponent<ActionButtonHandler>() != null)
+                .ToDictionary(go => go.GetComponent<ActionButtonHandler>().referencedAction, go => go);
+
+            foreach (var action in allPlayerOwnedActions)
+            {
+                if (actionToButtonMap.TryGetValue(action, out GameObject buttonGO))
+                {
+                    // This action has a UI button, find its location.
+                    Transform parent = buttonGO.transform.parent;
+                    string containerID = GetIDByContainer(parent.gameObject);
+                    int slotIndex = buttonGO.transform.GetSiblingIndex();
+
+                    loadout.Add(new ActionSlotSaveData
+                    {
+                        ContainerID = containerID,
+                        SlotIndex = slotIndex,
+                        ActionGuid = action.guid
+                    });
+                }
+                else
+                {
+                    // This action is owned but has no button. It should be in the inventory.
+                    // This handles cases where an action was just awarded but the UI hasn't been refreshed.
+                    loadout.Add(new ActionSlotSaveData
+                    {
+                        ContainerID = "Inventory", // Default to inventory
+                        SlotIndex = -1, // No specific slot index
+                        ActionGuid = action.guid
+                    });
+                }
+            }
+            return loadout;
+        }
+
+        public void SaveLoadout()
+        {
+            if (SaveManager.instance != null)
+            {
+                SaveManager.instance.SaveToSlot(SaveManager.instance.currentSaveSlot);
             }
         }
 
@@ -302,6 +452,10 @@ namespace Assets.Scripts
         {
             LeanTween.scale(ActionsHolder.gameObject, new Vector3(1, 0, 1), 0.15f).setEaseInOutCubic().setIgnoreTimeScale(true);
             LeanTween.scale(SkillHolder.gameObject, new Vector3(1, 0, 1), 0.15f).setEaseInOutCubic().setIgnoreTimeScale(true);
+            if (LeftSecondaryContainer != null)
+                LeanTween.scale(LeftSecondaryContainer.gameObject, new Vector3(1, 0, 1), 0.15f).setEaseInOutCubic().setIgnoreTimeScale(true);
+            if (RightSecondaryContainer != null)
+                LeanTween.scale(RightSecondaryContainer.gameObject, new Vector3(1, 0, 1), 0.15f).setEaseInOutCubic().setIgnoreTimeScale(true);
             //ActionsHolder.transform.parent.gameObject.SetActive(false);
             OnHideUI?.Invoke();
         }
@@ -311,15 +465,24 @@ namespace Assets.Scripts
             ActionsHolder.transform.parent.gameObject.SetActive(true);
 
             var leftContainerChildren = GetAllChildren(ActionsHolder);
-            var rightContainer = GetAllChildren(SkillHolder);
-        
-            foreach(var child in leftContainerChildren.Concat(rightContainer))
+            var rightContainerChildren = GetAllChildren(SkillHolder);
+            var leftSecContainerChildren = LeftSecondaryContainer != null ? GetAllChildren(LeftSecondaryContainer) : new List<GameObject>();
+            var rightSecContainerChildren = RightSecondaryContainer != null ? GetAllChildren(RightSecondaryContainer) : new List<GameObject>();
+
+            foreach (var child in leftContainerChildren.Concat(rightContainerChildren).Concat(leftSecContainerChildren).Concat(rightSecContainerChildren))
             {
                 child.GetComponent<ActionButtonBattle>().Disabled = false;
                 LeanTween.scale(child.gameObject, Vector3.one, 0.4f).setEaseOutBack().setIgnoreTimeScale(true);
             }
             LeanTween.scale(ActionsHolder.gameObject, Vector3.one, 0.15f).setEaseInOutCubic().setIgnoreTimeScale(true);
             LeanTween.scale(SkillHolder.gameObject, Vector3.one, 0.15f).setEaseInOutCubic().setIgnoreTimeScale(true);
+
+            if (LeftSecondaryContainer != null && LeftSecondaryContainer.transform.childCount > 0)
+                LeanTween.scale(LeftSecondaryContainer.gameObject, Vector3.one, 0.15f).setEaseInOutCubic().setIgnoreTimeScale(true);
+
+            if (RightSecondaryContainer != null && RightSecondaryContainer.transform.childCount > 0)
+                LeanTween.scale(RightSecondaryContainer.gameObject, Vector3.one, 0.15f).setEaseInOutCubic().setIgnoreTimeScale(true);
+
             OnShowUI?.Invoke();
         }
 
@@ -328,15 +491,20 @@ namespace Assets.Scripts
             ActionsHolder.transform.parent.gameObject.SetActive(true);
 
             var leftContainerChildren = GetAllChildren(ActionsHolder);
-            var rightContainer = GetAllChildren(SkillHolder);
+            var rightContainerChildren = GetAllChildren(SkillHolder);
+            var leftSecContainerChildren = LeftSecondaryContainer != null ? GetAllChildren(LeftSecondaryContainer) : new List<GameObject>();
+            var rightSecContainerChildren = RightSecondaryContainer != null ? GetAllChildren(RightSecondaryContainer) : new List<GameObject>();
 
-            foreach (var child in leftContainerChildren.Concat(rightContainer))
+            foreach (var child in leftContainerChildren.Concat(rightContainerChildren).Concat(leftSecContainerChildren).Concat(rightSecContainerChildren))
             {
                 child.GetComponent<ActionButtonBattle>().Disabled = false;
                 LeanTween.scale(child.gameObject, Vector3.one, 0.4f).setEaseOutBack().setIgnoreTimeScale(true);
             }
             LeanTween.scale(ActionsHolder.gameObject, Vector3.one, 0.15f).setEaseInOutCubic().setIgnoreTimeScale(true);
             LeanTween.scale(SkillHolder.gameObject, Vector3.one, 0.15f).setEaseInOutCubic().setIgnoreTimeScale(true);
+            LeanTween.scale(LeftSecondaryContainer.gameObject, Vector3.one, 0.15f).setEaseInOutCubic().setIgnoreTimeScale(true);
+            LeanTween.scale(RightSecondaryContainer.gameObject, Vector3.one, 0.15f).setEaseInOutCubic().setIgnoreTimeScale(true);
+
             OnShowUI?.Invoke();
         }
 
@@ -365,21 +533,35 @@ namespace Assets.Scripts
         }
 
         public void DisableBattleSkills()
+{
+    foreach (var actionGO in PlayerActions)
+    {
+        if (actionGO == null) continue;
+        
+        // We now use ActionButtonInventory to handle the switch to Inventory mode
+        var inventoryScript = actionGO.GetComponent<ActionButtonInventory>();
+        if (inventoryScript != null)
         {
-            foreach (var action in PlayerActions)
-            {
-                action.GetComponent<ActionButtonInventory>().DisableBattleSkills();
-            }
+            inventoryScript.DisableBattleSkills();
         }
+    }
+}
 
-        public void EnableBattleSkills()
+       public void EnableBattleSkills()
+{
+    foreach (var actionGO in PlayerActions)
+    {
+        if (actionGO == null) continue;
+
+        // We now use ActionButtonInventory to handle the switch to Battle mode
+        var inventoryScript = actionGO.GetComponent<ActionButtonInventory>();
+        if (inventoryScript != null)
         {
-            foreach (var action in PlayerActions)
-            {
-                action.GetComponent<ActionButtonInventory>().EnableBattleSkills();
-            }
+            inventoryScript.EnableBattleSkills();
         }
-
+    }
+}
+ 
         //1. Attack or Move or Skill // MoveWithingRange if able;
         //2. Reaction Check > Give control to the enemy. Allow him to chose from his reactions (Skill used for mitigation damage)
         //3. Deal Dmg, Apply Effects, Check for Posture break

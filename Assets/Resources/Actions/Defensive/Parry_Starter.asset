@@ -36,7 +36,7 @@ MonoBehaviour:
   DamageModifier: 0.2
   PostureModifier: 0.2
   KnockbackModifier: 0.2
-  StaminaCostMult: 6
+  StaminaCostMult: -2
   duration: 2
   startupDelay: 0
   BuildupGainOnBlock: 5

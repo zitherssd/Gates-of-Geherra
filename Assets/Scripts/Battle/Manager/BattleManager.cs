@@ -62,7 +62,7 @@ namespace Assets.Scripts.Battle.Manager
             SpawnEnemies(battleDefinition);
             UIManager.instance.Fade(false, null);
             CameraManager.instance.ResetForNewBattle(level.transform.Find("CameraTransformPosition").position);
-            UIManager.instance.InitializePlayerActionButtonPrefabs(player.ActorData.actions);
+            //UIManager.instance.InitializePlayerActionButtonPrefabs(player.ActorData.actions);
             StartCoroutine(WaitForSeconds(2f, () =>
             {
                 SoundManager.instance.PlayMusic(null);

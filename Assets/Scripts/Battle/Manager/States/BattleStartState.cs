@@ -1,4 +1,4 @@
-﻿using Assets.Scripts.Battle.Actions.Actions.Effects;
+﻿﻿using Assets.Scripts.Battle.Actions.Actions.Effects;
 using Assets.Scripts.Battle.Actor.States;
 using Assets.Scripts.Pattern;
 using Assets.Scripts.Utility;
@@ -27,6 +27,7 @@ namespace Assets.Scripts.Battle.Manager.States
                 enemy.state.TransitionTo<IdleState>();
             }
             UIManager.instance.EnableUI();
+            UIManager.instance.EnableBattleSkills();
             OnNewBattle?.Invoke();
             ItemEventBus.Raise(ItemTrigger.OnNewBattle);
 

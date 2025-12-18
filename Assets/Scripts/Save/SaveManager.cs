@@ -40,6 +40,13 @@ namespace Assets.Scripts.Save
                 trainingsDoneThisFloor = GameFlowManager.instance.trainingsDoneThisFloor
 
             };
+
+            // Capture the current UI loadout
+            if (UIManager.instance != null)
+            {
+                saveData.player.actions = UIManager.instance.GetCurrentLoadout();
+            }
+
             SaveGame(slot, saveData);
         }
 

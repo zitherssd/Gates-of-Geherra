@@ -36,26 +36,35 @@ namespace Assets.Scripts.Game
                 SetMode(GameMode.RestArea); return; 
             }
 
+            List<ActionSlotSaveData> loadedLoadout = null;
+            bool isNewGame = false;
+
             if (SaveManager.instance.SlotExists(SaveManager.instance.currentSaveSlot))
             {
                 var save = SaveManager.instance.LoadFromSlot(SaveManager.instance.currentSaveSlot);
                 save.LoadActor(playerActor);
+                loadedLoadout = save.player.actions;
             }
             else
             {
+                isNewGame = true;
                 ActorData template = Resources.Load<ActorData>("Actors/MC");
                 ActorData clone = Instantiate(template);
                 playerActor.ActorData = clone;
                 playerActor.ActorData.Name = SaveManager.instance.newGamePlayerName;
                 RollNewstats(playerActor);
                 playerActor.Spawn();
-                SaveManager.instance.SaveToSlot(SaveManager.instance.currentSaveSlot);
             }
 
             //Now that player is loaded we go to rest
             SetMode(GameMode.RestArea);
-            UIManager.instance.InitializePlayerActionButtonPrefabs(playerActor.ActorData.actions);
+            UIManager.instance.InitializePlayerActionButtonPrefabs(playerActor.ActorData.actions, loadedLoadout);
             UIManager.instance.DisableBattleSkills();
+
+            if (isNewGame)
+            {
+                SaveManager.instance.SaveToSlot(SaveManager.instance.currentSaveSlot);
+            }
         }
 
         public GameMode Mode { get; private set; }
@@ -82,7 +91,7 @@ namespace Assets.Scripts.Game
         {
             Mode = mode;
 
-            restAreaManager.enabled = false;
+            restAreaManager.enabled = true;
             //explorationManager.enabled = false;
             //trainingManager.enabled = false;
             battleManager.enabled = false;
@@ -135,5 +144,3 @@ namespace Assets.Scripts.Game
 
 
 }
-
-

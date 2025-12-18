@@ -24,8 +24,8 @@ namespace Assets.Scripts.Battle.Actions.Effects
             var finalTarget = (ApplyTo == StatusTarget.Caster) ? actor : target;
             if(StatusToApply != null && finalTarget != null)
             {
-                var statusInstance = Instantiate(StatusToApply);
-                finalTarget.statusManager.Add(statusInstance);
+                //var statusInstance = Instantiate(StatusToApply);
+                //finalTarget.statusManager.Add(statusInstance);
             }
         }
     }

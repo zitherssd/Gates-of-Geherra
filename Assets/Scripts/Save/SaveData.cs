@@ -27,6 +27,13 @@ namespace Assets.Scripts.Save
         }
     }
 
+    [System.Serializable]
+    public class ActionSlotSaveData
+    {
+        public string ContainerID; // "Left", "LeftSec", "Right", "RightSec"
+        public int SlotIndex;
+        public string ActionGuid;
+    }
 
     [System.Serializable]
     public class ActorSave
@@ -37,7 +44,7 @@ namespace Assets.Scripts.Save
         public float maxBuildup;
         public float maxPosture;
         public float maxStamina;
-        public List<string> actionsIds;
+        public List<ActionSlotSaveData> actions = new List<ActionSlotSaveData>();
         public List<BaseItem> items;
 
         public float currentStamina;
@@ -55,7 +62,7 @@ namespace Assets.Scripts.Save
         {
             var save = new ActorSave
             {
-                actionsIds = new List<string>(),
+                actions = new List<ActionSlotSaveData>(),
                 hpBars = new List<HpBar>()
             };
 
@@ -91,9 +98,11 @@ namespace Assets.Scripts.Save
             }
 
             // Save action GUIDs
+            // This creates a fallback list. If UIManager is active, SaveManager will overwrite this 
+            // with the full loadout (including ContainerIDs).
             foreach (var a in ad.actions)
             {
-                save.actionsIds.Add(a.guid);
+                save.actions.Add(new ActionSlotSaveData { ActionGuid = a.guid });
             }
 
             return save;
@@ -137,9 +146,9 @@ namespace Assets.Scripts.Save
 
             // Restore actions
             ad.actions.Clear();
-            foreach (var guid in save.actionsIds)
+            foreach (var slotData in save.actions)
             {
-                BaseAction template = actionDb.Get(guid);
+                BaseAction template = actionDb.Get(slotData.ActionGuid);
                 BaseAction clone = UnityEngine.Object.Instantiate(template);
                 ad.actions.Add(clone);
             }

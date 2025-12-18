@@ -28,7 +28,7 @@ public class OutOfBoundsKiller : MonoBehaviour
                 Damage = 999,
                 PostureDamage = 0,
             };
-            actor.ApplyDamageInstance(damageInstance, null);
+            actor.ApplyDamageInstance(damageInstance, null, null);
         }
     }
 }
