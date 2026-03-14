@@ -22,7 +22,8 @@ namespace Assets.Scripts
         [SerializeField] private TextMeshProUGUI StoneSlab;
         [SerializeField] private UnityEngine.UI.Image fadeImage;
         [SerializeField] private CanvasGroup actionHolder;
-        [SerializeField] private UnityEngine.UI.Slider SlowdownMeter;
+        [SerializeField] private AnimationCurve slowdownStartCurve;
+        [SerializeField] private AnimationCurve slowdownEndCurve;
 
         [Range(0, 1)] public float letterPause = 0.01f;
         [Range(0, 1)] public float fadeSpeed;
@@ -33,10 +34,6 @@ namespace Assets.Scripts
         [HideInInspector] public BaseSkill selectedSkill;
 
         public static UIManager instance;
-        private float fadeduration = 1;
-        private float timer = 0f;
-        private bool waitingForAction = false;
-        private Action onActionSelected;
         public GameObject OriginPoint;
         
         [Header("Action Containers")]
@@ -48,11 +45,6 @@ namespace Assets.Scripts
         public GameObject SkillsInventoryViewport;
         public GameObject RestingUI;
         public List<GameObject> PlayerActions = new List<GameObject>();
-        private bool effectActive;
-        [SerializeField] private AnimationCurve startCurve;
-        [SerializeField] private AnimationCurve startCurve2;
-        [SerializeField] private AnimationCurve endCurve;
-        private float totalEffectTime;
         private bool isLocked = false;
 
         public static event Action OnHideUI;
@@ -62,10 +54,17 @@ namespace Assets.Scripts
         {
             return instance;
         }
+
+        #region Initialization
+
         public void Awake()
         {
             instance = this;
-            effectActive = true;
+        }
+
+        private void OnDestroy()
+        {
+            // Cleanup if needed
         }
 
         public void Start()
@@ -75,113 +74,33 @@ namespace Assets.Scripts
 
         void Update()
         {
-            if (SlowdownMeter.value > 0)
-            {
-                if (Time.unscaledDeltaTime > 0.1) return;
-                SlowdownMeter.value -= 0.1f * Time.unscaledDeltaTime; // Decrease slider value over time
-                if (!effectActive)
-                {
-                    StartCoroutine(StartEffect()); // Trigger effect when value is above 0 and effect is not active
-                }
-
-                SlowdownMeter.gameObject.SetActive(true);
-            }
-            else
-            {
-                if (effectActive)
-                {
-                    StartCoroutine(StopEffect(0.1f)); // Stop the effect when slider reaches 0
-                }
-                if (SlowdownMeter.gameObject == true)
-                {
-                    SlowdownMeter.value = 0; // Ensure the value doesn't go below 0
-                    SlowdownMeter.gameObject.SetActive(false);
-                }
-            }
+            // Placeholder for other UI updates
         }
 
-        // Method to start the effect
+        #endregion
 
-        public IEnumerator StartEffect()
+        #region Slowdown Management
+
+        /// <summary>
+        /// Deactivate state-based slowdown.
+        /// Fades back to normal time using the end curve.
+        /// </summary>
+        public void ResetStateSlowdown()
         {
-            effectActive = true;
-            float elapsedTime = 0f;
-
-            while (elapsedTime < totalEffectTime)
+            if (SlowdownManager.instance != null)
             {
-                elapsedTime += Time.unscaledDeltaTime;
-                Time.timeScale = startCurve.Evaluate(elapsedTime / totalEffectTime);
-                Time.fixedDeltaTime = Time.timeScale * .02f;
-
-                yield return null;
+                SlowdownManager.instance.ResetStateSlowdown(slowdownEndCurve);
             }
         }
 
-        public IEnumerator StarEffectEnd()
+        internal void ResetMeter()
         {
-            effectActive = true;
-            float elapsedTime = 0f;
-
-            while (elapsedTime < totalEffectTime)
-            {
-                elapsedTime += Time.unscaledDeltaTime;
-                Time.timeScale = startCurve2.Evaluate(elapsedTime / totalEffectTime);
-                Time.fixedDeltaTime = Time.timeScale * .02f;
-
-                yield return null;
-            }
+            ResetStateSlowdown();
         }
 
-        // Method to stop the effect
-        public IEnumerator StopEffect(float duration)
-        {
-            float elapsedTime = 0f;
+        #endregion
 
-            while (elapsedTime < duration)
-            {
-                elapsedTime += Time.unscaledDeltaTime;
-                Time.timeScale = endCurve.Evaluate(elapsedTime / duration);
-                Time.fixedDeltaTime = Time.timeScale * .02f;
-
-                yield return null;
-            }
-
-            Time.timeScale = 1f;  // Ensure time scale is back to normal (1)
-            Time.fixedDeltaTime = Time.timeScale * .02f;
-            effectActive = false; // Mark the effect as inactive
-        }
-       
-        public void GainMeter(float seconds)
-        {
-            if (isLocked) return;
-            totalEffectTime = seconds + SlowdownMeter.value * 5;
-            SlowdownMeter.gameObject.SetActive(true);
-            SlowdownMeter.value += seconds / 5;
-
-
-            if (effectActive)
-            {
-                StopAllCoroutines();  
-            }
-
-            StartCoroutine(StartEffect());
-        }
-
-        public void GainMeterEndBattle(float seconds)
-        {
-            totalEffectTime = 1.5f;
-            SlowdownMeter.gameObject.SetActive(false);
-            //SlowdownMeter.value += seconds / 5;
-
-           
-            if (effectActive)
-            {
-                StopAllCoroutines();  // Stop the currently running effect
-            }
-
-            // Start the effect with the updated duration
-            StartCoroutine(StarEffectEnd());
-        }
+        #region Action Button Management
 
         public void InitializePlayerActionButtonPrefabs(List <BaseAction> ActionsToInitialize, List<ActionSlotSaveData> loadout = null)
         {
@@ -362,6 +281,9 @@ namespace Assets.Scripts
             ActionButtonGameobject.GetComponent<ActionButtonInventory>().DisableBattleSkills();
         }
 
+        #endregion
+
+        #region Text & Animation
 
         public IEnumerator TypeTextMiddleLetterByLetter(string text, Action onTypingComplete)
         {
@@ -392,7 +314,6 @@ namespace Assets.Scripts
                 yield return null;
             }
 
-            // Ensure the target color is reached
             MiddleTextbox.color = targetColor;
             MiddleTextbox.text = string.Empty;
         }
@@ -410,44 +331,10 @@ namespace Assets.Scripts
             }
         }
 
-        public void HideAllButThis(BaseAction action)
-        {
-            var leftContainerChildren = GetAllChildren(ActionsHolder);
-            var rightContainer = GetAllChildren(SkillHolder);
-            HideUI();
-            HideIfNotMatch(leftContainerChildren.Concat(rightContainer).ToList(), action);
-        }
-        public void HideIfNotMatch(List<GameObject> children, BaseAction action)
-        {
-            // Loop through the children to find the one with the correct ButtonHandler
-            foreach (GameObject child in children)
-            {
-                ActionButtonBattle buttonHandler = child.GetComponent<ActionButtonBattle>();
+        #endregion
 
-                // Check if the child has a ButtonHandler and if its referencedSkill matches the action
-                if (buttonHandler != null && buttonHandler.referencedAction == action)
-                {
-                }
-                else
-                {
-                    buttonHandler.Disabled = true;
-                    LeanTween.scale(buttonHandler.gameObject, new Vector3(1,0,1), 0.1f).setEaseInOutCubic();
-                }
-                
-            }
-        }
-        public List<GameObject> GetAllChildren(GameObject parent)
-        {
-            List<GameObject> children = new List<GameObject>();
+        #region UI Visibility
 
-            // Loop through each child of the parent
-            foreach (Transform child in parent.transform)
-            {
-                children.Add(child.gameObject); // Add child to list
-            }
-
-            return children;
-        }
         public void HideUI()
         {
             LeanTween.scale(ActionsHolder.gameObject, new Vector3(1, 0, 1), 0.15f).setEaseInOutCubic().setIgnoreTimeScale(true);
@@ -456,9 +343,9 @@ namespace Assets.Scripts
                 LeanTween.scale(LeftSecondaryContainer.gameObject, new Vector3(1, 0, 1), 0.15f).setEaseInOutCubic().setIgnoreTimeScale(true);
             if (RightSecondaryContainer != null)
                 LeanTween.scale(RightSecondaryContainer.gameObject, new Vector3(1, 0, 1), 0.15f).setEaseInOutCubic().setIgnoreTimeScale(true);
-            //ActionsHolder.transform.parent.gameObject.SetActive(false);
             OnHideUI?.Invoke();
         }
+
         public void ShowUI()
         {
             if (isLocked) return;
@@ -508,18 +395,6 @@ namespace Assets.Scripts
             OnShowUI?.Invoke();
         }
 
-        internal void ResetMeter()
-        {
-            SlowdownMeter.value = 0f;
-            StopAllCoroutines();
-            StartCoroutine(StopEffect(0.05f));
-        }
-
-        internal void ShowRestingUI()
-        {
-            RestingUI.SetActive(true);
-        }
-
         public void DisableUI()
         {
             HideUI();
@@ -532,41 +407,82 @@ namespace Assets.Scripts
             isLocked = false;
         }
 
+        internal void ShowRestingUI()
+        {
+            RestingUI.SetActive(true);
+        }
+
+        #endregion
+
+        #region Battle Skills Management
+
         public void DisableBattleSkills()
-{
-    foreach (var actionGO in PlayerActions)
-    {
-        if (actionGO == null) continue;
-        
-        // We now use ActionButtonInventory to handle the switch to Inventory mode
-        var inventoryScript = actionGO.GetComponent<ActionButtonInventory>();
-        if (inventoryScript != null)
         {
-            inventoryScript.DisableBattleSkills();
+            foreach (var actionGO in PlayerActions)
+            {
+                if (actionGO == null) continue;
+                
+                var inventoryScript = actionGO.GetComponent<ActionButtonInventory>();
+                if (inventoryScript != null)
+                {
+                    inventoryScript.DisableBattleSkills();
+                }
+            }
         }
-    }
-}
 
-       public void EnableBattleSkills()
-{
-    foreach (var actionGO in PlayerActions)
-    {
-        if (actionGO == null) continue;
-
-        // We now use ActionButtonInventory to handle the switch to Battle mode
-        var inventoryScript = actionGO.GetComponent<ActionButtonInventory>();
-        if (inventoryScript != null)
+        public void EnableBattleSkills()
         {
-            inventoryScript.EnableBattleSkills();
+            foreach (var actionGO in PlayerActions)
+            {
+                if (actionGO == null) continue;
+
+                var inventoryScript = actionGO.GetComponent<ActionButtonInventory>();
+                if (inventoryScript != null)
+                {
+                    inventoryScript.EnableBattleSkills();
+                }
+            }
         }
-    }
-}
- 
-        //1. Attack or Move or Skill // MoveWithingRange if able;
-        //2. Reaction Check > Give control to the enemy. Allow him to chose from his reactions (Skill used for mitigation damage)
-        //3. Deal Dmg, Apply Effects, Check for Posture break
-        ////If Posture break > go back to 1.
-        //4. ChoseNextActivePlayer();
-        //
+
+        #endregion
+
+        #region Utility Methods
+
+        public void HideAllButThis(BaseAction action)
+        {
+            var leftContainerChildren = GetAllChildren(ActionsHolder);
+            var rightContainer = GetAllChildren(SkillHolder);
+            HideUI();
+            HideIfNotMatch(leftContainerChildren.Concat(rightContainer).ToList(), action);
+        }
+
+        public void HideIfNotMatch(List<GameObject> children, BaseAction action)
+        {
+            foreach (GameObject child in children)
+            {
+                ActionButtonBattle buttonHandler = child.GetComponent<ActionButtonBattle>();
+                if (buttonHandler != null && buttonHandler.referencedAction == action)
+                {
+                    // Keep this button visible
+                }
+                else
+                {
+                    buttonHandler.Disabled = true;
+                    LeanTween.scale(buttonHandler.gameObject, new Vector3(1, 0, 1), 0.1f).setEaseInOutCubic();
+                }
+            }
+        }
+
+        public List<GameObject> GetAllChildren(GameObject parent)
+        {
+            List<GameObject> children = new List<GameObject>();
+            foreach (Transform child in parent.transform)
+            {
+                children.Add(child.gameObject);
+            }
+            return children;
+        }
+
+        #endregion
     }
 }

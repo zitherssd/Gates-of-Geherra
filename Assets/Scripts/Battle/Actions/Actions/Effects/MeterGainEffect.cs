@@ -1,4 +1,5 @@
 ﻿using System;
+using Assets.Scripts.Utility;
 
 namespace Assets.Scripts.Battle.Actions.Actions.Effects
 {
@@ -8,8 +9,7 @@ namespace Assets.Scripts.Battle.Actions.Actions.Effects
         public float MeterGainValue;
         public void Eval(Actor.Actor actor, BaseAction t)
         {
-            if (actor.isControllable)
-                UIManager.instance.GainMeter(MeterGainValue);
+            // Slowdown handled by state-based system in IdleState
         }
     }
 

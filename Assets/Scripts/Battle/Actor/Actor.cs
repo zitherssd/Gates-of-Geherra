@@ -117,7 +117,6 @@ namespace Assets.Scripts.Battle.Actor
 
             if (isControllable)
                 UIManager.instance.ResetMeter();
-            Time.timeScale = 1f;
 
             _currentAction = action;
             _currentAction.OnActionEnded += OnActionEnded;
@@ -205,7 +204,9 @@ namespace Assets.Scripts.Battle.Actor
             // 2. Invoke OnAfterTakeDamage event
             OnAfterTakeDamage?.Invoke(damageInstance);
 
-            if (isControllable) UIManager.instance.GainMeter(0.4f);
+            // Trigger temporary slowdown effect on damage
+            if (isControllable && SlowdownManager.instance != null)
+                SlowdownManager.instance.TriggerTemporarySlowdown(0.4f, new AnimationCurve());
         }
 
         public void DealDamage(DamageInstance damageInstance, Actor targetActor, BaseAction action)

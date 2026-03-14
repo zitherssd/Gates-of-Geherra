@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Assets.Scripts.Utility;
 using UnityEngine;
 
 namespace Assets.Scripts.Battle.Actions
@@ -69,7 +70,6 @@ namespace Assets.Scripts.Battle.Actions
         {
             if (reason == ActionEndReason.Completed)
             {
-                if(_caster != null && _caster.isControllable) UIManager.instance.GainMeter(SlowdownMeterGainOnEnd);
                 UpdateRemainingUses();
             }
         }

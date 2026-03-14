@@ -2,6 +2,7 @@
 using Assets.Scripts.Battle.Actions;
 using Assets.Scripts.Battle.Actions.Reactions;
 using Assets.Scripts.Pattern;
+using Assets.Scripts.Utility;
 using UnityEngine;
 
 namespace Assets.Scripts.Battle.Actor.States
@@ -85,7 +86,9 @@ namespace Assets.Scripts.Battle.Actor.States
             if (skill.blockType == Block.BlockType.Parry)
             {
                 if (owner.isControllable)
-                    UIManager.instance.GainMeter(skill.SlowdownMeterGain);
+                {
+                    // Slowdown handled by state-based system in IdleState
+                }
                 owner.ActorData.ChangeBuildup(skill.BuildupGainOnBlock);
                 skill.EndAction(ActionEndReason.Completed); // Parry ends the block immediately with success.
             }
@@ -111,7 +114,9 @@ namespace Assets.Scripts.Battle.Actor.States
             else if (skill.blockType == Block.BlockType.Guard)
             {
                 if (owner.isControllable)
-                    UIManager.instance.GainMeter(skill.SlowdownMeterGain);
+                {
+                    // Slowdown handled by state-based system in IdleState
+                }
             }
         }
 

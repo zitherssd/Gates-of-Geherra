@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Battle.Actor.States;
+using Assets.Scripts.Utility;
 using System;
 using UnityEngine;
 
@@ -25,7 +26,7 @@ namespace Assets.Scripts.Battle.Actions.Actions
             {
                 if (casterActor.isControllable)
                 {
-                    UIManager.instance.GainMeter(SlowdownMeterGain);
+                    // Slowdown handled by state-based system in IdleState
                 }
                 casterActor.movement.SetFriction();
             }

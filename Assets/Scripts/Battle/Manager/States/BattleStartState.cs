@@ -30,9 +30,6 @@ namespace Assets.Scripts.Battle.Manager.States
             UIManager.instance.EnableBattleSkills();
             OnNewBattle?.Invoke();
             ItemEventBus.Raise(ItemTrigger.OnNewBattle);
-
-            //Gain meter
-            UIManager.instance.GainMeter(4f);
             UIManager.instance.ShowUI();
 
             //Transition to active

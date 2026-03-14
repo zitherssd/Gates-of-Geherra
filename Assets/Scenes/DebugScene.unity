@@ -467,6 +467,69 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 103737264}
   m_CullTransparentMesh: 1
+--- !u!1 &104650110
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 104650113}
+  - component: {fileID: 104650112}
+  - component: {fileID: 104650111}
+  m_Layer: 0
+  m_Name: GlobalVolume
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &104650111
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 104650110}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bdc26e40121d4b149b6138ae553c8776, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  debugMode: 0
+--- !u!114 &104650112
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 104650110}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IsGlobal: 1
+  priority: 0
+  blendDistance: 0
+  weight: 0
+  sharedProfile: {fileID: 11400000, guid: f44f12036a87a3047adf395662d79be5, type: 2}
+--- !u!4 &104650113
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 104650110}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.4502778, y: 0.31767207, z: -0.95401996}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!43 &108027637
 Mesh:
   m_ObjectHideFlags: 0
@@ -7008,13 +7071,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 338460977}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.004363274, y: 0, z: 0, w: 0.9999905}
+  m_LocalRotation: {x: 0.40132478, y: -0, z: -0, w: 0.9159359}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 0, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0.5, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 47.322, y: 0, z: 0}
 --- !u!1 &366089772
 GameObject:
   m_ObjectHideFlags: 0
@@ -30568,6 +30631,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentFloor: 1
+  StoryBattles: []
+  RandomBattles: []
   floorEnemiesList:
   - floorNumber: 2
     enemies:
@@ -66506,6 +66571,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionDatabase: {fileID: 11400000, guid: 956ec3de762324a448cd0b65f236b77d, type: 2}
   currentSaveSlot: 0
+  newGamePlayerName: 
 --- !u!1 &1822976024
 GameObject:
   m_ObjectHideFlags: 0
@@ -67136,7 +67202,9 @@ MonoBehaviour:
   selectedSkill: {fileID: 0}
   OriginPoint: {fileID: 0}
   ActionsHolder: {fileID: 913158223}
+  LeftSecondaryContainer: {fileID: 0}
   SkillHolder: {fileID: 1725617373}
+  RightSecondaryContainer: {fileID: 0}
   SkillsInventoryViewport: {fileID: 1828998033}
   RestingUI: {fileID: 1760135184}
   PlayerActions: []
@@ -67264,6 +67332,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 00888e124b0fd15468a54a9e2095dd8f, type: 3}
   - {fileID: 8300000, guid: 1744291f19f487c4db9d04c439e50766, type: 3}
   - {fileID: 8300000, guid: 4430111986f14dd4986e92de5e672708, type: 3}
+  restMusic: []
   soundEffects:
   - {fileID: 8300000, guid: bb13a031194c1224f971826c7e78480e, type: 3}
   - {fileID: 8300000, guid: 41e5ac83a1394d04c9636f19d83f25b5, type: 3}
@@ -73738,3 +73807,4 @@ SceneRoots:
   - {fileID: 338460980}
   - {fileID: 1921021678}
   - {fileID: 471904928}
+  - {fileID: 104650113}

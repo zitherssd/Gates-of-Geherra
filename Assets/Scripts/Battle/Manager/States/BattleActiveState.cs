@@ -41,9 +41,10 @@ namespace Assets.Scripts.Battle.Manager.States
                 if (battleManager.EnemyActors.TrueForAll(actor => actor.ActorData.isDead())) // Last hit dealt now
                 {
                     FinalHitDealth?.Invoke();
-                    //Gain meter, final hit effects
+                    // Final hit slowdown effect
                     UIManager.instance.ResetMeter();
-                    UIManager.instance.GainMeter(2f);
+                    if (SlowdownManager.instance != null)
+                        SlowdownManager.instance.TriggerTemporarySlowdown(2f, new AnimationCurve());
                     UIManager.instance.DisableUI();
                     CameraManager.instance.SlowTrack = true;
                     exitStep = true;
@@ -51,9 +52,10 @@ namespace Assets.Scripts.Battle.Manager.States
 
                 if (battleManager.PlayerActors.TrueForAll(actor => actor.ActorData.isDead())) // Last hit dealt now
                 {
-                    //Gain meter, final hit effects
+                    // Final hit slowdown effect
                     UIManager.instance.ResetMeter();
-                    UIManager.instance.GainMeter(2f);
+                    if (SlowdownManager.instance != null)
+                        SlowdownManager.instance.TriggerTemporarySlowdown(2f, new AnimationCurve());
                     UIManager.instance.DisableUI();
                     CameraManager.instance.SlowTrack = true;
                     exitStep = true;

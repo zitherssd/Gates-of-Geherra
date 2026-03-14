@@ -32,7 +32,6 @@ namespace Assets.Scripts.Battle.Actions.Reactions
             {
                 owner.movement.SetFriction();
                 owner.movement.FaceTarget(owner.target.ClosestEnemy);
-                UIManager.instance.GainMeter(SlowdownMeterGain);
             }
         }
 

@@ -34,8 +34,6 @@ namespace Assets.Scripts.Battle.Actions.Actions.Effects
         {
             // Need ro revise
             var targetBlocking = targetActor.state.IsBlocking();
-            if (casterActor.isControllable && !targetBlocking)
-                UIManager.instance.GainMeter(action.SlowdownMeterGain);
             if (targetBlocking)
                 casterActor.ActorData.ChangeBuildup(DamageData.BuildupGainOnHit / 2);
             else

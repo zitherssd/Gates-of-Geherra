@@ -96,7 +96,6 @@ namespace Assets.Scripts.Battle.Actions
                 case BUTTONTYPE.VECTOR:
                     CameraManager.instance.SlowTrack = false;
                     UIManager.instance.HideAllButThis(referencedAction);
-                    UIManager.instance.GainMeter(referencedAction.SlowDownMeterGainOnPress);
                     JoystickManager.instance.EnableJoystick(Input.touchCount > 0 ? Input.GetTouch(0).position : (Vector2)Input.mousePosition);
                     guide.GetComponent<ParticleSystem>().Play();
                     break;
@@ -141,7 +140,6 @@ namespace Assets.Scripts.Battle.Actions
                     {
                         referencedAction.EndAction(ActionEndReason.Cancelled);
                     }
-                    UIManager.instance.GainMeter(referencedAction.SlowdownMeterGainOnRelease);
                     guide.GetComponent<ParticleSystem>().Stop();
                     break;
                 default:

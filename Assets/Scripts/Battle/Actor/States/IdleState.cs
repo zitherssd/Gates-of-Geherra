@@ -1,6 +1,7 @@
 ﻿using System;
 using Assets.Scripts.Battle.Manager;
 using Assets.Scripts.Pattern;
+using Assets.Scripts.Utility;
 using UnityEngine;
 
 namespace Assets.Scripts.Battle.Actor.States
@@ -27,6 +28,10 @@ namespace Assets.Scripts.Battle.Actor.States
                 //  var AvaliableSkills = actor.ActorData.actions;  //This should be read at the beginning of the fight?
                 UIManager.GetInstance().ShowUI();
                 var Ready = true;
+                
+                // Activate state-based slowdown when entering idle
+                if (SlowdownManager.instance != null)
+                    SlowdownManager.instance.SetStateSlowdown(new AnimationCurve());
             }
 
             //actor.state.TransitionTo(actor.state.moveState.SetForTarget(10f, null)); do this from ai
