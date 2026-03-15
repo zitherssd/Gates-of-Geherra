@@ -18,11 +18,8 @@ namespace Assets.Scripts.Battle.Actor.States
         private bool continousAction;
         private float timer;
         public MoveAction action;
-        private const float deadzoneThreshold = 0.3f;
-        private const float idleSpeedThreshold = 0.3f;
-        private bool isCurrentlyIdle = false;
-
-        public bool IsCurrentlyIdle => isCurrentlyIdle;
+        private float deadzoneThreshold = 0.3f;
+        private float idleSpeedThreshold = 0.1f;
 
 
         public MoveState(Actor actor)
@@ -48,9 +45,7 @@ namespace Assets.Scripts.Battle.Actor.States
 
         public void Enter()
         {
-            actor.PlayAnimation("Run");
             lastSqrMag = Mathf.Infinity;
-            isCurrentlyIdle = false;
             //actor.movement.ResetMomentum();
             actor.movement.SetFriction(0);
             timer = 0.2f;
@@ -92,39 +87,20 @@ namespace Assets.Scripts.Battle.Actor.States
                 
                 // Check if joystick is in deadzone AND player speed is below threshold
                 bool isInDeadzone = action.Direction.magnitude < deadzoneThreshold;
-                bool isStandingStill = actor.movement.speed < idleSpeedThreshold;
-                bool shouldBeIdle = isInDeadzone && isStandingStill;
+                var animator = actor.GetAnimator();
+                animator.speed = actor.movement.speed;
+                if (animator.speed > 1) animator.speed = StaticHelpers.LinearMap(animator.speed, 1, 10, 1, 4);
+                if (actor.movement.speed < idleSpeedThreshold) actor.PlayAnimation("Idle"); else actor.PlayAnimation("Run");
                 
-                // Switch animation based on deadzone and speed state
-                if (shouldBeIdle && !isCurrentlyIdle)
-                {
-                    actor.PlayAnimation("Idle");
-                    isCurrentlyIdle = true;
-                }
-                else if (!shouldBeIdle && isCurrentlyIdle)
-                {
-                    actor.PlayAnimation("Run");
-                    isCurrentlyIdle = false;
-                }
-                
+                if (isInDeadzone) actor.movement.SetFriction();
+                else actor.movement.SetFriction(0);
+
                 if (timer < 1f)
                 {
-                    var animator = actor.GetAnimator();
-                    //animator.speed = timer * 2 / 3 * (1 + (float)actor.ActorData.AGI/10);
-                    animator.speed = actor.movement.speed;
-                    if (animator.speed > 1) animator.speed = StaticHelpers.LinearMap(animator.speed, 1, 10, 1, 4);
-                    //actor.movement.ChangeSpeed((action.Direction.normalized) * (1 + actor.ActorData.AGI/10) * timer);
-                    //actor.movement.MoveTowardTarget(action.Direction + actor.transform.position, 2f * timer, 1 + (float)actor.ActorData.AGI / 10);
-                    actor.movement.MoveInDirection(action.Direction, 2f * timer, 1 + (float)actor.ActorData.Agility / 20);
-
+                    if (!isInDeadzone) actor.movement.MoveInDirection(action.Direction, 2f * timer, 1 + (float)actor.ActorData.Agility / 20);
                 }
                 else
-                    //actor.movement.ChangeSpeed((action.Direction) * (1 + actor.ActorData.AGI/10));
-                    //actor.movement.MoveTowardTarget(action.Direction + actor.transform.position, 2f, 1 + (float)actor.ActorData.AGI / 10);
-                    actor.movement.MoveInDirection(action.Direction, 2f, 1 + (float)actor.ActorData.Agility / 20);
-                //Show guide and store Direction in skill;
-                //guide.transform.position = player.transform.position + GetRelativeToCamera(deltaScaled * referencedAction.StickMult);
-                //referencedAction.Direction = GetRelativeToCamera(deltaScaled);
+                    if (!isInDeadzone) actor.movement.MoveInDirection(action.Direction, 2f, 1 + (float)actor.ActorData.Agility / 20);
 
 
                 if (timer >= duration)

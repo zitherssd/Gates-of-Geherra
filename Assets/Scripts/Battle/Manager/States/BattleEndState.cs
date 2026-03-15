@@ -22,6 +22,10 @@ namespace Assets.Scripts.Battle.Manager.States
         }
         public void Enter()
         {
+            // Reset slowdown immediately when battle ends
+            if (SlowdownManager.instance != null)
+                SlowdownManager.instance.ResetImmediate();
+            
             SoundManager.instance.FadeOutMusic();
             UIManager.instance.Fade(true, () =>
             {

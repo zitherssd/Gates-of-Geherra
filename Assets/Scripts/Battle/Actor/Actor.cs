@@ -280,9 +280,9 @@ namespace Assets.Scripts.Battle.Actor
             }
 
             // Also regen when standing still during movement (joystick in deadzone)
-            if (state.CurrentState is MoveState moveState && moveState.IsCurrentlyIdle)
+            if (state.CurrentState is MoveState moveState)
             {
-                ActorData.DealStaminaDamage(-ActorData.staminaRegenRate * 5 * StaminaRegenRate * Time.deltaTime);
+                ActorData.DealStaminaDamage(-ActorData.staminaRegenRate * 5 * StaminaRegenRate * Time.deltaTime * (1 - moveState.action.Direction.magnitude));
             }
         }
         private void UpdateActionCooldowns()
