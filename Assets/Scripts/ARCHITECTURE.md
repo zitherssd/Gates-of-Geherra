@@ -92,9 +92,13 @@ Editor/          - Custom editor tools and inspectors
 3. **BattleActiveState** - Main combat loop:
    - Player inputs actions via **UIManager** → **InputHandler**
    - Player **Actor** executes **BaseAction**/**BaseSkill**
+     - On action: **SlowdownManager.ResetStateSlowdown()** exits slowdown state
+     - On final hit: Temporary slowdown triggered (2.0s duration) for dramatic effect
    - Enemy **Actor** executes AI decisions via **AIBT** (Behavior Tree)
    - **Action System** handles animation, damage, effects
+   - Actors take damage: Temporary slowdown triggered (0.4s duration) for feedback
    - **StatusManager** processes ongoing status effects
+   - **SlowdownManager** smooth time scale transitions
 4. **BattleEndState** - Cleanup, rewards, save progression
 5. Return to **Rest Area**
 
@@ -127,7 +131,7 @@ The core combat engine managing all in-battle interactions.
 - **Responsibility**: State-based battle progression
 - **States**:
   - `BattleStartState` - Initialize actors, UI
-  - `BattleActiveState` - Main combat loop
+  - `BattleActiveState` - Main combat loop (triggers slowdown on final hit)
   - `BattleEndState` - Cleanup, rewards
 - **Pattern**: State Machine (generic pattern from `Pattern/StateMachine.cs`)
 
@@ -137,7 +141,39 @@ The core combat engine managing all in-battle interactions.
 
 ---
 
-### 2. **Actor System** (`Battle/Actor/`)
+### 2. **Slowdown System** (`Utility/SlowdownManager.cs`)
+
+Centralized time manipulation for visual feedback and dramatic moments.
+
+#### **SlowdownManager** (`Utility/SlowdownManager.cs`) - Singleton
+- **Responsibility**: Manage time scale transitions with smooth animations
+- **Members**:
+  - `stateSlowdownStartCurve` - AnimationCurve for entry to slowdown (1.0 → 0.05)
+  - `stateSlowdownEndCurve` - AnimationCurve for exit from slowdown (0.05 → 1.0)
+  - `targetSlowdownTimeScale` - Target time scale (default: 0.05)
+  - `isInStateSlowdown` - Currently in state-based slowdown
+  - `isInTemporarySlowdown` - Currently in temporary slowdown
+- **Two Operation Modes**:
+  1. **State-Based Slowdown**:
+     - `SetStateSlowdown()` - Smoothly animate to 0.05 timeScale over 0.1s
+     - `ResetStateSlowdown()` - Smoothly animate back to 1.0 over 0.1s
+     - **Blocks temporary slowdowns** while active (priority system)
+     - Used by: `IdleState` (entry), `Actor.UseAction()` (action execution exit)
+  2. **Temporary Slowdown**:
+     - `TriggerTemporarySlowdown(float duration, AnimationCurve curve)` - Brief slowdown that auto-expires
+     - Auto-expires after specified duration unless state slowdown is active
+     - Used by: `BattleActiveState` (final hit drama - 2.0s), `Actor` (damage feedback - 0.4s)
+- **Key Methods**:
+  - `SetStateSlowdown()` - Initiate state slowdown via coroutine
+  - `ResetStateSlowdown()` - Exit state slowdown via coroutine
+  - `TriggerTemporarySlowdown(duration, curve)` - Queue temporary slowdown
+  - `ResetImmediate()` - Emergency reset to 1.0 timeScale
+- **Events**: `OnStateSlowdownStart`, `OnStateSlowdownEnd`, `OnTemporarySlowdownStart`, `OnTemporarySlowdownEnd`
+- **Animation Details**: Both entry/exit use smooth Lerp with serialized AnimationCurves as easing functions (0.1s duration)
+
+---
+
+### 3. **Actor System** (`Battle/Actor/`)
 
 Represents any in-game combatant (player or enemy).
 
@@ -160,8 +196,10 @@ Represents any in-game combatant (player or enemy).
   - `OnActionUsed`
 - **Key Methods**:
   - `Spawn()` - Initialize actor in battle
-  - `ApplyDamageInstance(DamageInstance, caster, action)` - Receive damage
+  - `ApplyDamageInstance(DamageInstance, caster, action)` - Receive damage; triggers temporary slowdown (0.4s)
   - `ExecuteAction(BaseAction)` - Perform action
+  - `UseAction(BaseAction)` - Execute action with slowdown reset via `SlowdownManager.ResetStateSlowdown()`
+  - `StaminaRegen()` - Regenerate stamina when fully idle OR standing still during movement (checks both `IsIdle()` and `MoveState.IsCurrentlyIdle`)
   - `Update()` - Every frame: stamina regen, status ticking, AI updates
 
 #### **ActorData** (`Battle/Actor/ActorData.cs`) - Configuration
@@ -177,9 +215,9 @@ Represents any in-game combatant (player or enemy).
 #### **ActorStateMachine** (`Battle/Actor/ActorStateMachine.cs`)
 - **Responsibility**: Actor animation/action state management
 - **States**:
-  - `IdleState` - Idle, regenerating stats
+  - `IdleState` - Idle, regenerating stats (triggers state slowdown on enter)
   - `ActingState` - Executing an action (windup → recovery)
-  - `MoveState` - Moving
+  - `MoveState` - Moving with animation switching and stamina regen (see details below)
   - `StaggerState` - Knocked back, can recover
   - `DeathState` - Dead
   - `BlockState` - Blocking
@@ -188,13 +226,37 @@ Represents any in-game combatant (player or enemy).
 - **Pattern**: State Machine (implements `IState` interface)
 - **Usage**: Called by actions to transition actor into action-execution mode
 
+#### **MoveState** (`Battle/Actor/States/MoveState.cs`) - Enhanced Movement
+- **Responsibility**: Continuous movement with joystick input and animation management
+- **Key Features**:
+  - **Deadzone Detection** (0.15f threshold): Joystick input below this magnitude is considered idle
+  - **Speed-Based Animation Switching**:
+    - Animates between "Run" and "Idle" states
+    - Transitions to "Idle" only when BOTH conditions met:
+      1. Joystick in deadzone (magnitude < 0.15f)
+      2. Actor speed < 0.3f
+    - Ensures animation doesn't flicker at low speeds
+  - **Stamina Regeneration During Standing Still**:
+    - Stamina regenerates when joystick is in deadzone
+    - Complements `IdleState` stamina regen
+    - Allows players to recover stamina without fully exiting movement
+- **Key Property**:
+  - `IsCurrentlyIdle` - Exposed for external queries (used by `Actor.StaminaRegen()` and slowdown system)
+
+#### **IdleState** (`Battle/Actor/States/IdleState.cs`) - Enhanced Idle
+- **Responsibility**: Player-ready state during turn-based combat
+- **Key Features**:
+  - On enter: Calls `SlowdownManager.instance.SetStateSlowdown()` to visually indicate idle readiness
+  - Smooth slowdown transition provides clear player feedback
+  - Stamina regeneration active during idle
+
 #### **ActorInventory** (`Battle/Actor/ActorInventory.cs`)
 - **Responsibility**: Tracks items held by actor
 - **Usage**: Equipment, consumables
 
 ---
 
-### 3. **Action/Skill System** (`Battle/Actions/`)
+### 4. **Action/Skill System** (`Battle/Actions/`)
 
 Framework for player and enemy actions (attacks, skills, abilities).
 
@@ -236,7 +298,7 @@ Examples of implemented skills:
 
 ---
 
-### 4. **AI System** (`Battle/Actor/AI/`)
+### 5. **AI System** (`Battle/Actor/AI/`)
 
 Enemy decision-making and behavior control.
 
@@ -274,7 +336,7 @@ Enemy decision-making and behavior control.
 
 ---
 
-### 5. **Status & Effects System** (`Battle/Components/Status/`)
+### 6. **Status & Effects System** (`Battle/Components/Status/`)
 
 Runtime effects and status conditions applied to actors.
 
@@ -301,7 +363,7 @@ Runtime effects and status conditions applied to actors.
 
 ---
 
-### 6. **Effect & Audio System**
+### 7. **Effect & Audio System**
 
 #### **EffectManager** (`Battle/Components/Effects/EffectManager.cs`)
 - **Responsibility**: Visual feedback for attacks and damage
@@ -323,7 +385,7 @@ Runtime effects and status conditions applied to actors.
 
 ---
 
-### 7. **Game Flow System** (`Game/`)
+### 8. **Game Flow System** (`Game/`)
 
 High-level game mode and progression management.
 
@@ -372,7 +434,7 @@ High-level game mode and progression management.
 
 ---
 
-### 8. **UI System** (`UI/`)
+### 9. **UI System** (`UI/`)
 
 User interface management and interaction handling.
 
@@ -382,15 +444,16 @@ User interface management and interaction handling.
   - `ActionsHolder` - Left panel for player actions
   - `SkillHolder` - Right panel for skills
   - `TopTextbox`, `MiddleTextbox` - Text display
-  - `SlowdownMeter` - Game mechanic meter (slowdown buildup)
   - `selectedAction`, `selectedSkill` - Currently selected action
 - **Key Methods**:
   - `InitializePlayerActionButtonPrefabs()` - Setup action UI
   - `SelectAction(BaseAction)` - Handle action selection
-  - `GainMeter(float)` - Increase slowdown meter
+  - `ResetStateSlowdown()` - Wrapper that delegates to `SlowdownManager.ResetStateSlowdown()`
+  - `ResetMeter()` - Alias for backward compatibility (calls `ResetStateSlowdown()`)
   - `Fade(bool in, Action callback)` - Fade UI in/out
   - `ShowRestingUI()` - Display rest screen
   - `GetCurrentLoadout()` - Return current action setup for saving
+- **Note**: Slowdown meter visualization was removed; slowdown now managed entirely by `SlowdownManager`
 - **Events**: `OnHideUI`, `OnShowUI`
 
 #### **Action UI Handlers** (`UI/`)
@@ -403,7 +466,7 @@ User interface management and interaction handling.
 
 ---
 
-### 9. **Save/Load System** (`Save/`)
+### 10. **Save/Load System** (`Save/`)
 
 Game progress persistence.
 
@@ -434,7 +497,7 @@ Game progress persistence.
 
 ---
 
-### 10. **Input System** (`Utility/InputHandler.cs`)
+### 11. **Input System** (`Utility/InputHandler.cs`)
 
 Input handling and event dispatch.
 
@@ -452,7 +515,7 @@ Input handling and event dispatch.
 
 ---
 
-### 11. **Audio System** (`Utility/SoundManager.cs`)
+### 12. **Audio System** (`Utility/SoundManager.cs`)
 
 Centralized audio management.
 
@@ -472,7 +535,7 @@ Centralized audio management.
 
 ---
 
-### 12. **Utility System** (`Utility/`)
+### 13. **Utility System** (`Utility/`)
 
 Helper classes and shared functionality.
 
@@ -512,6 +575,7 @@ Helper classes and shared functionality.
 | **Save/Load** | `Save/` | Persistence layer |
 | **Input** | `Utility/InputHandler.cs` | Input event distribution |
 | **Audio** | `Utility/SoundManager.cs` | Audio management |
+| **Slowdown** | `Utility/SlowdownManager.cs` | Time scale transitions and effects |
 
 ### By Layer
 
@@ -556,6 +620,14 @@ Events allow decoupled system interaction:
   OnHideUI, OnShowUI → State machines, input blocking
   ```
 
+- **SlowdownManager Events**:
+  ```csharp
+  OnStateSlowdownStart   → Visual effects (desaturation), state machines
+  OnStateSlowdownEnd     → Visual effects restoration
+  OnTemporarySlowdownStart → Brief visual feedback
+  OnTemporarySlowdownEnd   → Restore normal time scale (if no state slowdown)
+  ```
+
 ### 2. **Direct References (Coupling Points)**
 
 Some critical connections require direct references:
@@ -571,6 +643,12 @@ Some critical connections require direct references:
 - **UIManager**:
   - Globally accessible singleton
   - Used by: Battle system, actors for UI updates
+  - **Note**: Now delegates slowdown to SlowdownManager (reduced coupling)
+
+- **SlowdownManager**:
+  - Globally accessible singleton
+  - Used by: IdleState, BattleActiveState, Actor for time manipulation
+  - Central point for all slowdown logic
 
 - **SaveManager**:
   - Coordinates with `GameFlowManager`, `FloorManager`
@@ -581,23 +659,32 @@ Some critical connections require direct references:
 ```
 1. UIManager (player selects action)
    ↓
-2. Player Actor executes BaseAction.Begin()
+2. Player Actor.UseAction() called
    ↓
-3. Action transitions Actor to ActingState via ActorStateMachine
+3. SlowdownManager.ResetStateSlowdown() - Exit slowdown state (smooth transition)
    ↓
-4. ActingState handles animation, windup/recovery
+4. Actor executes BaseAction.Begin()
    ↓
-5. Action.OnHit() called by animation event
+5. Action transitions Actor to ActingState via ActorStateMachine
    ↓
-6. Damage calculated and Actor.ApplyDamageInstance() called on targets
+6. ActingState handles animation, windup/recovery
    ↓
-7. Target receives events: OnBeforeTakeDamage, OnAfterTakeDamage
+7. Action.OnHit() called by animation event
    ↓
-8. StatusManager processes status effects
+8. Damage calculated and Actor.ApplyDamageInstance() called on targets
    ↓
-9. EffectManager shows damage popups, color flash
+9. Target takes damage, triggers SlowdownManager.TriggerTemporarySlowdown(0.4f)
    ↓
-10. AudioManager plays hit sound
+10. Target receives events: OnBeforeTakeDamage, OnAfterTakeDamage
+   ↓
+11. StatusManager processes status effects
+   ↓
+12. EffectManager shows damage popups, color flash
+   ↓
+13. AudioManager plays hit sound
+   ↓
+14. BattleActiveState on final hit: SlowdownManager.TriggerTemporarySlowdown(2.0f)
+    → Dramatic slowdown to emphasize victory moment
    ↓
 11. UIManager updates health bars, slowdown meter
 ```
@@ -621,6 +708,7 @@ Used for globally-accessible managers:
 - `SaveManager.instance`
 - `InputHandler.instance`
 - `SoundManager.instance`
+- `SlowdownManager.instance`
 
 **Pro**: Easy global access
 **Con**: Potential hard dependencies, testing complexity

@@ -64234,8 +64234,8 @@ Light:
   serializedVersion: 10
   m_Type: 1
   m_Shape: 0
-  m_Color: {r: 0.398, g: 0.29925686, b: 0.205766, a: 1}
-  m_Intensity: 0.4
+  m_Color: {r: 0.7433963, g: 0.6582363, b: 0.5764828, a: 1}
+  m_Intensity: 0.84
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -214869,18 +214869,6 @@ MonoBehaviour:
   StoneSlab: {fileID: 0}
   fadeImage: {fileID: 837158216}
   actionHolder: {fileID: 1673170348}
-  slowdownStartCurve:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  slowdownEndCurve:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
   letterPause: 0.02
   fadeSpeed: 1
   typeSound1: {fileID: 8300000, guid: eaa9c9746cc1f5d469bd4b3cc7b6495f, type: 3}
@@ -214978,6 +214966,64 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e0962374405dde45b56109c9b255127, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stateSlowdownStartCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0.18497689
+      outSlope: 0.18497689
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.11884426
+    - serializedVersion: 3
+      time: 0.33620137
+      value: 0.35539904
+      inSlope: -1.2134361
+      outSlope: -1.2134361
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.025218213
+    - serializedVersion: 3
+      time: 1
+      value: 0.04
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  stateSlowdownEndCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.04
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  targetSlowdownTimeScale: 0.05
 --- !u!1 &1908580419
 GameObject:
   m_ObjectHideFlags: 0

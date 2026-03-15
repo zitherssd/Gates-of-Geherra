@@ -21,6 +21,11 @@ namespace Assets.Scripts.Utility
     {
         public static SlowdownManager instance;
 
+        // Serialized animation curves for inspector configuration
+        [SerializeField] private AnimationCurve stateSlowdownStartCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+        [SerializeField] private AnimationCurve stateSlowdownEndCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+        [SerializeField] private float targetSlowdownTimeScale = 0.05f; // Target timeScale during slowdown
+
         // Events for systems to subscribe to
         public event Action OnStateSlowdownStart;
         public event Action OnStateSlowdownEnd;
@@ -28,6 +33,7 @@ namespace Assets.Scripts.Utility
         public event Action OnTemporarySlowdownEnd;
 
         private Coroutine activeTemporarySlowdownCoroutine;
+        private Coroutine activeStateSlowdownCoroutine;
         
         // State slowdown tracking
         private bool isStateSlowdownActive = false;
@@ -45,11 +51,11 @@ namespace Assets.Scripts.Utility
         }
 
         /// <summary>
-        /// Activate state-based slowdown with immediate timeScale change.
-        /// Evaluates startCurve to determine target timeScale.
+        /// Activate state-based slowdown with smooth transition through the curve.
+        /// Uses the serialized stateSlowdownStartCurve to smoothly reach target timeScale.
         /// Blocks temporary slowdowns while active.
         /// </summary>
-        public void SetStateSlowdown(AnimationCurve startCurve)
+        public void SetStateSlowdown()
         {
             // Kill any running temporary slowdown
             if (activeTemporarySlowdownCoroutine != null)
@@ -58,32 +64,37 @@ namespace Assets.Scripts.Utility
                 activeTemporarySlowdownCoroutine = null;
             }
 
-            // Evaluate curve at end to get final timeScale
-            stateSlowdownTimeScale = startCurve.Evaluate(1f);
-            
-            // Apply immediately
-            Time.timeScale = stateSlowdownTimeScale;
-            Time.fixedDeltaTime = Time.timeScale * 0.02f;
+            // Kill any running state slowdown coroutine
+            if (activeStateSlowdownCoroutine != null)
+            {
+                StopCoroutine(activeStateSlowdownCoroutine);
+                activeStateSlowdownCoroutine = null;
+            }
 
             isStateSlowdownActive = true;
             OnStateSlowdownStart?.Invoke();
-
-            if (Mathf.Abs(stateSlowdownTimeScale) < 0.01f)
-                Debug.Log($"State slowdown activated: timeScale = {stateSlowdownTimeScale:F3} (frozen)");
-            else
-                Debug.Log($"State slowdown activated: timeScale = {stateSlowdownTimeScale:F3}");
+            
+            // Animate through the curve smoothly
+            activeStateSlowdownCoroutine = StartCoroutine(SetStateSlowdownCoroutine(stateSlowdownStartCurve));
         }
 
         /// <summary>
         /// Deactivate state-based slowdown and return to normal time.
-        /// Uses endCurve for smooth transition back to 1.0
+        /// Uses the serialized stateSlowdownEndCurve for smooth transition back to 1.0
         /// </summary>
-        public void ResetStateSlowdown(AnimationCurve endCurve)
+        public void ResetStateSlowdown()
         {
             if (!isStateSlowdownActive)
                 return;
 
             isStateSlowdownActive = false;
+            
+            // Kill any running state slowdown coroutine
+            if (activeStateSlowdownCoroutine != null)
+            {
+                StopCoroutine(activeStateSlowdownCoroutine);
+                activeStateSlowdownCoroutine = null;
+            }
             
             // Kill any temporary slowdown
             if (activeTemporarySlowdownCoroutine != null)
@@ -92,7 +103,7 @@ namespace Assets.Scripts.Utility
                 activeTemporarySlowdownCoroutine = null;
             }
 
-            StartCoroutine(ResetStateSlowdownCoroutine(endCurve));
+            StartCoroutine(ResetStateSlowdownCoroutine(stateSlowdownEndCurve));
         }
 
         /// <summary>
@@ -119,6 +130,9 @@ namespace Assets.Scripts.Utility
         public void ResetImmediate()
         {
             isStateSlowdownActive = false;
+
+            if (activeStateSlowdownCoroutine != null)
+                StopCoroutine(activeStateSlowdownCoroutine);
 
             if (activeTemporarySlowdownCoroutine != null)
                 StopCoroutine(activeTemporarySlowdownCoroutine);
@@ -149,6 +163,32 @@ namespace Assets.Scripts.Utility
             Time.timeScale = 1f;
             Time.fixedDeltaTime = 0.02f;
             OnStateSlowdownEnd?.Invoke();
+        }
+
+        private IEnumerator SetStateSlowdownCoroutine(AnimationCurve startCurve)
+        {
+            float duration = 0.1f;
+            float elapsedTime = 0f;
+
+            while (elapsedTime < duration)
+            {
+                elapsedTime += Time.unscaledDeltaTime;
+                float t = Mathf.Clamp01(elapsedTime / duration);
+                // Lerp from 1.0 to targetSlowdownTimeScale, using the curve as easing
+                float timeScaleValue = Mathf.Lerp(1f, targetSlowdownTimeScale, startCurve.Evaluate(t));
+
+                Time.timeScale = timeScaleValue;
+                Time.fixedDeltaTime = Time.timeScale * 0.02f;
+
+                yield return null;
+            }
+
+            // Ensure we reach the target timeScale
+            stateSlowdownTimeScale = targetSlowdownTimeScale;
+            Time.timeScale = stateSlowdownTimeScale;
+            Time.fixedDeltaTime = Time.timeScale * 0.02f;
+            
+            Debug.Log($"State slowdown activated: timeScale = {stateSlowdownTimeScale:F3}");
         }
 
         private IEnumerator TemporarySlowdownCoroutine(float duration, AnimationCurve curve)

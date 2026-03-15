@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Battle.Actions;
+using Assets.Scripts.Battle.Actions.Actions;
 using Assets.Scripts.Battle.Actor.AI;
 using Assets.Scripts.Battle.Actor.States;
 using Assets.Scripts.Battle.Actor.Systems;
@@ -115,8 +116,8 @@ namespace Assets.Scripts.Battle.Actor
                 _currentAction.EndAction(ActionEndReason.Interrupted);
             }
 
-            if (isControllable)
-                UIManager.instance.ResetMeter();
+            if (isControllable && SlowdownManager.instance != null)
+                SlowdownManager.instance.ResetStateSlowdown();
 
             _currentAction = action;
             _currentAction.OnActionEnded += OnActionEnded;
@@ -271,8 +272,18 @@ namespace Assets.Scripts.Battle.Actor
         }
         private void StaminaRegen()
         {
+            // Regen when in idle state
             if (state.IsIdle())
+            {
                 ActorData.DealStaminaDamage(-ActorData.staminaRegenRate * 5 * StaminaRegenRate * Time.deltaTime);
+                return;
+            }
+
+            // Also regen when standing still during movement (joystick in deadzone)
+            if (state.CurrentState is MoveState moveState && moveState.IsCurrentlyIdle)
+            {
+                ActorData.DealStaminaDamage(-ActorData.staminaRegenRate * 5 * StaminaRegenRate * Time.deltaTime);
+            }
         }
         private void UpdateActionCooldowns()
         {

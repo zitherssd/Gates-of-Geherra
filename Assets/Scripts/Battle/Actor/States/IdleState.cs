@@ -31,7 +31,7 @@ namespace Assets.Scripts.Battle.Actor.States
                 
                 // Activate state-based slowdown when entering idle
                 if (SlowdownManager.instance != null)
-                    SlowdownManager.instance.SetStateSlowdown(new AnimationCurve());
+                    SlowdownManager.instance.SetStateSlowdown();
             }
 
             //actor.state.TransitionTo(actor.state.moveState.SetForTarget(10f, null)); do this from ai

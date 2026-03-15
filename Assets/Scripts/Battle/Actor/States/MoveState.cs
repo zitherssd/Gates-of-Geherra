@@ -18,6 +18,11 @@ namespace Assets.Scripts.Battle.Actor.States
         private bool continousAction;
         private float timer;
         public MoveAction action;
+        private const float deadzoneThreshold = 0.3f;
+        private const float idleSpeedThreshold = 0.3f;
+        private bool isCurrentlyIdle = false;
+
+        public bool IsCurrentlyIdle => isCurrentlyIdle;
 
 
         public MoveState(Actor actor)
@@ -45,6 +50,7 @@ namespace Assets.Scripts.Battle.Actor.States
         {
             actor.PlayAnimation("Run");
             lastSqrMag = Mathf.Infinity;
+            isCurrentlyIdle = false;
             //actor.movement.ResetMomentum();
             actor.movement.SetFriction(0);
             timer = 0.2f;
@@ -83,6 +89,24 @@ namespace Assets.Scripts.Battle.Actor.States
             if (continousAction)
             {
                 timer += Time.deltaTime;
+                
+                // Check if joystick is in deadzone AND player speed is below threshold
+                bool isInDeadzone = action.Direction.magnitude < deadzoneThreshold;
+                bool isStandingStill = actor.movement.speed < idleSpeedThreshold;
+                bool shouldBeIdle = isInDeadzone && isStandingStill;
+                
+                // Switch animation based on deadzone and speed state
+                if (shouldBeIdle && !isCurrentlyIdle)
+                {
+                    actor.PlayAnimation("Idle");
+                    isCurrentlyIdle = true;
+                }
+                else if (!shouldBeIdle && isCurrentlyIdle)
+                {
+                    actor.PlayAnimation("Run");
+                    isCurrentlyIdle = false;
+                }
+                
                 if (timer < 1f)
                 {
                     var animator = actor.GetAnimator();

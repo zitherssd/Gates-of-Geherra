@@ -22,8 +22,6 @@ namespace Assets.Scripts
         [SerializeField] private TextMeshProUGUI StoneSlab;
         [SerializeField] private UnityEngine.UI.Image fadeImage;
         [SerializeField] private CanvasGroup actionHolder;
-        [SerializeField] private AnimationCurve slowdownStartCurve;
-        [SerializeField] private AnimationCurve slowdownEndCurve;
 
         [Range(0, 1)] public float letterPause = 0.01f;
         [Range(0, 1)] public float fadeSpeed;
@@ -83,13 +81,13 @@ namespace Assets.Scripts
 
         /// <summary>
         /// Deactivate state-based slowdown.
-        /// Fades back to normal time using the end curve.
+        /// Delegates to SlowdownManager which handles the fade back to normal time.
         /// </summary>
         public void ResetStateSlowdown()
         {
             if (SlowdownManager.instance != null)
             {
-                SlowdownManager.instance.ResetStateSlowdown(slowdownEndCurve);
+                SlowdownManager.instance.ResetStateSlowdown();
             }
         }
 
