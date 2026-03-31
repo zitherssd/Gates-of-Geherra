@@ -12,31 +12,45 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e110cd302acb85459812d80addcbd30, type: 3}
   m_Name: MC
   m_EditorClassIdentifier: 
-  Name: Player
-  maxHp: 10
-  maxBuildup: 50
-  maxPosture: 25
-  maxStamina: 50
+  guid: b8a7b1ce80f78164f9e1d2631a3c98fa
+  Name: asd
+  hpBars:
+  - _currentHp: 0
+    maxHp: 10
+    alive: 0
+  - _currentHp: 0
+    maxHp: 10
+    alive: 0
+  baseMaxBuildup: 20
+  baseMaxPosture: 10
+  baseMaxStamina: 20
   Controllable: 1
-  ruleset: 0
-  mainColor: {r: 1, g: 1, b: 1, a: 0}
-  secondaryColor: {r: 0, g: 0, b: 0, a: 1}
+  AIRuleset: 0
+  mainColor: {r: 0, g: 0.61666656, b: 1, a: 0}
+  secondaryColor: {r: 1, g: 0.05429987, b: 0, a: 1}
+  startingItems:
+  - {fileID: 11400000, guid: 5b6c739aefd38644ea98ff8f193967b7, type: 2}
+  - {fileID: 11400000, guid: 9929547627aa6c94d840fd5766eb1036, type: 2}
+  - {fileID: 11400000, guid: b5495c701cd7d9040adffb62f79fd415, type: 2}
+  - {fileID: 11400000, guid: b1cf4dcd96447f643b9838901f8fe9f0, type: 2}
   baseActions:
   - {fileID: 11400000, guid: 498ba4be69212c045ad9de12e867357c, type: 2}
-  - {fileID: 11400000, guid: 923e559ba7ce6f94abcdc40b245da779, type: 2}
-  - {fileID: 11400000, guid: 3aa89802a1ec30d48b32f497ba10ce82, type: 2}
-  - {fileID: 11400000, guid: 3a2fead6c4e4bd14e975cc8e422006e4, type: 2}
-  - {fileID: 11400000, guid: 6b798446413f4794088292db8b471646, type: 2}
-  - {fileID: 11400000, guid: 84039c0611ba36841b126f1d365eb783, type: 2}
-  - {fileID: 11400000, guid: f931b69ae9e3a26468a97a337c927f76, type: 2}
-  - {fileID: 11400000, guid: d4852d63a398314488e810be1c412698, type: 2}
-  - {fileID: 11400000, guid: 25c16194e242f234a95100260c6fe954, type: 2}
-  - {fileID: 11400000, guid: 531d3672a77fe614eae5b3d8ea0ea885, type: 2}
-  baseReactions: []
-  basePassives: []
-  baseHpBars:
-  - {fileID: 11400000, guid: f273e92b83c897a48b992d9fefe2c87e, type: 2}
-  - {fileID: 11400000, guid: 844423a2bec91434bb166f8390aa80f8, type: 2}
+  - {fileID: 11400000, guid: aae9dbed006f82f4086140a65bee5c06, type: 2}
+  - {fileID: 11400000, guid: e50784aadad8cdb459c92505f169fb00, type: 2}
+  - {fileID: 11400000, guid: bee8d5fdedd9f2441991e17989df781b, type: 2}
+  - {fileID: 11400000, guid: 5b9d2d0224c0bfa418627da8e495eadc, type: 2}
+  - {fileID: 11400000, guid: 7a9771d855ce02343aea8b6afd56e150, type: 2}
+  - {fileID: 11400000, guid: 7702bb00753068943bca06cfbbdd50e9, type: 2}
+  - {fileID: 11400000, guid: 65c5309366f7f6543b418ac5a7a9b5d0, type: 2}
+  - {fileID: 11400000, guid: aefc094f10c5be24e9452209eaebfaba, type: 2}
+  - {fileID: 11400000, guid: 37e5b136dca9c114ab3b7b61a6b3c714, type: 2}
+  - {fileID: 11400000, guid: 73d11a4d079983942bb6c9479b47c2c2, type: 2}
+  - {fileID: 11400000, guid: 5616ca93a2d8be24ab7510fb48ad3c15, type: 2}
+  - {fileID: 11400000, guid: 6b10ff94bcb4c55448ad32fd641ab3f4, type: 2}
+  - {fileID: 11400000, guid: abef5758c624d4d41a5922e1e6846602, type: 2}
+  - {fileID: 11400000, guid: 65e0cd7e139f4c54b9327beabbe9aa28, type: 2}
+  - {fileID: 11400000, guid: 5e56ae64a0508514885143487d0c12e9, type: 2}
+  - {fileID: 11400000, guid: 2777e9bab12011c4c9e72a69350dbe16, type: 2}
   actions:
   - {fileID: 0}
   - {fileID: 0}
@@ -48,16 +62,20 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  reactions: []
-  hpBars:
   - {fileID: 0}
   - {fileID: 0}
-  currentBuildup: 28
-  currentPosture: 20.837614
-  currentStamina: 13.407128
+  - {fileID: 0}
+  items:
+  - {fileID: 11400000, guid: 5b6c739aefd38644ea98ff8f193967b7, type: 2}
+  - {fileID: 11400000, guid: 9929547627aa6c94d840fd5766eb1036, type: 2}
+  - {fileID: 11400000, guid: b5495c701cd7d9040adffb62f79fd415, type: 2}
+  - {fileID: 11400000, guid: b1cf4dcd96447f643b9838901f8fe9f0, type: 2}
+  currentBuildup: 50.5
+  currentPosture: 19
+  currentStamina: 0.12922706
   postureRegenRate: 1
-  staminaRegenRate: 1
-  ATK: 1
-  DEF: 1
-  AGI: 5
-  Spirit: 0
+  staminaRegenRate: 2
+  Strength: 9
+  Agility: 8
+  Mind: 12
+  Spirit: 11

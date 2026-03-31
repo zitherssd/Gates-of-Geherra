@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5f076fb264629d419cdfb2d71f54608, type: 3}
+  m_Name: PalmStrike
+  m_EditorClassIdentifier: 
+  guid: 85ee21e3-64b5-410b-95de-77ba261c9fbf
+  Type: 1
+  Name: Palm Strike
+  Rarity: 0
+  Description: Excellend crowd control move
+  CooldownTimer: 10
+  TotalUses: 0
+  remainingUses: 0
+  BuildupCost: 9
+  BuildupGain: 0
+  StaminaCost: 8
+  Speed: 0
+  Tags: 0f000000
+  Direction: {x: 0, y: 0, z: 0}
+  currentCooldownTimer: 0
+  StickMult: 2
+  SlowdownMeterGain: 1
+  SlowdownMeterGainOnEnd: 0
+  SlowDownMeterGainOnPress: 4
+  SlowdownMeterGainOnRelease: 0
+  Animation: 5
+  Range: 1.1
+  Damage: 1
+  PostureDamage: 11
+  KnockbackForce: 1.7
+  windupTimeMult: 0.6
+  recoveryTimeMult: 0.65
+  state: 0
+  SelfForce: 2.5
+  HitboxPoints:
+  - {x: -0.15, y: 0, z: 0.2}
+  - {x: 0.15, y: 0, z: 0.2}
+  - {x: 0.35, y: 0, z: 1}
+  - {x: -0.35, y: 0, z: 1}
+  HitboxScale: 1
+  windupPostureDamageMult: 1
+  recoveryPostureDamageMult: 1
+  BuildupGainOnHit: 3

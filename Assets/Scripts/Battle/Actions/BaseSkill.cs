@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
-namespace Assets.Scripts.Actions
+namespace Assets.Scripts.Battle.Actions
 {
     public class BaseSkill : BaseAction
     {
@@ -34,6 +32,8 @@ namespace Assets.Scripts.Actions
             return desiredMoveDirection;
         }
         public virtual void OnHit() { }
+
+        public virtual void OnUpdate(float dt) { }
 
         public virtual void OnEnterWindup(Animator animator) { }
 

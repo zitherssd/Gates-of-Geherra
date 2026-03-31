@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Assets.Scripts.Battle.Actor.States;
+using System;
 using UnityEngine;
 
-namespace Assets.Scripts.Battle.Actions
+namespace Assets.Scripts.Battle.Actions.Actions
 {
     [CreateAssetMenu(fileName = "Move", menuName = "ScriptableObjects/Action/Move", order = 1)]
     public class MoveAction : BaseAction
@@ -9,19 +10,18 @@ namespace Assets.Scripts.Battle.Actions
         public static MoveAction instance;
         public float duration;
 
-        protected override void PerformSpecific(Actor casterActor, Action onPerformEnd)
+        protected override void PerformSpecific(Actor.Actor casterActor, Action onPerformEnd)
         {
-            cancel = onPerformEnd;
-            StickMult = 1 + casterActor.ActorData.AGI / 10;
+            StickMult = 1 + casterActor.ActorData.Mind / 10;
             var scaledStickMult = Direction * StickMult;
             var TargetPosition = casterActor.transform.position + scaledStickMult;
 
             if (Type == BUTTONTYPE.CONTINUOUS_VECTOR)
             {
-                casterActor.state.TransitionTo(casterActor.state.moveState.Set(duration, onPerformEnd, this));
+                casterActor.state.TransitionTo<MoveState>().Set(duration, this);
             }
             else
-                casterActor.state.TransitionTo(casterActor.state.moveState.Set(TargetPosition, onPerformEnd));
+                casterActor.state.TransitionTo<MoveState>().Set(TargetPosition, this);
         }
     }
 }

@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5f076fb264629d419cdfb2d71f54608, type: 3}
+  m_Name: Kick_Sweep
+  m_EditorClassIdentifier: 
+  guid: 65e0cd7e139f4c54b9327beabbe9aa28
+  Type: 1
+  Name: Sweep
+  Rarity: 0
+  Description: Wide attack that will always cast towards closest target
+  CooldownTimer: 16
+  TotalUses: 2
+  remainingUses: 2
+  BuildupCost: 9
+  BuildupGain: 0
+  StaminaCost: 13
+  Speed: 0
+  Tags: 0c000000100000000100000012000000
+  Direction: {x: -0.50078166, y: 0, z: 0.8655736}
+  currentCooldownTimer: 0
+  StickMult: 1.2
+  SlowdownMeterGain: 0
+  SlowdownMeterGainOnEnd: 1
+  SlowDownMeterGainOnPress: 0
+  SlowdownMeterGainOnRelease: 0
+  Animation: 2
+  Range: 1.5
+  Damage: 3
+  PostureDamage: 7
+  KnockbackForce: 1.2
+  windupTimeMult: 0.5
+  recoveryTimeMult: 0.65
+  state: 2
+  SelfForce: 1.7
+  HitboxPoints:
+  - {x: -0.4, y: 0, z: 0.2}
+  - {x: -0.8, y: 0, z: 0.7}
+  - {x: -0.75, y: 0, z: 0.75}
+  - {x: -0.55, y: 0, z: 0.8}
+  - {x: -0.25, y: 0, z: 0.9}
+  - {x: 0.25, y: 0, z: 0.9}
+  - {x: 0.55, y: 0, z: 0.8}
+  - {x: 0.75, y: 0, z: 0.75}
+  - {x: 0.8, y: 0, z: 0.7}
+  - {x: 0.4, y: 0, z: 0.2}
+  HitboxScale: 1.4
+  windupPostureDamageMult: 1
+  recoveryPostureDamageMult: 1
+  BuildupGainOnHit: 5
+  StrengthScaling: 0
+  AgilityScaling: 0
+  MindScaling: 0

@@ -12,37 +12,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e110cd302acb85459812d80addcbd30, type: 3}
   m_Name: Malnourished Individual
   m_EditorClassIdentifier: 
-  Name: Malnourished Individual
-  maxHp: 25
-  maxBuildup: 20
-  maxPosture: 20
-  maxStamina: 50
+  guid: 5c777c1ad3913004aab5763eb39282da
+  Name: Starving Individual
+  hpBars:
+  - _currentHp: 0
+    maxHp: 8
+    alive: 0
+  - _currentHp: 0
+    maxHp: 8
+    alive: 0
+  baseMaxBuildup: 15
+  baseMaxPosture: 15
+  baseMaxStamina: 30
   Controllable: 0
-  ruleset: 1
-  mainColor: {r: 0, g: 0, b: 0, a: 0}
-  secondaryColor: {r: 0, g: 0, b: 0, a: 0}
+  AIRuleset: 1
+  mainColor: {r: 0.12376268, g: 0.2679245, b: 0.11475256, a: 0}
+  secondaryColor: {r: 0.3207547, g: 0.19191022, b: 0.113171935, a: 0}
+  startingItems: []
   baseActions:
-  - {fileID: 11400000, guid: 3f869f152f955e64e9475dcf2c667237, type: 2}
-  - {fileID: 11400000, guid: 6b798446413f4794088292db8b471646, type: 2}
+  - {fileID: 11400000, guid: bbf04903c613b684fbee4bea1e99fc92, type: 2}
   - {fileID: 11400000, guid: eb94d8da9dbb0de4f9022395c5c28ce9, type: 2}
-  baseReactions:
-  - {fileID: 0}
-  basePassives: []
-  baseHpBars:
-  - {fileID: 11400000, guid: 7480a64d72f259342898ac4956c7a727, type: 2}
+  - {fileID: 11400000, guid: bee8d5fdedd9f2441991e17989df781b, type: 2}
+  - {fileID: 11400000, guid: 30f4820f0cb9091489efd45c0d0700e4, type: 2}
+  - {fileID: 11400000, guid: e6f5605b38a52a7419d7547b23b1c33c, type: 2}
   actions:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  reactions: []
-  hpBars:
-  - {fileID: 0}
-  currentBuildup: -4
-  currentPosture: 20
+  items: []
+  currentBuildup: 0
+  currentPosture: 18
   currentStamina: 0
   postureRegenRate: 1
-  staminaRegenRate: 1
-  ATK: 1
-  DEF: 0
-  AGI: 3
-  Spirit: 0
+  staminaRegenRate: 2
+  Strength: 3
+  Agility: 3
+  Mind: 3
+  Spirit: 7

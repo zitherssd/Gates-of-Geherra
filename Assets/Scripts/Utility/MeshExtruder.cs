@@ -4,7 +4,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.Utility
 {
     public class MeshExtruder : MonoBehaviour
     {

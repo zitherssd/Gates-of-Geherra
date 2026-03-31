@@ -1,10 +1,9 @@
 ﻿using Assets.Scripts.Battle;
-using System.Collections;
-using System.Linq;
+using Assets.Scripts.Battle.Actor;
+using Assets.Scripts.Battle.Manager;
 using UnityEngine;
-using UnityEngine.Windows;
 
-namespace Assets
+namespace Assets.Scripts.Utility
 {
     public class CameraManager : MonoBehaviour
     {
@@ -15,6 +14,8 @@ namespace Assets
         private float CameraHeight;
 
         public CameraType cameraType = CameraType.Main;
+        public GameObject directionalLight;
+        public float directionalLightRotationSpeed = 5f;
 
         [SerializeField]
         [Range(-1, 15)]
@@ -49,33 +50,32 @@ namespace Assets
         {
             playerTransform = BattleManager.instance.PlayerActors[0].transform;
             playerActor = BattleManager.instance.PlayerActors[0];
-            enemyTransform = BattleManager.instance.EnemyActors[0].transform;
             camera = gameObject.GetComponent<Camera>();
 
         }
 
-        public void ResetForNewBattle()
+        public void ResetForNewBattle(Vector3 position)
         {
-            transform.position = new Vector3(3.68f, 2.4f, -5.17f);
+            transform.position = position;
         }
 
         void Update()
         {
             Vector3 targetpos;
-            var playerTarget = playerActor.target.TargetPosition;
+            Vector3 weightedEnemyPosition = playerActor.target.GetWeightedAverageEnemyPosition();
 
-            distvector = (playerTarget + playerTransform.position) / 2; //start point 
+            distvector = (weightedEnemyPosition + playerTransform.position) / 2; //start point 
             distvector = new Vector3(distvector.x, 0, distvector.z);
-            directionvector = (playerTarget - playerTransform.position) / 2;
+            directionvector = (weightedEnemyPosition - playerTransform.position) / 2;
             directionvector = new Vector3(directionvector.x, 0, directionvector.z);
 
             //Debug.Log($"distvector Vector: {directionvector}, directionvector Vector: {directionvector}");
 
             if (!Override)
             {
-                var input = Mathf.Clamp((directionvector * 2).magnitude, 1, 30);
-                UpDistance = LinearMap(input, 1, 30, 1.7f, 8);
-                BackDistance = LinearMap(input, 1, 30, 3.3f, 20);
+                var input = Mathf.Clamp( playerActor.target.LargestDirectionFromEnemies().magnitude, 1, 30);
+                UpDistance = LinearMap(input, 1, 30, 1.7f, 5f);
+                BackDistance = LinearMap(input, 1, 30, 3.3f, 11);
             }
 
             directionvector = Vector3.ProjectOnPlane(directionvector, Vector3.up).normalized;
@@ -84,8 +84,8 @@ namespace Assets
                 // Flip directionvector to align with cameraMain.right
                 directionvector = -directionvector;
             }
-            if (!SlowTrack)
-                blue = Vector3.Cross(directionvector, Vector3.up).normalized;
+            //if (!SlowTrack)
+            blue = Vector3.Cross(directionvector, Vector3.up).normalized;
             newposition = distvector + Vector3.up * UpDistance + -blue * BackDistance;
 
             if (shakeDuration > 0)
@@ -107,10 +107,20 @@ namespace Assets
                     // }
                     //else
                     //  {
-                    transform.position = Vector3.Lerp(transform.position, targetpos, 0.03f);
+                    transform.position = Vector3.Lerp(transform.position, targetpos, 0.1f);
                 //  }
                 else
-                    transform.position = Vector3.MoveTowards(transform.position, targetpos, 0.1f * Time.unscaledDeltaTime);
+                {
+                    float distance = Vector3.Distance(transform.position, targetpos);
+                    float speed = Mathf.Lerp(0.02f, 12f, distance / 25f);
+                    // small distance → slow, big distance → fast
+
+                    transform.position = Vector3.MoveTowards(
+                        transform.position,
+                        targetpos,
+                        speed * Time.unscaledDeltaTime
+                    );
+                }
 
 
             }
@@ -126,15 +136,33 @@ namespace Assets
                     NEWdistvector = (playertarget.transform.position + playerTransform.position) / 2; //start point 
                     NEWdistvector = new Vector3(distvector.x, 0, distvector.z);
                 }
+                else
+                {
+                    NEWdistvector = (playerTransform.position + playerTransform.forward);
+                    NEWdistvector = new Vector3(distvector.x, 0, distvector.z);
+                }
                 Vector3 targetRotation = (NEWdistvector + Vector3.up * 0.5f) - transform.position;
                 Quaternion endRotation = Quaternion.LookRotation(targetRotation);
 
                 // Smoothly rotate towards the target rotation
                 transform.rotation = Quaternion.Slerp(transform.rotation, endRotation, 0.1f);
             }
+            if (directionalLight)
+            {
+                float targetY = transform.eulerAngles.y;
+                float currentY = directionalLight.transform.eulerAngles.y;
+
+                float newY = Mathf.LerpAngle(
+                    currentY,
+                    targetY,
+                    Time.unscaledDeltaTime * directionalLightRotationSpeed
+                );
+
+                directionalLight.transform.rotation = Quaternion.Euler(0.5f, newY, 0f);
+            }
 
         }
-        void OnGUI()
+    void OnGUI()
         {
             if (camera != null)
             {

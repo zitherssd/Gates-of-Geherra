@@ -1,76 +1,83 @@
-using Assets;
+using System;
 using System.Collections.Generic;
+using Assets.Scripts.Battle;
+using Assets.Scripts.Battle.Actions;
+using Assets.Scripts.Battle.Actor;
+using Assets.Scripts.Battle.Manager;
+using Assets.Scripts.Game;
+using Assets.Scripts.Utility;
 using UnityEngine;
 
-public class FloorManager : MonoBehaviour
+namespace Assets.Scripts.Crawler
 {
-    public int currentFloor = 1;
-    private UIManager uiManager;
-
-    public List<ActorData> secondFloorEnemies;
-    public List<ActorData> thirdFloorEnemies;
-    public List<ActorData> fourthFloorEnemies;
-
-    private static FloorManager instance;
-    public static FloorManager GetInstance()
+    public class FloorManager : MonoBehaviour
     {
-        return instance;
-    }
-    private void Awake()
-    {
-        instance = this;
-    }
+        public int currentFloor = 0;
+        private UIManager uiManager;
+        public List<BattleDefinition> StoryBattles;
+        public List<BattleDefinition> RandomBattles;
 
-    private void Start()
-    {
-        uiManager = UIManager.GetInstance();
-    }
+        [Header("Floor Enemies")]
+        public List<FloorEnemies> floorEnemiesList; // List of all floors and their enemies
 
-    public void ProgressToNextFloor()
-    {
-        currentFloor++;
-        uiManager.Fade(true, () =>
+        public static FloorManager instance;
+
+        private void Awake()
         {
-            var random = new System.Random();
-            var line = lines[Random.Range(0, lines.Length)];
-            line = line.Replace("{numberth}", GetOrdinal(currentFloor));
+            instance = this;
+        }
 
-            var bm = BattleManager.instance;
-            bm.PlayerActors[0].transform.position = Vector3.zero;
-            bm.EnemyActors[0].transform.position = Vector3.right * 10;
-            bm.EnemyActors[0].PlayAnimation("Idle");
+        private void Start()
+        {
+            uiManager = UIManager.GetInstance();
+        }
 
-            StartCoroutine(uiManager.TypeTextMiddleLetterByLetter(line, () =>
+
+        public void ProgressToNextFloor()
+        {
+            ItemEventBus.Raise(ItemTrigger.OnNewFloor);
+            SoundManager.instance.PlaySE("Gong");
+            currentFloor++;
+            SoundManager.instance.FadeOutMusic();
+            UIManager.instance.Fade(true, () =>
             {
-                StartCoroutine(uiManager.FadeMiddleText(1));
-                bm.SetupBattleWithEnemies(GetActorsForFloor());
-
-
-            }));
-        });
-    }
-
-    public List<ActorData> GetActorsForFloor()
-    {
-        List<ActorData> result = new List<ActorData>();
-        if (currentFloor == 2)
-            result.Add(secondFloorEnemies[Random.Range(0, secondFloorEnemies.Count)]);
-        else if (currentFloor == 3)
-        {
-            result.Add(thirdFloorEnemies[Random.Range(0, thirdFloorEnemies.Count)]);
-            result.Add(thirdFloorEnemies[Random.Range(0, thirdFloorEnemies.Count)]);
+                var battle = StoryBattles[currentFloor - 1];
+                GameFlowManager.instance.trainingsDoneThisFloor = 0;
+                GameFlowManager.instance.EnterBattle(battle, null);
+            });
         }
-        else
+
+        public void QuickFight()
         {
-            result.Add(fourthFloorEnemies[Random.Range(0, fourthFloorEnemies.Count)]);
+            SoundManager.instance.PlaySE("Gong");
+            SoundManager.instance.FadeOutMusic();
+            UIManager.instance.Fade(true, () =>
+            {
+                var battle = RandomBattles[UnityEngine.Random.Range(0, RandomBattles.Count)];
+                GameFlowManager.instance.EnterBattle(battle, () =>
+                {
+                    TimeLockManager.Add("QuickFight", System.TimeSpan.FromMinutes(1));
+                });
+            });
         }
-        result.ForEach(result => result.Reset());
-        return result;
-    }
 
+        public List<ActorData> GetActorsForFloor()
+        {
+            // Find the floor in the list and return its enemies
+            FloorEnemies floorData = floorEnemiesList.Find(f => f.floorNumber == currentFloor);
 
+            if (floorData != null)
+            {
+                return floorData.enemies;
+            }
+            else
+            {
+                // If the floor is not found, return an empty list or handle as needed
+                return new List<ActorData>();
+            }
+        }
 
-    string[] lines = {
+        string[] lines = {
             "A combatant approaches...",
             "On the {numberth} floor someone challenges me.",
             "A rival awaits me on the {numberth} floor.",
@@ -79,33 +86,41 @@ public class FloorManager : MonoBehaviour
             "On the {numberth} floor, an adversary appears.",
             "Someone on the {numberth} floor steps up to the challenge.",
             "A foe confronts me on the {numberth} floor.",
-            "An opponent stands ready on the {numberth} floor."
+            "An opponent stands ready on the {numberth} floor.",
+            "Bla bla bla"
         };
 
-    static string GetOrdinal(int number)
-    {
-        if (number <= 0)
-            return number.ToString();
-
-        switch (number % 100)
+        static string GetOrdinal(int number)
         {
-            case 11:
-            case 12:
-            case 13:
-                return number + "th";
-        }
+            if (number <= 0)
+                return number.ToString();
 
-        switch (number % 10)
-        {
-            case 1:
-                return number + "st";
-            case 2:
-                return number + "nd";
-            case 3:
-                return number + "rd";
-            default:
-                return number + "th";
+            switch (number % 100)
+            {
+                case 11:
+                case 12:
+                case 13:
+                    return number + "th";
+            }
+
+            switch (number % 10)
+            {
+                case 1:
+                    return number + "st";
+                case 2:
+                    return number + "nd";
+                case 3:
+                    return number + "rd";
+                default:
+                    return number + "th";
+            }
         }
     }
 
+    [System.Serializable]
+    public class FloorEnemies
+    {
+        public int floorNumber; // The floor number (e.g., 2 for second floor, etc.)
+        public List<ActorData> enemies; // List of enemies for this floor
+    }
 }

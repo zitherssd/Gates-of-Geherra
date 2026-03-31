@@ -12,12 +12,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e110cd302acb85459812d80addcbd30, type: 3}
   m_Name: Boxer
   m_EditorClassIdentifier: 
+  guid: aa59e95a0c89e09478c2c950ba11a89a
   Name: Boxer
-  maxHp: 30
+  hpBars:
+  - _currentHp: 0
+    maxHp: 8
+    alive: 0
+  - _currentHp: 0
+    maxHp: 8
+    alive: 0
+  - _currentHp: 0
+    maxHp: 8
+    alive: 0
   maxBuildup: 30
   maxPosture: 30
-  maxStamina: 0
+  maxStamina: 50
   Controllable: 0
+  AIRuleset: 2
   mainColor: {r: 0, g: 0, b: 0, a: 0}
   secondaryColor: {r: 0, g: 0, b: 0, a: 0}
   baseActions:
@@ -25,28 +36,17 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 32aec34b3154f8d4f911f18b56484c67, type: 2}
   - {fileID: 11400000, guid: 3f869f152f955e64e9475dcf2c667237, type: 2}
   - {fileID: 11400000, guid: 3aa89802a1ec30d48b32f497ba10ce82, type: 2}
-  - {fileID: 11400000, guid: ce99600fa584eda46b10c30070f3ef49, type: 2}
-  baseReactions:
-  - {fileID: 11400000, guid: a3d5aec8050957e42b3e18c6b34a017a, type: 2}
   - {fileID: 11400000, guid: e1dd5f1ba77a8a147ada505d02ffc4f1, type: 2}
-  basePassives: []
-  baseHpBars:
-  - {fileID: 11400000, guid: 7480a64d72f259342898ac4956c7a727, type: 2}
   actions:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
-  reactions:
-  - {fileID: 0}
-  - {fileID: 0}
-  hpBars:
-  - {fileID: 11400000, guid: 7480a64d72f259342898ac4956c7a727, type: 2}
-  currentHp: 30
   currentBuildup: 0
   currentPosture: 30
   currentStamina: 0
+  postureRegenRate: 1
+  staminaRegenRate: 1
   ATK: 2
   DEF: 2
   AGI: 4

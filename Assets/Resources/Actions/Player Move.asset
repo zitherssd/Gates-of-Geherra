@@ -12,22 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a53caa89e83e055489c03028a676b01e, type: 3}
   m_Name: Player Move
   m_EditorClassIdentifier: 
+  guid: 498ba4be69212c045ad9de12e867357c
   Type: 3
   Name: Move
   Rarity: 0
   Description: 
-  CooldownTimer: 2
+  CooldownTimer: 3
   TotalUses: 0
   remainingUses: 0
   BuildupCost: 0
   BuildupGain: 0
   StaminaCost: 0
   Speed: 0
-  Tags: 09000000
+  Tags: 0900000011000000
   Direction: {x: -0.56206256, y: -0, z: 0.13260877}
   currentCooldownTimer: 0
-  StickMult: 1
+  StickMult: 0
   SlowdownMeterGain: 0
+  SlowdownMeterGainOnEnd: 0
   SlowDownMeterGainOnPress: 0
   SlowdownMeterGainOnRelease: 1
-  duration: 19.4
+  duration: 10

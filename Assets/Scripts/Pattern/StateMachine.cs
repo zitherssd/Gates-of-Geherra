@@ -1,5 +1,4 @@
-﻿using Assets.Scripts.Battle.Components.State.States;
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace Assets.Scripts.Pattern
@@ -18,6 +17,11 @@ namespace Assets.Scripts.Pattern
             state.Enter();
 
             stateChanged?.Invoke(state);
+        }
+
+        public void Reset()
+        {
+            CurrentState = null;
         }
 
         public void TransitionTo(IState nextState)

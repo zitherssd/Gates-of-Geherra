@@ -1,34 +1,34 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class DragMove : MonoBehaviour
+namespace Assets.Scripts.Utility
 {
+    public class DragMove : MonoBehaviour
+    {
 
         private Vector3 offset;
         private Vector3 initMouse;
         private bool isDragging = false;
 
-    void Update()
-    {
-        if (Input.GetMouseButtonDown(0))
+        void Update()
         {
-            OnMouseDown();
-        }
-        else if (Input.GetMouseButtonUp(0))
-        {
-            OnMouseUp();
+            if (Input.GetMouseButtonDown(0))
+            {
+                OnMouseDown();
+            }
+            else if (Input.GetMouseButtonUp(0))
+            {
+                OnMouseUp();
+            }
+
+            if (isDragging)
+            {
+                OnMouseDrag();
+            }
         }
 
-        if (isDragging)
+        void OnMouseDown()
         {
-            OnMouseDrag();
-        }
-    }
-
-    void OnMouseDown()
-        {
-        Debug.Log("Enter OnMouseDown");
+            Debug.Log("Enter OnMouseDown");
             // Calculate the offset between the mouse click point and the object's position
             initMouse = Input.mousePosition;
             offset = gameObject.transform.position - Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -49,8 +49,8 @@ public class DragMove : MonoBehaviour
 
         void OnMouseUp()
         {
-        Debug.Log("Enter OnMouseUp");
-        if (isDragging)
+            Debug.Log("Enter OnMouseUp");
+            if (isDragging)
             {
                 var newpos = Input.mousePosition - initMouse;
                 Debug.Log(newpos);
@@ -60,4 +60,5 @@ public class DragMove : MonoBehaviour
             isDragging = false;
         }
 
+    }
 }

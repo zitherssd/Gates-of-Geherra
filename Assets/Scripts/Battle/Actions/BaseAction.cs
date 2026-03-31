@@ -1,12 +1,14 @@
-﻿using Assets.Scripts.Battle;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Assets.Scripts.Utility;
 using UnityEngine;
 
-namespace Assets
+namespace Assets.Scripts.Battle.Actions
 {
+    [Serializable]
     public class BaseAction : ScriptableObject
     {
+        public string guid;
         public BUTTONTYPE Type;
         public string Name;
         public RARITY Rarity;
@@ -25,29 +27,55 @@ namespace Assets
         public float currentCooldownTimer = 0;
         public float StickMult = 1;
         public float SlowdownMeterGain;
+        public float SlowdownMeterGainOnEnd;
         public float SlowDownMeterGainOnPress;
         public float SlowdownMeterGainOnRelease;
-        public Action cancel;
+
+        private bool _isEnded = false;
+        public event Action<BaseAction, ActionEndReason> OnActionEnded;
+        protected Actor.Actor _caster;
+
 
         public enum BUTTONTYPE { INSTANT, VECTOR, CONTINNUOUS, CONTINUOUS_VECTOR };
-
-        public virtual void Perform(Actor casterActor, Action onPerformEnd)
+        
+        public void Begin(Actor.Actor casterActor)
         {
-            //ResetCooldown();
+            _caster = casterActor;
+            _isEnded = false;
 
-            if (Tags.Contains(TAG.KILLMOMENTUM)) casterActor.movement.ResetMomentum();
+            if (Tags.Contains(TAG.KILLMOMENTUM)) casterActor.movement.ResetMomentum(); //implement as effect
 
+            //costs
             casterActor.ActorData.DealStaminaDamage(StaminaCost);
             casterActor.ActorData.ChangeBuildup(BuildupGain);
             casterActor.ActorData.ChangeBuildup(-BuildupCost);
 
             PerformSpecific(casterActor, () =>
             {
-                UpdateRemainingUses(); onPerformEnd?.Invoke();
+                EndAction(ActionEndReason.Completed);
             });
         }
 
-        protected virtual void PerformSpecific(Actor casterActor, Action onPerformEnd) { }
+        public void EndAction(ActionEndReason reason)
+        {
+            if (_isEnded) return;
+            _isEnded = true;
+
+            Cleanup(reason);
+
+            OnActionEnded?.Invoke(this, reason);
+        }
+
+        protected virtual void Cleanup(ActionEndReason reason)
+        {
+            if (reason == ActionEndReason.Completed)
+            {
+                UpdateRemainingUses();
+            }
+        }
+
+
+        protected virtual void PerformSpecific(Actor.Actor casterActor, Action onPerformEnd) { }
 
         public virtual void UpdateCooldown() //runs every frame
         {
@@ -64,7 +92,13 @@ namespace Assets
 
 
             if (currentCooldownTimer > 0)
-                currentCooldownTimer = currentCooldownTimer -= Time.deltaTime;
+            {
+                if (Tags.Contains(TAG.RECHARGE_DURING_SLOWDOWN))
+                    currentCooldownTimer = currentCooldownTimer -= Time.unscaledDeltaTime;
+                else
+                    currentCooldownTimer = currentCooldownTimer -= Time.deltaTime;
+
+            }
             else
                 currentCooldownTimer = 0f;
 
@@ -101,7 +135,7 @@ namespace Assets
             currentCooldownTimer = 0;
         }
 
-        public virtual bool IsValid(Actor caster, out string InvalidReason)
+        public virtual bool IsValid(Actor.Actor caster, out string InvalidReason)
         {
             InvalidReason = "";
 
@@ -128,7 +162,7 @@ namespace Assets
             return true;
         }
 
-        public virtual bool IsValidAndInRange(Actor caster)
+        public virtual bool IsValidAndInRange(Actor.Actor caster)
         {
             return false;
         }
@@ -160,15 +194,12 @@ namespace Assets
             PROJECTILE, KNOCKBACK_AIR, KNOCKBACK_FRONT, KNOCKBACK_BACK, NO_REACTION, FREE, STARTER, FINISHER, COUNTER, USESTICK, RECHARGE_TOTAL_USES,
             APPLYROOTMOTION,
             KILLMOMENTUM, KILL_TRACKING, PLAY_WHILE_SELECTING,
-            TECH, FACECLOSEST
+            TECH, FACECLOSEST, RECHARGE_DURING_SLOWDOWN, KNOCKBACK_AWAY
         }
     }
 
 
-
-
-
     public enum RARITY { COMMON, UNCOMMON, RARE, EPIC, LEGENDARY };
-    public enum ANIMATION { NONE, Punch, Kick, Shuriken, Highkick, PalmStrike, Ninjutsu, ForwardPunch, ThrowStar, ForwardKick, ShadowStep, Taunt, Dash, Roll, Step }
+    public enum ANIMATION { NONE, Punch, Kick, Shuriken, Highkick, PalmStrike, Ninjutsu, ForwardPunch, ThrowStar, ForwardKick, ShadowStep, Taunt, Dash, Roll, Step, Firecast }
 
 }

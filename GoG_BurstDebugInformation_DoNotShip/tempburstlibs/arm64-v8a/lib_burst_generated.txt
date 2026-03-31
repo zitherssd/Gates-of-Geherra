@@ -101,6 +101,11 @@ Library: D:\Projects\Gates-of-Gehera\Temp\StagingArea\tempburstlibs\arm64-v8a\li
 --compilation-defines=NET_STANDARD_2_1
 --compilation-defines=NETSTANDARD
 --compilation-defines=NETSTANDARD2_1
+--compilation-defines=DEVELOPMENT_BUILD
+--compilation-defines=ENABLE_PROFILER
+--compilation-defines=DEBUG
+--compilation-defines=TRACE
+--compilation-defines=UNITY_ASSERTIONS
 --compilation-defines=ENABLE_CUSTOM_RENDER_TEXTURE
 --compilation-defines=ENABLE_DIRECTOR
 --compilation-defines=ENABLE_LOCALIZATION
@@ -118,6 +123,7 @@ Library: D:\Projects\Gates-of-Gehera\Temp\StagingArea\tempburstlibs\arm64-v8a\li
 --compilation-defines=PACKAGE_UITOOLKIT
 --compilation-defines=CSHARP_7_OR_LATER
 --compilation-defines=CSHARP_7_3_OR_NEWER
+--compilation-defines=VISUAL_SCRIPTING_ENABLED
 --compilation-defines=ENABLE_VR_MODULE
 --compilation-defines=ENABLE_XR_MODULE
 --compilation-defines=ENABLE_INPUT_SYSTEM_PACKAGE
@@ -127,6 +133,9 @@ Library: D:\Projects\Gates-of-Gehera\Temp\StagingArea\tempburstlibs\arm64-v8a\li
 --compilation-defines=UNITY_INPUT_SYSTEM_ENABLE_PHYSICS2D
 --compilation-defines=UNITY_INPUT_SYSTEM_ENABLE_UI
 --compilation-defines=VISUAL_EFFECT_GRAPH_0_0_1_OR_NEWER
+--compilation-defines=ADAPTIVE_PERFORMANCE_2_0_0_OR_NEWER
+--compilation-defines=ADAPTIVE_PERFORMANCE_2_1_0_OR_NEWER
+--compilation-defines=ADAPTIVE_PERFORMANCE_4_0_0_OR_NEWER
 --compilation-defines=ENABLE_BURST_1_0_0_OR_NEWER
 --compilation-defines=USING_ANIMATION_MODULE
 --compilation-defines=USING_PHYSICS2D_MODULE
@@ -146,6 +155,7 @@ Library: D:\Projects\Gates-of-Gehera\Temp\StagingArea\tempburstlibs\arm64-v8a\li
 --compilation-defines=VFX_HAS_INPUT_SYSTEM_PACKAGE
 --generate-link-xml=Temp\burst.link.xml
 --temp-folder=D:\Projects\Gates-of-Gehera\Temp\Burst
+--debug=Full
 --output=D:\Projects\Gates-of-Gehera\Temp\StagingArea\tempburstlibs\arm64-v8a\lib_burst_generated
 --pdb-search-paths=Temp/ManagedSymbols/
 --pdb-search-paths=Temp/ManagedSymbols/

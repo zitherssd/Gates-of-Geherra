@@ -1,71 +1,74 @@
-using Assets.Scripts.Battle;
+using Assets.Scripts.Battle.Actor;
 using UnityEngine;
 
-public class VelocityIndicator : MonoBehaviour
+namespace Assets.Scripts.Utility
 {
-    public LineRenderer arrowLineRenderer;
-    public float maxArrowLength = 2f;
-    public float velocityThreshold = 5f;
-    public Color startColor = Color.green;
-    public Color endColor = Color.green;
-
-    private Rigidbody rb;
-
-    void Start()
+    public class VelocityIndicator : MonoBehaviour
     {
-        rb = GetComponent<Rigidbody>();
+        public LineRenderer arrowLineRenderer;
+        public float maxArrowLength = 2f;
+        public float velocityThreshold = 5f;
+        public Color startColor = Color.green;
+        public Color endColor = Color.green;
 
-        // Create the LineRenderer component if not assigned in the Inspector
-        if (arrowLineRenderer == null)
+        private Rigidbody rb;
+
+        void Start()
         {
-            arrowLineRenderer = gameObject.AddComponent<LineRenderer>();
-            arrowLineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+            rb = GetComponent<Rigidbody>();
+
+            // Create the LineRenderer component if not assigned in the Inspector
+            if (arrowLineRenderer == null)
+            {
+                arrowLineRenderer = gameObject.AddComponent<LineRenderer>();
+                arrowLineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+            }
+
+            // Always enable the LineRenderer
+            arrowLineRenderer.enabled = true;
+            arrowLineRenderer.startWidth = 0.1f;
+            arrowLineRenderer.endWidth = 0.01f;
         }
 
-        // Always enable the LineRenderer
-        arrowLineRenderer.enabled = true;
-        arrowLineRenderer.startWidth = 0.1f;
-        arrowLineRenderer.endWidth = 0.01f;
-    }
+        void LateUpdate()
+        {
+            UpdateArrow();
+            //UpdateForwardArrow();
+        }
 
-    void LateUpdate()
-    {
-        UpdateArrow();
-        //UpdateForwardArrow();
-    }
+        void UpdateArrow()
+        {
+            Vector3 velocity = rb.velocity;
+            float normalizedVelocity = Mathf.Clamp01(velocity.magnitude / velocityThreshold);
+            float arrowLength = Mathf.Lerp(0f, maxArrowLength, normalizedVelocity);
 
-    void UpdateArrow()
-    {
-        Vector3 velocity = rb.velocity;
-        float normalizedVelocity = Mathf.Clamp01(velocity.magnitude / velocityThreshold);
-        float arrowLength = Mathf.Lerp(0f, maxArrowLength, normalizedVelocity);
+            // Calculate the arrow end position based on the magnitude of the velocity
+            Vector3 arrowEnd = transform.position + velocity.normalized * arrowLength;
 
-        // Calculate the arrow end position based on the magnitude of the velocity
-        Vector3 arrowEnd = transform.position + velocity.normalized * arrowLength;
+            // Update the LineRenderer to draw the arrow with startColor and endColor
+            arrowLineRenderer.positionCount = 2;
+            arrowLineRenderer.SetPosition(0, transform.position);
+            arrowLineRenderer.SetPosition(1, arrowEnd);
+            arrowLineRenderer.startColor = startColor;
+            arrowLineRenderer.endColor = endColor;
+        }
 
-        // Update the LineRenderer to draw the arrow with startColor and endColor
-        arrowLineRenderer.positionCount = 2;
-        arrowLineRenderer.SetPosition(0, transform.position);
-        arrowLineRenderer.SetPosition(1, arrowEnd);
-        arrowLineRenderer.startColor = startColor;
-        arrowLineRenderer.endColor = endColor;
-    }
+        void UpdateForwardArrow()
+        {
+            Vector3 velocity = transform.forward;
+            float arrowLength = 2f;
+            if(GetComponentInParent<Actor>().isControllable)
+                Debug.Log(transform.forward);
 
-    void UpdateForwardArrow()
-    {
-        Vector3 velocity = transform.forward;
-        float arrowLength = 2f;
-        if(GetComponentInParent<Actor>().isControllable())
-        Debug.Log(transform.forward);
+            // Calculate the arrow end position based on the magnitude of the velocity
+            Vector3 arrowEnd = transform.position + velocity.normalized * arrowLength;
 
-        // Calculate the arrow end position based on the magnitude of the velocity
-        Vector3 arrowEnd = transform.position + velocity.normalized * arrowLength;
-
-        // Update the LineRenderer to draw the arrow with startColor and endColor
-        arrowLineRenderer.positionCount = 2;
-        arrowLineRenderer.SetPosition(0, transform.position);
-        arrowLineRenderer.SetPosition(1, arrowEnd);
-        arrowLineRenderer.startColor = Color.blue;
-        arrowLineRenderer.endColor = Color.green;
+            // Update the LineRenderer to draw the arrow with startColor and endColor
+            arrowLineRenderer.positionCount = 2;
+            arrowLineRenderer.SetPosition(0, transform.position);
+            arrowLineRenderer.SetPosition(1, arrowEnd);
+            arrowLineRenderer.startColor = Color.blue;
+            arrowLineRenderer.endColor = Color.green;
+        }
     }
 }

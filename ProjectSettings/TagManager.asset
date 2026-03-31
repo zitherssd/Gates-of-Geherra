@@ -9,6 +9,7 @@ TagManager:
   - MainCanvas
   - OriginPoint
   - Level
+  - Level_Occlude
   layers:
   - Default
   - TransparentFX
@@ -17,7 +18,7 @@ TagManager:
   - Water
   - UI
   - Top
-  - 
+  - Ditherable
   - 
   - 
   - 

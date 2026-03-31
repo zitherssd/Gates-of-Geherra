@@ -12,40 +12,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e110cd302acb85459812d80addcbd30, type: 3}
   m_Name: Enraged Maniac
   m_EditorClassIdentifier: 
+  guid: 7b1857963b332e64b87b7f2be2c368a7
   Name: Enraged Maniac
-  maxHp: 25
-  maxBuildup: 30
-  maxPosture: 18
-  maxStamina: 50
+  hpBars:
+  - _currentHp: 0
+    maxHp: 8
+    alive: 1
+  - _currentHp: 0
+    maxHp: 8
+    alive: 1
+  baseMaxBuildup: 30
+  baseMaxPosture: 15
+  baseMaxStamina: 32
   Controllable: 0
-  ruleset: 0
-  mainColor: {r: 0, g: 0, b: 0, a: 0}
-  secondaryColor: {r: 0, g: 0, b: 0, a: 0}
+  AIRuleset: 3
+  mainColor: {r: 0.7169812, g: 0, b: 0, a: 0}
+  secondaryColor: {r: 0.8490566, g: 0.40042827, b: 0.06007475, a: 0}
+  startingItems: []
   baseActions:
-  - {fileID: 11400000, guid: 3a2fead6c4e4bd14e975cc8e422006e4, type: 2}
-  - {fileID: 11400000, guid: 3aa89802a1ec30d48b32f497ba10ce82, type: 2}
-  - {fileID: 11400000, guid: 6b798446413f4794088292db8b471646, type: 2}
-  - {fileID: 11400000, guid: 498ba4be69212c045ad9de12e867357c, type: 2}
-  - {fileID: 11400000, guid: 84039c0611ba36841b126f1d365eb783, type: 2}
-  baseReactions: []
-  basePassives: []
-  baseHpBars:
-  - {fileID: 11400000, guid: 7480a64d72f259342898ac4956c7a727, type: 2}
+  - {fileID: 11400000, guid: 6156ef38c6ee2b647849b0a5cf9a53e3, type: 2}
+  - {fileID: 11400000, guid: dd75cdbaf2f7b9a4095a2d9c82f6a1e2, type: 2}
+  - {fileID: 11400000, guid: 5b9d2d0224c0bfa418627da8e495eadc, type: 2}
+  - {fileID: 11400000, guid: eb94d8da9dbb0de4f9022395c5c28ce9, type: 2}
   actions:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
-  reactions: []
-  hpBars:
-  - {fileID: 0}
-  currentBuildup: 19
-  currentPosture: 16
-  currentStamina: 2.8068178
+  items: []
+  currentBuildup: 0
+  currentPosture: 0
+  currentStamina: 23.712652
   postureRegenRate: 1
-  staminaRegenRate: 1
-  ATK: 2
-  DEF: 0
-  AGI: 3
-  Spirit: 0
+  staminaRegenRate: 2
+  Strength: 3
+  Agility: 1
+  Mind: 1
+  Spirit: 1

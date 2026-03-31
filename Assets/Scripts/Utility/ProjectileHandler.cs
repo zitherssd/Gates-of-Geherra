@@ -1,60 +1,84 @@
 ﻿using Assets.Scripts.Battle;
+using Assets.Scripts.Battle.Actions;
+using Assets.Scripts.Battle.Actions.Actions.Effects;
+using Assets.Scripts.Battle.Actions.Skills;
+using Assets.Scripts.Battle.Actor;
+using Unity.VisualScripting;
 using UnityEngine;
+using static Assets.Scripts.Battle.Actions.BaseAction;
 
 namespace Assets.Scripts.Utility
 {
     public class ProjectileHandler : MonoBehaviour
     {
-        public float Damage;
-        public float PostureDamage;
-        public float KnockbackForce;
-
+        private Actor owner;
+        private ProjectileAttack action;
         private Rigidbody rb;
-
+        [SerializeField] private Transform vfxRoot;
 
         public void Start()
         {
             rb = gameObject.GetComponent<Rigidbody>();
         }
 
+        public void Initialize(Actor owner, ProjectileAttack action)
+        {
+            this.owner = owner;
+            this.action = action;
+            transform.localScale = transform.localScale * this.action.SizeMultiplier;
+        }
+
         private void OnTriggerEnter(Collider other)
         {
-            Debug.Log("Entered trigger zone with: " + other.gameObject.name);
-
+            if (other.gameObject == owner.gameObject) return;
             Actor enemyBattler = other.gameObject.GetComponent<Actor>();
 
+            // --- Detach travel particles BEFORE destroying the projectile ---
+            DetachAndLetVFXFinish();
 
             if (enemyBattler != null)
             {
-                ApplyDamageEffects(enemyBattler);
-                Destroy(this.gameObject);
+                if (!enemyBattler.state.IsAlive()) return;
+                action.OnProjectileHitEffects.ForEach(effect => effect.Eval(owner, action, this.gameObject));
+                action.OnHitEffects.ForEach(effect => effect.Eval(owner, action));
+                ApplyDamageEffects(owner, enemyBattler, action);
             }
-            else
-            {
-                Destroy(this.gameObject);
-            }
+
+            Destroy(this.gameObject);
         }
 
-        public void ApplyDamageEffects(Actor targetActor)
+        public void ApplyDamageEffects(Actor casterActor, Actor targetActor, ProjectileAttack action)
         {
-            // Apply Damage
-            var damage = Damage - targetActor.ActorData.DEF;
-            if (damage > 0)
+            var damageInstance = new DamageInstance
             {
-                targetActor.ApplyDamage(damage);
+                Damage = action.Damage,
+                PostureDamage = action.PostureDamage,
+                KnockbackForce = action.KnockbackForce,
             };
 
-            //Apply posture
-            if (PostureDamage > 0)
+            targetActor.ApplyDamageInstance(damageInstance, casterActor, action);
+        }
+
+        private void DetachAndLetVFXFinish()
+        {
+            if (vfxRoot == null) return;
+
+            // Detach the particle VFX from projectile
+            vfxRoot.SetParent(null, true);
+
+            // Destroy all particle systems after they finish
+            foreach (var ps in vfxRoot.GetComponentsInChildren<ParticleSystem>())
             {
-                targetActor.ApplyPosture(PostureDamage);
+                float maxLifetime = ps.main.duration + ps.main.startLifetime.constantMax;
+                Destroy(ps.gameObject, maxLifetime);
+                ps.Stop();  // prevents looping particles from staying alive forever
             }
 
-            // Apply Knockback
-            if (KnockbackForce > 0)
+            // Handle Trail Renderers too
+            foreach (var tr in vfxRoot.GetComponentsInChildren<TrailRenderer>())
             {
-                var direction = rb.velocity.normalized;
-                targetActor.ApplyKnockback(direction, KnockbackForce);
+                tr.autodestruct = true;
+                tr.transform.parent = null;
             }
         }
     }

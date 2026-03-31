@@ -2,10 +2,11 @@
 
 namespace Assets.Scripts.Battle.Components.Status
 {
-    public abstract class BaseStatus
+    public abstract class BaseStatus : ScriptableObject
     {
         public bool singleInstance = false;
-        public Actor owner;
+        [System.NonSerialized]
+        public Actor.Actor owner;
 
         public virtual void Apply() { }
         public virtual void Remove() { }

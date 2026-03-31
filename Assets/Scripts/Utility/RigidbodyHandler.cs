@@ -1,11 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class RigidbodyHandler : MonoBehaviour
+namespace Assets.Scripts.Utility
 {
-    void Update()
+    public class RigidbodyHandler : MonoBehaviour
     {
-        transform.rotation = Quaternion.identity;
+        void Update()
+        {
+            transform.rotation = Quaternion.identity;
+        }
     }
 }

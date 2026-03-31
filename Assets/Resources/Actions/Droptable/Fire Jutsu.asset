@@ -1,0 +1,92 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5a2e800b20efe647a3894bd700a7333, type: 3}
+  m_Name: Fire Jutsu
+  m_EditorClassIdentifier: 
+  guid: 6c8e96be-c67e-46eb-b916-ef5816217295
+  Type: 2
+  Name: Fire Breath
+  Rarity: 1
+  Description: Sasuke!!!1!
+  CooldownTimer: 2
+  TotalUses: 0
+  remainingUses: 0
+  BuildupCost: 2
+  BuildupGain: 0
+  StaminaCost: 5
+  Speed: 0
+  Tags: 
+  Direction: {x: 0, y: 0, z: 0}
+  currentCooldownTimer: 0
+  StickMult: 1
+  SlowdownMeterGain: 0
+  SlowdownMeterGainOnEnd: 1
+  SlowDownMeterGainOnPress: 0
+  SlowdownMeterGainOnRelease: 0
+  Animation: 6
+  OnStartEffects:
+  - rid: 6357899949336690688
+  - rid: 6357899952368123904
+  - rid: 6357900109471809577
+  OnHitEffects:
+  - rid: 6357899949336690690
+  - rid: 6357899949336690691
+  - rid: 6357900109471809578
+  OnEndEffects: []
+  OnUpdateEffects: []
+  windupTimeMult: 0.4
+  recoveryTimeMult: 0.2
+  references:
+    version: 2
+    RefIds:
+    - rid: 6357899949336690688
+      type: {class: FlashColor, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      data:
+        intensity: 0.5
+    - rid: 6357899949336690690
+      type: {class: PlayParticleEffect, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      data:
+        psPrefab: {fileID: 7528961806869292416, guid: c37872a0287490644b036dab0b6fd1b8, type: 3}
+        OnPlayer: 1
+    - rid: 6357899949336690691
+      type: {class: DamageTickEffect, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      data:
+        UseHitbox: 1
+        DamageData:
+          Damage: 1.5
+          PostureDamage: 1.5
+          KnockbackForce: 0.1
+          KnockbackForceUp: 0
+          KnockbackType: 1
+          StrengthScaling: 0
+          AgilityScaling: 0
+          MindScaling: 0.01
+          BuildupGainOnHit: 2
+        tickRate: 0.2
+    - rid: 6357899952368123904
+      type: {class: ShowHitboxOnPlayer, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      data:
+        HitboxPoints:
+        - {x: 0, y: 0, z: 0}
+        - {x: -0.3, y: 0, z: 0.8}
+        - {x: -0.15, y: 0, z: 0.95}
+        - {x: 0, y: 0, z: 1}
+        - {x: 0.15, y: 0, z: 0.95}
+        - {x: 0.3, y: 0, z: 0.8}
+        HitboxScale: 2.8
+    - rid: 6357900109471809577
+      type: {class: FaceClosestEnemy, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      data: 
+    - rid: 6357900109471809578
+      type: {class: SlowTrack, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      data:
+        active: 1

@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 761beca3e267e1f4da16a2215337e02d, type: 3}
+  m_Name: InnerFire
+  m_EditorClassIdentifier: 
+  ItemName: Inner Fire
+  Description: Descending will heal living bars
+  Icon: {fileID: -71755199, guid: dbed9846e9655f9489c37ed23450fffa, type: 3}
+  stackable: 0
+  Triggers: 00000000
+  Effects:
+  - rid: 6357900276064845825
+  references:
+    version: 2
+    RefIds:
+    - rid: 6357900276064845825
+      type: {class: HealLivingBars, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      data: 
