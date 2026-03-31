@@ -4,7 +4,7 @@ using Assets.Scripts.Battle.Actor;
 using Assets.Scripts.Battle.Components.Status;
 using UnityEngine;
 
-namespace Assets.Scripts.Battle.Actions.Effects
+namespace Assets.Scripts.Battle.Actions.Actions.Effects
 {
     public enum StatusTarget
     {

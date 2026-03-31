@@ -1,0 +1,105 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5a2e800b20efe647a3894bd700a7333, type: 3}
+  m_Name: AnimationAction
+  m_EditorClassIdentifier: 
+  guid: 1fd389a9fb3e8e042ba5b3564ae3e936
+  Type: 0
+  Name: Enhanced Punch
+  Rarity: 0
+  Description: Whatever
+  CooldownTimer: 0.1
+  TotalUses: 0
+  remainingUses: 0
+  BuildupCost: 2
+  BuildupGain: 3
+  StaminaCost: 5
+  Tags: 00000000
+  Direction: {x: 0, y: 0, z: 0}
+  currentCooldownTimer: 0
+  StickMult: 1
+  Animation: 1
+  animationPhase:
+    animation: 1
+    windupTimeMult: 0.25
+    recoveryTimeMult: 0.5
+    hitWindows:
+    - displayName: Boost
+      startFrame: 10
+      endFrame: 10
+      maxHitsPerEnemy: 0
+      windowEffects:
+      - rid: 6073795310272905229
+    - displayName: Hit
+      startFrame: 12
+      endFrame: 13
+      maxHitsPerEnemy: 1
+      windowEffects:
+      - rid: 6073795310272905230
+    - displayName: setup
+      startFrame: 0
+      endFrame: 0
+      maxHitsPerEnemy: 1
+      windowEffects:
+      - rid: 6073795310272905232
+      - rid: 6073795310272905235
+      - rid: 6073795310272905234
+    - displayName: clear
+      startFrame: 14
+      endFrame: 14
+      maxHitsPerEnemy: 1
+      windowEffects:
+      - rid: 6073795310272905236
+  OnStartEffects: []
+  OnEndEffects: []
+  OnUpdateEffects: []
+  OnHitEffects: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 6073795310272905229
+      type: {class: AddForceTarget, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      data:
+        Force: 0.4
+    - rid: 6073795310272905230
+      type: {class: DamageEffect, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      data:
+        UseHitbox: 1
+        DamageData:
+          Damage: 3
+          PostureDamage: 3
+          KnockbackForce: 0.5
+          KnockbackForceUp: 0
+          KnockbackType: 0
+          StrengthScaling: 0
+          AgilityScaling: 0
+          MindScaling: 0
+          BuildupGainOnHit: 5
+    - rid: 6073795310272905232
+      type: {class: ShowHitboxOnPlayer, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      data:
+        HitboxPoints:
+        - {x: -0.1, y: 0, z: 0.15}
+        - {x: -0.1, y: 0, z: 0.7}
+        - {x: 0.1, y: 0, z: 0.7}
+        - {x: 0.1, y: 0, z: 0.15}
+        HitboxScale: 1
+    - rid: 6073795310272905234
+      type: {class: FaceClosestEnemy, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      data: 
+    - rid: 6073795310272905235
+      type: {class: AddForceTarget, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      data:
+        Force: 0.3
+    - rid: 6073795310272905236
+      type: {class: ClearHitbox, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      data: 

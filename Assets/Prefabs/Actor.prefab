@@ -10712,6 +10712,7 @@ GameObject:
   - component: {fileID: 4002958033492770288}
   - component: {fileID: 5832880172782262998}
   - component: {fileID: 4929105012875946850}
+  - component: {fileID: 8620214316142954928}
   m_Layer: 3
   m_Name: Actor
   m_TagString: Untagged
@@ -10936,6 +10937,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ActorData: {fileID: 11400000, guid: f37eb8c8a780f98419ee07350d193ef2, type: 2}
   state: {fileID: 0}
+  statusManager: {fileID: 0}
   CanRegenPosture: 1
   PostureRegenCooldownDelay: 1
   StaminaRegenRate: 1
@@ -11000,6 +11002,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1394f33104af660498a03862d12b1276, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &8620214316142954928
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2098779824770817834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0234da6f965db7e489859ed26c0f6ce8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  activeStatuses: []
 --- !u!1 &2201109491587270952
 GameObject:
   m_ObjectHideFlags: 0

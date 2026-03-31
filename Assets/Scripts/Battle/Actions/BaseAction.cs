@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Assets.Scripts.Utility;
 using UnityEngine;
 
@@ -15,21 +16,14 @@ namespace Assets.Scripts.Battle.Actions
         public string Description;
         public float CooldownTimer;
         public int TotalUses;
-        public int remainingUses;
-        //public int Range;
-        //public SpriteRenderer sprite;
+        [HideInInspector] public int remainingUses;
         public int BuildupCost;
         public int BuildupGain;
         public int StaminaCost;
-        public int Speed;
         public List<TAG> Tags;
         [HideInInspector] public Vector3 Direction;
-        public float currentCooldownTimer = 0;
+        [HideInInspector] public float currentCooldownTimer = 0;
         public float StickMult = 1;
-        public float SlowdownMeterGain;
-        public float SlowdownMeterGainOnEnd;
-        public float SlowDownMeterGainOnPress;
-        public float SlowdownMeterGainOnRelease;
 
         private bool _isEnded = false;
         public event Action<BaseAction, ActionEndReason> OnActionEnded;

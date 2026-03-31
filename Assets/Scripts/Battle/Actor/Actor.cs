@@ -127,7 +127,6 @@ namespace Assets.Scripts.Battle.Actor
 
         private void OnActionEnded(BaseAction action, ActionEndReason reason)
         {
-            Debug.Log($"Action {action.Name} ended with reason: {reason}");
 
             // Unsubscribe from the action that ended.
             action.OnActionEnded -= OnActionEnded;

@@ -14,15 +14,59 @@ namespace Assets.Scripts.Battle.Actions.Actions.Effects
         public bool UseHitbox = true;
         public IHitbox HitboxEffect; //How to get hitbox?
         public DamageInstance DamageData;
+        
+        private int currentWindowIndex = -1;
 
 
         public virtual void Eval(Actor.Actor actor, BaseAction action)
         {
             var gs = action as GenericSkill;
-            HitboxEffect = gs.OnStartEffects.Where(item => item is IHitbox).FirstOrDefault() as IHitbox;
+            if (gs == null) return;
+            
+            
+            // Get current active window index
+            currentWindowIndex = gs.CurrentActiveWindowIndex;
+            
+            // Only apply damage if we're in an active hit window
+            if (currentWindowIndex < 0)
+            {
+                return;
+            }
+            
+            // Only query hitbox if UseHitbox is enabled
+            if (!UseHitbox)
+            {
+                return;
+            }
+            
+            // Query hitbox from hit windows in animation phase
+            HitboxEffect = null;
+            foreach (var window in gs.animationPhase.hitWindows)
+            {
+                HitboxEffect = window.windowEffects.OfType<IHitbox>().FirstOrDefault();
+                if (HitboxEffect != null)
+                {
+                    break;
+                }
+            }
+            if (HitboxEffect == null)
+            {
+                return;
+            }
+            
             var enemies = HitboxEffect.CheckEnemiesInsideHitbox(actor);
+            
             foreach (var enemy in enemies)
+            {
+                // Check if this enemy can be hit in current window
+                if (!gs.HitWindowMgr.CanHit(enemy, currentWindowIndex))
+                {
+                    continue;
+                }
+                
                 ApplyDamageEffects(actor, enemy, action);
+                gs.HitWindowMgr.RecordHit(enemy, currentWindowIndex);
+            }
         }
 
         public void Eval(Actor.Actor actor)
