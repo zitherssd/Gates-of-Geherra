@@ -2,6 +2,7 @@
 using Assets.Scripts.Battle.Actions;
 using Assets.Scripts.Battle.Manager;
 using Assets.Scripts.Pattern;
+using Assets.Scripts.Utility;
 using UnityEngine;
 
 namespace Assets.Scripts.Battle.Actor.States
@@ -36,6 +37,7 @@ namespace Assets.Scripts.Battle.Actor.States
             if (actor.isControllable)
             {
                 UIManager.GetInstance().HideUI();
+                SlowdownManager.instance.ResetStateSlowdown();
                 var Ready = false;
             }
 

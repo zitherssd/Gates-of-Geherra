@@ -24,7 +24,8 @@ namespace Assets.Scripts.Battle.Manager.States
         {
             // Reset slowdown immediately when battle ends
             if (SlowdownManager.instance != null)
-                SlowdownManager.instance.ResetImmediate();
+                SlowdownManager.instance.ResetStateSlowdown();
+                
             
             SoundManager.instance.FadeOutMusic();
             UIManager.instance.Fade(true, () =>
@@ -77,6 +78,7 @@ namespace Assets.Scripts.Battle.Manager.States
                     }
                         manager.TriggerBattleEnd();
                     GameFlowManager.instance.SetMode(GameMode.RestArea);
+                    SlowdownManager.instance.ResetStateSlowdown();
                 }
             });
         }

@@ -9,6 +9,7 @@ namespace Assets.Scripts.Game
 
         public void Enter()
         {
+            SlowdownManager.instance.ResetStateSlowdown();
             GameFlowManager.instance.playerActor.transform.position = RestArea.position;
             GameFlowManager.instance.playerActor.PlayAnimation("Fire");
             SoundManager.instance.PlayMusicRest();

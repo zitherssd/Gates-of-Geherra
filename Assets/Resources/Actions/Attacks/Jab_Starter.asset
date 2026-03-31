@@ -17,14 +17,14 @@ MonoBehaviour:
   Name: Jab
   Rarity: 0
   Description: Reliable jab attack
-  CooldownTimer: 2
-  TotalUses: 0
+  CooldownTimer: 3
+  TotalUses: 2
   remainingUses: 0
   BuildupCost: 0
   BuildupGain: 0
   StaminaCost: 5
   Speed: 0
-  Tags: 0f000000
+  Tags: 0f0000000a000000
   Direction: {x: 0, y: 0, z: 0}
   currentCooldownTimer: 0
   StickMult: 0.5
