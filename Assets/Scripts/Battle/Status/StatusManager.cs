@@ -145,7 +145,7 @@ namespace Assets.Scripts.Battle.Status
         // and call corresponding methods on their EffectLogic scripts.
 
         private void HandleBeforeTakeDamage(DamageInstance info) { }
-        private void HandleAfterTakeDamage(DamageInstance info) { }
+        private void HandleAfterTakeDamage(DamageInstanceResult info) { }
         private void HandleBeforeDealDamage(DamageInstance info) { }
         private void HandleAfterDealDamage(DamageInstance info) { }
         private void HandleActionUsed(Actions.BaseAction action) { }

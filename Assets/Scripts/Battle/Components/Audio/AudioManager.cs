@@ -32,7 +32,7 @@ namespace Assets.Scripts.Battle.Components.Audio
             audioSource.pitch = 1.0f;
         }
 
-        public void PlayDamagedSound(DamageInstance damage)
+        public void PlayDamagedSound(DamageInstanceResult damage)
         {
             PlayAudio("Blow1");
         }

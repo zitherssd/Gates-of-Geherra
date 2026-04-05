@@ -1,4 +1,6 @@
-﻿using Assets.Scripts.Utility;
+﻿using Assets.Scripts.Battle.Actions;
+using Assets.Scripts.Utility;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -18,11 +20,16 @@ namespace Assets.Scripts.Battle.Components.Effects
         public EffectManager(Actor.Actor owner)
         {
             this.owner = owner;
-            //owner.DamageApplied += ShowDamagePopup;
-            //owner.PostureApplied += ShowPosturePopup;
-            //owner.DamageApplied += FlashWhite;
+            owner.OnAfterTakeDamage += ShowPopups;
             lineRenderer = owner.GetComponentsInChildren<LineRenderer>().FirstOrDefault();
             
+        }
+
+        private void ShowPopups(DamageInstanceResult instance)
+        {
+            ShowDamagePopup(instance.DamageDealt);
+            ShowPosturePopup(instance.PostureDamageDealt);
+            FlashWhite(instance.DamageDealt);
         }
 
         private void ShowDamagePopup(float damageAmount)

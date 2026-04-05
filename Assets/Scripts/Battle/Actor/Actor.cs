@@ -31,7 +31,7 @@ namespace Assets.Scripts.Battle.Actor
 
         // --- New Event System ---
         public event Action<DamageInstance> OnBeforeTakeDamage;
-        public event Action<DamageInstance> OnAfterTakeDamage;
+        public event Action<DamageInstanceResult> OnAfterTakeDamage;
         public event Action<DamageInstance> OnBeforeDealDamage;
         public event Action<DamageInstance> OnAfterDealDamage;
         public event Action<BaseAction> OnActionUsed;
@@ -143,7 +143,11 @@ namespace Assets.Scripts.Battle.Actor
 
         public void ApplyDamageInstance(DamageInstance damageInstance, Actor attacker, BaseAction action = null)
         {
-            var (damage, postureDamage, direction, force) = damageInstance.Calculate(attacker, this, action);
+            DamageInstanceResult result = damageInstance.Calculate(attacker, this, action);
+            var damage = result.DamageDealt;
+            var postureDamage = result.PostureDamageDealt;
+            var force = result.KnockbackForceApplied;
+            var direction = result.KnockbackApplied;
 
             // 1. Invoke OnBeforeTakeDamage event, allowing listeners to modify the damage.
             OnBeforeTakeDamage?.Invoke(damageInstance);
@@ -202,7 +206,7 @@ namespace Assets.Scripts.Battle.Actor
             }
 
             // 2. Invoke OnAfterTakeDamage event
-            OnAfterTakeDamage?.Invoke(damageInstance);
+            OnAfterTakeDamage?.Invoke(result);
 
             // Trigger temporary slowdown effect on damage
             if (isControllable && SlowdownManager.instance != null)

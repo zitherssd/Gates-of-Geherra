@@ -28,7 +28,7 @@ namespace Assets.Scripts.Battle.Actions
         [Range(0, 10)] public float MindScaling;
         public float BuildupGainOnHit;
 
-        public (float Damage, float PostureDamage, Vector3 Knockback, float KnockbackForce) Calculate(Actor.Actor casterActor, Actor.Actor targetActor, BaseAction action)
+        public DamageInstanceResult Calculate(Actor.Actor casterActor, Actor.Actor targetActor, BaseAction action)
         {
             var damage = Damage + casterActor.ActorData.Strength * StrengthScaling - targetActor.ActorData.Strength * StrengthScaling / 2 + casterActor.ActorData.Agility * AgilityScaling - targetActor.ActorData.Agility * AgilityScaling / 2 + casterActor.ActorData.Mind * MindScaling;
 
@@ -78,7 +78,21 @@ namespace Assets.Scripts.Battle.Actions
             }
             var knockback = direction;
 
-            return (damage, PostureDamage, knockback, KnockbackForce);
+            return new DamageInstanceResult
+            {
+                DamageDealt = damage,
+                PostureDamageDealt = PostureDamage,
+                KnockbackApplied = knockback,
+                KnockbackForceApplied = KnockbackForce,
+            };
         }
+    }
+
+    public class DamageInstanceResult
+    {
+        public float DamageDealt;
+        public float PostureDamageDealt;
+        public Vector3 KnockbackApplied;
+        public float KnockbackForceApplied;
     }
 }

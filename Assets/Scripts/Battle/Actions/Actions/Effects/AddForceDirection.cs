@@ -29,5 +29,31 @@ namespace Assets.Scripts.Battle.Actions.Actions.Effects
         enum TARGET { }
     }
 
+    [Serializable]
+    public class SetFriction : IEffect, IEndableEffect
+    {
+        public float Friction;
+
+        public void End(Actor.Actor actor, BaseAction action)
+        {
+            actor.movement.SetFriction();
+        }
+
+        public void Eval(Actor.Actor actor, BaseAction t)
+        {
+            actor.movement.SetFriction(Friction);
+        }
+}
+[Serializable]
+    public class ResestFriction : IEffect
+    {
+        public float Friction;
+
+        public void Eval(Actor.Actor actor, BaseAction action)
+        {
+            actor.movement.SetFriction();
+        }
+}
+
 }
 
