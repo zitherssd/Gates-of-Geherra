@@ -121433,7 +121433,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sphereRadius: 1
   fadeSpeed: 5
-  maxFadeDistance: 5
+  maxFadeDistance: 1
 --- !u!1 &964506884
 GameObject:
   m_ObjectHideFlags: 0

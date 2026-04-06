@@ -67,19 +67,19 @@ namespace Assets.Scripts.Game
                     timespan = TimeSpan.FromSeconds(10);
                     break;
                 case 1:
-                    timespan = TimeSpan.FromMinutes(1);
+                    timespan = TimeSpan.FromSeconds(11);
                     break;
                 case 2:
-                    timespan = TimeSpan.FromMinutes(3);
+                    timespan = TimeSpan.FromSeconds(12);
                     break;
                 case 3:
-                    timespan = TimeSpan.FromMinutes(5);
+                    timespan = TimeSpan.FromSeconds(13);
                     break;
                 case 4:
-                    timespan = TimeSpan.FromMinutes(10);
+                    timespan = TimeSpan.FromSeconds(14);
                     break;
                 case >4:
-                    timespan = TimeSpan.FromMinutes(15);
+                    timespan = TimeSpan.FromSeconds(15);
                     break;
             }
 

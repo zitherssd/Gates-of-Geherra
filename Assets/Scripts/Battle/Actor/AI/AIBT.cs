@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Assets.Scripts.Battle.Actor.AI
 {
-    public enum AiRuleset { DEFAULT, OldMan, Ninja, Maniac, Hungry, ShurkienThrower }
+    public enum AiRuleset { DEFAULT, OldMan, Ninja, Maniac, Hungry, ShurkienThrower, TacticalFlanker }
     public enum AIState { Thinking, Acting, Moving }
 
     public class AIBT
@@ -45,6 +45,9 @@ namespace Assets.Scripts.Battle.Actor.AI
                         break;
                     case AiRuleset.ShurkienThrower:
                         behaviors = ShurkienThrowerBehavior;
+                        break;
+                    case AiRuleset.TacticalFlanker:
+                        behaviors = TacticalFlankerBehavior;
                         break;
                 }
             }
@@ -99,6 +102,11 @@ namespace Assets.Scripts.Battle.Actor.AI
                 new InsideEnemyHitbox(),
                 new DodgeBehavior(1f),
             }),
+            new SequenceNode(new List<BTNode>
+            {
+                new DistanceToPlayerSmallerThan(6.0f),
+                new CircleApproachBehavior(),
+            }),
             new ApproachBehavior(),
         };
 
@@ -125,6 +133,28 @@ namespace Assets.Scripts.Battle.Actor.AI
                 new DistanceToPlayerGreaterThan(5),
                 new MoveTowardsPlayer(0.2f)
             }),
+        };
+
+        private static readonly List<BTNode> TacticalFlankerBehavior = new List<BTNode>
+        {
+            new SequenceNode(new List<BTNode>
+            {
+                new InsideEnemyHitbox(),
+                new BlockBehavior(1f),
+            }),
+            new SequenceNode(new List<BTNode>
+            {
+                new DistanceToPlayerSmallerThan(2.5f),
+                new HesitateCondition(2.5f, 1.5f),
+                new GlobalAttackTokenCondition(1.0f),
+                new AttackWithValidSkill(),
+            }),
+            new SequenceNode(new List<BTNode>
+            {
+                new DistanceToPlayerSmallerThan(6.0f),
+                new CircleApproachBehavior(),
+            }),
+            new ApproachBehavior(),
         };
 
         public void Update()

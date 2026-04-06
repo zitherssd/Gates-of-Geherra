@@ -28,6 +28,10 @@ The character representation follows a **component-based** approach, with an `Ac
 
 - **`ActorStateMachine`**: Manages the state of an `Actor` during battle (e.g., Idle, Attacking, Hurt).
 
+- **Enemy AI (`AIBT.cs`, `BTNode.cs`)**: Enemies use a Behavior Tree architecture for tactical decision-making. AI Rulesets (like `TacticalFlanker`) combine nodes to coordinate behaviors, including:
+    - **Condition Nodes**: `HesitateCondition` (adds delay before attacking), `GlobalAttackTokenCondition` (prevents enemies from attacking simultaneously).
+    - **Action Nodes**: `ApproachBehavior`, `CircleApproachBehavior` (intelligently surrounding the player while respecting personal space), `BlockBehavior`, etc.
+
 - **`BaseAction.cs` & `BaseSkill.cs`**: These are likely the base classes for defining all character abilities and actions within the battle system.
 
 ### 3. Dungeon Crawling (Inferred)
