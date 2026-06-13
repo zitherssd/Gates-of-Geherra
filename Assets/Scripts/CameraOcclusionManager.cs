@@ -50,14 +50,7 @@ public class CameraOcclusionManager : MonoBehaviour
 
                 occludedThisFrame.Add(rend);
 
-                // Calculate perpendicular distance from the centerline of the "tube"
-                Vector3 toObject = hit.transform.position - origin;
-                float distAlongRay = Vector3.Dot(toObject, dir.normalized);
-                Vector3 closestPointOnLine = origin + dir.normalized * distAlongRay;
-                float distanceFromCenterline = Vector3.Distance(hit.transform.position, closestPointOnLine);
-
-                // Use distance from centerline instead of camera distance
-                float targetOpacity = Mathf.Clamp01(distanceFromCenterline / maxFadeDistance);
+                float targetOpacity = Mathf.Clamp01(hit.distance / maxFadeDistance);
                 targetOpacity = Mathf.Lerp(0.1f, 1f, targetOpacity); // closer = more transparent
 
                 if (!fadeValues.ContainsKey(rend))

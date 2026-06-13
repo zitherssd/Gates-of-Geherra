@@ -20,6 +20,7 @@ public class OutOfBoundsKiller : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        Debug.Log("OutOfBoundsKiller hit: " + collision.gameObject.name);
         var actor = collision.gameObject.GetComponent<Actor>();
         if (actor != null)
         {
@@ -28,7 +29,7 @@ public class OutOfBoundsKiller : MonoBehaviour
                 Damage = 999,
                 PostureDamage = 0,
             };
-            actor.ApplyDamageInstance(damageInstance, null, null);
+            actor.ApplyDamageInstance(damageInstance, actor, null);
         }
     }
 }
