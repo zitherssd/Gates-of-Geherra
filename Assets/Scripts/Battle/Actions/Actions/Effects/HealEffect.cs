@@ -7,7 +7,7 @@ namespace Assets.Scripts.Battle.Actions.Actions.Effects
     {
         public void Eval(Actor.Actor owner)
         {
-            owner.ActorData.HealAllBars();
+            owner.Runtime.HealAllBars();
         }
     }
 }

@@ -13,7 +13,7 @@ namespace Assets.Scripts.Battle.Actor.States
         {
             cc.height = 0.4f;
             cc.center = new Vector3(0, 0.3f, 0);
-            actor.ActorData.currentPosture = actor.ActorData.maxPosture;
+            actor.Runtime.currentPosture = actor.Runtime.maxPosture;
             elapsedTime = 0f; // Reset the timer when entering the state
         }
 
@@ -38,7 +38,7 @@ namespace Assets.Scripts.Battle.Actor.States
         {
             elapsedTime += Time.deltaTime; // Increment the elapsed time by the time since the last frame
 
-            if (actor.ActorData.isDead())
+            if (actor.Runtime.isDead())
             {
                 actor.state.TransitionTo<DeathState>();
                 return;
@@ -46,7 +46,7 @@ namespace Assets.Scripts.Battle.Actor.States
 
             if (elapsedTime > 1.2f)
             {
-                actor.ActorData.currentPosture = actor.ActorData.maxPosture;
+                actor.Runtime.currentPosture = actor.Runtime.maxPosture;
                 actor.PlayAnimation("Idle"); // Play the "GetUp" animation
                 actor.state.TransitionTo<IdleState>();
 

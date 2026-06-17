@@ -30,7 +30,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
             }
 
             Vector3 toEnemy = actor.target.DirectionToClosestEnemy.normalized;
-            var allies = BattleManager.instance.EnemyActors.Where(a => a != actor && !a.ActorData.isDead()).ToList();
+            var allies = BattleManager.instance.EnemyActors.Where(a => a != actor && !a.Runtime.isDead()).ToList();
 
             // 2. Check if path towards player is free
             Actor blockingAlly = null;
@@ -100,7 +100,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
             else
             {
                 // Start a new MoveAction
-                var moveSkill = actor.ActorData.actions.OfType<MoveAction>().FirstOrDefault();
+                var moveSkill = actor.Runtime.actions.OfType<MoveAction>().FirstOrDefault();
                 if (moveSkill == null) return NodeState.Failure;
 
                 moveSkill.Direction = approachDirection;

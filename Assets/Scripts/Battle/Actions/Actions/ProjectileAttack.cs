@@ -74,7 +74,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
 
             if (IsSkillOnCooldown()) return false;
 
-            if (caster.ActorData.currentBuildup < BuildupCost) return false;
+            if (caster.Runtime.currentBuildup < BuildupCost) return false;
 
             return true;
         }

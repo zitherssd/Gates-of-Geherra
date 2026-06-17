@@ -127,7 +127,7 @@ namespace Assets.Scripts.Battle.Actor.States
 
         public void Update()
         {
-            if (owner.ActorData.isDead())
+            if (owner.Runtime.isDead())
             {
                 owner.movement.AddForce(Vector3.up * 1.5f);
                 owner.transform.position += Vector3.up * 0.01f;

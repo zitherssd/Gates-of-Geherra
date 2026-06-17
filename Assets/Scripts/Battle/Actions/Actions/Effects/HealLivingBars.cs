@@ -8,12 +8,12 @@ namespace Assets.Scripts.Battle.Actions.Actions.Effects
     {
         public void Eval(Actor.Actor actor, BaseAction action)
         {
-            actor.ActorData.HealAllAliveBars();
+            actor.Runtime.HealAllAliveBars();
         }
 
         public void Eval(Actor.Actor owner)
         {
-            owner.ActorData.HealAllAliveBars();
+            owner.Runtime.HealAllAliveBars();
         }
     }
     [Serializable]
@@ -23,7 +23,7 @@ namespace Assets.Scripts.Battle.Actions.Actions.Effects
 
         public void Eval(Actor.Actor owner)
         {
-            owner.ActorData.ChangeBuildup(BuildupGain);
+            owner.Runtime.ChangeBuildup(BuildupGain);
         }
     }
 

@@ -19,11 +19,11 @@ public class StatPanelUI : MonoBehaviour
     public TextMeshProUGUI MIND;
     public TextMeshProUGUI SPIRIT;
 
-    public ActorData actorData;
+    public ActorRuntime actorData;
 
     public void Start()
     {
-        actorData = GameFlowManager.instance.playerActor.ActorData;
+        actorData = GameFlowManager.instance.playerActor.Runtime;
     }
 
     private void Update()

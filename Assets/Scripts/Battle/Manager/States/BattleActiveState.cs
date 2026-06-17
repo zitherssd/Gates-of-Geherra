@@ -38,7 +38,7 @@ namespace Assets.Scripts.Battle.Manager.States
         {
             if (exitStep == false)
             {
-                if (battleManager.EnemyActors.TrueForAll(actor => actor.ActorData.isDead())) // Last hit dealt now
+                if (battleManager.EnemyActors.TrueForAll(actor => actor.Runtime.isDead())) // Last hit dealt now
                 {
                     FinalHitDealth?.Invoke();
                     // Final hit slowdown effect
@@ -50,7 +50,7 @@ namespace Assets.Scripts.Battle.Manager.States
                     exitStep = true;
                 }
 
-                if (battleManager.PlayerActors.TrueForAll(actor => actor.ActorData.isDead())) // Last hit dealt now
+                if (battleManager.PlayerActors.TrueForAll(actor => actor.Runtime.isDead())) // Last hit dealt now
                 {
                     // Final hit slowdown effect
                     UIManager.instance.ResetMeter();

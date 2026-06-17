@@ -69,7 +69,7 @@ namespace Assets.Scripts.Battle.Actor.States
             // Check if the total stagger duration has been reached
             if (timer >= duration)
             {
-                actor.ActorData.currentPosture = actor.ActorData.maxPosture;
+                actor.Runtime.currentPosture = actor.Runtime.maxPosture;
                 actor.state.TransitionToIdle();  // Transition back to idle state
                 actor.PlayAnimation("Idle");
             }

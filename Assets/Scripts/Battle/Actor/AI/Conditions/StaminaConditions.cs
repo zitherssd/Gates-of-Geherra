@@ -17,7 +17,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Conditions
 
         public override NodeState Execute(AIBT ai, Actor actor)
         {
-            if (actor.ActorData.currentStamina < actor.ActorData.maxStamina * percentOfMaximum)
+            if (actor.Runtime.currentStamina < actor.Runtime.maxStamina * percentOfMaximum)
             {
                 return NodeState.Sucess;
             }
@@ -35,7 +35,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Conditions
 
         public override NodeState Execute(AIBT ai, Actor actor)
         {
-            if (actor.ActorData.currentStamina > actor.ActorData.maxStamina * percentOfMaximum)
+            if (actor.Runtime.currentStamina > actor.Runtime.maxStamina * percentOfMaximum)
             {
                 return NodeState.Sucess;
             }

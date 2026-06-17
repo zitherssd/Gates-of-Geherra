@@ -48,7 +48,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
 
         private BaseAction ChooseValidAttackSkill(Actor actor)
         {
-            return actor.ActorData.actions.Where(skill => skill is AttackSkill && skill.IsValidAndInRange(actor)).OrderBy(x => UnityEngine.Random.value).FirstOrDefault();
+            return actor.Runtime.actions.Where(skill => skill is AttackSkill && skill.IsValidAndInRange(actor)).OrderBy(x => UnityEngine.Random.value).FirstOrDefault();
         }
     }
 
@@ -95,7 +95,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
 
         private BaseAction ChooseValidProjectileSkill(Actor actor)
         {
-            return actor.ActorData.actions.Where(skill => skill is ProjectileAttack && skill.IsValidAndInRange(actor)).OrderBy(x => UnityEngine.Random.value).FirstOrDefault();
+            return actor.Runtime.actions.Where(skill => skill is ProjectileAttack && skill.IsValidAndInRange(actor)).OrderBy(x => UnityEngine.Random.value).FirstOrDefault();
         }
 
 

@@ -79,9 +79,9 @@ namespace Assets.Scripts.Battle.Actions.Actions.Effects
             // Need ro revise
             var targetBlocking = targetActor.state.IsBlocking();
             if (targetBlocking)
-                casterActor.ActorData.ChangeBuildup(DamageData.BuildupGainOnHit / 2);
+                casterActor.Runtime.ChangeBuildup(DamageData.BuildupGainOnHit / 2);
             else
-                casterActor.ActorData.ChangeBuildup(DamageData.BuildupGainOnHit);
+                casterActor.Runtime.ChangeBuildup(DamageData.BuildupGainOnHit);
 
             targetActor.ApplyDamageInstance(DamageData, casterActor, action);
         }

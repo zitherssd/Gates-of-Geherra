@@ -25,7 +25,7 @@ namespace Assets.Scripts.Battle.Actor.States
             //deathcheck this needs to be moved
             if (actor.isControllable)
             {
-                //  var AvaliableSkills = actor.ActorData.actions;  //This should be read at the beginning of the fight?
+                //  var AvaliableSkills = actor.Runtime.actions;  //This should be read at the beginning of the fight?
                 UIManager.GetInstance().ShowUI();
                 var Ready = true;
                 
@@ -43,7 +43,7 @@ namespace Assets.Scripts.Battle.Actor.States
 
         private void DeathCheck()
         {
-            if (actor.ActorData.isDead())
+            if (actor.Runtime.isDead())
             {
                 actor.state.TransitionTo<DeathState>();
                 return;

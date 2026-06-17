@@ -58,16 +58,16 @@ namespace Assets.Scripts.Battle.Manager
             var player = GameFlowManager.instance.playerActor;
             var level = GameObject.Find("Level_" + battleDefinition.Level);
             player.transform.position = level.transform.GetChild(0).GetChild(0).position; //unholy line
-            player.ActorData.Refresh();
+            player.Runtime.Refresh();
             SpawnEnemies(battleDefinition);
             UIManager.instance.Fade(false, null);
             CameraManager.instance.ResetForNewBattle(level.transform.Find("CameraTransformPosition").position);
-            //UIManager.instance.InitializePlayerActionButtonPrefabs(player.ActorData.actions);
+            //UIManager.instance.InitializePlayerActionButtonPrefabs(player.Runtime.actions);
             StartCoroutine(WaitForSeconds(2f, () =>
             {
                 SoundManager.instance.PlayMusic(null);
                 //UIManager
-                //.instance.InitializePlayerActionButtonPrefabs(PlayerActors[0].ActorData.actions);
+                //.instance.InitializePlayerActionButtonPrefabs(PlayerActors[0].Runtime.actions);
                 //UIManager.instance.MoveActionsToBattleActionContainers();
                 battleStateMachine.Initialize(battleStateMachine.startState); // Start the battle state machine
             }));
@@ -92,14 +92,13 @@ namespace Assets.Scripts.Battle.Manager
             for (int i = 0; i < battleDefinition.enemyActors.Count(); i++)
             {
                 var enemy = battleDefinition.enemyActors[i];
-                var clone = Instantiate(enemy);
                 Vector3 position;
 
                 position = spawners.transform.GetChild(i + 1).position;
 
                 var enemyGameObject = Instantiate(enemyPrefab, position, Quaternion.identity);
                 var enemyActor = enemyGameObject.GetComponent<Actor.Actor>();
-                enemyActor.ActorData = clone;
+                enemyActor.SetDefinition(enemy);
                 enemyActor.Init();
                 enemyActor.Spawn();
                 EnemyActors.Add(enemyActor);
@@ -128,7 +127,7 @@ namespace Assets.Scripts.Battle.Manager
 
 
 
-        public void SetupBattleWithEnemies(List<ActorData> newEnemies) //Floor 1,2 etc setup
+        public void SetupBattleWithEnemies(List<ActorDefinition> newEnemies) //Floor 1,2 etc setup
         {
             foreach (var enemy in EnemyActors)
             {
@@ -138,17 +137,16 @@ namespace Assets.Scripts.Battle.Manager
 
             foreach (var enemy in newEnemies)
             {
-                var clone = Instantiate(enemy);
                 var randomSpawner = GetRandomChild(SpawnerParent);
                 var enemyGameObject = Instantiate(enemyPrefab, randomSpawner.position, Quaternion.identity);
                 var enemyActor = enemyGameObject.GetComponent<Actor.Actor>();
-                enemyActor.ActorData = clone;
+                enemyActor.SetDefinition(enemy);
                 enemyActor.Init();
                 EnemyActors.Add(enemyActor);
             }
 
 
-            PlayerActors[0].ActorData.Refresh();
+            PlayerActors[0].Runtime.Refresh();
 
             UIManager.instance.EnableBattleSkills();
             UIManager.instance.Fade(false, () =>

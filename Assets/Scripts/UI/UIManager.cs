@@ -215,14 +215,14 @@ namespace Assets.Scripts
             List<ActionSlotSaveData> loadout = new List<ActionSlotSaveData>();
 
             // This is the definitive list of actions the player owns.
-            if (GameFlowManager.instance == null || GameFlowManager.instance.playerActor == null || GameFlowManager.instance.playerActor.ActorData == null)
+            if (GameFlowManager.instance == null || GameFlowManager.instance.playerActor == null || GameFlowManager.instance.playerActor.Runtime == null)
             {
                 // Cannot determine owned actions, return empty or log error.
                 Debug.LogError("Could not get player actions to create loadout.");
                 return loadout;
             }
 
-            var allPlayerOwnedActions = GameFlowManager.instance.playerActor.ActorData.actions;
+            var allPlayerOwnedActions = GameFlowManager.instance.playerActor.Runtime.actions;
 
             // Create a lookup from action to its button GameObject for performance.
             var actionToButtonMap = PlayerActions

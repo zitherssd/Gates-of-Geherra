@@ -45,7 +45,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
 
         private BaseAction ChooseValidSkillInRange(Actor actor)
         {
-            return actor.ActorData.actions.Where(skill => skill.IsValidAndInRange(actor)).OrderBy(x => UnityEngine.Random.value).FirstOrDefault();
+            return actor.Runtime.actions.Where(skill => skill.IsValidAndInRange(actor)).OrderBy(x => UnityEngine.Random.value).FirstOrDefault();
         }
     }
 }

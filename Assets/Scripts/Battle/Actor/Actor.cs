@@ -10,6 +10,7 @@ using Assets.Scripts.Battle.Manager;
 using Assets.Scripts.Utility;
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Assets.Scripts.Battle.Actor
 {
@@ -17,7 +18,9 @@ namespace Assets.Scripts.Battle.Actor
     public class Actor : MonoBehaviour
     {
         //Data
-        public ActorData ActorData;
+        [FormerlySerializedAs("ActorData")]
+        public ActorDefinition Definition;
+        public ActorRuntime Runtime { get; set; }
 
         //Components
         public ActorStateMachine state;
@@ -49,7 +52,7 @@ namespace Assets.Scripts.Battle.Actor
         public float PostureRegenCooldownDelay = 1f;
         public float StaminaRegenRate = 1.0f;
         public float PostureREgenRate = 1.0f;
-        public bool isControllable { get { return ActorData.Controllable; } private set { } }
+        public bool isControllable { get { return Definition != null && Definition.Controllable; } private set { } }
 
         public BaseAction GetCurrentAction() => _currentAction;
 
@@ -70,21 +73,24 @@ namespace Assets.Scripts.Battle.Actor
         public void Start()
         {
             ai = new AIBT(this); //this too subscribe
+            EnsureRuntime();
             state.Initialize<InactiveState>();
             effects.SetColors();
-            foreach (var item in ActorData.items)
+            foreach (var item in Runtime.items)
                 inventory.AddItem(item);
         }
 
         //Should run after 
         public void Spawn()
         {
-            ActorData.Reset();
+            EnsureRuntime();
+            Runtime.ResetToDefinition();
         }
 
         public void Update()
         {
             if (BattleManager.instance.enabled == false) return;
+            if (Runtime == null) return;
 
             StaminaRegen();
             PostureRegen();
@@ -104,8 +110,32 @@ namespace Assets.Scripts.Battle.Actor
 
         public void Init()
         {
+            EnsureRuntime();
             effects.SetColors();
             //Do other one time things when spawning
+        }
+
+        public void SetDefinition(ActorDefinition definition)
+        {
+            Definition = definition;
+
+            if (Runtime == null)
+            {
+                Runtime = new ActorRuntime(Definition);
+            }
+            else
+            {
+                Runtime.Definition = Definition;
+                Runtime.ResetToDefinition();
+            }
+        }
+
+        private void EnsureRuntime()
+        {
+            if (Runtime == null && Definition != null)
+            {
+                Runtime = new ActorRuntime(Definition);
+            }
         }
 
 
@@ -155,11 +185,11 @@ namespace Assets.Scripts.Battle.Actor
             //Damage
             #region damage
             //Changes buildup by 1% for each 2% of hp lost? not yet
-            ActorData.ChangeBuildup(Mathf.Max(UnityEngine.Random.Range(2, 3), damage));
+            Runtime.ChangeBuildup(Mathf.Max(UnityEngine.Random.Range(2, 3), damage));
 
             ItemEventBus.Raise(ItemTrigger.OnDamageTaken, this);
-            ActorData.DealDamage(damage);
-            var DiedFromThisHit = ActorData.isDead();
+            Runtime.DealDamage(damage);
+            var DiedFromThisHit = Runtime.isDead();
             //
             #endregion
 
@@ -180,15 +210,15 @@ namespace Assets.Scripts.Battle.Actor
             else
             {
                 //Posture
-                var previousPosture = ActorData.currentPosture;
-                ActorData.DealPostureDamage(postureDamage);
+                var previousPosture = Runtime.currentPosture;
+                Runtime.DealPostureDamage(postureDamage);
                 // Stop posture regeneration and start the cooldown
                 CanRegenPosture = false;
                 postureRegenCooldownTimer = PostureRegenCooldownDelay;
 
 
-                var postureLostPercentage = (Mathf.Min(postureDamage, previousPosture) / ActorData.maxPosture) * 100;
-                if (ActorData.currentPosture <= ActorData.maxPosture / 2)
+                var postureLostPercentage = (Mathf.Min(postureDamage, previousPosture) / Runtime.maxPosture) * 100;
+                if (Runtime.currentPosture <= Runtime.maxPosture / 2)
                 {
                     // Calculate stagger duration
                     float staggerDuration = StaticHelpers.LinearMap(Mathf.Min(postureLostPercentage), 0, 100, 1f, 2.5f);
@@ -242,9 +272,9 @@ namespace Assets.Scripts.Battle.Actor
             if (Physics.Raycast(ray, 0.02f))
             {
                 return true; // The object is grounded
-                //Debug.Log(ActorData.Name + " GROUNDED");
+                //Debug.Log(Runtime.Name + " GROUNDED");
             }
-            //Debug.Log(ActorData.Name + " NOT GROUNDED");
+            //Debug.Log(Runtime.Name + " NOT GROUNDED");
             return false; // The object is not grounded
         }
         public bool grounded { get { return IsGrounded(); } private set { } }
@@ -259,9 +289,9 @@ namespace Assets.Scripts.Battle.Actor
         {
             if (!state.IsStaggered() && CanRegenPosture)
             {
-                if (ActorData.currentPosture < ActorData.maxPosture)
+                if (Runtime.currentPosture < Runtime.maxPosture)
                 {
-                    ActorData.DealPostureDamage(-ActorData.postureRegenRate * Time.deltaTime);
+                    Runtime.DealPostureDamage(-Runtime.postureRegenRate * Time.deltaTime);
                 }
             }
             if (!CanRegenPosture && postureRegenCooldownTimer > 0)
@@ -278,19 +308,19 @@ namespace Assets.Scripts.Battle.Actor
             // Regen when in idle state
             if (state.IsIdle())
             {
-                ActorData.DealStaminaDamage(-ActorData.staminaRegenRate * 5 * StaminaRegenRate * Time.deltaTime);
+                Runtime.DealStaminaDamage(-Runtime.staminaRegenRate * 5 * StaminaRegenRate * Time.deltaTime);
                 return;
             }
 
             // Also regen when standing still during movement (joystick in deadzone)
             if (state.CurrentState is MoveState moveState)
             {
-                ActorData.DealStaminaDamage(-ActorData.staminaRegenRate * 5 * StaminaRegenRate * Time.deltaTime * (1 - moveState.action.Direction.magnitude));
+                Runtime.DealStaminaDamage(-Runtime.staminaRegenRate * 5 * StaminaRegenRate * Time.deltaTime * (1 - moveState.action.Direction.magnitude));
             }
         }
         private void UpdateActionCooldowns()
         {
-            foreach (var skill in ActorData.actions)
+            foreach (var skill in Runtime.actions)
             {
                 skill.UpdateCooldown();
             }

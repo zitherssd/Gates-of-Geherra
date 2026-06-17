@@ -113,7 +113,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
                         {
                             ApplyDamageEffects(_caster, hit, null);
                         }
-                        _caster.ActorData.ChangeBuildup(BuildupGainOnHit);
+                        _caster.Runtime.ChangeBuildup(BuildupGainOnHit);
                         // Slowdown handled by state-based system in IdleState
                     }
                 }

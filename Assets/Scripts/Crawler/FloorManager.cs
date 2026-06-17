@@ -61,7 +61,7 @@ namespace Assets.Scripts.Crawler
             });
         }
 
-        public List<ActorData> GetActorsForFloor()
+        public List<ActorDefinition> GetActorsForFloor()
         {
             // Find the floor in the list and return its enemies
             FloorEnemies floorData = floorEnemiesList.Find(f => f.floorNumber == currentFloor);
@@ -73,7 +73,7 @@ namespace Assets.Scripts.Crawler
             else
             {
                 // If the floor is not found, return an empty list or handle as needed
-                return new List<ActorData>();
+                return new List<ActorDefinition>();
             }
         }
 
@@ -121,6 +121,6 @@ namespace Assets.Scripts.Crawler
     public class FloorEnemies
     {
         public int floorNumber; // The floor number (e.g., 2 for second floor, etc.)
-        public List<ActorData> enemies; // List of enemies for this floor
+        public List<ActorDefinition> enemies; // List of enemies for this floor
     }
 }

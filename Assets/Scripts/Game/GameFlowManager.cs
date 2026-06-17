@@ -27,9 +27,8 @@ namespace Assets.Scripts.Game
         public void Start()
         {
             if (SaveManager.instance == null) {
-                ActorData template = Resources.Load<ActorData>("Actors/MC");
-                ActorData clone = Instantiate(template);
-                playerActor.ActorData = clone;
+                ActorDefinition template = Resources.Load<ActorDefinition>("Actors/MC");
+                playerActor.SetDefinition(template);
                 RollNewstats(playerActor);
                 playerActor.Spawn();
 
@@ -48,17 +47,16 @@ namespace Assets.Scripts.Game
             else
             {
                 isNewGame = true;
-                ActorData template = Resources.Load<ActorData>("Actors/MC");
-                ActorData clone = Instantiate(template);
-                playerActor.ActorData = clone;
-                playerActor.ActorData.Name = SaveManager.instance.newGamePlayerName;
+                ActorDefinition template = Resources.Load<ActorDefinition>("Actors/MC");
+                playerActor.SetDefinition(template);
                 RollNewstats(playerActor);
                 playerActor.Spawn();
+                playerActor.Runtime.Name = SaveManager.instance.newGamePlayerName;
             }
 
             //Now that player is loaded we go to rest
             SetMode(GameMode.RestArea);
-            UIManager.instance.InitializePlayerActionButtonPrefabs(playerActor.ActorData.actions, loadedLoadout);
+            UIManager.instance.InitializePlayerActionButtonPrefabs(playerActor.Runtime.actions, loadedLoadout);
             UIManager.instance.DisableBattleSkills();
 
             if (isNewGame)
@@ -126,10 +124,10 @@ namespace Assets.Scripts.Game
             var RandomMnd = UnityEngine.Random.Range(1, 7) + UnityEngine.Random.Range(1, 7) + UnityEngine.Random.Range(1, 7);
             var RandomSpi = UnityEngine.Random.Range(1, 7) + UnityEngine.Random.Range(1, 7) + UnityEngine.Random.Range(1, 7);
 
-            playerActor.ActorData.Strength = RandomStr;
-            playerActor.ActorData.Agility = RandomAgi;
-            playerActor.ActorData.Mind = RandomMnd;
-            playerActor.ActorData.Spirit = RandomSpi;
+            playerActor.Runtime.Strength = RandomStr;
+            playerActor.Runtime.Agility = RandomAgi;
+            playerActor.Runtime.Mind = RandomMnd;
+            playerActor.Runtime.Spirit = RandomSpi;
         }
     }
     public enum GameMode

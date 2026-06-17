@@ -125,12 +125,12 @@ namespace Assets.Scripts.Battle.Actor
 
         public void Start()
         {
-            statesText.text = actor.ActorData.Name;
+            statesText.text = actor.Runtime.Name;
             actor.state.StateChanged += OnStateChanged;
-            actor.ActorData.OnDeath += HideAllBars;
+            actor.Runtime.OnDeath += HideAllBars;
             BattleManager.instance.battleStateMachine.activeState.FinalHitDealth += HideAllBars;
             BattleManager.instance.battleStateMachine.startState.OnNewBattle += ShowAllBars;
-            lastStamina = actor.ActorData.currentStamina;
+            lastStamina = actor.Runtime.currentStamina;
             staminaBar.value = lastStamina;
             staminaBarEase.value = lastStamina;
             var staggerState = actor.state.GetState<StaggerState>();
@@ -142,7 +142,7 @@ namespace Assets.Scripts.Battle.Actor
                 Destroy(child.gameObject);
             }
 
-            foreach (var hpBar in actor.ActorData.hpBars)
+            foreach (var hpBar in actor.Runtime.hpBars)
             {
                 var bar = Instantiate(hpBarPrefab, hpBarsContainer);
                 bar.GetComponent<HpBarHandler>().bar = hpBar;
@@ -163,7 +163,7 @@ namespace Assets.Scripts.Battle.Actor
         {
             if (statesText != null)
             {
-                var name = actor.ActorData.Name.Replace("(Clone)", "").Trim();
+                var name = actor.Runtime.Name.Replace("(Clone)", "").Trim();
                 statesText.text = name;
             }
         }
@@ -184,7 +184,7 @@ namespace Assets.Scripts.Battle.Actor
             LeanTween.alpha(staminaBarEase.fillRect, 1f, 0.1f).setEaseOutCubic().setIgnoreTimeScale(true);
             LeanTween.alpha(staminaBar.fillRect, 1f, 0.1f).setEaseOutCubic().setIgnoreTimeScale(true);
 
-            staminaBar.value = actor.ActorData.currentStamina / actor.ActorData.maxStamina;
+            staminaBar.value = actor.Runtime.currentStamina / actor.Runtime.maxStamina;
 
             LeanTween.value(staminaBarEase.value, staminaBar.value, 2f)
                 .setEaseOutCubic()
@@ -197,30 +197,30 @@ namespace Assets.Scripts.Battle.Actor
 
         void HealStamina()  
         {
-            float newvalue = actor.ActorData.currentStamina / actor.ActorData.maxStamina;
+            float newvalue = actor.Runtime.currentStamina / actor.Runtime.maxStamina;
             staminaBar.value = newvalue;
             staminaBarEase.value = newvalue;
         }
 
         void Update()
         {
-            if (lastStamina < actor.ActorData.currentStamina)
+            if (lastStamina < actor.Runtime.currentStamina)
             {
                 HealStamina();
             }
-            else if (lastStamina > actor.ActorData.currentStamina)
+            else if (lastStamina > actor.Runtime.currentStamina)
             {
                 DamageStamina();
             }
-            lastStamina = actor.ActorData.currentStamina;
+            lastStamina = actor.Runtime.currentStamina;
 
-            //hpBar.value = actor.ActorData.GetCurrentHP() / actor.ActorData.maxHp;
+            //hpBar.value = actor.Runtime.GetCurrentHP() / actor.Runtime.maxHp;
             //hpBarEase.value = Mathf.Lerp(hpBarEase.value, hpBar.value, 0.01f);
 
-            postureBar.value = actor.ActorData.currentPosture / actor.ActorData.maxPosture;
+            postureBar.value = actor.Runtime.currentPosture / actor.Runtime.maxPosture;
             postureBarEase.value = Mathf.Lerp(postureBarEase.value, postureBar.value, 0.01f);
 
-            buildupBar.value = actor.ActorData.currentBuildup / actor.ActorData.maxBuildup;
+            buildupBar.value = actor.Runtime.currentBuildup / actor.Runtime.maxBuildup;
             buildupBarEase.value = Mathf.Lerp(buildupBarEase.value, buildupBar.value, 0.01f);
             HandleCCBar();
         }

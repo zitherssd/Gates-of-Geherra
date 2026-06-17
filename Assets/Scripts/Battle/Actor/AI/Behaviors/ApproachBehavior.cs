@@ -39,7 +39,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
             else
             {
                 // We are not moving, so start moving.
-                var moveSkill = actor.ActorData.actions.OfType<MoveAction>().FirstOrDefault();
+                var moveSkill = actor.Runtime.actions.OfType<MoveAction>().FirstOrDefault();
                 if (moveSkill == null) return NodeState.Failure;
 
                 moveSkill.Direction = actor.target.DirectionToClosestEnemy;

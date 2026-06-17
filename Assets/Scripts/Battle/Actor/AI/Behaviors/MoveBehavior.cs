@@ -21,7 +21,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
                 action.Direction = direction;
             }
 
-            var moveSkill = actor.ActorData.actions.OfType<MoveAction>().FirstOrDefault();
+            var moveSkill = actor.Runtime.actions.OfType<MoveAction>().FirstOrDefault();
             if (moveSkill == null) return NodeState.Failure;
 
             moveSkill.Direction = direction;
@@ -57,7 +57,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
             else
                 timer = 0f;
 
-            var moveSkill = actor.ActorData.actions.OfType<MoveAction>().FirstOrDefault();
+            var moveSkill = actor.Runtime.actions.OfType<MoveAction>().FirstOrDefault();
             if (moveSkill == null) return NodeState.Failure;
 
             moveSkill.Direction = actor.movement.agent.desiredVelocity.normalized;
@@ -117,7 +117,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
             }
 
             // start moving away
-            var moveSkill = actor.ActorData.actions.OfType<MoveAction>().FirstOrDefault();
+            var moveSkill = actor.Runtime.actions.OfType<MoveAction>().FirstOrDefault();
             if (moveSkill == null) return NodeState.Failure;
 
             moveSkill.Direction = actor.target.DirectionToClosestEnemy * -1f;
@@ -218,7 +218,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
             // Move away from the nearest detected obstacle
             if (bestDir != Vector3.zero)
             {
-                var moveSkill = actor.ActorData.actions.OfType<MoveAction>().FirstOrDefault();
+                var moveSkill = actor.Runtime.actions.OfType<MoveAction>().FirstOrDefault();
                 if (moveSkill == null) return NodeState.Failure;
 
                 moveSkill.Direction = -bestDir;
@@ -239,7 +239,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
         public override NodeState Execute(AIBT ai, Actor actor)
         {
             var agent = actor.GetComponent<NavMeshAgent>();
-            var moveAction = actor.ActorData.actions.OfType<MoveAction>().First();
+            var moveAction = actor.Runtime.actions.OfType<MoveAction>().First();
 
             Vector3 targetPos = actor.target.ClosestEnemy.transform.position;
             float dist = Vector3.Distance(actor.transform.position, targetPos);

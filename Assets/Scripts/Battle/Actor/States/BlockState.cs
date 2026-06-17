@@ -80,7 +80,7 @@ namespace Assets.Scripts.Battle.Actor.States
             damageInstance.KnockbackForce *= KnockbackModifier;
 
             // Consume stamina
-            owner.ActorData.DealStaminaDamage(originalDamage * skill.StaminaCostMult);
+            owner.Runtime.DealStaminaDamage(originalDamage * skill.StaminaCostMult);
 
             // Handle block-type specific logic
             if (skill.blockType == Block.BlockType.Parry)
@@ -89,7 +89,7 @@ namespace Assets.Scripts.Battle.Actor.States
                 {
                     // Slowdown handled by state-based system in IdleState
                 }
-                owner.ActorData.ChangeBuildup(skill.BuildupGainOnBlock);
+                owner.Runtime.ChangeBuildup(skill.BuildupGainOnBlock);
                 skill.EndAction(ActionEndReason.Completed); // Parry ends the block immediately with success.
             }
             else if (skill.blockType == Block.BlockType.Block)
@@ -108,7 +108,7 @@ namespace Assets.Scripts.Battle.Actor.States
                         break;
                 }
                 owner.GetComponentInChildren<ActorUIController>().SetCC(duration, "Block");
-                owner.ActorData.ChangeBuildup(skill.BuildupGainOnBlock);
+                owner.Runtime.ChangeBuildup(skill.BuildupGainOnBlock);
                 numberOfHits++;
             }
             else if (skill.blockType == Block.BlockType.Guard)

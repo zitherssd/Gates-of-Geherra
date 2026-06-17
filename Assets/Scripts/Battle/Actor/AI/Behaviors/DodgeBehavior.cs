@@ -41,7 +41,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
 
         private BaseAction ChooseDodge(Actor actor, BaseAction incomingAction)
         {
-            var randomDodge = actor.ActorData.actions.OfType<Dodge>().Where(action => action.IsValid(actor, out _)).OrderBy(x => UnityEngine.Random.value).FirstOrDefault();
+            var randomDodge = actor.Runtime.actions.OfType<Dodge>().Where(action => action.IsValid(actor, out _)).OrderBy(x => UnityEngine.Random.value).FirstOrDefault();
 
             if (randomDodge != null)
             {

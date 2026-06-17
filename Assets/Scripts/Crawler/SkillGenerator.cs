@@ -71,8 +71,8 @@ namespace Assets.Scripts.Crawler
                 // Assign button click event
                 UICard.GetComponent<Button>().onClick.AddListener(() =>
                 {
-                    BattleManager.instance.PlayerActors[0].ActorData.actions.Add(handler.ReferencedAction);
-                    UIManager.instance.InitializePlayerActionButtonPrefabs(GameFlowManager.instance.playerActor.ActorData.actions);
+                    BattleManager.instance.PlayerActors[0].Runtime.actions.Add(handler.ReferencedAction);
+                    UIManager.instance.InitializePlayerActionButtonPrefabs(GameFlowManager.instance.playerActor.Runtime.actions);
 
                     // Destroy all skill cards after selection
                     foreach (Transform child in parent)
@@ -88,7 +88,7 @@ namespace Assets.Scripts.Crawler
 
         void onClickCardHandler(BaseAction action)
         {
-            BattleManager.instance.PlayerActors[0].ActorData.actions.Add(action);
+            BattleManager.instance.PlayerActors[0].Runtime.actions.Add(action);
         }
 
         void ModifyFloats(ref float field1, ref float field2, ref float field3)

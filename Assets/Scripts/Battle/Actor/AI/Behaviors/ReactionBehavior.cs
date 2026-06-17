@@ -72,7 +72,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
 
         private BaseAction ChooseReaction(Actor actor, BaseAction incomingAction)
         {
-            var allBlocksAndDodges = actor.ActorData.actions.Where(action => action is Block || action is Dodge);
+            var allBlocksAndDodges = actor.Runtime.actions.Where(action => action is Block || action is Dodge);
 
             var validReactions = allBlocksAndDodges.Where(item => item.IsValid(actor, out _));
             var randomReaction = validReactions.OrderBy(x => Random.value).FirstOrDefault();

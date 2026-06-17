@@ -102,7 +102,7 @@ namespace Assets.Scripts.Game
 
         private void AwardRandomStat()
         {
-            var ad = GameFlowManager.instance.playerActor.ActorData;
+            var ad = GameFlowManager.instance.playerActor.Runtime;
 
             // Pick a random stat index
             int roll = UnityEngine.Random.Range(0, 3);

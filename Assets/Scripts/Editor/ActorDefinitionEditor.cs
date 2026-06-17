@@ -5,13 +5,13 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(ActorData), true)]
-public class ActorDataEditor : Editor
+[CustomEditor(typeof(ActorDefinition), true)]
+public class ActorDefinitionEditor : Editor
 {
     // Start is called before the first frame update
     private void OnEnable()
     {
-        ActorData action = target as ActorData;
+        ActorDefinition action = target as ActorDefinition;
 
         if (string.IsNullOrEmpty(action.guid))
         {

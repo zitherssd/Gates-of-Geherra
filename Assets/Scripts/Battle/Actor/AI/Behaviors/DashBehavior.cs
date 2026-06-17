@@ -7,7 +7,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
     {
         public override NodeState Execute(AIBT ai, Actor actor)
         {
-            var chargeSkill = actor.ActorData.actions.OfType<Charge>()
+            var chargeSkill = actor.Runtime.actions.OfType<Charge>()
                 .FirstOrDefault(action => action.IsValid(actor, out _));
 
 

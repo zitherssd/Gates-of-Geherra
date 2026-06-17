@@ -30,7 +30,7 @@ namespace Assets.Scripts.Battle.Actions
 
         public DamageInstanceResult Calculate(Actor.Actor casterActor, Actor.Actor targetActor, BaseAction action)
         {
-            var damage = Damage + casterActor.ActorData.Strength * StrengthScaling - targetActor.ActorData.Strength * StrengthScaling / 2 + casterActor.ActorData.Agility * AgilityScaling - targetActor.ActorData.Agility * AgilityScaling / 2 + casterActor.ActorData.Mind * MindScaling;
+            var damage = Damage + casterActor.Runtime.Strength * StrengthScaling - targetActor.Runtime.Strength * StrengthScaling / 2 + casterActor.Runtime.Agility * AgilityScaling - targetActor.Runtime.Agility * AgilityScaling / 2 + casterActor.Runtime.Mind * MindScaling;
 
             Vector3 direction;
             switch (KnockbackType)

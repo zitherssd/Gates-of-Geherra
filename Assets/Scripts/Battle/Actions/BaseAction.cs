@@ -40,9 +40,9 @@ namespace Assets.Scripts.Battle.Actions
             if (Tags.Contains(TAG.KILLMOMENTUM)) casterActor.movement.ResetMomentum(); //implement as effect
 
             //costs
-            casterActor.ActorData.DealStaminaDamage(StaminaCost);
-            casterActor.ActorData.ChangeBuildup(BuildupGain);
-            casterActor.ActorData.ChangeBuildup(-BuildupCost);
+            casterActor.Runtime.DealStaminaDamage(StaminaCost);
+            casterActor.Runtime.ChangeBuildup(BuildupGain);
+            casterActor.Runtime.ChangeBuildup(-BuildupCost);
 
             PerformSpecific(casterActor, () =>
             {
@@ -143,12 +143,12 @@ namespace Assets.Scripts.Battle.Actions
                 InvalidReason = $"usable in {currentCooldownTimer}";
                 return false;
             }
-            if (caster.ActorData.currentBuildup < BuildupCost)
+            if (caster.Runtime.currentBuildup < BuildupCost)
             {
                 InvalidReason = "Not enough Buildup!";
                 return false;
             }
-            if (caster.ActorData.currentStamina < StaminaCost)
+            if (caster.Runtime.currentStamina < StaminaCost)
             {
                 InvalidReason = "Not enough Stamina!";
                 return false;

@@ -17,7 +17,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
 
         public override NodeState Execute(AIBT ai, Actor actor)
         {
-            var moveSkill = actor.ActorData.actions.OfType<MoveAction>().FirstOrDefault();
+            var moveSkill = actor.Runtime.actions.OfType<MoveAction>().FirstOrDefault();
             if (moveSkill == null) return NodeState.Failure;
             var player = actor.target.ClosestEnemy;
             angle += angularSpeed * Time.deltaTime;

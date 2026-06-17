@@ -52,14 +52,14 @@ namespace Assets.Scripts.Battle.Components.Effects
         public void SetColors()
         {
             var cc = owner.GetComponentInChildren<ColorController>();
-            cc.SetColors(owner.ActorData.mainColor, owner.ActorData.secondaryColor);
+            cc.SetColors(owner.Definition.mainColor, owner.Definition.secondaryColor);
         }
 
         public void FlashWhite(float damageAmount)
         {
             var cc = owner.GetComponentInChildren<ColorController>();
 
-            var intensity = (damageAmount / owner.ActorData.maxPosture);
+            var intensity = (damageAmount / owner.Runtime.maxPosture);
             cc.StartCoroutine(cc.FlashWhite(0.3f, Mathf.Clamp(intensity,0,1.2f)));
         }
 

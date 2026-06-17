@@ -76,7 +76,7 @@ Editor/          - Custom editor tools and inspectors
 ### 1. **Game Initialization**
 - Scene loads with **GameFlowManager** singleton
 - If save exists: Load player data from **SaveManager**
-- If new game: Create player from template **ActorData**
+- If new game: Assign shared template **ActorDefinition** via `Actor.SetDefinition()`, which builds the live **ActorRuntime**
 - Initialize **UIManager** with player actions
 - Transition to **Rest Area** mode
 
@@ -189,28 +189,47 @@ Represents any in-game combatant (player or enemy).
   - **EffectManager** - Visual effects, damage popups, hit visualization
   - **AudioManager** - Sound effects
 - **Key Data**:
-  - `ActorData` - ScriptableObject with stats, abilities, configuration
+  - `Definition` - `ActorDefinition` ScriptableObject: authored, shared, read-only template (serialized field; remapped from legacy `ActorData` via `[FormerlySerializedAs]`)
+  - `Runtime` - `ActorRuntime`: live per-instance state + behavior, built at spawn
 - **Key Events**:
   - `OnBeforeTakeDamage`, `OnAfterTakeDamage`
   - `OnBeforeDealDamage`, `OnAfterDealDamage`
   - `OnActionUsed`
 - **Key Methods**:
-  - `Spawn()` - Initialize actor in battle
+  - `SetDefinition(ActorDefinition)` - Assign the shared template and (re)build the `Runtime`
+  - `Spawn()` - Initialize actor in battle (resets `Runtime` to its `Definition`)
   - `ApplyDamageInstance(DamageInstance, caster, action)` - Receive damage; triggers temporary slowdown (0.4s)
   - `ExecuteAction(BaseAction)` - Perform action
   - `UseAction(BaseAction)` - Execute action with slowdown reset via `SlowdownManager.ResetStateSlowdown()`
   - `StaminaRegen()` - Regenerate stamina when fully idle OR standing still during movement (checks both `IsIdle()` and `MoveState.IsCurrentlyIdle`)
   - `Update()` - Every frame: stamina regen, status ticking, AI updates
 
-#### **ActorData** (`Battle/Actor/ActorData.cs`) - Configuration
-- **Responsibility**: Serializable stats and ability configuration
+> **Actor Data Model** — The legacy dual-purpose `ActorData` ScriptableObject (which mixed an authored template with live runtime state) was split into three types: **`ActorDefinition`** (authored template), **`ActorRuntime`** (live state + behavior), and **`ActorSaveData`** (flat persistence DTO, see Save/Load System).
+
+#### **ActorDefinition** (`Battle/Actor/ActorDefinition.cs`) - Authored Template
+- **Responsibility**: Read-only, shared ScriptableObject template holding authored baseline data only (no runtime state, no methods)
 - **Key Data**:
-  - Base stats: HP bars, Stamina, Posture, Buildup
-  - Attribute multipliers: Strength, Agility, Mind, Spirit
-  - Available actions/skills
-  - AI ruleset (behavior configuration)
-- **Used by**: Actor initialization, UI stat display, damage calculations
-- **Note**: Created as ScriptableObjects in Resources folder
+  - Base stats: `hpBars`, `baseMaxStamina`, `baseMaxPosture`, `baseMaxBuildup`
+  - Attributes: Strength, Agility, Mind, Spirit
+  - Regen rates: `postureRegenRate`, `staminaRegenRate`
+  - `Controllable` flag, `AIRuleset` (behavior configuration)
+  - `mainColor`, `secondaryColor` (visual identity)
+  - `baseActions`, `startingItems` (cloned/shared into the runtime at spawn)
+- **Used by**: `ActorRuntime` construction, enemy spawning (shared, **not** cloned), color setup, AI ruleset selection
+- **Note**: Created as ScriptableObjects in Resources folder. Field names are preserved from the legacy `ActorData` so authored `.asset` values survive the rename; the `.cs.meta` GUID is preserved so `.asset` `m_Script` references stay intact. Custom inspector: `ActorDefinitionEditor`.
+
+#### **ActorRuntime** (`Battle/Actor/ActorRuntime.cs`) - Live Instance State
+- **Responsibility**: Plain `[Serializable]` class (NOT a ScriptableObject) holding per-instance live state + combat behavior
+- **Key Data**:
+  - Back-reference to `Definition`
+  - Live vitals: `currentStamina`, `currentPosture`, `currentBuildup`, live `hpBars`
+  - Live attributes copied from the definition (mutable, e.g. for training stat gains)
+  - Cloned `actions` (per-instance `Instantiate` copies) and shared `items`
+  - Derived getters: `maxBuildup` (base + Mind), `maxPosture` (base + Strength), `maxStamina` (base + Agility×2)
+  - `OnDeath` event
+- **Key Methods**: `ResetToDefinition()` (mutates in place to preserve event subscriptions), `Refresh()`, `DealDamage()`, `DealPostureDamage()`, `DealStaminaDamage()`, `ChangeBuildup()`, `isDead()`, `GetCurrentHP()`, `HealAllBars()`, `HealAllAliveBars()`
+- **Built by**: `Actor` at spawn (via `SetDefinition()` / `Init()` / `Spawn()`); never replaced after creation so `OnDeath` listeners persist
+- **Used by**: Actor combat logic, UI stat display (`StatPanelUI`), damage calculations, AI conditions
 
 #### **ActorStateMachine** (`Battle/Actor/ActorStateMachine.cs`)
 - **Responsibility**: Actor animation/action state management
@@ -490,10 +509,11 @@ Game progress persistence.
 #### **SaveData** (`Save/SaveData.cs`)
 - **Responsibility**: Serializable save state structure
 - **Members**:
-  - `player` - ActorSave (player data snapshot)
+  - `player` - `ActorSaveData` (flat player data snapshot; was `ActorSave`)
   - `currentFloor` - Progression tracking
   - `timelocks` - Time-locked actions state
   - `trainingsDone`, `trainingsDoneThisFloor` - Progression counters
+- **Conversion**: `ActorSaveData.FromActor(Actor)` builds the snapshot from the actor's `Runtime`; `ActorSaveData.LoadInto(ActorSaveData, Actor)` restores it (ensuring `Actor.Runtime` exists first). `JsonUtility` keys on field names, so the type rename preserves existing saves as long as field names are unchanged.
 
 ---
 
@@ -692,9 +712,9 @@ Some critical connections require direct references:
 ### 4. **ScriptableObject-Driven Data**
 
 - **BaseAction** - Created as ScriptableObject in Resources
-- **ActorData** - ScriptableObject defines actor baseline
+- **ActorDefinition** - ScriptableObject defines the authored actor baseline (live per-instance state lives in the plain `ActorRuntime` class, not the SO)
 - **AiRuleset** - Configuration driving AIBT behavior
-- **BattleDefinition** - BattleDefinition object defines enemy rosters
+- **BattleDefinition** - BattleDefinition object defines enemy rosters (`List<ActorDefinition>`)
 
 ---
 
@@ -792,7 +812,8 @@ GameFlowManager
       └─ StoryBattles (BattleDefinition list)
 
 Actor
-  ├─ ActorData (ScriptableObject)
+  ├─ Definition (ActorDefinition - shared, read-only SO template)
+  ├─ Runtime (ActorRuntime - live per-instance state, built at spawn)
   ├─ ActorStateMachine
   ├─ StatusManager
   ├─ EffectManager
@@ -972,7 +993,7 @@ public class YourBehavior : BTNode
 |----------|--------|
 | Adding new action type | Extend `BaseSkill` in new file |
 | Changing action execution | Modify `Actor.ExecuteAction()` or create executor service |
-| Adding actor stat | Extend `ActorData`, update `Actor.Update()` |
+| Adding actor stat | Add the authored field to `ActorDefinition`, mirror it on `ActorRuntime` (with `ResetToDefinition()` copy), update `Actor.Update()` |
 | Changing damage calculation | Extend `DamageInstance` or modify `Actor.ApplyDamageInstance()` |
 | Adding UI element | Create new handler, subscribe to events |
 | Changing battle flow | Modify `BattleStateMachine` or `BattleManager.Enter()` |
@@ -1004,7 +1025,7 @@ public class YourBehavior : BTNode
 
 1. **Keep managers focused** - One manager, one concern
 2. **Use events for notifications** - Avoid bidirectional dependencies
-3. **ScriptableObject for config** - ActorData, BattleDefinition model
+3. **ScriptableObject for config** - `ActorDefinition`, `BattleDefinition` model authored data; live state lives in plain classes (`ActorRuntime`)
 4. **Separate data from logic** - DamageInstance vs. damage application
 5. **Methods should fit screen** - Refactor if >50 lines
 6. **States should fit screen** - Consider refactoring ActorStateMachine states

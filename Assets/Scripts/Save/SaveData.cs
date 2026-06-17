@@ -18,12 +18,12 @@ namespace Assets.Scripts.Save
         public int currentFloor;
         public int trainingsDone;
         public int trainingsDoneThisFloor;
-        public ActorSave player;
+        public ActorSaveData player;
         public List<TimeLock> timelocks = new List<TimeLock>();
 
         public void LoadActor(Actor actorToOverwrite)
         {
-            ActorSave.LoadActorFromSave(player, actorToOverwrite);
+            ActorSaveData.LoadInto(player, actorToOverwrite);
         }
     }
 
@@ -36,7 +36,7 @@ namespace Assets.Scripts.Save
     }
 
     [System.Serializable]
-    public class ActorSave
+    public class ActorSaveData
     {
         public string actorId;
         public string Name;
@@ -58,18 +58,17 @@ namespace Assets.Scripts.Save
         public int AGI;
         public int Spirit;
 
-        public static ActorSave CreateSaveFromActor(Actor actor)
+        public static ActorSaveData FromActor(Actor actor)
         {
-            var save = new ActorSave
+            var save = new ActorSaveData
             {
                 actions = new List<ActionSlotSaveData>(),
                 hpBars = new List<HpBar>()
             };
 
+            ActorRuntime ad = actor.Runtime;
 
-            ActorData ad = actor.ActorData;
-
-            save.actorId = ad.guid;
+            save.actorId = actor.Definition.guid;
             save.Name = ad.Name;
             save.items = actor.inventory.Items;
 
@@ -107,13 +106,17 @@ namespace Assets.Scripts.Save
 
             return save;
         }
-        public static void LoadActorFromSave(ActorSave save, Actor actorToOverwrite)
+        public static void LoadInto(ActorSaveData save, Actor actorToOverwrite)
         {
             var actionDb = SaveManager.instance.actionDatabase;
             // You can rewrite this to your own spawning system
             Actor actor = actorToOverwrite;
 
-            ActorData ad = actor.ActorData;
+            if (actor.Runtime == null)
+            {
+                actor.Runtime = new ActorRuntime(actor.Definition);
+            }
+            ActorRuntime ad = actor.Runtime;
 
             ad.Name = save.Name;
 

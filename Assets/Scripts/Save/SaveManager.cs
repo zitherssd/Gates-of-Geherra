@@ -35,7 +35,7 @@ namespace Assets.Scripts.Save
             {
                 currentFloor = FloorManager.instance.currentFloor,
                 timelocks = GameFlowManager.instance.timelocks ?? new List<TimeLock>(),
-                player = ActorSave.CreateSaveFromActor(actor),
+                player = ActorSaveData.FromActor(actor),
                 trainingsDone = GameFlowManager.instance.trainingsDone,
                 trainingsDoneThisFloor = GameFlowManager.instance.trainingsDoneThisFloor
 

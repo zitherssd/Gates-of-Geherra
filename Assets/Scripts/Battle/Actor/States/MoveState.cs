@@ -52,7 +52,7 @@ namespace Assets.Scripts.Battle.Actor.States
 
             //if (!continousAction)
             //{
-            //    actor.movement.AddForce((destination - actor.transform.position).normalized * (1 + actor.ActorData.Agi / 10));
+            //    actor.movement.AddForce((destination - actor.transform.position).normalized * (1 + actor.Runtime.Agi / 10));
             //    actor.movement.FaceDirection(destination - actor.transform.position);
             //}
         }
@@ -97,10 +97,10 @@ namespace Assets.Scripts.Battle.Actor.States
 
                 if (timer < 1f)
                 {
-                    if (!isInDeadzone) actor.movement.MoveInDirection(action.Direction, 2f * timer, 1 + (float)actor.ActorData.Agility / 20);
+                    if (!isInDeadzone) actor.movement.MoveInDirection(action.Direction, 2f * timer, 1 + (float)actor.Runtime.Agility / 20);
                 }
                 else
-                    if (!isInDeadzone) actor.movement.MoveInDirection(action.Direction, 2f, 1 + (float)actor.ActorData.Agility / 20);
+                    if (!isInDeadzone) actor.movement.MoveInDirection(action.Direction, 2f, 1 + (float)actor.Runtime.Agility / 20);
 
 
                 if (timer >= duration)

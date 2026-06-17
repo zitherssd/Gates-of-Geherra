@@ -47,7 +47,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
 
         private Block GetBlock(Actor actor, BaseAction incomingAction)
         {
-            var randomBlock = actor.ActorData.actions.OfType<Block>().Where(action => action.IsValid(actor, out _)).OrderBy(x => UnityEngine.Random.value).FirstOrDefault();
+            var randomBlock = actor.Runtime.actions.OfType<Block>().Where(action => action.IsValid(actor, out _)).OrderBy(x => UnityEngine.Random.value).FirstOrDefault();
 
             if (randomBlock != null)
             {

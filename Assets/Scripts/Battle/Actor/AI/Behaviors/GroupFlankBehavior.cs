@@ -38,7 +38,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
             }
 
             // Start moving if not already moving
-            moveAction = actor.ActorData.actions.OfType<MoveAction>().FirstOrDefault();
+            moveAction = actor.Runtime.actions.OfType<MoveAction>().FirstOrDefault();
             if (moveAction == null) return NodeState.Failure;
             moveAction.Direction = approachDirection;
             actor.UseAction(moveAction);

@@ -10,7 +10,7 @@ namespace Assets.Scripts.Battle.Status
 
         public override void OnTick(Actor.Actor target)
         {
-            target.ActorData.DealDamage(Damage);
+            target.Runtime.DealDamage(Damage);
         }
     }
 }

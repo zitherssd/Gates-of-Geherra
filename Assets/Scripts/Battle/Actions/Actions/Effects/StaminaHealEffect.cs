@@ -9,7 +9,7 @@ namespace Assets.Scripts.Battle.Actions.Actions.Effects
 
         public void Eval(Actor.Actor actor, BaseAction t)
         {
-            actor.ActorData.DealStaminaDamage(-HealAmount);
+            actor.Runtime.DealStaminaDamage(-HealAmount);
         }
     }
 

@@ -9,7 +9,7 @@ namespace Assets.Scripts.Battle.Actions.Actions.Effects
 
         public void Eval(Actor.Actor actor, BaseAction t)
         {
-            actor.ActorData.ChangeBuildup(BuildupAmount);
+            actor.Runtime.ChangeBuildup(BuildupAmount);
         }
     }
 

@@ -25,9 +25,9 @@ namespace Assets.Scripts.Battle.Actor.AI
 
         public void Reset()
         {
-            if (actor.ActorData)
+            if (actor.Definition != null)
             {
-                switch (actor.ActorData.AIRuleset)
+                switch (actor.Definition.AIRuleset)
                 {
                     case AiRuleset.DEFAULT:
                         behaviors = SandboxGuy;
@@ -160,7 +160,7 @@ namespace Assets.Scripts.Battle.Actor.AI
         public void Update()
         {
             if (actor.isControllable) return;
-            if (actor.ActorData.isDead() || actor.state.IsStaggered()) return;
+            if (actor.Runtime.isDead() || actor.state.IsStaggered()) return;
             //aiTickTimer -= Time.deltaTime;
             //if (aiTickTimer > 0) return;
             //aiTickTimer = aiTickCooldown;
