@@ -9,20 +9,26 @@ using UnityEngine.Rendering;
 public class CameraOcclusionManager : MonoBehaviour
 {
     [Header("Detection")]
-    [Tooltip("Radius of the sphere cast from the camera toward each actor. Bigger = wider 'view tube'.")]
-    public float sphereRadius = 1f;
-
     [Tooltip("Only objects on these layers can occlude. Set this to your 'Ditherable' layer.")]
-    public LayerMask occlusionLayers = ~0;
+    public LayerMask occlusionLayers = 7;
 
-    [Tooltip("Vertical offset added to each actor's position so we aim at the body, not the feet.")]
-    public float actorAimHeight = 0.5f;
+    [Tooltip("Half-width of an actor's silhouette in world units. Sample rays spread this far left/right.")]
+    public float actorRadius = 1.2f;
+
+    [Tooltip("Total height of an actor's silhouette in world units. Sample rays spread across this height.")]
+    public float actorHeight = 2f;
+
+    [Tooltip("Vertical centre of the actor's silhouette, measured up from its transform position.")]
+    public float actorAimHeight = 1f;
+
+    [Tooltip("Sample rays per axis across the silhouette (N x N grid). Higher = smoother coverage, more raycasts.")]
+    [Range(1, 9)] public int samplesPerAxis = 3;
 
     [Header("Fade")]
     [Tooltip("How fast opacity eases toward its target. Higher = snappier.")]
     public float fadeSpeed = 8f;
 
-    [Tooltip("Opacity used when an object sits dead-centre on the line of sight (0 = fully see-through).")]
+    [Tooltip("Opacity used when an object fully hides an actor (0 = fully see-through).")]
     [Range(0f, 1f)] public float minOpacity = 0.1f;
 
     [Tooltip("Float shader property that drives the dither / transparency.")]
@@ -41,8 +47,10 @@ public class CameraOcclusionManager : MonoBehaviour
     private readonly Dictionary<Renderer, float> currentOpacity = new Dictionary<Renderer, float>();
     // Lowest opacity requested for each renderer this frame (1 = fully opaque).
     private readonly Dictionary<Renderer, float> targetOpacity = new Dictionary<Renderer, float>();
-    // Reused buffer so the sphere casts don't allocate garbage every frame.
+    // Reused buffer so the sample raycasts don't allocate garbage every frame.
     private readonly RaycastHit[] hitBuffer = new RaycastHit[32];
+    // Per-actor tally of how many sample rays each blocker intercepts.
+    private readonly Dictionary<Renderer, int> blockCounts = new Dictionary<Renderer, int>();
     // Scratch list so we can iterate while removing finished entries.
     private readonly List<Renderer> trackedScratch = new List<Renderer>();
     // Materials we've already validated, so the property warning fires once each.
@@ -65,6 +73,11 @@ public class CameraOcclusionManager : MonoBehaviour
         // Guard against the mask deserialising to "Nothing" (which would occlude nothing).
         if (occlusionLayers.value == 0)
             occlusionLayers = ~0;
+
+        // Guard against newly-added fields zero-filling on an existing component.
+        if (samplesPerAxis < 1) samplesPerAxis = 3;
+        if (actorRadius <= 0f) actorRadius = 0.5f;
+        if (actorHeight <= 0f) actorHeight = 2f;
     }
 
     void Update()
@@ -77,66 +90,85 @@ public class CameraOcclusionManager : MonoBehaviour
         ApplyFade();
     }
 
-    // Sphere-casts from the camera to every actor and records, per blocker,
-    // how strongly it should fade based on how centred it is on the line of sight.
+    // For every actor, fires a grid of sample rays across its silhouette and
+    // records, per blocker, the fraction of those rays it intercepts. That
+    // fraction is "how much of the actor this object hides" => how much it fades.
     private void AccumulateOcclusion()
     {
         Vector3 origin = cam.transform.position;
+        int samples = Mathf.Max(1, samplesPerAxis);
+        int totalSamples = samples * samples;
 
         foreach (var actor in battleManager.PlayerActors.Concat(battleManager.EnemyActors))
         {
             if (actor == null)
                 continue;
 
-            Vector3 dir = actor.transform.position + Vector3.up * actorAimHeight - origin;
-            float distance = dir.magnitude;
-            if (distance < Mathf.Epsilon)
+            Vector3 centre = actor.transform.position + Vector3.up * actorAimHeight;
+            Vector3 toCentre = centre - origin;
+            float centreDist = toCentre.magnitude;
+            if (centreDist < Mathf.Epsilon)
                 continue;
-            dir /= distance; // normalise
+            Vector3 viewDir = toCentre / centreDist;
 
-            int count = Physics.SphereCastNonAlloc(
-                origin, sphereRadius, dir, hitBuffer, distance,
-                occlusionLayers, QueryTriggerInteraction.Ignore);
+            // Build a basis in the plane facing the camera so samples spread across
+            // the actor's width and height, not along the view direction.
+            Vector3 right = Vector3.Cross(Vector3.up, viewDir);
+            if (right.sqrMagnitude < 1e-4f)
+                right = Vector3.right; // looking straight up or down
+            right.Normalize();
+            Vector3 up = Vector3.Cross(viewDir, right);
 
-            if (debug)
-                Debug.DrawLine(origin, origin + dir * distance, count > 0 ? Color.yellow : Color.green);
+            blockCounts.Clear();
 
-            for (int i = 0; i < count; i++)
+            for (int xi = 0; xi < samples; xi++)
             {
-                RaycastHit hit = hitBuffer[i];
+                float ox = samples == 1 ? 0f : Mathf.Lerp(-1f, 1f, xi / (float)(samples - 1));
+                for (int yi = 0; yi < samples; yi++)
+                {
+                    float oy = samples == 1 ? 0f : Mathf.Lerp(-1f, 1f, yi / (float)(samples - 1));
 
-                Renderer rend = hit.transform.GetComponent<Renderer>();
-                if (rend == null)
-                    continue;
+                    Vector3 samplePoint = centre
+                        + right * (ox * actorRadius)
+                        + up * (oy * actorHeight * 0.5f);
 
-                if (debug)
-                    Debug.DrawLine(origin, hit.point, Color.red);
+                    Vector3 sdir = samplePoint - origin;
+                    float sdist = sdir.magnitude;
+                    if (sdist < Mathf.Epsilon)
+                        continue;
+                    sdir /= sdist;
 
-                float desired = OpacityForHit(origin, dir, hit);
+                    int count = Physics.RaycastNonAlloc(
+                        origin, sdir, hitBuffer, sdist,
+                        occlusionLayers, QueryTriggerInteraction.Ignore);
 
-                // When one object blocks several actors, keep the strongest fade.
-                if (targetOpacity.TryGetValue(rend, out float existing))
+                    if (debug)
+                        Debug.DrawLine(origin, samplePoint, count > 0 ? Color.red : Color.green);
+
+                    for (int i = 0; i < count; i++)
+                    {
+                        Renderer rend = hitBuffer[i].transform.GetComponent<Renderer>();
+                        if (rend == null)
+                            continue;
+
+                        blockCounts.TryGetValue(rend, out int c);
+                        blockCounts[rend] = c + 1;
+                    }
+                }
+            }
+
+            // Convert this actor's coverage into target opacities, keeping the
+            // strongest fade when an object blocks more than one actor.
+            foreach (var kvp in blockCounts)
+            {
+                float coverage = kvp.Value / (float)totalSamples;     // 0..1 of the actor hidden
+                float desired = Mathf.Lerp(1f, minOpacity, coverage); // more hidden => more transparent
+
+                if (targetOpacity.TryGetValue(kvp.Key, out float existing))
                     desired = Mathf.Min(existing, desired);
-                targetOpacity[rend] = desired;
+                targetOpacity[kvp.Key] = desired;
             }
         }
-    }
-
-    // Closer to the centre line of the view => blocks more => more transparent.
-    //   perpendicular distance 0           -> minOpacity (fully blocking the actor)
-    //   perpendicular distance sphereRadius -> 1 (only grazing the edge of the view)
-    private float OpacityForHit(Vector3 origin, Vector3 dir, RaycastHit hit)
-    {
-        if (hit.distance <= 0f)
-            return minOpacity; // Camera is inside / overlapping the collider.
-
-        Vector3 toHit = hit.point - origin;
-        float along = Vector3.Dot(toHit, dir);
-        Vector3 closestOnLine = origin + dir * along;
-        float perpDistance = Vector3.Distance(hit.point, closestOnLine);
-
-        float t = Mathf.Clamp01(perpDistance / Mathf.Max(sphereRadius, Mathf.Epsilon));
-        return Mathf.Lerp(minOpacity, 1f, t);
     }
 
     // Eases every tracked renderer toward its target opacity and stops
