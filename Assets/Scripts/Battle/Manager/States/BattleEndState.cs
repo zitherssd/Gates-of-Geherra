@@ -44,7 +44,7 @@ namespace Assets.Scripts.Battle.Manager.States
                         if (UnityEngine.Random.Range(0f, 1f) <= rewardItemPool.ChanceToReward)
                         {
                             // Add using ActorInventory
-                            GameFlowManager.instance.playerActor.inventory.AddItem(randomItem);
+                            BattleManager.instance.Player.inventory.AddItem(randomItem);
 
                             // Optional: Show some UI feedback that item was awarded
 
@@ -64,7 +64,7 @@ namespace Assets.Scripts.Battle.Manager.States
                             SaveManager.instance.SaveToSlot(SaveManager.instance.currentSaveSlot);
                         }
                             manager.TriggerBattleEnd();
-                        GameFlowManager.instance.SetMode(GameMode.RestArea);
+                        ReturnAfterBattle();
                     });
                 }
                 else
@@ -77,10 +77,27 @@ namespace Assets.Scripts.Battle.Manager.States
                         SaveManager.instance.SaveToSlot(SaveManager.instance.currentSaveSlot);
                     }
                         manager.TriggerBattleEnd();
-                    GameFlowManager.instance.SetMode(GameMode.RestArea);
+                    ReturnAfterBattle();
                     SlowdownManager.instance.ResetStateSlowdown();
                 }
             });
+        }
+
+        // Arena battles return to the scene we came from; legacy in-scene battles just flip the
+        // shared scene back to rest mode. Player data already lives on GameSession, so no disk
+        // round-trip is needed across the scene load.
+        private void ReturnAfterBattle()
+        {
+            if (GameSession.Exists && !string.IsNullOrEmpty(GameSession.Instance.ReturnScene))
+            {
+                var scene = GameSession.Instance.ReturnScene;
+                GameSession.Instance.ReturnScene = null;
+                UnityEngine.SceneManagement.SceneManager.LoadScene(scene);
+                return;
+            }
+
+            if (GameFlowManager.instance != null)
+                GameFlowManager.instance.SetMode(GameMode.RestArea);
         }
 
         private BaseAction[] Get3RandomFromRewardPool(List<BaseAction> actions)

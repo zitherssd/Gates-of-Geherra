@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: MC
   m_EditorClassIdentifier: 
   guid: b8a7b1ce80f78164f9e1d2631a3c98fa
-  Name: magog
+  Name: Base_Definition
   hpBars:
   - _currentHp: 10
     maxHp: 10
@@ -24,6 +24,12 @@ MonoBehaviour:
   baseMaxBuildup: 20
   baseMaxPosture: 10
   baseMaxStamina: 20
+  Strength: 10
+  Agility: 9
+  Mind: 14
+  Spirit: 8
+  postureRegenRate: 1
+  staminaRegenRate: 2
   Controllable: 1
   AIRuleset: 0
   mainColor: {r: 0, g: 0.61666656, b: 1, a: 0}
@@ -50,34 +56,3 @@ MonoBehaviour:
   - {fileID: 11400000, guid: abef5758c624d4d41a5922e1e6846602, type: 2}
   - {fileID: 11400000, guid: 65e0cd7e139f4c54b9327beabbe9aa28, type: 2}
   - {fileID: 11400000, guid: 1fd389a9fb3e8e042ba5b3564ae3e936, type: 2}
-  actions:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  items:
-  - {fileID: 11400000, guid: 5b6c739aefd38644ea98ff8f193967b7, type: 2}
-  - {fileID: 11400000, guid: 9929547627aa6c94d840fd5766eb1036, type: 2}
-  - {fileID: 11400000, guid: b5495c701cd7d9040adffb62f79fd415, type: 2}
-  - {fileID: 11400000, guid: b1cf4dcd96447f643b9838901f8fe9f0, type: 2}
-  currentBuildup: 44
-  currentPosture: 20
-  currentStamina: 7.506322
-  postureRegenRate: 1
-  staminaRegenRate: 2
-  Strength: 10
-  Agility: 9
-  Mind: 14
-  Spirit: 8

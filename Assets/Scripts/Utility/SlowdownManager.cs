@@ -188,6 +188,7 @@ namespace Assets.Scripts.Utility
             Time.timeScale = stateSlowdownTimeScale;
             Time.fixedDeltaTime = Time.timeScale * 0.02f;
             
+            Debug.Log($"State slowdown activated: timeScale = {stateSlowdownTimeScale:F3}");
         }
 
         private IEnumerator TemporarySlowdownCoroutine(float duration, AnimationCurve curve)

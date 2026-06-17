@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.Battle;
 using Assets.Scripts.Battle.Actor;
 using Assets.Scripts.Battle.Manager;
+using Assets.Scripts.Game;
 using UnityEngine;
 
 namespace Assets.Scripts.Utility
@@ -45,13 +46,37 @@ namespace Assets.Scripts.Utility
             if (instance == null) instance = this;
         }
 
+        private void OnEnable()
+        {
+            GameSession.Instance.OnPlayerSpawned += SetPlayer;
+        }
+
+        private void OnDisable()
+        {
+            if (GameSession.Exists)
+                GameSession.Instance.OnPlayerSpawned -= SetPlayer;
+        }
+
         // Use this for initialization
         void Start()
         {
-            playerTransform = BattleManager.instance.PlayerActors[0].transform;
-            playerActor = BattleManager.instance.PlayerActors[0];
             camera = gameObject.GetComponent<Camera>();
 
+            // Legacy in-scene scenes have a pre-placed player; arena scenes spawn it at runtime
+            // and notify via GameSession.OnPlayerSpawned (handled by SetPlayer).
+            if (BattleManager.instance != null && BattleManager.instance.PlayerActors != null
+                && BattleManager.instance.PlayerActors.Count > 0
+                && BattleManager.instance.PlayerActors[0] != null)
+            {
+                SetPlayer(BattleManager.instance.PlayerActors[0]);
+            }
+        }
+
+        private void SetPlayer(Actor player)
+        {
+            if (player == null) return;
+            playerActor = player;
+            playerTransform = player.transform;
         }
 
         public void ResetForNewBattle(Vector3 position)
@@ -61,6 +86,8 @@ namespace Assets.Scripts.Utility
 
         void Update()
         {
+            if (playerActor == null || playerTransform == null) return;
+
             Vector3 targetpos;
             Vector3 weightedEnemyPosition = playerActor.target.GetWeightedAverageEnemyPosition();
 
@@ -130,7 +157,7 @@ namespace Assets.Scripts.Utility
 
             else
             {
-                var playertarget = BattleManager.instance.PlayerActors[0].target.target;
+                var playertarget = playerActor.target.target;
                 if (playertarget != null)
                 {
                     NEWdistvector = (playertarget.transform.position + playerTransform.position) / 2; //start point 

@@ -21,6 +21,22 @@ public class ActorInventory
             trinket.Equip(Owner);
     }
 
+    /// <summary>
+    /// Point this body's inventory at a persistent item list (owned by the run's ActorRuntime)
+    /// and wire each trinket's effects to this body. Sharing the list (instead of copying) means
+    /// items gained or consumed during play persist automatically when the body is respawned in
+    /// another scene.
+    /// </summary>
+    public void RebindTo(List<BaseItem> sharedItems)
+    {
+        Items = sharedItems ?? new List<BaseItem>();
+        foreach (var item in Items)
+        {
+            if (item is BaseTrinket trinket)
+                trinket.Equip(Owner);
+        }
+    }
+
     public void RemoveItem(BaseItem item)
     {
         Items.Remove(item);

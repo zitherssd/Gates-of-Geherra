@@ -7,18 +7,42 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Assets.Scripts.Game
 {
     public class GameFlowManager : MonoBehaviour
     {
         public static GameFlowManager instance;
+
+        [Header("Player body for this scene")]
+        [Tooltip("Optional pre-placed player body. If null, one is spawned from playerPrefab.")]
         public Actor playerActor;
+        [Tooltip("Optional. Spawned at playerSpawnPoint when no pre-placed playerActor is set.")]
+        public Actor playerPrefab;
+        [Tooltip("Where the player body is spawned / repositioned for this scene.")]
+        public Transform playerSpawnPoint;
+
         public RestAreaManager restAreaManager;
         public BattleManager battleManager;
-        public int trainingsDone = 0;
-        public int trainingsDoneThisFloor = 0;
-        public List<TimeLock> timelocks;
+
+        // Run-progress now lives on the persistent GameSession; these delegate so existing
+        // callers (SaveManager, TrainingManager, TimeLockManager) keep working unchanged.
+        public int trainingsDone
+        {
+            get => GameSession.Instance.trainingsDone;
+            set => GameSession.Instance.trainingsDone = value;
+        }
+        public int trainingsDoneThisFloor
+        {
+            get => GameSession.Instance.trainingsDoneThisFloor;
+            set => GameSession.Instance.trainingsDoneThisFloor = value;
+        }
+        public List<TimeLock> timelocks
+        {
+            get => GameSession.Instance.timelocks;
+            set => GameSession.Instance.timelocks = value;
+        }
 
 
         //Player should be spawned and loaded or created here all other managers assume player exists
@@ -26,32 +50,40 @@ namespace Assets.Scripts.Game
 
         public void Start()
         {
-            if (SaveManager.instance == null) {
-                ActorDefinition template = Resources.Load<ActorDefinition>("Actors/MC");
-                playerActor.SetDefinition(template);
-                RollNewstats(playerActor);
-                playerActor.Spawn();
-
-                SetMode(GameMode.RestArea); return; 
-            }
+            var session = GameSession.Instance;
 
             List<ActionSlotSaveData> loadedLoadout = null;
             bool isNewGame = false;
 
-            if (SaveManager.instance.SlotExists(SaveManager.instance.currentSaveSlot))
+            if (SaveManager.instance == null)
+            {
+                // No save system present (e.g. a scene opened directly for testing): fresh run.
+                if (session.PlayerRuntime == null)
+                    session.StartNewRun(null);
+                SetupPlayerBody();
+                SetMode(GameMode.RestArea);
+                return;
+            }
+
+            if (session.PlayerRuntime != null)
+            {
+                // Returning from another scene in the same run: the model is already in memory.
+                SetupPlayerBody();
+            }
+            else if (SaveManager.instance.SlotExists(SaveManager.instance.currentSaveSlot))
             {
                 var save = SaveManager.instance.LoadFromSlot(SaveManager.instance.currentSaveSlot);
-                save.LoadActor(playerActor);
+                EnsurePlayerBody();
+                save.LoadActor(playerActor);                     // hydrate the body's runtime from disk
+                session.AdoptPlayerRuntime(playerActor.Runtime); // session owns it from now on
                 loadedLoadout = save.player.actions;
+                BindPlayerBody();
             }
             else
             {
                 isNewGame = true;
-                ActorDefinition template = Resources.Load<ActorDefinition>("Actors/MC");
-                playerActor.SetDefinition(template);
-                RollNewstats(playerActor);
-                playerActor.Spawn();
-                playerActor.Runtime.Name = SaveManager.instance.newGamePlayerName;
+                session.StartNewRun(SaveManager.instance.newGamePlayerName);
+                SetupPlayerBody();
             }
 
             //Now that player is loaded we go to rest
@@ -65,19 +97,66 @@ namespace Assets.Scripts.Game
             }
         }
 
+        /// <summary>Ensure a player body exists for this scene (spawn from prefab if needed).</summary>
+        private void EnsurePlayerBody()
+        {
+            if (playerActor != null) return;
+
+            if (playerPrefab == null)
+            {
+                Debug.LogError("GameFlowManager: no playerActor assigned and no playerPrefab to spawn.");
+                return;
+            }
+
+            Vector3 pos = playerSpawnPoint != null ? playerSpawnPoint.position : Vector3.zero;
+            Quaternion rot = playerSpawnPoint != null ? playerSpawnPoint.rotation : Quaternion.identity;
+            playerActor = Instantiate(playerPrefab, pos, rot);
+        }
+
+        /// <summary>Ensure the body exists, bind it to the persistent runtime, and announce it.</summary>
+        private void SetupPlayerBody()
+        {
+            EnsurePlayerBody();
+            BindPlayerBody();
+        }
+
+        private void BindPlayerBody()
+        {
+            if (playerActor == null) return;
+
+            playerActor.Bind(GameSession.Instance.PlayerRuntime);
+            if (playerSpawnPoint != null)
+                playerActor.transform.position = playerSpawnPoint.position;
+
+            GameSession.Instance.NotifyPlayerSpawned(playerActor);
+        }
+
         public GameMode Mode { get; private set; }
 
         public void Awake()
         {
             instance = this;
-            if (timelocks == null)
-                timelocks = new List<TimeLock>();
         }
 
 
         public void EnterBattle(BattleDefinition battle, Action onBattleEnd )
         {
+            // Dedicated arena: hand off to another scene. The ArenaBootstrapper there reads
+            // GameSession.PendingBattle, spawns + binds the player, and starts the battle.
+            if (ArenaCatalog.HasScene(battle.arena) &&
+                ArenaCatalog.SceneName(battle.arena) != SceneManager.GetActiveScene().name)
+            {
+                if (onBattleEnd != null)
+                    Debug.LogWarning("EnterBattle: onBattleEnd callbacks are not carried across scene loads; ignoring for arena battle.");
 
+                var session = GameSession.Instance;
+                session.PendingBattle = battle;
+                session.ReturnScene = SceneManager.GetActiveScene().name;
+                SceneManager.LoadScene(ArenaCatalog.SceneName(battle.arena));
+                return;
+            }
+
+            // Legacy in-scene battle (e.g. CaveScene): fight right here.
             Mode = GameMode.Battle;
             restAreaManager.enabled = false;
             TrainingManager.instance.enabled = false;
@@ -88,46 +167,15 @@ namespace Assets.Scripts.Game
         public void SetMode(GameMode mode)
         {
             Mode = mode;
-
-            restAreaManager.enabled = true;
-            //explorationManager.enabled = false;
-            //trainingManager.enabled = false;
             battleManager.enabled = false;
 
-            switch (Mode)
+            // Rest is the only in-scene mode that still does setup; other transitions are scene loads.
+            if (mode == GameMode.RestArea)
             {
-                case GameMode.RestArea:
-                    restAreaManager.enabled = true;
-                    TrainingManager.instance.enabled = true;
-                    restAreaManager.Enter();
-                    break;
-
-                case GameMode.Training:
-
-                    //trainingManager.Enter();
-                    break;
-
-                case GameMode.Exploring:
-                    //explorationManager.Enter();
-                    break;
-
-                case GameMode.Battle:
-                    //battleManager.BeginBattle(currentBattle);
-                    break;
+                restAreaManager.enabled = true;
+                TrainingManager.instance.enabled = true;
+                restAreaManager.Enter();
             }
-        }
-
-        public void RollNewstats(Actor playerActor)
-        {
-            var RandomStr = UnityEngine.Random.Range(1, 7) + UnityEngine.Random.Range(1, 7) + UnityEngine.Random.Range(1, 7);
-            var RandomAgi = UnityEngine.Random.Range(1, 7) + UnityEngine.Random.Range(1, 7) + UnityEngine.Random.Range(1, 7);
-            var RandomMnd = UnityEngine.Random.Range(1, 7) + UnityEngine.Random.Range(1, 7) + UnityEngine.Random.Range(1, 7);
-            var RandomSpi = UnityEngine.Random.Range(1, 7) + UnityEngine.Random.Range(1, 7) + UnityEngine.Random.Range(1, 7);
-
-            playerActor.Runtime.Strength = RandomStr;
-            playerActor.Runtime.Agility = RandomAgi;
-            playerActor.Runtime.Mind = RandomMnd;
-            playerActor.Runtime.Spirit = RandomSpi;
         }
     }
     public enum GameMode

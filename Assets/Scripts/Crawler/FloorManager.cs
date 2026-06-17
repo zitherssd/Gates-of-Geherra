@@ -12,7 +12,12 @@ namespace Assets.Scripts.Crawler
 {
     public class FloorManager : MonoBehaviour
     {
-        public int currentFloor = 0;
+        // Floor progress lives on the persistent GameSession so it survives scene loads.
+        public int currentFloor
+        {
+            get => GameSession.Instance.currentFloor;
+            set => GameSession.Instance.currentFloor = value;
+        }
         private UIManager uiManager;
         public List<BattleDefinition> StoryBattles;
         public List<BattleDefinition> RandomBattles;

@@ -10,10 +10,10 @@ public class CameraOcclusionManager : MonoBehaviour
 {
     [Header("Detection")]
     [Tooltip("Only objects on these layers can occlude. Set this to your 'Ditherable' layer.")]
-    public LayerMask occlusionLayers = 7;
+    public LayerMask occlusionLayers = ~0;
 
     [Tooltip("Half-width of an actor's silhouette in world units. Sample rays spread this far left/right.")]
-    public float actorRadius = 1.2f;
+    public float actorRadius = 0.5f;
 
     [Tooltip("Total height of an actor's silhouette in world units. Sample rays spread across this height.")]
     public float actorHeight = 2f;
@@ -36,7 +36,7 @@ public class CameraOcclusionManager : MonoBehaviour
 
     [Header("Debug")]
     [Tooltip("Draw the sight-line casts in the Scene view and log detection + property problems.")]
-    public bool debug = true;
+    public bool debug = false;
 
     private Camera cam;
     private BattleManager battleManager;

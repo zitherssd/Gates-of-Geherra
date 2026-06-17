@@ -46,6 +46,7 @@ namespace Assets.Scripts.Battle.Actor
         private Animator animator;
         private float postureRegenCooldownTimer;
         private BaseAction _currentAction;
+        private bool _bound;
 
         // Public properties
         public bool CanRegenPosture = true;
@@ -76,8 +77,12 @@ namespace Assets.Scripts.Battle.Actor
             EnsureRuntime();
             state.Initialize<InactiveState>();
             effects.SetColors();
-            foreach (var item in Runtime.items)
-                inventory.AddItem(item);
+            // Bound bodies (the persistent player) have their inventory populated in Bind().
+            if (!_bound)
+            {
+                foreach (var item in Runtime.items)
+                    inventory.AddItem(item);
+            }
         }
 
         //Should run after 
@@ -128,6 +133,28 @@ namespace Assets.Scripts.Battle.Actor
                 Runtime.Definition = Definition;
                 Runtime.ResetToDefinition();
             }
+        }
+
+        /// <summary>
+        /// Attach this body to a persistent runtime model (owned by GameSession) so the
+        /// player's live state survives scene loads while the body is respawned per scene.
+        /// Unlike Spawn(), this does NOT reset the runtime to its definition, preserving
+        /// rolled/loaded stats. Safe to call before or after this body's Start().
+        /// </summary>
+        public void Bind(ActorRuntime runtime)
+        {
+            if (runtime == null) return;
+
+            Runtime = runtime;
+            if (runtime.Definition != null)
+                Definition = runtime.Definition;
+
+            _bound = true;
+
+            // Rebuild body-local state from the persistent runtime (fresh body each scene).
+            if (effects != null) effects.SetColors();
+            if (inventory != null)
+                inventory.RebindTo(runtime.items);
         }
 
         private void EnsureRuntime()

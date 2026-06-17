@@ -9,9 +9,17 @@ namespace Assets.Scripts.Battle.Manager
     public class BattleDefinition : ScriptableObject
     {
         public List<ActorDefinition> enemyActors;
-        public List<Vector3> enemyStartPosition;
+
+        [Header("Where this battle takes place")]
+        [Tooltip("Arena scene to fight in. None = fight in the current scene (legacy in-scene flow).")]
+        public Arena arena = Arena.None;
+
+        [Tooltip("Which SpawnGroup in the arena to use for player/enemy placement.")]
+        public SpawnGroupId spawnGroup = SpawnGroupId.Default;
+
+        [Tooltip("Legacy: in-scene level object suffix, used as 'Level_<Level>' when no SpawnGroup is found.")]
         public string Level;
-        public Transform playerStartPosition;
+
         public RewardPool RewardPool;
         public List<RewardItemsPool> RewardItemsPools;
 

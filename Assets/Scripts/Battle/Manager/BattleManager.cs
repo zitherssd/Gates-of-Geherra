@@ -19,7 +19,6 @@ namespace Assets.Scripts.Battle.Manager
         public BattleStateMachine battleStateMachine;
         [SerializeField] public List<Actor.Actor> PlayerActors;
         [SerializeField] public List<Actor.Actor> EnemyActors;
-        [SerializeField] private GameObject SpawnerParent;
         public event Action OnBattleEnd;
 
 
@@ -47,6 +46,21 @@ namespace Assets.Scripts.Battle.Manager
                 return battleDefinition;
         }
 
+        /// <summary>
+        /// The player body for the current battle: the first registered PlayerActor, falling back
+        /// to the RestScene's GameFlowManager player. Lets battle code run in dedicated arena
+        /// scenes that have no GameFlowManager.
+        /// </summary>
+        public Actor.Actor Player
+        {
+            get
+            {
+                if (PlayerActors != null && PlayerActors.Count > 0 && PlayerActors[0] != null)
+                    return PlayerActors[0];
+                return GameFlowManager.instance != null ? GameFlowManager.instance.playerActor : null;
+            }
+        }
+
         public void Enter(BattleDefinition battleDefinition, Action onBattleEnd)
         {
             OnBattleEnd = null;
@@ -55,29 +69,22 @@ namespace Assets.Scripts.Battle.Manager
 
             this.battleDefinition = battleDefinition;
             //Should assume that screen is black/fadeimage is active
-            var player = GameFlowManager.instance.playerActor;
-            var level = GameObject.Find("Level_" + battleDefinition.Level);
-            player.transform.position = level.transform.GetChild(0).GetChild(0).position; //unholy line
+            var player = Player;
+            var spawnGroup = SpawnGroup.Find(battleDefinition.spawnGroup);
+            var level = GameObject.Find("Level_" + battleDefinition.Level); // legacy; null in dedicated arena scenes
+            player.transform.position = PlayerSpawnPosition(spawnGroup, level, player.transform.position);
             player.Runtime.Refresh();
-            SpawnEnemies(battleDefinition);
+            SpawnEnemies(battleDefinition, spawnGroup, level);
             UIManager.instance.Fade(false, null);
-            CameraManager.instance.ResetForNewBattle(level.transform.Find("CameraTransformPosition").position);
-            //UIManager.instance.InitializePlayerActionButtonPrefabs(player.Runtime.actions);
+            CameraManager.instance.ResetForNewBattle(CameraAnchorPosition(spawnGroup, level));
             StartCoroutine(WaitForSeconds(2f, () =>
             {
                 SoundManager.instance.PlayMusic(null);
-                //UIManager
-                //.instance.InitializePlayerActionButtonPrefabs(PlayerActors[0].Runtime.actions);
-                //UIManager.instance.MoveActionsToBattleActionContainers();
                 battleStateMachine.Initialize(battleStateMachine.startState); // Start the battle state machine
             }));
-
-            // Wait 2 seconds while fadeout finishes and camera moves
-            // Going strike
-            // Initialize battle state machine
         }
 
-        private void SpawnEnemies(BattleDefinition battleDefinition)
+        private void SpawnEnemies(BattleDefinition battleDefinition, SpawnGroup spawnGroup, GameObject level)
         {
             foreach (var enemy in EnemyActors)
             {
@@ -85,16 +92,13 @@ namespace Assets.Scripts.Battle.Manager
             }
             EnemyActors.Clear();
 
-            var level = GameObject.Find("Level_" + battleDefinition.Level);
-            var spawners = level.transform.GetChild(0).gameObject;
-            var pspawner = level.transform.GetChild(0).gameObject.transform;
+            // Legacy spawners: first child of the level holds player (child 0) + enemy (child 1..) markers.
+            var legacySpawners = level != null ? level.transform.GetChild(0) : null;
 
             for (int i = 0; i < battleDefinition.enemyActors.Count(); i++)
             {
                 var enemy = battleDefinition.enemyActors[i];
-                Vector3 position;
-
-                position = spawners.transform.GetChild(i + 1).position;
+                var position = EnemySpawnPosition(spawnGroup, legacySpawners, i);
 
                 var enemyGameObject = Instantiate(enemyPrefab, position, Quaternion.identity);
                 var enemyActor = enemyGameObject.GetComponent<Actor.Actor>();
@@ -103,6 +107,37 @@ namespace Assets.Scripts.Battle.Manager
                 enemyActor.Spawn();
                 EnemyActors.Add(enemyActor);
             }
+        }
+
+        // Prefer the scene's SpawnGroup; fall back to the legacy in-scene "Level_<n>" markers.
+        private static Vector3 PlayerSpawnPosition(SpawnGroup spawnGroup, GameObject level, Vector3 fallback)
+        {
+            if (spawnGroup != null && spawnGroup.playerSpawn != null)
+                return spawnGroup.playerSpawn.position;
+            if (level != null)
+                return level.transform.GetChild(0).GetChild(0).position;
+            return fallback;
+        }
+
+        private static Vector3 EnemySpawnPosition(SpawnGroup spawnGroup, Transform legacySpawners, int index)
+        {
+            if (spawnGroup != null && spawnGroup.enemySpawns != null && spawnGroup.enemySpawns.Count > 0)
+            {
+                var t = spawnGroup.enemySpawns[index % spawnGroup.enemySpawns.Count];
+                if (t != null) return t.position;
+            }
+            if (legacySpawners != null)
+                return legacySpawners.GetChild(index + 1).position;
+            return Vector3.zero;
+        }
+
+        private static Vector3 CameraAnchorPosition(SpawnGroup spawnGroup, GameObject level)
+        {
+            if (spawnGroup != null && spawnGroup.cameraAnchor != null)
+                return spawnGroup.cameraAnchor.position;
+            if (level != null)
+                return level.transform.Find("CameraTransformPosition").position;
+            return Vector3.zero;
         }
 
         void Start()
@@ -125,50 +160,10 @@ namespace Assets.Scripts.Battle.Manager
             OnBattleEnd?.Invoke();
         }
 
-
-
-        public void SetupBattleWithEnemies(List<ActorDefinition> newEnemies) //Floor 1,2 etc setup
-        {
-            foreach (var enemy in EnemyActors)
-            {
-                Destroy(enemy.gameObject);
-            }
-            EnemyActors.Clear();
-
-            foreach (var enemy in newEnemies)
-            {
-                var randomSpawner = GetRandomChild(SpawnerParent);
-                var enemyGameObject = Instantiate(enemyPrefab, randomSpawner.position, Quaternion.identity);
-                var enemyActor = enemyGameObject.GetComponent<Actor.Actor>();
-                enemyActor.SetDefinition(enemy);
-                enemyActor.Init();
-                EnemyActors.Add(enemyActor);
-            }
-
-
-            PlayerActors[0].Runtime.Refresh();
-
-            UIManager.instance.EnableBattleSkills();
-            UIManager.instance.Fade(false, () =>
-            {
-                battleStateMachine.TransitionTo(battleStateMachine.startState); // Start the battle state machine
-            });
-        }
-
         public IEnumerator WaitForSeconds(float seconds, Action onFinishedWaiting)
         {
             yield return new WaitForSeconds(seconds);
             onFinishedWaiting();
-        }
-
-        public static Transform GetRandomChild(GameObject list)
-        {
-            // Make sure the list is not empty
-            if (list.transform.childCount == 0)
-                throw new InvalidOperationException("Cannot retrieve a random element from an empty list.");
-
-            return list.transform.GetChild(UnityEngine.Random.Range(0, list.transform.childCount));
-            // Return the element at the random index
         }
     }
     public enum STATE { READY, WAITING }
