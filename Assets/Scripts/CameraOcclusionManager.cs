@@ -1,17 +1,19 @@
 using Assets.Scripts.Battle.Manager;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 [RequireComponent(typeof(Camera))]
 public class CameraOcclusionManager : MonoBehaviour
 {
     [Header("Detection")]
     [Tooltip("Radius of the sphere cast from the camera toward each actor. Bigger = wider 'view tube'.")]
-    public float sphereRadius = 2f;
+    public float sphereRadius = 1f;
 
     [Tooltip("Only objects on these layers can occlude. Set this to your 'Ditherable' layer.")]
-    public LayerMask occlusionLayers = 7;
+    public LayerMask occlusionLayers = ~0;
 
     [Tooltip("Vertical offset added to each actor's position so we aim at the body, not the feet.")]
     public float actorAimHeight = 0.5f;
@@ -21,10 +23,14 @@ public class CameraOcclusionManager : MonoBehaviour
     public float fadeSpeed = 8f;
 
     [Tooltip("Opacity used when an object sits dead-centre on the line of sight (0 = fully see-through).")]
-    [Range(0f, 1f)] public float minOpacity = 0f;
+    [Range(0f, 1f)] public float minOpacity = 0.1f;
 
     [Tooltip("Float shader property that drives the dither / transparency.")]
     public string opacityProperty = "_Opacity";
+
+    [Header("Debug")]
+    [Tooltip("Draw the sight-line casts in the Scene view and log detection + property problems.")]
+    public bool debug = true;
 
     private Camera cam;
     private BattleManager battleManager;
@@ -39,6 +45,8 @@ public class CameraOcclusionManager : MonoBehaviour
     private readonly RaycastHit[] hitBuffer = new RaycastHit[32];
     // Scratch list so we can iterate while removing finished entries.
     private readonly List<Renderer> trackedScratch = new List<Renderer>();
+    // Materials we've already validated, so the property warning fires once each.
+    private readonly HashSet<Material> validatedMaterials = new HashSet<Material>();
 
     void Reset()
     {
@@ -90,6 +98,9 @@ public class CameraOcclusionManager : MonoBehaviour
                 origin, sphereRadius, dir, hitBuffer, distance,
                 occlusionLayers, QueryTriggerInteraction.Ignore);
 
+            if (debug)
+                Debug.DrawLine(origin, origin + dir * distance, count > 0 ? Color.yellow : Color.green);
+
             for (int i = 0; i < count; i++)
             {
                 RaycastHit hit = hitBuffer[i];
@@ -97,6 +108,9 @@ public class CameraOcclusionManager : MonoBehaviour
                 Renderer rend = hit.transform.GetComponent<Renderer>();
                 if (rend == null)
                     continue;
+
+                if (debug)
+                    Debug.DrawLine(origin, hit.point, Color.red);
 
                 float desired = OpacityForHit(origin, dir, hit);
 
@@ -140,7 +154,7 @@ public class CameraOcclusionManager : MonoBehaviour
         trackedScratch.AddRange(currentOpacity.Keys);
 
         // Frame-rate independent easing factor.
-        float t = 1f - Mathf.Exp(-fadeSpeed * Time.unscaledDeltaTime);
+        float t = 1f - Mathf.Exp(-fadeSpeed * Time.deltaTime);
 
         foreach (Renderer rend in trackedScratch)
         {
@@ -154,6 +168,8 @@ public class CameraOcclusionManager : MonoBehaviour
             float opacity = Mathf.Lerp(currentOpacity[rend], target, t);
             currentOpacity[rend] = opacity;
 
+            ValidateMaterial(rend);
+
             rend.GetPropertyBlock(mpb);
             mpb.SetFloat(opacityId, opacity);
             rend.SetPropertyBlock(mpb);
@@ -166,5 +182,36 @@ public class CameraOcclusionManager : MonoBehaviour
                 currentOpacity.Remove(rend);
             }
         }
+    }
+
+    // Warns once per material if it lacks the opacity property, listing the
+    // shader's actual float Reference names so the right one can be set.
+    private void ValidateMaterial(Renderer rend)
+    {
+        Material mat = rend.sharedMaterial;
+        if (mat == null || !validatedMaterials.Add(mat))
+            return;
+
+        if (mat.HasProperty(opacityId))
+        {
+            if (debug)
+                Debug.Log($"[CameraOcclusion] OK: '{mat.name}' on '{rend.name}' has '{opacityProperty}'.", rend);
+            return;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine($"[CameraOcclusion] Material '{mat.name}' on '{rend.name}' has NO float property " +
+                      $"'{opacityProperty}'. Set 'Opacity Property' to one of this shader's float References:");
+
+        Shader shader = mat.shader;
+        int propCount = shader.GetPropertyCount();
+        for (int i = 0; i < propCount; i++)
+        {
+            ShaderPropertyType type = shader.GetPropertyType(i);
+            if (type == ShaderPropertyType.Float || type == ShaderPropertyType.Range)
+                sb.AppendLine("    " + shader.GetPropertyName(i));
+        }
+
+        Debug.LogWarning(sb.ToString(), rend);
     }
 }
