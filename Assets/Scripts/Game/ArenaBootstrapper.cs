@@ -56,6 +56,16 @@ namespace Assets.Scripts.Game
             BattleManager.instance.PlayerActors.Clear();
             BattleManager.instance.PlayerActors.Add(player);
 
+            // Build this scene's action buttons from the run's persisted layout. ActionButtonBattle
+            // resolves its player via BattleManager.PlayerActors[0] (set just above), so the buttons
+            // drive the freshly-bound body. Start them disabled like the rest scene does;
+            // BattleStartState re-enables them when the fight begins.
+            if (UIManager.instance != null)
+            {
+                UIManager.instance.InitializePlayerActionButtonPrefabs(player.Runtime.actions, session.Loadout);
+                UIManager.instance.DisableBattleSkills();
+            }
+
             session.PendingBattle = null;
             BattleManager.instance.enabled = true;
             BattleManager.instance.Enter(battle, null);

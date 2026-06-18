@@ -21,9 +21,31 @@ public class StatPanelUI : MonoBehaviour
 
     public ActorRuntime actorData;
 
+    private void OnEnable()
+    {
+        GameSession.Instance.OnPlayerSpawned += SetPlayer;
+    }
+
+    private void OnDisable()
+    {
+        if (GameSession.Exists)
+            GameSession.Instance.OnPlayerSpawned -= SetPlayer;
+    }
+
     public void Start()
     {
-        actorData = GameFlowManager.instance.playerActor.Runtime;
+        // Read the persistent run model directly so the panel works in any scene (arena or rest)
+        // without depending on GameFlowManager; OnPlayerSpawned refreshes it when a body spawns.
+        if (GameSession.Exists && GameSession.Instance.PlayerRuntime != null)
+            actorData = GameSession.Instance.PlayerRuntime;
+        else if (GameFlowManager.instance != null && GameFlowManager.instance.playerActor != null)
+            actorData = GameFlowManager.instance.playerActor.Runtime;
+    }
+
+    private void SetPlayer(Actor player)
+    {
+        if (player != null)
+            actorData = player.Runtime;
     }
 
     private void Update()

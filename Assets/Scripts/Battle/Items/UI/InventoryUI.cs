@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Game;
+﻿using Assets.Scripts.Battle.Manager;
+using Assets.Scripts.Game;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,14 @@ namespace Assets.Scripts.Battle.Items.UI
 
         public void Start()
         {
-            inventory = GameFlowManager.instance.playerActor.inventory;
+            // Resolve the current player body (battle/arena via BattleManager, else the rest scene's
+            // GameFlowManager) so the inventory works in any scene.
+            var player = BattleManager.instance != null ? BattleManager.instance.Player : null;
+            if (player == null && GameFlowManager.instance != null)
+                player = GameFlowManager.instance.playerActor;
+            if (player == null) return;
+
+            inventory = player.inventory;
             Refresh();
         }
 

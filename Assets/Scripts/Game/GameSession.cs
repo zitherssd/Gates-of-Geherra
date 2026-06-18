@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Assets.Scripts.Battle.Actor;
 using Assets.Scripts.Battle.Manager;
+using Assets.Scripts.Save;
 using UnityEngine;
 
 namespace Assets.Scripts.Game
@@ -51,6 +52,9 @@ namespace Assets.Scripts.Game
         /// <summary>Scene to return to when an arena battle ends (empty = legacy in-scene flow).</summary>
         public string ReturnScene;
 
+        /// <summary>Persisted action-button layout, so the player's arrangement survives scene loads.</summary>
+        public List<ActionSlotSaveData> Loadout;
+
         /// <summary>Raised after the player body is spawned and bound in the current scene.</summary>
         public event Action<Actor> OnPlayerSpawned;
 
@@ -89,6 +93,7 @@ namespace Assets.Scripts.Game
             timelocks = new List<TimeLock>();
             PendingBattle = null;
             ReturnScene = null;
+            Loadout = null;
         }
 
         /// <summary>Adopt a runtime that was just hydrated from a save into a body.</summary>
@@ -107,6 +112,7 @@ namespace Assets.Scripts.Game
             timelocks = new List<TimeLock>();
             PendingBattle = null;
             ReturnScene = null;
+            Loadout = null;
         }
 
         /// <summary>Notify listeners that the player body for the current scene is ready.</summary>

@@ -15,7 +15,6 @@ namespace Assets.Scripts.Utility
         private float CameraHeight;
 
         public CameraType cameraType = CameraType.Main;
-        public GameObject directionalLight;
         public float directionalLightRotationSpeed = 5f;
 
         [SerializeField]
@@ -173,19 +172,6 @@ namespace Assets.Scripts.Utility
 
                 // Smoothly rotate towards the target rotation
                 transform.rotation = Quaternion.Slerp(transform.rotation, endRotation, 0.1f);
-            }
-            if (directionalLight)
-            {
-                float targetY = transform.eulerAngles.y;
-                float currentY = directionalLight.transform.eulerAngles.y;
-
-                float newY = Mathf.LerpAngle(
-                    currentY,
-                    targetY,
-                    Time.unscaledDeltaTime * directionalLightRotationSpeed
-                );
-
-                directionalLight.transform.rotation = Quaternion.Euler(0.5f, newY, 0f);
             }
 
         }

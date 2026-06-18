@@ -64193,6 +64193,7 @@ GameObject:
   - component: {fileID: 338460980}
   - component: {fileID: 338460979}
   - component: {fileID: 338460978}
+  - component: {fileID: 338460981}
   m_Layer: 0
   m_Name: Directional Light
   m_TagString: Untagged
@@ -64300,6 +64301,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: -1939.197, z: 0}
+--- !u!114 &338460981
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 338460977}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76ed03b01e08e464395f56cfef291986, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cameraTransform: {fileID: 0}
+  directionalLightRotationSpeed: 0.23
 --- !u!1 &340486222
 GameObject:
   m_ObjectHideFlags: 0
@@ -81050,7 +81065,6 @@ MonoBehaviour:
   PlayerActors:
   - {fileID: 800080379}
   EnemyActors: []
-  SpawnerParent: {fileID: 1207135220}
 --- !u!1 &502470965
 GameObject:
   m_ObjectHideFlags: 0
@@ -89321,7 +89335,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7236b0a71b14ac2458ff667e6834e9f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentFloor: 0
   StoryBattles:
   - {fileID: 11400000, guid: b16ac839a35c6f748b9c98135d5b5c5b, type: 2}
   - {fileID: 11400000, guid: 53c04aa737e8acf428cdb57909c85932, type: 2}
@@ -90268,7 +90281,24 @@ MonoBehaviour:
   AGILITY: {fileID: 842504183}
   MIND: {fileID: 1840978118}
   SPIRIT: {fileID: 119850185}
-  actorData: {fileID: 0}
+  actorData:
+    Definition: {fileID: 0}
+    Name: 
+    hpBars: []
+    baseMaxBuildup: 0
+    baseMaxPosture: 0
+    baseMaxStamina: 0
+    postureRegenRate: 0
+    staminaRegenRate: 0
+    Strength: 0
+    Agility: 0
+    Mind: 0
+    Spirit: 0
+    actions: []
+    items: []
+    currentBuildup: 0
+    currentPosture: 0
+    currentStamina: 0
 --- !u!1 &873897788
 GameObject:
   m_ObjectHideFlags: 0
@@ -121270,8 +121300,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraType: 0
-  directionalLight: {fileID: 338460977}
-  directionalLightRotationSpeed: 0.08
+  directionalLightRotationSpeed: 5
   UpDistance: 3.7
   BackDistance: 9.4
   Override: 0
@@ -121431,9 +121460,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3efe6d3207765954396e452a0c6a481d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sphereRadius: 1
+  occlusionLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  actorRadius: 0.5
+  actorHeight: 2
+  actorAimHeight: 1
+  samplesPerAxis: 3
   fadeSpeed: 5
-  maxFadeDistance: 1
+  minOpacity: 0.1
+  opacityProperty: _Opacity
+  debug: 0
 --- !u!1 &964506884
 GameObject:
   m_ObjectHideFlags: 0
@@ -132948,7 +132985,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraType: 1
-  directionalLight: {fileID: 0}
   directionalLightRotationSpeed: 5
   UpDistance: 0
   BackDistance: 1
@@ -214949,11 +214985,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerActor: {fileID: 800080379}
+  playerPrefab: {fileID: 0}
+  playerSpawnPoint: {fileID: 0}
   restAreaManager: {fileID: 1155496717}
   battleManager: {fileID: 499970021}
-  trainingsDone: 0
-  trainingsDoneThisFloor: 0
-  timelocks: []
 --- !u!114 &1899119114
 MonoBehaviour:
   m_ObjectHideFlags: 0

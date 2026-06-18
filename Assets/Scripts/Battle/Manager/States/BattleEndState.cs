@@ -88,6 +88,11 @@ namespace Assets.Scripts.Battle.Manager.States
         // round-trip is needed across the scene load.
         private void ReturnAfterBattle()
         {
+            // Keep the persisted layout in sync with any post-battle changes (e.g. a reward skill
+            // added to the inventory) so the rest scene rebuilds the same arrangement.
+            if (GameSession.Exists && UIManager.instance != null)
+                GameSession.Instance.Loadout = UIManager.instance.GetCurrentLoadout();
+
             if (GameSession.Exists && !string.IsNullOrEmpty(GameSession.Instance.ReturnScene))
             {
                 var scene = GameSession.Instance.ReturnScene;

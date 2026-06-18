@@ -62,6 +62,8 @@ namespace Assets.Scripts.Game
                     session.StartNewRun(null);
                 SetupPlayerBody();
                 SetMode(GameMode.RestArea);
+                UIManager.instance.InitializePlayerActionButtonPrefabs(playerActor.Runtime.actions, session.Loadout);
+                UIManager.instance.DisableBattleSkills();
                 return;
             }
 
@@ -88,7 +90,10 @@ namespace Assets.Scripts.Game
 
             //Now that player is loaded we go to rest
             SetMode(GameMode.RestArea);
-            UIManager.instance.InitializePlayerActionButtonPrefabs(playerActor.Runtime.actions, loadedLoadout);
+            // Prefer the in-memory layout (returning from an arena in the same run); fall back to the
+            // layout loaded from disk on a fresh load, or null (default placement) for a new game.
+            var layout = session.Loadout ?? loadedLoadout;
+            UIManager.instance.InitializePlayerActionButtonPrefabs(playerActor.Runtime.actions, layout);
             UIManager.instance.DisableBattleSkills();
 
             if (isNewGame)
@@ -152,6 +157,7 @@ namespace Assets.Scripts.Game
                 var session = GameSession.Instance;
                 session.PendingBattle = battle;
                 session.ReturnScene = SceneManager.GetActiveScene().name;
+                session.Loadout = UIManager.instance.GetCurrentLoadout(); // preserve button layout across the load
                 SceneManager.LoadScene(ArenaCatalog.SceneName(battle.arena));
                 return;
             }

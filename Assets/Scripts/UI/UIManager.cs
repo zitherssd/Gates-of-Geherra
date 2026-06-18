@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.Battle.Actions;
 using Assets.Scripts.Battle.Actions.Skills;
+using Assets.Scripts.Battle.Manager;
 using Assets.Scripts.Game;
 using Assets.Scripts.Save;
 using Assets.Scripts.Utility;
@@ -214,15 +215,21 @@ namespace Assets.Scripts
         {
             List<ActionSlotSaveData> loadout = new List<ActionSlotSaveData>();
 
-            // This is the definitive list of actions the player owns.
-            if (GameFlowManager.instance == null || GameFlowManager.instance.playerActor == null || GameFlowManager.instance.playerActor.Runtime == null)
+            // Resolve the current player body. In a battle/arena it's BattleManager.Player; in the
+            // rest scene that resolver falls back to GameFlowManager's player. This lets the loadout
+            // be captured in arena scenes that have no GameFlowManager.
+            var player = BattleManager.instance != null ? BattleManager.instance.Player : null;
+            if (player == null && GameFlowManager.instance != null)
+                player = GameFlowManager.instance.playerActor;
+
+            if (player == null || player.Runtime == null)
             {
                 // Cannot determine owned actions, return empty or log error.
                 Debug.LogError("Could not get player actions to create loadout.");
                 return loadout;
             }
 
-            var allPlayerOwnedActions = GameFlowManager.instance.playerActor.Runtime.actions;
+            var allPlayerOwnedActions = player.Runtime.actions;
 
             // Create a lookup from action to its button GameObject for performance.
             var actionToButtonMap = PlayerActions

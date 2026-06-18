@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Crawler;
+﻿using Assets.Scripts.Battle.Manager;
+using Assets.Scripts.Crawler;
 using Assets.Scripts.Game;
 using System.Collections.Generic;
 using System.IO;
@@ -30,14 +31,25 @@ namespace Assets.Scripts.Save
 
         public void SaveToSlot(int slot)
         {
-            var actor = GameFlowManager.instance.playerActor;
+            // Run data lives on the persistent GameSession; the body is the current battle/scene
+            // player (BattleManager.Player), falling back to the rest scene's GameFlowManager player.
+            var session = GameSession.Instance;
+            var actor = BattleManager.instance != null ? BattleManager.instance.Player : null;
+            if (actor == null && GameFlowManager.instance != null)
+                actor = GameFlowManager.instance.playerActor;
+            if (actor == null)
+            {
+                Debug.LogError("SaveToSlot: no player body available to save.");
+                return;
+            }
+
             var saveData = new SaveData
             {
-                currentFloor = FloorManager.instance.currentFloor,
-                timelocks = GameFlowManager.instance.timelocks ?? new List<TimeLock>(),
+                currentFloor = session.currentFloor,
+                timelocks = session.timelocks ?? new List<TimeLock>(),
                 player = ActorSaveData.FromActor(actor),
-                trainingsDone = GameFlowManager.instance.trainingsDone,
-                trainingsDoneThisFloor = GameFlowManager.instance.trainingsDoneThisFloor
+                trainingsDone = session.trainingsDone,
+                trainingsDoneThisFloor = session.trainingsDoneThisFloor
 
             };
 
