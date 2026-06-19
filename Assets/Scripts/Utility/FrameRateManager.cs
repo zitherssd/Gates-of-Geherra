@@ -4,7 +4,7 @@ using UnityEngine;
 public class FrameRateManager : MonoBehaviour
 {
     [Header("Frame Settings")]
-    public float TargetFrameRate = 75.0f;
+    public float TargetFrameRate = 60f;
     private TextMeshProUGUI fpsText;
 
     private float elapsedTime = 0.0f;

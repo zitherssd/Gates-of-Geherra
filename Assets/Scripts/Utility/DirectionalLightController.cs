@@ -21,7 +21,7 @@ public class DirectionalLightController : MonoBehaviour
             // Set tilt angle based on arena
             return battleDef.arena switch
             {
-                Arena.Crossing => 72f,
+                Arena.Crossing => 77f,
                 _ => 0.5f // Default for other arenas
             };
         }
