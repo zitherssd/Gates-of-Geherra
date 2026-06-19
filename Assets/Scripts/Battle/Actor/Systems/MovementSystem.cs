@@ -77,15 +77,14 @@ namespace Assets.Scripts.Battle.Actor.Systems
         }
         public void AddForce(Vector3 force)
         {
-            var currentMagnitude = rigidbody.velocity.magnitude;
             rigidbody.AddForce(force, ForceMode.Impulse);
             Vector3 newVelocity = rigidbody.velocity;
 
             float maxSpeed = 5f;
-            if (newVelocity.magnitude > maxSpeed || newVelocity.magnitude > force.magnitude)
+            if (newVelocity.magnitude > maxSpeed)
             {
                 // Clamp the velocity to the max speed while maintaining the direction
-                rigidbody.velocity = newVelocity.normalized * force.magnitude;
+                rigidbody.velocity = newVelocity.normalized * maxSpeed;
             }
         }
         public void MoveTowardTarget(Vector3 targetPoint, float acceleration, float maxSpeed)
