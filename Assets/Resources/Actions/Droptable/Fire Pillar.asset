@@ -23,40 +23,79 @@ MonoBehaviour:
   BuildupCost: 22
   BuildupGain: 0
   StaminaCost: 8
-  Speed: 0
   Tags: 
   Direction: {x: 0, y: 0, z: 0}
   currentCooldownTimer: 0
   StickMult: 4
-  SlowdownMeterGain: 0
-  SlowdownMeterGainOnEnd: 1
-  SlowDownMeterGainOnPress: 1
-  SlowdownMeterGainOnRelease: 0
   Animation: 6
+  animationPhase:
+    animation: 6
+    windupTimeMult: 0.5
+    recoveryTimeMult: 1
+    hitWindows:
+    - displayName: Pillar
+      startFrame: 20
+      endFrame: 20
+      maxHitsPerEnemy: 1
+      windowEffects:
+      - rid: 3754567654245662738
+      - rid: 3754567654245662740
+    - displayName: Hitbox
+      startFrame: 0
+      endFrame: 0
+      maxHitsPerEnemy: 1
+      windowEffects:
+      - rid: 3754567654245662739
   OnStartEffects:
   - rid: 6357899949336690688
   - rid: 6357899949336690694
   - rid: 6357899973538611203
-  OnHitEffects:
-  - rid: 6357899949336690690
-  - rid: 8809521468473081869
-  - rid: 6357899952368123906
   OnEndEffects: []
   OnUpdateEffects: []
-  windupTimeMult: 0.4
-  recoveryTimeMult: 0.2
   references:
     version: 2
     RefIds:
-    - rid: 6357899949336690688
-      type: {class: FlashColor, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+    - rid: 3754567654245662738
+      type: {class: DamageEffect, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
       data:
-        intensity: 0.5
-    - rid: 6357899949336690690
+        UseHitbox: 1
+        DamageData:
+          Damage: 8
+          PostureDamage: 10
+          KnockbackForce: 1.3
+          KnockbackForceUp: 0
+          KnockbackType: 4
+          StrengthScaling: 0
+          AgilityScaling: 0
+          MindScaling: 0.4
+          BuildupGainOnHit: 5
+    - rid: 3754567654245662739
+      type: {class: ShowHitboxOnPoint, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      data:
+        HitboxPoints:
+        - {x: 1, y: 0, z: 0}
+        - {x: 0.86, y: 0, z: 0.5}
+        - {x: 0.5, y: 0, z: 0.86}
+        - {x: 0, y: 0, z: 1}
+        - {x: -0.5, y: 0, z: 0.86}
+        - {x: -0.86, y: 0, z: 0.5}
+        - {x: -1, y: 0, z: 0}
+        - {x: -0.86, y: 0, z: -0.5}
+        - {x: -0.5, y: 0, z: -0.86}
+        - {x: 0, y: 0, z: -1}
+        - {x: 0.5, y: 0, z: -0.86}
+        - {x: 0.86, y: 0, z: -0.5}
+        HitboxScale: 0.5
+        point: {x: 0, y: 0, z: 0}
+    - rid: 3754567654245662740
       type: {class: PlayParticleEffect, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
       data:
         psPrefab: {fileID: 7528961806869292416, guid: 3c23d0a787efa59488b8866012d0facb, type: 3}
         OnPlayer: 0
+    - rid: 6357899949336690688
+      type: {class: FlashColor, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      data:
+        intensity: 0.5
     - rid: 6357899949336690694
       type: {class: ShowHitboxOnPoint, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
       data:
@@ -75,25 +114,8 @@ MonoBehaviour:
         - {x: 0.86, y: 0, z: -0.5}
         HitboxScale: 0.5
         point: {x: 0, y: 0, z: 0}
-    - rid: 6357899952368123906
-      type: {class: ClearHitbox, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
-      data: 
     - rid: 6357899973538611203
       type: {class: PlayParticleEffect, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
       data:
         psPrefab: {fileID: 8225998914541537083, guid: 2ef14b77c5927a4439a217a8818a39b6, type: 3}
         OnPlayer: 1
-    - rid: 8809521468473081869
-      type: {class: DamageEffect, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
-      data:
-        UseHitbox: 1
-        DamageData:
-          Damage: 8
-          PostureDamage: 9
-          KnockbackForce: 1
-          KnockbackForceUp: 0
-          KnockbackType: 4
-          StrengthScaling: 0
-          AgilityScaling: 0
-          MindScaling: 0.2
-          BuildupGainOnHit: 5

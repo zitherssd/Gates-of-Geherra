@@ -4,6 +4,7 @@ using Assets.Scripts.Battle.Actions.Reactions;
 using Assets.Scripts.Pattern;
 using Assets.Scripts.Utility;
 using UnityEngine;
+using static Assets.Scripts.Battle.Actions.BaseAction;
 
 namespace Assets.Scripts.Battle.Actor.States
 {
@@ -54,6 +55,7 @@ namespace Assets.Scripts.Battle.Actor.States
             {
                 owner.GetComponentInChildren<ActorUIController>().HideCC();
                 owner.OnBeforeTakeDamage -= ModifyIncomingDamage;
+                if(action.Type == BUTTONTYPE.CONTINNUOUS)
                 owner.PlayAnimation("Idle");
                 owner.StaminaRegenRate = 1f;
 

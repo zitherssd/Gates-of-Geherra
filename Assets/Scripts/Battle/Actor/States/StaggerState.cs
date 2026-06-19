@@ -37,7 +37,7 @@ namespace Assets.Scripts.Battle.Actor.States
             if (actor.isControllable)
             {
                 UIManager.GetInstance().HideUI();
-                SlowdownManager.instance.ResetStateSlowdown();
+                SlowdownManager.instance.ExitStateSlowdown();
                 var Ready = false;
             }
 

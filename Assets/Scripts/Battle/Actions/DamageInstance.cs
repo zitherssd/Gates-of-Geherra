@@ -67,7 +67,8 @@ namespace Assets.Scripts.Battle.Actions
                     direction = Vector3.up;
                     break;
                 case KnockbackType.UP_AND_AWAY:
-                    direction = ((targetActor.transform.position - casterActor.transform.position).normalized + Vector3.up).normalized;
+                    var awayDirUpAway = (targetActor.transform.position - casterActor.transform.position).normalized;
+                    direction = (awayDirUpAway * KnockbackForce + Vector3.up * KnockbackForceUp).normalized;
                     break;
                 case KnockbackType.UP_AND_DIRECTION:
                     direction = (action != null ? action.Direction.normalized : Vector3.zero + Vector3.up).normalized;
@@ -77,13 +78,19 @@ namespace Assets.Scripts.Battle.Actions
                     break;
             }
             var knockback = direction;
+            // Apply separate up and away/lateral forces to the direction
+            var knockbackForceVec = knockback == Vector3.zero ? Vector3.zero : new Vector3(
+                knockback.x * KnockbackForce,
+                knockback.y * KnockbackForceUp,
+                knockback.z * KnockbackForce
+            );
 
             return new DamageInstanceResult
             {
                 DamageDealt = damage,
                 PostureDamageDealt = PostureDamage,
-                KnockbackApplied = knockback,
-                KnockbackForceApplied = KnockbackForce,
+                KnockbackApplied = Vector3.one,  // Normalized, direction already baked into KnockbackForceApplied
+                KnockbackForceApplied = knockbackForceVec,
             };
         }
     }
@@ -93,6 +100,6 @@ namespace Assets.Scripts.Battle.Actions
         public float DamageDealt;
         public float PostureDamageDealt;
         public Vector3 KnockbackApplied;
-        public float KnockbackForceApplied;
+        public Vector3 KnockbackForceApplied;
     }
 }

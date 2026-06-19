@@ -20,10 +20,6 @@ namespace Assets.Scripts.Battle.Actions.Skills
         
         [SerializeReference, SubclassSelector]
         public List<IUpdateableEffect> OnUpdateEffects = new List<IUpdateableEffect>();
-        
-        [SerializeReference, SubclassSelector]
-        [System.Obsolete("Use hitWindows instead. Kept for backward compatibility during migration.")]
-        public List<IEffect> OnHitEffects = new List<IEffect>();
 
         private List<IEndableEffect> runtimeEndEffects;
         private List<IUpdateableEffect> runtimeUpdateEffects;
@@ -69,20 +65,6 @@ namespace Assets.Scripts.Battle.Actions.Skills
             }
         }
 
-        [System.Obsolete("Use HitWindows instead.")]
-        public override void OnHit()
-        {
-            foreach (var effect in OnHitEffects)
-            {
-                if(effect is IEndableEffect endable) runtimeEndEffects.Add(endable);
-                if(effect is IUpdateableEffect updatable) runtimeUpdateEffects.Add(updatable);
-                effect.Eval(_caster, this);
-            }
-            if (Tags.Contains(TAG.TECH) && _caster.state.CurrentState is ActingState acting)
-            {
-                acting.OnEnd();
-            }
-        }
         public override void OnUpdate(float dt)
         {
             actionElapsedTime += dt;
@@ -105,6 +87,12 @@ namespace Assets.Scripts.Battle.Actions.Skills
                 {
                     anyWindowActive = true;
                     currentActiveWindowIndex = i;
+
+                    // Optional per-player trigger limit for this window.
+                    if (!hitWindowManager.CanTriggerWindowForPlayer(_caster, i))
+                    {
+                        continue;
+                    }
                     
                     // Run all window effects
                     if (window.windowEffects != null)
@@ -117,6 +105,8 @@ namespace Assets.Scripts.Battle.Actions.Skills
                             effect.Eval(_caster, this);
                         }
                     }
+
+                    hitWindowManager.RecordWindowTriggerForPlayer(_caster, i);
                 }
             }
             

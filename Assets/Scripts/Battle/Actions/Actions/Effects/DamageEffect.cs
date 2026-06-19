@@ -66,6 +66,13 @@ namespace Assets.Scripts.Battle.Actions.Actions.Effects
                 
                 ApplyDamageEffects(actor, enemy, action);
                 gs.HitWindowMgr.RecordHit(enemy, currentWindowIndex);
+
+                // TECH behavior: successful hit cancels recovery so combos can continue.
+                if (action != null && action.Tags != null && action.Tags.Contains(TAG.TECH))
+                {
+                    action.EndAction(ActionEndReason.Completed);
+                    return;
+                }
             }
         }
 

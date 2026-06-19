@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace Assets.Scripts.Battle.Actions.Actions.Effects
 {
@@ -10,6 +11,10 @@ namespace Assets.Scripts.Battle.Actions.Actions.Effects
 
         public void Eval(Actor.Actor actor, BaseAction t)
         {
+            if(actor.isControllable)
+            {
+            Debug.Log($"Applying force in direction {t.Direction.normalized} with magnitude {Force}");
+            }
             actor.movement.AddForce(t.Direction.normalized * Force);
         }
 

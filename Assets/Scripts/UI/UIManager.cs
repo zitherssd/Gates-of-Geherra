@@ -78,27 +78,6 @@ namespace Assets.Scripts
 
         #endregion
 
-        #region Slowdown Management
-
-        /// <summary>
-        /// Deactivate state-based slowdown.
-        /// Delegates to SlowdownManager which handles the fade back to normal time.
-        /// </summary>
-        public void ResetStateSlowdown()
-        {
-            if (SlowdownManager.instance != null)
-            {
-                SlowdownManager.instance.ResetStateSlowdown();
-            }
-        }
-
-        internal void ResetMeter()
-        {
-            ResetStateSlowdown();
-        }
-
-        #endregion
-
         #region Action Button Management
 
         public void InitializePlayerActionButtonPrefabs(List <BaseAction> ActionsToInitialize, List<ActionSlotSaveData> loadout = null)

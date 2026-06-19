@@ -22,9 +22,7 @@ namespace Assets.Scripts.Battle.Manager.States
         }
         public void Enter()
         {
-            // Reset slowdown immediately when battle ends
-            if (SlowdownManager.instance != null)
-                SlowdownManager.instance.ResetStateSlowdown();
+            ResetSlowdown();
                 
             
             SoundManager.instance.FadeOutMusic();
@@ -57,6 +55,7 @@ namespace Assets.Scripts.Battle.Manager.States
                 {
                     SkillGenerator.instance.DrawSkillsFromSelectionAndWaitForSelection(Get3RandomFromRewardPool(bd.RewardPool.Actions), () =>
                     {
+                        ResetSlowdown();
                         UIManager.instance.DisableBattleSkills();
 
                         if (SaveManager.instance != null)
@@ -69,6 +68,7 @@ namespace Assets.Scripts.Battle.Manager.States
                 }
                 else
                 {
+                    ResetSlowdown();
                     UIManager.instance.DisableBattleSkills();
 
                     if (SaveManager.instance != null)
@@ -78,9 +78,14 @@ namespace Assets.Scripts.Battle.Manager.States
                     }
                         manager.TriggerBattleEnd();
                     ReturnAfterBattle();
-                    SlowdownManager.instance.ResetStateSlowdown();
                 }
             });
+        }
+
+        private static void ResetSlowdown()
+        {
+            if (SlowdownManager.instance != null)
+                SlowdownManager.instance.ResetImmediate();
         }
 
         // Arena battles return to the scene we came from; legacy in-scene battles just flip the
@@ -88,6 +93,8 @@ namespace Assets.Scripts.Battle.Manager.States
         // round-trip is needed across the scene load.
         private void ReturnAfterBattle()
         {
+            ResetSlowdown();
+
             // Keep the persisted layout in sync with any post-battle changes (e.g. a reward skill
             // added to the inventory) so the rest scene rebuilds the same arrangement.
             if (GameSession.Exists && UIManager.instance != null)

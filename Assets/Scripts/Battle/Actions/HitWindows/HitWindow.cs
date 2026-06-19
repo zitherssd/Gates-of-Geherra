@@ -13,6 +13,7 @@ namespace Assets.Scripts.Battle.Actions.HitWindows
         public int endFrame;                                   // Inclusive end frame
         
         public int maxHitsPerEnemy;                            // 0 = unlimited; 1 = once; 2 = twice; etc.
+        public int maxTriggersPerPlayer;                       // 0 = unlimited; limits how often this window's effects trigger for caster
         
         [SerializeReference, SubclassSelector]
         public List<IEffect> windowEffects;                   // Effects to run while active

@@ -23,28 +23,26 @@ MonoBehaviour:
   BuildupCost: 2
   BuildupGain: 0
   StaminaCost: 5
-  Speed: 0
   Tags: 
   Direction: {x: 0, y: 0, z: 0}
   currentCooldownTimer: 0
   StickMult: 1
-  SlowdownMeterGain: 0
-  SlowdownMeterGainOnEnd: 1
-  SlowDownMeterGainOnPress: 0
-  SlowdownMeterGainOnRelease: 0
   Animation: 6
+  animationPhase:
+    animation: 6
+    windupTimeMult: 1
+    recoveryTimeMult: 0.33
+    hitWindows: []
   OnStartEffects:
   - rid: 6357899949336690688
   - rid: 6357899952368123904
   - rid: 6357900109471809577
+  OnEndEffects: []
+  OnUpdateEffects: []
   OnHitEffects:
   - rid: 6357899949336690690
   - rid: 6357899949336690691
   - rid: 6357900109471809578
-  OnEndEffects: []
-  OnUpdateEffects: []
-  windupTimeMult: 0.4
-  recoveryTimeMult: 0.2
   references:
     version: 2
     RefIds:
@@ -64,7 +62,7 @@ MonoBehaviour:
         DamageData:
           Damage: 1.5
           PostureDamage: 1.5
-          KnockbackForce: 0.1
+          KnockbackForce: 0.12
           KnockbackForceUp: 0
           KnockbackType: 1
           StrengthScaling: 0

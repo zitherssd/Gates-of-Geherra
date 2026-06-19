@@ -44,6 +44,7 @@ namespace Assets.Scripts.Battle.Actor
 
         // Private members
         private Animator animator;
+        private static readonly int SpeedParam = Animator.StringToHash("Movement_Speed");
         private float postureRegenCooldownTimer;
         private BaseAction _currentAction;
         private bool _bound;
@@ -111,6 +112,8 @@ namespace Assets.Scripts.Battle.Actor
         void FixedUpdate()
         {
             movement.agent.nextPosition = transform.position;
+            animator.SetFloat(SpeedParam, movement.GetSpeed());
+
         }
 
         public void Init()
@@ -174,7 +177,7 @@ namespace Assets.Scripts.Battle.Actor
             }
 
             if (isControllable && SlowdownManager.instance != null)
-                SlowdownManager.instance.ResetStateSlowdown();
+                SlowdownManager.instance.ExitStateSlowdown();
 
             _currentAction = action;
             _currentAction.OnActionEnded += OnActionEnded;
@@ -203,7 +206,7 @@ namespace Assets.Scripts.Battle.Actor
             DamageInstanceResult result = damageInstance.Calculate(attacker, this, action);
             var damage = result.DamageDealt;
             var postureDamage = result.PostureDamageDealt;
-            var force = result.KnockbackForceApplied;
+            var knockbackForce = result.KnockbackForceApplied;
             var direction = result.KnockbackApplied;
 
             // 1. Invoke OnBeforeTakeDamage event, allowing listeners to modify the damage.
@@ -226,12 +229,11 @@ namespace Assets.Scripts.Battle.Actor
                 state.GetState<StaggerState>().Set(2f);
                 state.TransitionTo<StaggerState>();
 
-                if (force > 0f)
+                if (knockbackForce.magnitude > 0f)
                 {
-                    var newForce = force * 1.2f;
-                    var newDirection = direction;
-                    newDirection.y += 0.6f;
-                    movement.AddForce(newForce * newDirection);
+                    var newForce = knockbackForce * 1.2f;
+                    newForce.y += 0.6f;
+                    movement.AddForce(newForce);
                 }
             }
             else
@@ -253,12 +255,13 @@ namespace Assets.Scripts.Battle.Actor
                     state.TransitionTo<StaggerState>();
                 }
 
-                if (force > 0)
+                if (knockbackForce.magnitude > 0)
                 {
+                    var applyForce = knockbackForce;
                     if (!state.IsStaggered())
-                        direction.y = 0;
+                        applyForce.y = 0;
 
-                    movement.AddForce(force * direction);
+                    movement.AddForce(applyForce);
                 }
             }
 
@@ -267,7 +270,7 @@ namespace Assets.Scripts.Battle.Actor
 
             // Trigger temporary slowdown effect on damage
             if (isControllable && SlowdownManager.instance != null)
-                SlowdownManager.instance.TriggerTemporarySlowdown(0.4f, new AnimationCurve());
+                SlowdownManager.instance.TriggerTemporarySlowdown(0.4f);
         }
 
         public void DealDamage(DamageInstance damageInstance, Actor targetActor, BaseAction action)
@@ -333,16 +336,10 @@ namespace Assets.Scripts.Battle.Actor
         private void StaminaRegen()
         {
             // Regen when in idle state
-            if (state.IsIdle())
+            if (state.IsIdle() || state.IsStaggered())
             {
                 Runtime.DealStaminaDamage(-Runtime.staminaRegenRate * 5 * StaminaRegenRate * Time.deltaTime);
                 return;
-            }
-
-            // Also regen when standing still during movement (joystick in deadzone)
-            if (state.CurrentState is MoveState moveState)
-            {
-                Runtime.DealStaminaDamage(-Runtime.staminaRegenRate * 5 * StaminaRegenRate * Time.deltaTime * (1 - moveState.action.Direction.magnitude));
             }
         }
         private void UpdateActionCooldowns()

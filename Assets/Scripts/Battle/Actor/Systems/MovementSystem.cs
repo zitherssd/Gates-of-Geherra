@@ -40,6 +40,11 @@ namespace Assets.Scripts.Battle.Actor.Systems
             physicMaterial.frictionCombine = PhysicMaterialCombine.Multiply;
         }
 
+        public float GetSpeed()
+        {
+            return rigidbody.velocity.magnitude;
+        }
+        
         public void FaceDirection(Vector3 direction)
         {
             //Face the enemy

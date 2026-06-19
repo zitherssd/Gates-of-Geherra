@@ -100,8 +100,8 @@ namespace Assets.Scripts.Utility
             if (!Override)
             {
                 var input = Mathf.Clamp( playerActor.target.LargestDirectionFromEnemies().magnitude, 1, 30);
-                UpDistance = LinearMap(input, 1, 30, 1.7f, 5f);
-                BackDistance = LinearMap(input, 1, 30, 3.3f, 11);
+                UpDistance = LinearMap(input, 1, 16, 1.7f, 5f);
+                BackDistance = LinearMap(input, 1, 30, 3.3f, 16f);
             }
 
             directionvector = Vector3.ProjectOnPlane(directionvector, Vector3.up).normalized;

@@ -1,0 +1,110 @@
+{
+  "project": "Gates of Gehera",
+  "generatedDate": "2026-06-18",
+  "singletons": [
+    { "name": "GameSession", "type": "MonoBehaviour", "dontDestroyOnLoad": true, "access": "GameSession.Instance" },
+    { "name": "SaveManager", "type": "MonoBehaviour", "dontDestroyOnLoad": true, "access": "SaveManager.instance" },
+    { "name": "BattleManager", "type": "MonoBehaviour", "dontDestroyOnLoad": false, "access": "BattleManager.instance" },
+    { "name": "GameFlowManager", "type": "MonoBehaviour", "dontDestroyOnLoad": false, "access": "GameFlowManager.instance" },
+    { "name": "UIManager", "type": "MonoBehaviour", "dontDestroyOnLoad": false, "access": "UIManager.instance" },
+    { "name": "CameraManager", "type": "MonoBehaviour", "dontDestroyOnLoad": false, "access": "CameraManager.instance" },
+    { "name": "SlowdownManager", "type": "MonoBehaviour", "dontDestroyOnLoad": false, "access": "SlowdownManager.instance" },
+    { "name": "SoundManager", "type": "MonoBehaviour", "dontDestroyOnLoad": false, "access": "SoundManager.instance" },
+    { "name": "FloorManager", "type": "MonoBehaviour", "dontDestroyOnLoad": false, "access": "FloorManager.instance" },
+    { "name": "SkillGenerator", "type": "MonoBehaviour", "dontDestroyOnLoad": false, "access": "SkillGenerator.instance" },
+    { "name": "TrainingManager", "type": "MonoBehaviour", "dontDestroyOnLoad": false, "access": "TrainingManager.instance" },
+    { "name": "InputHandler", "type": "MonoBehaviour", "dontDestroyOnLoad": false, "access": "InputHandler.instance" },
+    { "name": "ItemEventBus", "type": "StaticClass", "dontDestroyOnLoad": true, "access": "ItemEventBus.Raise()" },
+    { "name": "TimeLockManager", "type": "StaticClass", "dontDestroyOnLoad": true, "access": "TimeLockManager.Add/Get/Remove()" }
+  ],
+  "systems": [
+    {
+      "name": "Combat",
+      "mainScripts": ["Actor", "ActorStateMachine", "BaseAction", "BaseSkill", "AttackSkill", "GenericSkill", "ProjectileAttack", "DamageInstance"],
+      "dependsOn": ["SlowdownManager", "CameraManager", "BattleManager", "StatusManager", "ItemEventBus"],
+      "dataAssets": ["ActorDefinition", "BaseAction subclasses"]
+    },
+    {
+      "name": "AI",
+      "mainScripts": ["AIBT", "BTNode", "Behaviors/*", "Conditions/*"],
+      "dependsOn": ["Actor", "TargetingSystem", "MovementSystem"],
+      "dataAssets": ["ActorDefinition.AIRuleset"]
+    },
+    {
+      "name": "Progression",
+      "mainScripts": ["FloorManager", "SkillGenerator", "TrainingManager", "GameSession"],
+      "dependsOn": ["BattleManager", "UIManager", "SoundManager", "SaveManager", "TimeLockManager"],
+      "dataAssets": ["BattleDefinition", "BaseAction (droptable)"]
+    },
+    {
+      "name": "SaveSystem",
+      "mainScripts": ["SaveManager", "SaveData", "ActorSaveData", "ActionDatabase"],
+      "dependsOn": ["GameSession", "UIManager", "FloorManager", "ActionDatabase"],
+      "dataAssets": ["Action Database.asset"]
+    },
+    {
+      "name": "UI",
+      "mainScripts": ["UIManager", "ActionButtonBattle", "ActionButtonInventory", "DropSlot", "SkillCard", "StatPanelUI"],
+      "dependsOn": ["BattleManager", "GameSession", "SlowdownManager"],
+      "dataAssets": ["ActionButton.prefab", "SkillCard.prefab"]
+    },
+    {
+      "name": "Items",
+      "mainScripts": ["BaseItem", "BaseConsumable", "BaseTrinket", "ActorInventory", "ItemEventBus"],
+      "dependsOn": ["SaveManager", "BattleEndState"],
+      "dataAssets": ["BaseItem SOs", "BaseConsumable SOs", "BaseTrinket SOs"]
+    },
+    {
+      "name": "StatusEffects",
+      "mainScripts": ["StatusManager", "BaseStatus", "PoisonStatus", "DamageMultiplierStatus", "BlockStatus"],
+      "dependsOn": ["Actor"],
+      "dataAssets": ["DamageMultiplierStatus.asset", "PoisonStatus.asset"]
+    },
+    {
+      "name": "Audio",
+      "mainScripts": ["SoundManager", "AudioManager"],
+      "dependsOn": [],
+      "dataAssets": ["AudioClips (UNVERIFIED)"]
+    },
+    {
+      "name": "Input",
+      "mainScripts": ["InputHandler", "JoystickManager", "ModifiedOnScreenStick", "SlowdownInputController"],
+      "dependsOn": ["SlowdownManager", "BattleManager"],
+      "dataAssets": ["InputActionReference assets"]
+    },
+    {
+      "name": "Camera",
+      "mainScripts": ["CameraManager", "CameraOcclusionManager"],
+      "dependsOn": ["GameSession", "BattleManager", "Actor.TargetingSystem"],
+      "dataAssets": []
+    },
+    {
+      "name": "TimeControl",
+      "mainScripts": ["SlowdownManager", "SlowdownInputController", "SlowdownVisualEffect"],
+      "dependsOn": ["Actor (isControllable flag)"],
+      "dataAssets": []
+    }
+  ],
+  "events": [
+    { "event": "GameSession.OnPlayerSpawned", "producer": "ArenaBootstrapper/GameFlowManager", "consumers": ["CameraManager"] },
+    { "event": "Actor.OnBeforeTakeDamage", "producer": "Actor.ApplyDamageInstance", "consumers": ["Items (DamageMultiplier)"] },
+    { "event": "Actor.OnAfterTakeDamage", "producer": "Actor.ApplyDamageInstance", "consumers": ["UNVERIFIED"] },
+    { "event": "Actor.OnActionUsed", "producer": "Actor.UseAction", "consumers": ["UNVERIFIED"] },
+    { "event": "BaseAction.OnActionEnded", "producer": "BaseAction.EndAction", "consumers": ["Actor.OnActionEnded -> state transition"] },
+    { "event": "UIManager.OnHideUI", "producer": "UIManager.HideUI", "consumers": ["UNVERIFIED"] },
+    { "event": "UIManager.OnShowUI", "producer": "UIManager.ShowUI", "consumers": ["UNVERIFIED"] },
+    { "event": "ItemEventBus.OnNewBattle", "producer": "BattleStartState.Enter", "consumers": ["BaseTrinket effects"] },
+    { "event": "ItemEventBus.OnNewFloor", "producer": "FloorManager.ProgressToNextFloor", "consumers": ["BaseTrinket effects"] },
+    { "event": "ItemEventBus.OnDamageTaken", "producer": "Actor.ApplyDamageInstance", "consumers": ["BaseTrinket effects"] },
+    { "event": "SlowdownManager.OnStateSlowdownStart", "producer": "SlowdownManager.EnterStateSlowdown", "consumers": ["SlowdownVisualEffect"] },
+    { "event": "SlowdownManager.OnStateSlowdownEnd", "producer": "SlowdownManager.ExitStateSlowdown", "consumers": ["SlowdownVisualEffect"] }
+  ],
+  "sceneTransitions": [
+    { "from": "TitleScene", "to": "CaveScene", "trigger": "New game start" },
+    { "from": "TitleScene", "to": "SandboxScene", "trigger": "Sandbox button" },
+    { "from": "CaveScene", "to": "TitleScene", "trigger": "Player death" },
+    { "from": "CaveScene", "to": "ArenaScenes/Crossing", "trigger": "EnterBattle with arena != None" },
+    { "from": "ArenaScenes/*", "to": "CaveScene", "trigger": "Battle end (ReturnScene)" },
+    { "from": "ArenaScenes/*", "to": "TitleScene", "trigger": "Player death" }
+  ]
+}

@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.Pattern;
 using Assets.Scripts.Save;
 using Assets.Scripts.Utility;
+using Assets.Scripts.Game;
 using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -42,9 +43,8 @@ namespace Assets.Scripts.Battle.Manager.States
                 {
                     FinalHitDealth?.Invoke();
                     // Final hit slowdown effect
-                    UIManager.instance.ResetMeter();
-                    if (SlowdownManager.instance != null)
-                        SlowdownManager.instance.TriggerTemporarySlowdown(2f, new AnimationCurve());
+                    SlowdownManager.instance?.ExitStateSlowdown();
+                    SlowdownManager.instance?.TriggerTemporarySlowdown(2f);
                     UIManager.instance.DisableUI();
                     CameraManager.instance.SlowTrack = true;
                     exitStep = true;
@@ -53,9 +53,8 @@ namespace Assets.Scripts.Battle.Manager.States
                 if (battleManager.PlayerActors.TrueForAll(actor => actor.Runtime.isDead())) // Last hit dealt now
                 {
                     // Final hit slowdown effect
-                    UIManager.instance.ResetMeter();
-                    if (SlowdownManager.instance != null)
-                        SlowdownManager.instance.TriggerTemporarySlowdown(2f, new AnimationCurve());
+                    SlowdownManager.instance?.ExitStateSlowdown();
+                    SlowdownManager.instance?.TriggerTemporarySlowdown(2f);
                     UIManager.instance.DisableUI();
                     CameraManager.instance.SlowTrack = true;
                     exitStep = true;
@@ -70,6 +69,8 @@ namespace Assets.Scripts.Battle.Manager.States
                 else if (battleManager.PlayerActors.TrueForAll(actor => !actor.state.IsAlive())) // All players are in death state
                 {
                     SaveManager.instance.DeleteSave(SaveManager.instance.currentSaveSlot);
+                    if (GameSession.Exists)
+                        GameSession.Instance.ClearRun();
                     battleManager.StartCoroutine(battleManager.WaitForSeconds(2f, () => { SceneManager.LoadScene("TitleScene"); }));
                 }
 

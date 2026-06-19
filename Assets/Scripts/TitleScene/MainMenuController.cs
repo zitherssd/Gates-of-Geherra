@@ -1,5 +1,6 @@
 using Assets.Scripts;
 using Assets.Scripts.Battle.Actor;
+using Assets.Scripts.Game;
 using Assets.Scripts.Save;
 using System.Collections;
 using System.Collections.Generic;
@@ -32,6 +33,8 @@ public class MainMenuController : MonoBehaviour
     public void StartNewGame(int slot)
     {
         SaveManager.instance.currentSaveSlot = slot;
+        if (GameSession.Exists)
+            GameSession.Instance.ClearRun();
 
         //SceneManager.LoadScene("CaveScene");
     }

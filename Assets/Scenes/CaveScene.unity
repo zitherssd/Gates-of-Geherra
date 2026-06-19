@@ -214880,6 +214880,7 @@ GameObject:
   - component: {fileID: 1899119112}
   - component: {fileID: 1899119113}
   - component: {fileID: 1899119114}
+  - component: {fileID: 1899119115}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -215001,45 +215002,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e0962374405dde45b56109c9b255127, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stateSlowdownStartCurve:
+  stateEnterCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
-      inSlope: 0.18497689
-      outSlope: 0.18497689
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.11884426
-    - serializedVersion: 3
-      time: 0.33620137
-      value: 0.35539904
-      inSlope: -1.2134361
-      outSlope: -1.2134361
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.025218213
-    - serializedVersion: 3
-      time: 1
-      value: 0.04
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  stateSlowdownEndCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0.04
+      value: 0
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -215058,7 +215026,71 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  targetSlowdownTimeScale: 0.05
+  stateExitCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  stateTargetTimeScale: 0.05
+  stateTransitionDuration: 0.1
+  holdTransitionCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  holdTransitionDuration: 0.5
+  debugMode: 0
+--- !u!114 &1899119115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1899119105}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 282b4d87749c3b049a773bc3c41b7e8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ignoreUiInteractions: 1
 --- !u!1 &1908580419
 GameObject:
   m_ObjectHideFlags: 0
