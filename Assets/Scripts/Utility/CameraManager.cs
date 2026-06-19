@@ -2,6 +2,8 @@
 using Assets.Scripts.Battle.Actor;
 using Assets.Scripts.Battle.Manager;
 using Assets.Scripts.Game;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Assets.Scripts.Utility
@@ -88,12 +90,10 @@ namespace Assets.Scripts.Utility
             if (playerActor == null || playerTransform == null) return;
 
             Vector3 targetpos;
-            Vector3 weightedEnemyPosition = playerActor.target.GetWeightedAverageEnemyPosition();
+            Vector3 focusPoint = GetBattleFocusPoint();
 
-            distvector = (weightedEnemyPosition + playerTransform.position) / 2; //start point 
-            distvector = new Vector3(distvector.x, 0, distvector.z);
-            directionvector = (weightedEnemyPosition - playerTransform.position) / 2;
-            directionvector = new Vector3(directionvector.x, 0, directionvector.z);
+            distvector = new Vector3(focusPoint.x, 0, focusPoint.z);
+            directionvector = GetBattleSideAxis();
 
             //Debug.Log($"distvector Vector: {directionvector}, directionvector Vector: {directionvector}");
 
@@ -107,7 +107,7 @@ namespace Assets.Scripts.Utility
             directionvector = Vector3.ProjectOnPlane(directionvector, Vector3.up).normalized;
             if (Vector3.Dot(directionvector, transform.right) < 0)
             {
-                // Flip directionvector to align with cameraMain.right
+                // Keep the camera's side axis stable as the fight moves around.
                 directionvector = -directionvector;
             }
             //if (!SlowTrack)
@@ -152,22 +152,12 @@ namespace Assets.Scripts.Utility
             }
             else transform.position = targetpos;
             if (!SlowTrack)
-                transform.LookAt(distvector + Vector3.up * 0.5f);
+                transform.LookAt(focusPoint + Vector3.up * 0.5f);
 
             else
             {
-                var playertarget = playerActor.target.target;
-                if (playertarget != null)
-                {
-                    NEWdistvector = (playertarget.transform.position + playerTransform.position) / 2; //start point 
-                    NEWdistvector = new Vector3(distvector.x, 0, distvector.z);
-                }
-                else
-                {
-                    NEWdistvector = (playerTransform.position + playerTransform.forward);
-                    NEWdistvector = new Vector3(distvector.x, 0, distvector.z);
-                }
-                Vector3 targetRotation = (NEWdistvector + Vector3.up * 0.5f) - transform.position;
+                NEWdistvector = new Vector3(focusPoint.x, 0, focusPoint.z);
+                Vector3 targetRotation = (focusPoint + Vector3.up * 0.5f) - transform.position;
                 Quaternion endRotation = Quaternion.LookRotation(targetRotation);
 
                 // Smoothly rotate towards the target rotation
@@ -206,6 +196,67 @@ namespace Assets.Scripts.Utility
         float LinearMap(float input, float inputMin, float inputMax, float outputMin, float outputMax)
         {
             return outputMin + (outputMax - outputMin) * ((input - inputMin) / (inputMax - inputMin));
+        }
+
+        private Vector3 GetBattleFocusPoint()
+        {
+            var positions = new List<Vector3> { playerTransform.position };
+
+            if (BattleManager.instance != null && BattleManager.instance.EnemyActors != null)
+            {
+                positions.AddRange(BattleManager.instance.EnemyActors
+                    .Where(actor => actor != null && actor.Runtime != null && !actor.Runtime.isDead())
+                    .Select(actor => actor.transform.position));
+            }
+
+            if (positions.Count == 0)
+                return playerTransform.position + playerTransform.forward * 2f;
+
+            Vector3 sum = Vector3.zero;
+            foreach (var position in positions)
+                sum += position;
+
+            return sum / positions.Count;
+        }
+
+        private Vector3 GetBattleSideAxis()
+        {
+            var positions = new List<Vector3> { playerTransform.position };
+
+            if (BattleManager.instance != null && BattleManager.instance.EnemyActors != null)
+            {
+                positions.AddRange(BattleManager.instance.EnemyActors
+                    .Where(actor => actor != null && actor.Runtime != null && !actor.Runtime.isDead())
+                    .Select(actor => actor.transform.position));
+            }
+
+            if (positions.Count < 2)
+                return playerTransform.forward;
+
+            Vector3 bestAxis = Vector3.zero;
+            float bestDistanceSqr = 0f;
+
+            for (int i = 0; i < positions.Count; i++)
+            {
+                for (int j = i + 1; j < positions.Count; j++)
+                {
+                    Vector3 axis = Vector3.ProjectOnPlane(positions[j] - positions[i], Vector3.up);
+                    float distanceSqr = axis.sqrMagnitude;
+                    if (distanceSqr > bestDistanceSqr)
+                    {
+                        bestDistanceSqr = distanceSqr;
+                        bestAxis = axis;
+                    }
+                }
+            }
+
+            if (bestAxis.sqrMagnitude < 0.0001f)
+                bestAxis = Vector3.ProjectOnPlane(playerTransform.forward, Vector3.up);
+
+            if (bestAxis.sqrMagnitude < 0.0001f)
+                bestAxis = transform.right;
+
+            return bestAxis.normalized;
         }
 
 
