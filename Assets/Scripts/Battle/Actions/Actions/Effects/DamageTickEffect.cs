@@ -21,11 +21,23 @@ namespace Assets.Scripts.Battle.Actions.Actions.Effects
         {
             var gs = action as GenericSkill;
             HitboxEffect = gs.OnStartEffects.Where(item => item is IHitbox).FirstOrDefault() as IHitbox;
+            if (HitboxEffect == null)
+            {
+                foreach (var window in gs.animationPhase.hitWindows)
+                {
+                    HitboxEffect = window.windowEffects.OfType<IHitbox>().FirstOrDefault();
+                    if (HitboxEffect != null)
+                        break;
+                }
+            }
             timer = 0f;
         }
 
         public void Update(Actor.Actor actor, BaseAction action, float dt)
         {
+            if (HitboxEffect == null)
+                return;
+
             timer += dt;
             if (timer >= tickRate)
             {

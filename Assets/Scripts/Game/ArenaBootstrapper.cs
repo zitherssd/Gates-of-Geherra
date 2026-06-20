@@ -28,6 +28,9 @@ namespace Assets.Scripts.Game
         private void Start()
         {
             var session = GameSession.Instance;
+            if (session.PlayerRuntime == null)
+                session.StartNewRun(null);
+
             var battle = session.PendingBattle != null ? session.PendingBattle : debugBattle;
             if (battle == null)
             {
@@ -62,8 +65,16 @@ namespace Assets.Scripts.Game
             // BattleStartState re-enables them when the fight begins.
             if (UIManager.instance != null)
             {
-                UIManager.instance.InitializePlayerActionButtonPrefabs(player.Runtime.actions, session.Loadout);
-                UIManager.instance.DisableBattleSkills();
+                var actions = session.PlayerRuntime != null ? session.PlayerRuntime.actions : null;
+                if (actions != null)
+                {
+                    UIManager.instance.InitializePlayerActionButtonPrefabs(actions, session.Loadout);
+                    UIManager.instance.DisableBattleSkills();
+                }
+                else
+                {
+                    Debug.LogWarning($"{nameof(ArenaBootstrapper)}: player runtime actions not available; skipping action button initialization.");
+                }
             }
 
             session.PendingBattle = null;

@@ -68,6 +68,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
         public override void OnUpdate(float dt)
         {
             actionElapsedTime += dt;
+            int previousFrame = currentFrame;
             
             // Accumulate frame time based on current animator speed
             // This prevents frame skipping when animator speed changes mid-action
@@ -81,12 +82,17 @@ namespace Assets.Scripts.Battle.Actions.Skills
             {
                 var window = animationPhase.hitWindows[i];
                 bool isActive = currentFrame >= window.startFrame && currentFrame <= window.endFrame;
+                bool skippedOverWindow = previousFrame < window.startFrame && currentFrame > window.endFrame;
+                bool shouldTriggerEffects = isActive || skippedOverWindow;
                 
                 
-                if (isActive)
+                if (shouldTriggerEffects)
                 {
-                    anyWindowActive = true;
                     currentActiveWindowIndex = i;
+                    if (isActive)
+                    {
+                        anyWindowActive = true;
+                    }
 
                     // Optional per-player trigger limit for this window.
                     if (!hitWindowManager.CanTriggerWindowForPlayer(_caster, i))
@@ -101,6 +107,9 @@ namespace Assets.Scripts.Battle.Actions.Skills
                         {
                             if (effect is IEndableEffect endable && !runtimeEndEffects.Contains(endable))
                                 runtimeEndEffects.Add(endable);
+
+                            if (effect is IUpdateableEffect updateable && !runtimeUpdateEffects.Contains(updateable))
+                                runtimeUpdateEffects.Add(updateable);
                             
                             effect.Eval(_caster, this);
                         }

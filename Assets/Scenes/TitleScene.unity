@@ -4175,6 +4175,7 @@ MonoBehaviour:
   StartButton: {fileID: 1617536486}
   SandboxButton: {fileID: 2056430993}
   NamePromptPanel: {fileID: 638713685}
+  sandboxBattleDefinition: {fileID: 11400000, guid: 4c1b6fd6a520c184bb73245d210a6fdd, type: 2}
 --- !u!4 &2126781443
 Transform:
   m_ObjectHideFlags: 0

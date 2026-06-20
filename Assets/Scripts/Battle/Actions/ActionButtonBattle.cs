@@ -39,13 +39,30 @@ namespace Assets.Scripts.Battle.Actions
         private void Start()
         {
             if (referencedAction == null) referencedAction = GetComponent<ActionButtonHandler>().referencedAction;
-            if (player == null) player = BattleManager.instance.PlayerActors[0];
+            TryResolvePlayer();
             home = transform.parent;
             LeanTween.scale(gameObject, Vector3.one, 0.4f).setEaseOutBack().setIgnoreTimeScale(true);
         }
 
         private void Update()
         {
+            if (referencedAction == null)
+            {
+                var handler = GetComponent<ActionButtonHandler>();
+                if (handler != null)
+                    referencedAction = handler.referencedAction;
+            }
+
+            TryResolvePlayer();
+
+            if (player == null || referencedAction == null)
+            {
+                SetInteractable(false);
+                if (cooldownimage != null)
+                    cooldownimage.fillAmount = 0;
+                return;
+            }
+
             bool isCurrentlyRunningContinuous = (player.GetCurrentAction() == referencedAction &&
                                      (referencedAction.Type == BUTTONTYPE.CONTINNUOUS || referencedAction.Type == BUTTONTYPE.CONTINUOUS_VECTOR));
 
@@ -64,6 +81,16 @@ namespace Assets.Scripts.Battle.Actions
                 guide.transform.position = player.transform.position + GetRelativeToCamera(deltaScaled * referencedAction.StickMult);
                 referencedAction.Direction = GetRelativeToCamera(deltaScaled);
             }
+        }
+
+        private void TryResolvePlayer()
+        {
+            if (player != null) return;
+
+            if (BattleManager.instance == null || BattleManager.instance.PlayerActors == null || BattleManager.instance.PlayerActors.Count == 0)
+                return;
+
+            player = BattleManager.instance.PlayerActors[0];
         }
 
         private void OnDisable()

@@ -1,5 +1,6 @@
 using Assets.Scripts;
 using Assets.Scripts.Battle.Actor;
+using Assets.Scripts.Battle.Manager;
 using Assets.Scripts.Game;
 using Assets.Scripts.Save;
 using System.Collections;
@@ -16,6 +17,7 @@ public class MainMenuController : MonoBehaviour
     public Button StartButton;
     public Button SandboxButton;
     public TMP_InputField NamePromptPanel;
+    public BattleDefinition sandboxBattleDefinition;
 
     public void Awake()
     {
@@ -51,6 +53,10 @@ public class MainMenuController : MonoBehaviour
     }
     public void StartSandbox()
     {
+        if (GameSession.Instance.PlayerRuntime == null)
+            GameSession.Instance.StartNewRun(null);
+
+        GameSession.Instance.PendingBattle = sandboxBattleDefinition;
         SceneManager.LoadScene("SandboxScene");
     }
 }

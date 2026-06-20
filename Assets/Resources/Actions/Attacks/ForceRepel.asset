@@ -1,0 +1,96 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5a2e800b20efe647a3894bd700a7333, type: 3}
+  m_Name: ForceRepel
+  m_EditorClassIdentifier: 
+  guid: 286b2c3c0ed136d4db82da603fb36818
+  Type: 0
+  Name: Repel
+  Rarity: 0
+  Description: Push them away
+  CooldownTimer: 15
+  TotalUses: 0
+  remainingUses: 0
+  BuildupCost: 15
+  BuildupGain: 0
+  StaminaCost: 17
+  Tags: 
+  Direction: {x: 0, y: 0, z: 0}
+  currentCooldownTimer: 0
+  StickMult: 1
+  Animation: 6
+  animationPhase:
+    animation: 6
+    windupTimeMult: 1
+    recoveryTimeMult: 1
+    hitWindows:
+    - displayName: Frame 0 setup
+      startFrame: 0
+      endFrame: 0
+      maxHitsPerEnemy: 0
+      maxTriggersPerPlayer: 0
+      windowEffects:
+      - rid: 3754567693683130368
+    - displayName: Force
+      startFrame: 20
+      endFrame: 20
+      maxHitsPerEnemy: 1
+      maxTriggersPerPlayer: 0
+      windowEffects:
+      - rid: 3754567693683130369
+      - rid: 3754567693683130370
+      - rid: 3754567693683130372
+  OnStartEffects: []
+  OnEndEffects: []
+  OnUpdateEffects: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 3754567693683130368
+      type: {class: ShowHitboxOnPlayer, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      data:
+        HitboxPoints:
+        - {x: 1, y: 0, z: 0}
+        - {x: 0.86, y: 0, z: 0.5}
+        - {x: 0.5, y: 0, z: 0.86}
+        - {x: 0, y: 0, z: 1}
+        - {x: -0.5, y: 0, z: 0.86}
+        - {x: -0.86, y: 0, z: 0.5}
+        - {x: -1, y: 0, z: 0}
+        - {x: -0.86, y: 0, z: -0.5}
+        - {x: -0.5, y: 0, z: -0.86}
+        - {x: 0, y: 0, z: -1}
+        - {x: 0.5, y: 0, z: -0.86}
+        - {x: 0.86, y: 0, z: -0.5}
+        HitboxScale: 1
+    - rid: 3754567693683130369
+      type: {class: DamageEffect, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      data:
+        UseHitbox: 1
+        DamageData:
+          Damage: 0
+          PostureDamage: 12
+          KnockbackForce: 2.5
+          KnockbackForceUp: 0
+          KnockbackType: 1
+          StrengthScaling: 0
+          AgilityScaling: 0
+          MindScaling: 0
+          BuildupGainOnHit: 4
+    - rid: 3754567693683130370
+      type: {class: ClearHitbox, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      data: 
+    - rid: 3754567693683130372
+      type: {class: PlayParticleEffect, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      data:
+        psPrefab: {fileID: 797784518864179116, guid: 5edac89522a3e634b81eca01e3f9a501, type: 3}
+        OnPlayer: 1
