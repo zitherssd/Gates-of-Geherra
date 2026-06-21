@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyActors:
   - {fileID: 11400000, guid: 7b1857963b332e64b87b7f2be2c368a7, type: 2}
-  enemyStartPosition: []
+  arena: 1
+  spawnGroup: 1
   Level: Original
-  playerStartPosition: {fileID: 0}
   RewardPool: {fileID: 0}
   RewardItemsPools:
   - {fileID: 11400000, guid: 3ec2e97b6c3eb8f42a37ad763d550b15, type: 2}

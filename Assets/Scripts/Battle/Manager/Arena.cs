@@ -24,7 +24,7 @@ namespace Assets.Scripts.Battle.Manager
         {
             switch (arena)
             {
-                case Arena.Cave: return "CaveScene";
+                case Arena.Cave: return "Cave";
                 case Arena.Debug: return "DebugScene";
                 case Arena.Sandbox: return "SandboxScene";
                 case Arena.Crossing: return "Crossing";

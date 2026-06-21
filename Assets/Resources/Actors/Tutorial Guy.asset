@@ -13,14 +13,20 @@ MonoBehaviour:
   m_Name: Tutorial Guy
   m_EditorClassIdentifier: 
   guid: 5b523a4d0ce46db4f837f2ec1400e176
-  Name: Player
+  Name: Dummy
   hpBars:
   - _currentHp: 0
     maxHp: 50
     alive: 1
-  maxBuildup: 30
-  maxPosture: 10
-  maxStamina: 50
+  baseMaxBuildup: 0
+  baseMaxPosture: 15
+  baseMaxStamina: 0
+  Strength: 0
+  Agility: 0
+  Mind: 0
+  Spirit: 0
+  postureRegenRate: 1
+  staminaRegenRate: 1
   Controllable: 0
   AIRuleset: 0
   mainColor: {r: 1, g: 1, b: 1, a: 0}
@@ -28,15 +34,3 @@ MonoBehaviour:
   startingItems: []
   baseActions:
   - {fileID: 11400000, guid: eb94d8da9dbb0de4f9022395c5c28ce9, type: 2}
-  actions:
-  - {fileID: 0}
-  items: []
-  currentBuildup: 0
-  currentPosture: 10
-  currentStamina: 50
-  postureRegenRate: 1
-  staminaRegenRate: 1
-  ATK: 1
-  DEF: 1
-  AGI: 5
-  Spirit: 0

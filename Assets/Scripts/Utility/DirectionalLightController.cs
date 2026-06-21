@@ -22,6 +22,7 @@ public class DirectionalLightController : MonoBehaviour
             return battleDef.arena switch
             {
                 Arena.Crossing => 77f,
+                Arena.Cave => 0.4f,
                 _ => 0.5f // Default for other arenas
             };
         }

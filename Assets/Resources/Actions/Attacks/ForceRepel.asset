@@ -30,8 +30,8 @@ MonoBehaviour:
   Animation: 6
   animationPhase:
     animation: 6
-    windupTimeMult: 1
-    recoveryTimeMult: 1
+    windupTimeMult: 0.7
+    recoveryTimeMult: 0.2
     hitWindows:
     - displayName: Frame 0 setup
       startFrame: 0

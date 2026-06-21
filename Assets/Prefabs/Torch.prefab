@@ -31,7 +31,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 6.19, y: -0.012, z: -0.43}
-  m_LocalScale: {x: 0.25699335, y: 0.31974688, z: 0.27486402}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3892146978936326007}
@@ -1924,7 +1924,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 3778
+  m_VersionIndex: 3784
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -2222,7 +2222,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4998466031612692028, guid: 5debdae775f62c142a4537ff42a492da, type: 3}
       propertyPath: m_Range
-      value: 12
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4998466031612692028, guid: 5debdae775f62c142a4537ff42a492da, type: 3}
       propertyPath: m_Color.g
@@ -2237,8 +2237,12 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4998466031612692028, guid: 5debdae775f62c142a4537ff42a492da, type: 3}
-      propertyPath: m_Shadows.m_Type
+      propertyPath: m_Lightmapping
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4998466031612692028, guid: 5debdae775f62c142a4537ff42a492da, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4998466031612692030, guid: 5debdae775f62c142a4537ff42a492da, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2249,7 +2253,8 @@ PrefabInstance:
       value: 2.83
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 4998466031134278797, guid: 5debdae775f62c142a4537ff42a492da, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5debdae775f62c142a4537ff42a492da, type: 3}

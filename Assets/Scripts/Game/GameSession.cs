@@ -4,6 +4,7 @@ using Assets.Scripts.Battle.Actor;
 using Assets.Scripts.Battle.Manager;
 using Assets.Scripts.Save;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Assets.Scripts.Game
 {
@@ -55,6 +56,9 @@ namespace Assets.Scripts.Game
         /// <summary>Persisted action-button layout, so the player's arrangement survives scene loads.</summary>
         public List<ActionSlotSaveData> Loadout;
 
+        /// <summary>Sandbox-only action-button layout, isolated from the regular run layout.</summary>
+        public List<ActionSlotSaveData> SandboxLoadout;
+
         /// <summary>Raised after the player body is spawned and bound in the current scene.</summary>
         public event Action<Actor> OnPlayerSpawned;
 
@@ -94,6 +98,7 @@ namespace Assets.Scripts.Game
             PendingBattle = null;
             ReturnScene = null;
             Loadout = null;
+            SandboxLoadout = null;
         }
 
         /// <summary>Adopt a runtime that was just hydrated from a save into a body.</summary>
@@ -113,6 +118,27 @@ namespace Assets.Scripts.Game
             PendingBattle = null;
             ReturnScene = null;
             Loadout = null;
+            SandboxLoadout = null;
+        }
+
+        /// <summary>
+        /// Returns the active loadout bucket for the current scene context.
+        /// SandboxScene uses an isolated layout; all other scenes use the regular run layout.
+        /// </summary>
+        public List<ActionSlotSaveData> GetActiveLoadout()
+        {
+            return SceneManager.GetActiveScene().name == "SandboxScene" ? SandboxLoadout : Loadout;
+        }
+
+        /// <summary>
+        /// Stores the loadout in the active scene bucket (sandbox or regular).
+        /// </summary>
+        public void SetActiveLoadout(List<ActionSlotSaveData> loadout)
+        {
+            if (SceneManager.GetActiveScene().name == "SandboxScene")
+                SandboxLoadout = loadout;
+            else
+                Loadout = loadout;
         }
 
         /// <summary>Notify listeners that the player body for the current scene is ready.</summary>

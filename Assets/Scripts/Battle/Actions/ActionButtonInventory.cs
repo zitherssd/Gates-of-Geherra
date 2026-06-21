@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Battle.Actions.Skills;
+using Assets.Scripts.Game;
 using Assets.Scripts.Save;
 using Assets.Scripts.Utility;
 using Unity.VisualScripting;
@@ -109,7 +110,12 @@ namespace Assets.Scripts.Battle.Actions
             }
             else
             {
-                // Successful drop, save loadout
+                // Successful drop: persist in-memory layout for the active scene context
+                // (SandboxScene -> SandboxLoadout, other scenes -> regular Loadout).
+                if (GameSession.Exists && UIManager.instance != null)
+                    GameSession.Instance.SetActiveLoadout(UIManager.instance.GetCurrentLoadout());
+
+                // Keep existing disk-save behavior for regular save-slot flow.
                 if (SaveManager.instance != null)
                 {
                     SaveManager.instance.SaveToSlot(SaveManager.instance.currentSaveSlot);

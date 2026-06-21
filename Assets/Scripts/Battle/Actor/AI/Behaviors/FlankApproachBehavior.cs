@@ -58,8 +58,32 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
 
             if (blockingAlly == null)
             {
-                // 3. Path is free, beeline for the player
-                approachDirection = toEnemy;
+                // 3. Path is free. Choose a flank side that is less occupied by allies around the player
+                Vector3 rightTangent = Vector3.Cross(Vector3.up, toEnemy).normalized;
+                float leftCount = 0f;
+                float rightCount = 0f;
+                Vector3 targetPosition = actor.target.TargetPosition;
+
+                foreach (var ally in allies)
+                {
+                    Vector3 allyToTarget = (ally.transform.position - targetPosition).normalized;
+                    float sideDot = Vector3.Dot(allyToTarget, rightTangent);
+                    if (sideDot > 0.35f)
+                    {
+                        rightCount += Mathf.Clamp01(sideDot);
+                    }
+                    else if (sideDot < -0.35f)
+                    {
+                        leftCount += Mathf.Clamp01(-sideDot);
+                    }
+                }
+
+                float crowdStrength = Mathf.Clamp01((leftCount + rightCount - 0.8f) * 0.5f);
+                float balance = rightCount - leftCount;
+                float flankSign = balance > 0 ? -1f : 1f;
+                float sideWeight = Mathf.Clamp01(Mathf.Abs(balance) * 0.4f) * crowdStrength;
+                approachDirection = (toEnemy * (1f - sideWeight) + rightTangent * sideWeight * flankSign);
+
                 directionChangeTimer = 0f; // Reset timer so we make a fresh choice next time we're blocked
             }
             else

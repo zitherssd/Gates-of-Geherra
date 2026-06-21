@@ -20,6 +20,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/ArenaScenes/Crossing.unity
     guid: 4d20b69d4877d7441b319a5efdc512f2
+  - enabled: 1
+    path: Assets/Scenes/ArenaScenes/Cave.unity
+    guid: 2bbe2996960f1af4fb02fccfb8373dee
   m_configObjects:
     com.unity.adaptiveperformance.loader_settings: {fileID: 11400000, guid: 549623a7a7ac97949aaa727f947db7f9, type: 2}
     com.unity.adaptiveperformance.simulator.provider_settings: {fileID: 11400000, guid: fbbd4c757ae43284082e799feeea8ccb, type: 2}

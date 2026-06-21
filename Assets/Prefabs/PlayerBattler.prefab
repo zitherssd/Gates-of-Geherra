@@ -5672,7 +5672,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 1341526326, guid: dbed9846e9655f9489c37ed23450fffa, type: 3}
+  m_Sprite: {fileID: 1619807635, guid: dbed9846e9655f9489c37ed23450fffa, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
   m_FlipY: 0
@@ -16634,9 +16634,10 @@ GameObject:
   - component: {fileID: 7899857719349980933}
   - component: {fileID: 3240682240543084486}
   - component: {fileID: 9029912859238403314}
-  - component: {fileID: 1245344454777916432}
   - component: {fileID: 9049931842800356057}
   - component: {fileID: 8264991979198612096}
+  - component: {fileID: 579974939327943214}
+  - component: {fileID: 5070970560894348778}
   m_Layer: 3
   m_Name: PlayerBattler
   m_TagString: Untagged
@@ -16685,9 +16686,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.3
-  m_Height: 1.2
+  m_Height: 1
   m_Direction: 1
-  m_Center: {x: 0, y: 0.6, z: 0}
+  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!54 &7899857719349980930
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -16923,7 +16924,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4915d9a2fbf625f4a80174075d70d1a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ActorData: {fileID: 11400000, guid: b8a7b1ce80f78164f9e1d2631a3c98fa, type: 2}
+  Definition: {fileID: 11400000, guid: b8a7b1ce80f78164f9e1d2631a3c98fa, type: 2}
   state: {fileID: 0}
   statusManager: {fileID: 0}
   CanRegenPosture: 1
@@ -16931,20 +16932,6 @@ MonoBehaviour:
   StaminaRegenRate: 1
   PostureREgenRate: 1
 --- !u!114 &9029912859238403314
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7899857719349980943}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8e04cc0fc174ca14a91d560adf8e3ed8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  locked: 0
-  currentStateName: 
---- !u!114 &1245344454777916432
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -16970,6 +16957,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0234da6f965db7e489859ed26c0f6ce8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activeStatuses: []
 --- !u!195 &8264991979198612096
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -16992,6 +16980,49 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!64 &579974939327943214
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7899857719349980943}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 0
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 0}
+--- !u!114 &5070970560894348778
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7899857719349980943}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba3e966cc3a8a164ca77fa84092413ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  width: 0.65
+  height: 0.55
+  thickness: 1
+  verticalHeight: 1
+  plane: 1
+  convex: 1
+  keepCapsuleForPhysics: 1
+  createCapsuleIfMissing: 0
+  floorOffset: 0.1
 --- !u!1 &7899857719385047091
 GameObject:
   m_ObjectHideFlags: 0

@@ -21,8 +21,14 @@ MonoBehaviour:
   baseMaxBuildup: 10
   baseMaxPosture: 10
   baseMaxStamina: 20
+  Strength: 2
+  Agility: 1
+  Mind: 1
+  Spirit: 3
+  postureRegenRate: 1
+  staminaRegenRate: 20
   Controllable: 0
-  AIRuleset: 1
+  AIRuleset: 6
   mainColor: {r: 0.4113207, g: 0.4113207, b: 0.4113207, a: 1}
   secondaryColor: {r: 0.5169811, g: 0.09728259, b: 0, a: 1}
   startingItems: []
@@ -30,17 +36,3 @@ MonoBehaviour:
   - {fileID: 11400000, guid: eb94d8da9dbb0de4f9022395c5c28ce9, type: 2}
   - {fileID: 11400000, guid: e6f5605b38a52a7419d7547b23b1c33c, type: 2}
   - {fileID: 11400000, guid: bbf04903c613b684fbee4bea1e99fc92, type: 2}
-  actions:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  items: []
-  currentBuildup: 0
-  currentPosture: 12
-  currentStamina: 100
-  postureRegenRate: 1
-  staminaRegenRate: 20
-  Strength: 2
-  Agility: 1
-  Mind: 1
-  Spirit: 3

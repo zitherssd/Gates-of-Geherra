@@ -46,7 +46,7 @@ namespace Assets.Scripts.Battle.Manager.States
 
                             // Optional: Show some UI feedback that item was awarded
 
-                            TooltipUI.instance.ShowPrompt($"Gained <color=red>{randomItem.ItemName}</color>!");
+                            //TooltipUI.instance.ShowPrompt($"Gained <color=red>{randomItem.ItemName}</color>!");
                             Debug.Log($"Awarded item: {randomItem.ItemName}");
                         }
                     }

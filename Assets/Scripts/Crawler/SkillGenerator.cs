@@ -59,7 +59,7 @@ namespace Assets.Scripts.Crawler
             }
 
             // UI Parent
-            Transform parent = chooseSkillsUI.transform;
+            Transform parent = chooseSkillsUI.gameObject.transform;
 
             for (int i = 0; i < skills.Length; i++)
             {

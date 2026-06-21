@@ -144,9 +144,6 @@ namespace Assets.Scripts.Battle.Actor.AI
             }),
             new SequenceNode(new List<BTNode>
             {
-                new DistanceToPlayerSmallerThan(2.5f),
-                new HesitateCondition(2.5f, 1.5f),
-                new GlobalAttackTokenCondition(1.0f),
                 new AttackWithValidSkill(),
             }),
             new SequenceNode(new List<BTNode>
