@@ -88,6 +88,8 @@ namespace Assets.Scripts.Game
             PlayerRuntime = new ActorRuntime(template);
 
             RollStats(PlayerRuntime);
+            PlayerRuntime.Refresh();
+
             if (!string.IsNullOrEmpty(playerName))
                 PlayerRuntime.Name = playerName;
 
@@ -105,6 +107,7 @@ namespace Assets.Scripts.Game
         public void AdoptPlayerRuntime(ActorRuntime runtime)
         {
             PlayerRuntime = runtime;
+            PlayerRuntime?.UpdateEnergy(DateTime.UtcNow);
         }
 
         /// <summary>Clear all run state (e.g. on player death / returning to the title screen).</summary>
@@ -145,6 +148,11 @@ namespace Assets.Scripts.Game
         public void NotifyPlayerSpawned(Actor player)
         {
             OnPlayerSpawned?.Invoke(player);
+        }
+
+        private void Update()
+        {
+            PlayerRuntime?.UpdateEnergy(DateTime.UtcNow);
         }
 
         private static void RollStats(ActorRuntime runtime)

@@ -50,6 +50,9 @@ namespace Assets.Scripts.Save
         public float currentStamina;
         public float currentPosture;
         public float currentBuildup;
+        public float currentEnergy;
+        public float baseMaxEnergy;
+        public long energyLastUpdatedUnix;
 
         public float postureRegenRate = 1f;
         public float staminaRegenRate = 1f;
@@ -75,6 +78,9 @@ namespace Assets.Scripts.Save
             save.currentStamina = ad.currentStamina;
             save.currentBuildup = ad.currentBuildup;
             save.currentPosture = ad.currentPosture;
+            save.currentEnergy = ad.currentEnergy;
+            save.baseMaxEnergy = ad.baseMaxEnergy;
+            save.energyLastUpdatedUnix = ad.energyLastUpdatedUnix;
             save.maxStamina = ad.baseMaxStamina;
             save.maxPosture = ad.baseMaxPosture;
             save.maxBuildup = ad.baseMaxBuildup;
@@ -125,6 +131,9 @@ namespace Assets.Scripts.Save
             ad.currentStamina = save.currentStamina;
             ad.currentBuildup = save.currentBuildup;
             ad.currentPosture = save.currentPosture;
+            ad.currentEnergy = save.currentEnergy;
+            ad.baseMaxEnergy = save.baseMaxEnergy;
+            ad.energyLastUpdatedUnix = save.energyLastUpdatedUnix;
             ad.baseMaxStamina = save.maxStamina;
             ad.baseMaxBuildup = save.maxBuildup;
             ad.baseMaxPosture = save.maxPosture;
@@ -134,6 +143,7 @@ namespace Assets.Scripts.Save
             ad.Agility = save.CON;
             ad.Mind = save.AGI;
             ad.Spirit = save.Spirit;
+            ad.UpdateEnergy(DateTime.UtcNow);
 
             // Restore HP bars
             ad.hpBars.Clear();

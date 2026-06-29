@@ -34,12 +34,91 @@ namespace Assets.Scripts.Battle.Actor
         public float currentBuildup;
         public float currentPosture;
         public float currentStamina;
+        public float currentEnergy;
+        public float baseMaxEnergy;
+        public long energyLastUpdatedUnix;
 
         public event Action OnDeath;
 
         public float maxBuildup => baseMaxBuildup + Mind;
         public float maxPosture => baseMaxPosture + Strength;
         public float maxStamina => baseMaxStamina + Agility * 2;
+        public float maxEnergy => baseMaxEnergy + Spirit;
+        public float energyRegenRate => 1f / EnergySecondsPerPoint;
+        private const float EnergySecondsPerPoint = 1800f; // 30 mins per energy point
+
+        public DateTime EnergyLastUpdatedUtc => FromUnix(energyLastUpdatedUnix);
+
+        public bool HasEnoughEnergy(int cost)
+        {
+            return currentEnergy >= cost;
+        }
+
+        public void ConsumeEnergy(int amount)
+        {
+            currentEnergy = Mathf.Clamp(currentEnergy - amount, 0, maxEnergy);
+        }
+
+        public void AddEnergy(float amount)
+        {
+            currentEnergy = Mathf.Clamp(currentEnergy + amount, 0, maxEnergy);
+        }
+
+        public void UpdateEnergy(DateTime nowUtc)
+        {
+            if (energyLastUpdatedUnix == 0)
+            {
+                energyLastUpdatedUnix = ToUnix(nowUtc);
+            }
+
+            if (currentEnergy >= maxEnergy)
+            {
+                energyLastUpdatedUnix = ToUnix(nowUtc);
+                return;
+            }
+
+            var elapsedSeconds = (float)(nowUtc - EnergyLastUpdatedUtc).TotalSeconds;
+            if (elapsedSeconds <= 0f)
+            {
+                return;
+            }
+
+            AddEnergy(elapsedSeconds * energyRegenRate);
+            energyLastUpdatedUnix = ToUnix(nowUtc);
+        }
+
+        public float GetSecondsToNextEnergyPoint()
+        {
+            if (currentEnergy >= maxEnergy)
+                return 0f;
+
+            var secondsSinceUpdate = (float)(DateTime.UtcNow - EnergyLastUpdatedUtc).TotalSeconds;
+            var energyGained = secondsSinceUpdate * energyRegenRate;
+            var energyProgress = currentEnergy + energyGained;
+            var nextPoint = Mathf.Ceil(energyProgress) - energyProgress;
+            return Mathf.Max(nextPoint * EnergySecondsPerPoint, 0f);
+        }
+
+        public float GetSecondsToFullEnergy()
+        {
+            if (currentEnergy >= maxEnergy)
+                return 0f;
+
+            var secondsSinceUpdate = (float)(DateTime.UtcNow - EnergyLastUpdatedUtc).TotalSeconds;
+            var energyGained = secondsSinceUpdate * energyRegenRate;
+            var effectiveEnergy = Mathf.Min(currentEnergy + energyGained, maxEnergy);
+            return Mathf.Max((maxEnergy - effectiveEnergy) * EnergySecondsPerPoint, 0f);
+        }
+
+        public static long ToUnix(DateTime time)
+        {
+            return (long)(time - DateTime.UnixEpoch).TotalSeconds;
+        }
+
+        public static DateTime FromUnix(long unix)
+        {
+            return DateTime.UnixEpoch.AddSeconds(unix);
+        }
 
         public ActorRuntime(ActorDefinition definition)
         {
@@ -58,12 +137,14 @@ namespace Assets.Scripts.Battle.Actor
             baseMaxBuildup = Definition.baseMaxBuildup;
             baseMaxPosture = Definition.baseMaxPosture;
             baseMaxStamina = Definition.baseMaxStamina;
+            baseMaxEnergy = 0;
             postureRegenRate = Definition.postureRegenRate;
             staminaRegenRate = Definition.staminaRegenRate;
             Strength = Definition.Strength;
             Agility = Definition.Agility;
             Mind = Definition.Mind;
             Spirit = Definition.Spirit;
+            energyLastUpdatedUnix = ToUnix(DateTime.UtcNow);
 
             if (hpBars == null)
             {
@@ -117,6 +198,8 @@ namespace Assets.Scripts.Battle.Actor
             currentBuildup = 0;
             currentPosture = maxPosture;
             currentStamina = maxStamina;
+            currentEnergy = maxEnergy;
+            energyLastUpdatedUnix = ToUnix(DateTime.UtcNow);
 
             if (actions == null)
             {

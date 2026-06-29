@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Assets.Scripts.Battle;
 using Assets.Scripts.Battle.Actions;
 using Assets.Scripts.Battle.Actor;
+using Assets.Scripts.Battle.Items.UI;
 using Assets.Scripts.Battle.Manager;
 using Assets.Scripts.Game;
 using Assets.Scripts.Utility;
@@ -52,8 +53,18 @@ namespace Assets.Scripts.Crawler
             });
         }
 
+        private const int QuickFightEnergyCost = 4;
+
         public void QuickFight()
         {
+            if (!GameSession.Instance.PlayerRuntime.HasEnoughEnergy(QuickFightEnergyCost))
+            {
+                if (TooltipUI.instance != null)
+                    TooltipUI.instance.ShowPrompt("Not enough Energy to fight.");
+                return;
+            }
+
+            GameSession.Instance.PlayerRuntime.ConsumeEnergy(QuickFightEnergyCost);
             SoundManager.instance.PlaySE("Gong");
             SoundManager.instance.FadeOutMusic();
             UIManager.instance.Fade(true, () =>

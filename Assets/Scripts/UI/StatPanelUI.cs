@@ -14,6 +14,8 @@ public class StatPanelUI : MonoBehaviour
     public TextMeshProUGUI MaxStamina;
     public TextMeshProUGUI MaxBuildup;
     public TextMeshProUGUI MaxPosture;
+    public TextMeshProUGUI Energy;
+    public TextMeshProUGUI TimeToNextEnergy;
     public TextMeshProUGUI STRENGTH;
     public TextMeshProUGUI AGILITY;
     public TextMeshProUGUI MIND;
@@ -60,7 +62,16 @@ public class StatPanelUI : MonoBehaviour
         AGILITY.text = "AGI: " + actorData.Agility;
         MIND.text = "MND: " + actorData.Mind;
         SPIRIT.text = "SPI: " + actorData.Spirit;
-
+        if (Energy != null)
+            Energy.text = $"ENG: {actorData.currentEnergy:0}/{actorData.maxEnergy:0}";
+        var secondsToNextEnergy = actorData.GetSecondsToNextEnergyPoint();
+        if (TimeToNextEnergy != null)
+        {
+        if(secondsToNextEnergy == 0)
+            TimeToNextEnergy.text = "";
+        else
+        TimeToNextEnergy.text = $"{actorData.GetSecondsToNextEnergyPoint():0}";
+        }
     }
     private string GeneratedHPBarString(List<HpBar> bars)
     {

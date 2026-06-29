@@ -13,6 +13,8 @@ namespace Assets.Scripts.Game
         public static TrainingManager instance;
         private bool visible;
 
+        private const int TrainingEnergyCost = 2;
+
 
         private void Awake()
         {
@@ -41,7 +43,7 @@ namespace Assets.Scripts.Game
 
             if (trainingLock == null)
             {
-                trainingButton.interactable = true;
+                trainingButton.interactable = GameSession.Instance.PlayerRuntime.HasEnoughEnergy(TrainingEnergyCost);
                 return;
 
             }
@@ -58,6 +60,14 @@ namespace Assets.Scripts.Game
 
         public void TriggerTraining()
         {
+            if (!GameSession.Instance.PlayerRuntime.HasEnoughEnergy(TrainingEnergyCost))
+            {
+                if (TooltipUI.instance != null)
+                    TooltipUI.instance.ShowPrompt("Not enough Energy to train.");
+                return;
+            }
+
+            GameSession.Instance.PlayerRuntime.ConsumeEnergy(TrainingEnergyCost);
             TimeSpan timespan = TimeSpan.Zero;
             GameFlowManager.instance.trainingsDone++;
             var trainingsDone = GameFlowManager.instance.trainingsDoneThisFloor;
