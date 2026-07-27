@@ -550,7 +550,7 @@ public List<BaseItem> items;  // BaseItem is the abstract base of Consumable, Tr
 
 ### 11.4 `ActionDatabase` must be initialized before save load
 
-`SaveManager.Start()` calls `actionDatabase.Initialize()`. If any code attempts to load a save before `Start()` runs (e.g., in an `Awake()`), GUIDs won't resolve. The initialization order in `RuntimeArchitecture.md` confirms this works for the current start-up path, but it's fragile — guard with a `isInitialized` flag.
+`SaveManager.Start()` calls `actionDatabase.Initialize()`. If any code attempts to load a save before `Start()` runs (e.g., in an `Awake()`), GUIDs won't resolve. The initialization order in `Architecture.md` confirms this works for the current start-up path, but it's fragile — guard with a `isInitialized` flag.
 
 ### 11.5 No save encryption or obfuscation
 

@@ -16,6 +16,60 @@
 
 ---
 
+## Gameplay Overview
+
+### Core Gameplay Loop
+
+1. **Rest Area** — Player starts (or returns after battle) in the rest area inside CaveScene.
+   - Can view stats (`StatPanelUI`), manage skills (`Skills UI`), view items, or trigger training.
+   - Buttons: Descend (next floor boss), Explore (random fight), Train, Skills, Items.
+
+2. **Battle** — A `BattleDefinition` ScriptableObject defines enemies, arena, spawn positions, and reward pools.
+   - Player and enemies are placed in a 3D arena.
+   - Real-time combat using action buttons (drag-drop UI onto four action containers).
+   - Combat ends when all enemies OR the player are dead.
+
+3. **Post-Battle Reward** — `BattleEndState` awards:
+   - Optional item from a `RewardItemsPool` (random pick, probability-gated).
+   - Skill selection: 3 random `BaseAction` ScriptableObjects drawn from the `RewardPool`; player picks one to add to their action library.
+   - Auto-save to current slot.
+
+4. **Return to Rest** — Scene either returns to `CaveScene` rest mode or loads a `ReturnScene` (dedicated arena scene flow).
+
+5. **Death** — Save deleted; player is returned to `TitleScene`.
+
+### Win/Loss Conditions
+
+- **Per-battle win**: All `EnemyActors` reach `DeathState`.
+- **Run win**: [UNVERIFIED] — no explicit "run complete" condition found in code. 5 story battles defined (1st–5th Floor), but no victory screen or run-end state.
+- **Loss**: All `PlayerActors` reach `DeathState`. Save deleted, 2-second slowdown plays, then `TitleScene` loads.
+
+### Player Goals
+
+- Fight through 5 story floors.
+- Accumulate skills from post-battle rewards to build a viable combat kit.
+- Train between battles to improve stats.
+- Survive — death is permanent (save deleted).
+
+### Progression Systems
+
+| System | Key Script | Mechanism |
+|--------|-----------|-----------|
+| **Floor Progression** | `FloorManager` | `ProgressToNextFloor()` increments floor, triggers story battle from `StoryBattles[floor-1]` (5 floors). `QuickFight()` picks random battle from `RandomBattles` (8 defined). |
+| **Skill Acquisition** | `SkillGenerator` | Draws 3 random skills from `Resources/Actions/Droptable/` post-battle. Player picks one → added to `ActorRuntime.actions`. |
+| **Training** | `TrainingManager` | `TriggerTraining()` starts real-time timer (10–15s scaling with usage). On completion: `AwardRandomStat()`. Time-locked via `TimeLockManager`. |
+| **Stats** | `GameSession.RollStats()` | 4 stats: **STR** (maxPosture bonus), **AGI** (maxStamina×2), **MND** (maxBuildup bonus), **SPT** (purpose [UNVERIFIED]). Rolled 3d6 on new game. |
+
+### Meta Systems
+
+| System | Mechanism |
+|--------|-----------|
+| **Save** | JSON at `persistentDataPath/save_slot_{n}.json` (WebGL: PlayerPrefs). Saves floor, trainings, timelocks, HP bars, stats, stamina, posture, buildup, items, action layout. |
+| **Timelocks** | Real-world time-gated actions (`GameSession.timelocks`). Used for Training and QuickFight cooldowns. Persisted in save data. |
+| **Loadout** | `ActionSlotSaveData` records action→UI-container mapping. Persisted via `GameSession.Loadout` so layout survives scene transitions without disk I/O. |
+
+---
+
 ## Architecture Summary
 
 ### The Two-Layer Actor Model
@@ -60,7 +114,7 @@ Both actors and battles use a state-machine pattern (`IState` interface, `StateM
 |--------|------|--------------|
 | Combat | [Systems/Combat.md](Systems/Combat.md) | Core gameplay; wrong changes break all attacks |
 | Action/Effect | [repo memory: action-system-architecture.md] | Complex polymorphic system; effects interact |
-| Runtime Architecture | [RuntimeArchitecture.md](RuntimeArchitecture.md) | Startup order; wrong init order causes null refs |
+| Architecture | [Architecture.md](Architecture.md) | Startup order, system deps; wrong init order causes null refs |
 | Save System | [Systems/SaveSystem.md](Systems/SaveSystem.md) | Stat field naming bug; no migration system |
 | Actor Bind/Spawn | `Actor.cs` | Player must use Bind(); enemies use Spawn() |
 | GameSession | `GameSession.cs` | Single source of truth for all run state |
@@ -115,7 +169,7 @@ If `OnEnd()` is not called in the Animator clip (e.g., clip is interrupted, dele
 ### Add a New Effect Type
 1. Create a class implementing `IEffect` (and optionally `IEndableEffect`, `IUpdateableEffect`).
 2. No registration needed — `[SerializeReference, SubclassSelector]` auto-discovers it.
-3. Use it in `GenericSkill.OnStartEffects`, `OnHitEffects`, `OnEndEffects`, or `OnUpdateEffects`.
+3. Use it in `GenericSkill.OnStartEffects`, `GenericSkill.hitWindows[].windowEffects`, `OnEndEffects`, or `OnUpdateEffects`. (Note: `OnHitEffects` is deprecated — use HitWindows instead.)
 
 ### Add a New Battle
 1. Create a `BattleDefinition` SO at `Resources/Battles/`.
@@ -133,8 +187,7 @@ If `OnEnd()` is not called in the Animator clip (e.g., clip is interrupted, dele
 ## AI Instructions
 
 ### Before Making Code Changes
-- Check `Docs/RuntimeArchitecture.md` for initialization order.
-- Check `Docs/SystemDependencyGraph.md` for what depends on what you're changing.
+- Check `Docs/Architecture.md` for initialization order and system dependency graph.
 - Check repo memory `action-system-architecture.md` for deep action/effect system details.
 - Never store scene references in `GameSession` or `SaveManager`.
 
