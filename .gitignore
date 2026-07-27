@@ -58,6 +58,11 @@ sysinfo.txt
 # Builds
 *.apk
 *.aab
+
+# Build artifacts (IL2CPP backups, Burst debug info)
+Builds_BurstDebugInformation_DoNotShip/
+GoG_BackUpThisFolder_ButDontShipItWithYourGame/
+GoG_BurstDebugInformation_DoNotShip/
 *.unitypackage
 *.app
 
