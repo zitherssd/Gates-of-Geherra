@@ -28,10 +28,12 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
 
             // Calculate new position around the player
             Vector3 offset = new Vector3(Mathf.Cos(rad), 0, Mathf.Sin(rad)) * radius;
+            Vector3 destination = player.transform.position + offset;
 
+            var agent = actor.movement.agent;
+            agent.SetDestination(destination);
 
-
-            moveSkill.Direction = offset;
+            moveSkill.Direction = agent.desiredVelocity.normalized;
             actor.UseAction(moveSkill);
 
             return NodeState.Sucess;

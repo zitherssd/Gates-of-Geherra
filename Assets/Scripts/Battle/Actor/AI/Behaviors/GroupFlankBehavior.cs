@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿﻿using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.Battle.Actions.Actions;
 using Assets.Scripts.Battle.Manager;
@@ -29,18 +29,22 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
             Vector3 separationForce = ComputeSeparation(actor, allies);
             Vector3 approachDirection = (toEnemy * 0.3f + flankDirection * 0.5f + separationForce * 0.2f).normalized;
 
+            var agent = actor.movement.agent;
+            agent.SetDestination(actor.transform.position + approachDirection);
+            var navmeshDirection = agent.desiredVelocity.normalized;
+
             // If already moving, update direction
             MoveAction moveAction;
             if (actor.state.IsMoving(out moveAction))
             {
-                moveAction.Direction = approachDirection;
+                moveAction.Direction = navmeshDirection;
                 return NodeState.Sucess;
             }
 
             // Start moving if not already moving
             moveAction = actor.Runtime.actions.OfType<MoveAction>().FirstOrDefault();
             if (moveAction == null) return NodeState.Failure;
-            moveAction.Direction = approachDirection;
+            moveAction.Direction = navmeshDirection;
             actor.UseAction(moveAction);
             return NodeState.Sucess;
         }

@@ -95,10 +95,15 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
                 return NodeState.Failure; // not allowed to move away right now
             }
 
+            var agent = actor.movement.agent;
+            Vector3 awayDir = (actor.transform.position - actor.target.ClosestEnemy.transform.position).normalized;
+            agent.SetDestination(actor.transform.position + awayDir * 5f); // Target a point 5 units away
+            var moveDir = agent.desiredVelocity.normalized;
+
             MoveAction moveAction;
             if (actor.state.IsMoving(out moveAction))
             {
-                moveAction.Direction = actor.target.DirectionToClosestEnemy * -1f;
+                moveAction.Direction = moveDir;
                 moveTimer += Time.deltaTime;
 
                 if (moveTimer > moveDuration)
@@ -120,7 +125,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
             var moveSkill = actor.Runtime.actions.OfType<MoveAction>().FirstOrDefault();
             if (moveSkill == null) return NodeState.Failure;
 
-            moveSkill.Direction = actor.target.DirectionToClosestEnemy * -1f;
+            moveSkill.Direction = moveDir;
             actor.UseAction(moveSkill);
             return NodeState.Running;
         }
@@ -221,7 +226,11 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
                 var moveSkill = actor.Runtime.actions.OfType<MoveAction>().FirstOrDefault();
                 if (moveSkill == null) return NodeState.Failure;
 
-                moveSkill.Direction = -bestDir;
+                var agent = actor.movement.agent;
+                agent.SetDestination(actor.transform.position - bestDir * 2f); // Target a point 2 units away
+                var moveDir = agent.desiredVelocity.normalized;
+
+                moveSkill.Direction = moveDir;
                 actor.UseAction(moveSkill);
                 return NodeState.Running;
             }

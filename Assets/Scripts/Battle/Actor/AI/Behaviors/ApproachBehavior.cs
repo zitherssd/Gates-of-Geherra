@@ -1,4 +1,4 @@
-﻿using System.Linq;
+﻿﻿using System.Linq;
 using Assets.Scripts.Battle.Actions.Actions;
 using Assets.Scripts.Pattern;
 
@@ -42,7 +42,8 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
                 var moveSkill = actor.Runtime.actions.OfType<MoveAction>().FirstOrDefault();
                 if (moveSkill == null) return NodeState.Failure;
 
-                moveSkill.Direction = actor.target.DirectionToClosestEnemy;
+                actor.movement.agent.SetDestination(actor.target.ClosestEnemy.transform.position);
+                moveSkill.Direction = actor.movement.agent.desiredVelocity.normalized;
                 actor.UseAction(moveSkill);
                 return NodeState.Sucess;
             }

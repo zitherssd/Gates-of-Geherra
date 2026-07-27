@@ -1,4 +1,4 @@
-﻿﻿using System.Linq;
+﻿﻿﻿﻿using System.Linq;
 using Assets.Scripts.Battle.Actions.Actions;
 using Assets.Scripts.Battle.Manager;
 using UnityEngine;
@@ -114,11 +114,15 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
             approachDirection.y = 0f; // Keep on flat plane
             approachDirection.Normalize();
 
+            var agent = actor.movement.agent;
+            agent.SetDestination(actor.transform.position + approachDirection);
+            var navmeshDirection = agent.desiredVelocity.normalized;
+
             // 5. Apply movement
             if (isMoving)
             {
                 // Update the direction smoothly while continuing to walk
-                moveAction.Direction = approachDirection;
+                moveAction.Direction = navmeshDirection;
                 return NodeState.Sucess;
             }
             else
@@ -127,7 +131,7 @@ namespace Assets.Scripts.Battle.Actor.AI.Behaviors
                 var moveSkill = actor.Runtime.actions.OfType<MoveAction>().FirstOrDefault();
                 if (moveSkill == null) return NodeState.Failure;
 
-                moveSkill.Direction = approachDirection;
+                moveSkill.Direction = navmeshDirection;
                 actor.UseAction(moveSkill);
                 return NodeState.Sucess;
             }
