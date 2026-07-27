@@ -115,7 +115,7 @@ namespace Assets.Scripts.Game
             var ad = GameFlowManager.instance.playerActor.Runtime;
 
             // Pick a random stat index
-            int roll = UnityEngine.Random.Range(0, 3);
+            int roll = UnityEngine.Random.Range(0, 4);
 
             switch (roll)
             {
@@ -134,7 +134,6 @@ namespace Assets.Scripts.Game
                 case 3:
                     TooltipUI.instance.ShowPrompt("Your training failed to produce any results");
                     break;
-                    
             }
 
             // Optional: Save automatically

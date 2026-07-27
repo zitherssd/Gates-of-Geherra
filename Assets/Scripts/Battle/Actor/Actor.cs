@@ -15,6 +15,9 @@ using UnityEngine.Serialization;
 namespace Assets.Scripts.Battle.Actor
 {
     [RequireComponent(typeof(StatusManager))]
+    [RequireComponent(typeof(Rigidbody))]
+    [RequireComponent(typeof(Animator))]
+    [RequireComponent(typeof(ActorStateMachine))]
     public class Actor : MonoBehaviour
     {
         //Data
@@ -95,7 +98,7 @@ namespace Assets.Scripts.Battle.Actor
 
         public void Update()
         {
-            if (BattleManager.instance.enabled == false) return;
+            if (BattleManager.instance == null || !BattleManager.instance.enabled) return;
             if (Runtime == null) return;
 
             StaminaRegen();

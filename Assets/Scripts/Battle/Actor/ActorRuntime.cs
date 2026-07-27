@@ -241,8 +241,7 @@ namespace Assets.Scripts.Battle.Actor
 
         public void ChangeBuildup(float value)
         {
-            currentBuildup += value;
-            Mathf.Clamp(currentBuildup, 0, maxBuildup);
+            currentBuildup = Mathf.Clamp(currentBuildup + value, 0, maxBuildup);
         }
 
         public bool isDead()
@@ -252,12 +251,11 @@ namespace Assets.Scripts.Battle.Actor
 
         public float GetCurrentHP()
         {
-            var lastBar = hpBars.Where(item => item.alive).LastOrDefault();
-            if (lastBar != null)
+            for (int i = hpBars.Count - 1; i >= 0; i--)
             {
-                return lastBar.currentHp;
+                if (hpBars[i].alive)
+                    return hpBars[i].currentHp;
             }
-
             return 0;
         }
 

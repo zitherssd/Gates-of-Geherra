@@ -15,8 +15,9 @@ namespace Assets.Scripts.Save
         public string newGamePlayerName;
         void Awake()
         {
-            DontDestroyOnLoad(this);
+            if (instance != null && instance != this) { Destroy(gameObject); return; }
             instance = this;
+            DontDestroyOnLoad(this);
         }
 
         public void Start()

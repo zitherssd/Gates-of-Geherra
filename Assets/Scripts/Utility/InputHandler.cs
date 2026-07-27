@@ -50,9 +50,11 @@ namespace Assets.Scripts.Utility
             touchPressed.action.performed += ctx => PressBegin(ctx);
             touchEnd.action.performed += ctx => PressEnd(ctx);
             touchHold.action.performed += ctx => PressHold(ctx);
+#if UNITY_EDITOR
             OnSwipe += delta => { Debug.Log("ONSWIPEEVENT TRIGGERED. DELTA IS " + delta); };
             OnClick += pos => { Debug.Log("ONCLICKEVENT TRIGGERED. POSITION IS " + pos); };
             OnHold += pos => { Debug.Log("ONHOLDEVENT TRIGGERED. POSITION IS " + pos); };
+#endif
         }
 
         void PressBegin(InputAction.CallbackContext context)

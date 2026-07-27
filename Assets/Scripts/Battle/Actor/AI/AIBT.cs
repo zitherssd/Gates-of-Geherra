@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.Battle.Actor.AI.Behaviors;
 using Assets.Scripts.Battle.Actor.AI.Conditions;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Assets.Scripts.Battle.Actor.AI
 {
@@ -158,9 +159,9 @@ namespace Assets.Scripts.Battle.Actor.AI
         {
             if (actor.isControllable) return;
             if (actor.Runtime.isDead() || actor.state.IsStaggered()) return;
-            //aiTickTimer -= Time.deltaTime;
-            //if (aiTickTimer > 0) return;
-            //aiTickTimer = aiTickCooldown;
+            aiTickTimer -= Time.deltaTime;
+            if (aiTickTimer > 0) return;
+            aiTickTimer = aiTickCooldown;
 
             if (actor.state.IsIdle() || actor.state.IsMoving(out _))
             {

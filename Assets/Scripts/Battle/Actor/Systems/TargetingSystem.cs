@@ -81,11 +81,17 @@ namespace Assets.Scripts.Battle.Actor.Systems
             get
             {
                 if (actor.isControllable)
-
-
-                    return BattleManager.instance.EnemyActors.OrderBy(enemyActor => (enemyActor.transform.position - actor.transform.position).magnitude).Where(actor => !actor.Runtime.isDead()).First();
+                {
+                    var enemies = BattleManager.instance.EnemyActors
+                        .Where(e => !e.Runtime.isDead())
+                        .OrderBy(e => (e.transform.position - actor.transform.position).magnitude);
+                    return enemies.FirstOrDefault();
+                }
                 else
+                {
+                    if (BattleManager.instance.PlayerActors.Count == 0) return null;
                     return BattleManager.instance.PlayerActors[0];
+                }
             }
         }
 

@@ -57,6 +57,13 @@ namespace Assets.Scripts.Crawler
 
         public void QuickFight()
         {
+            if (RandomBattles == null || RandomBattles.Count == 0)
+            {
+                if (TooltipUI.instance != null)
+                    TooltipUI.instance.ShowPrompt("No random battles available.");
+                return;
+            }
+
             if (!GameSession.Instance.PlayerRuntime.HasEnoughEnergy(QuickFightEnergyCost))
             {
                 if (TooltipUI.instance != null)
