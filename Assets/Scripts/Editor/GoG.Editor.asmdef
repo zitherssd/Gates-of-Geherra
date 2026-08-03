@@ -1,0 +1,19 @@
+{
+    "name": "GoG.Editor",
+    "rootNamespace": "Assets.Scripts",
+    "references": [
+        "GoG.Runtime",
+        "LeanTween.Runtime"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,6 +1,5 @@
 using UnityEngine;
 #if UNITY_EDITOR
-using UnityEditor;
 #endif
 
 [RequireComponent(typeof(MeshCollider))]
