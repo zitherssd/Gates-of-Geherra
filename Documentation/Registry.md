@@ -17,19 +17,23 @@
 | `Assets.Scripts.Battle.Actor.Systems` | `Scripts/Battle/Actor/Systems/` | MovementSystem, TargetingSystem |
 | `Assets.Scripts.Battle.Manager` | `Scripts/Battle/Manager/` | BattleManager, BattleStateMachine, Arena, SpawnGroup |
 | `Assets.Scripts.Battle.Manager.States` | `Scripts/Battle/Manager/States/` | BattleStartState, BattleActiveState, BattleEndState |
-| `Assets.Scripts.Battle.Actions` | `Scripts/Battle/Actions/` | BaseAction, BaseSkill, DamageInstance |
-| `Assets.Scripts.Battle.Actions.Actions` | `Scripts/Battle/Actions/Actions/` | Concrete action implementations |
-| `Assets.Scripts.Battle.Actions.Actions.Effects` | `Scripts/Battle/Actions/Actions/Effects/` | IEffect implementations |
+| `Assets.Scripts.Battle.Actions` | `Scripts/Battle/Actions/` | BaseAction, BaseSkill, DamageInstance, MoveData, RewardPool, WorldActionTrigger |
+| `Assets.Scripts.Battle.Actions.Skills` | `Scripts/Battle/Actions/Skills/` | Concrete actions (AttackSkill, GenericSkill, Dodge, Block, Jump, MoveAction, ...) |
+| `Assets.Scripts.Battle.Actions.Effects` | `Scripts/Battle/Actions/Effects/` | IEffect + implementations |
 | `Assets.Scripts.Battle.Actions.HitWindows` | `Scripts/Battle/Actions/HitWindows/` | HitWindow, HitWindowManager |
-| `Assets.Scripts.Battle.Components.Status` | `Scripts/Battle/Components/Status/` | BaseStatus, StatusManager |
-| `Assets.Scripts.Battle.Components.Effects` | `Scripts/Battle/Components/Effects/` | EffectManager |
+| `Assets.Scripts.Battle.Status` | `Scripts/Battle/Status/` | BaseStatus, StatusManager, Poison, Stagger, BlockStatus, ... |
+| `Assets.Scripts.Battle.Components.Effects` | `Scripts/Battle/Components/Effects/` | EffectManager, EffectsRepository |
+| `Assets.Scripts.Battle.Components.Audio` | `Scripts/Battle/Components/Audio/` | AudioManager |
+| `Assets.Scripts.Battle.Timelock` | `Scripts/Battle/Timelock/` | TimelockManager, Timelock, CooldownDisplay |
 | `Assets.Scripts.Battle.Items` | `Scripts/Battle/Items/` | BaseItem, BaseConsumable, BaseTrinket, CraftingSystem |
 | `Assets.Scripts.Crawler` | `Scripts/Crawler/` | FloorManager, SkillGenerator, CrawlerManager (stub) |
 | `Assets.Scripts.Save` | `Scripts/Save/` | SaveManager, SaveData, ActorSaveData |
-| `Assets.Scripts.Pattern` | `Scripts/Pattern/` | StateMachine, IState, IAttack |
-| `Assets.Scripts.UI` | `Scripts/UI/` | UIManager, ActionCardHandler, etc. |
-| `Assets.Scripts.Utility` | `Scripts/Utility/` | CameraManager, SlowdownManager, SoundManager, InputHandler, etc. |
-| (global) | `Scripts/TitleScene/` | MainMenuController, MainMenuSlot |
+| `Assets.Scripts.Core` | `Scripts/Core/` | StateMachine, IState, StaticHelpers, Intersections, ActionSlot, RhombusMeshCollider |
+| `Assets.Scripts.UI` | `Scripts/UI/` | UIManager, ActionButton*, ActionCardHandler, ... |
+| `Assets.Scripts.UI.Title` | `Scripts/UI/Title/` | MainMenuController, MainMenuSlot |
+| `Assets.Scripts.Utility` | `Scripts/Utility/` (Camera/, Feedback/, Input/, Audio/, Misc/) | Cameras, slowdown, sound, input, misc helpers (single namespace) |
+
+> **Assemblies**: `GoG.Runtime` (all of `Scripts/` except `Editor/`), `GoG.Editor` (`Scripts/Editor/`, Editor-only), `LeanTween.Runtime` / `LeanTween.Editor` (`ThirdParty/LeanTween/`). Game code no longer compiles into `Assembly-CSharp`.
 
 ---
 
@@ -197,13 +201,13 @@ Frame-based hit windows with per-enemy hit limits. Used by `GenericSkill` in `On
 
 | Script | File | Role |
 |--------|------|------|
-| `StatusManager` | `Components/Status/StatusManager.cs` | Per-actor status ticker |
-| `BaseStatus` | `Components/Status/BaseStatus.cs` | Abstract SO base |
-| `PoisonStatus` | `Components/Status/PoisonStatus.cs` | Damage over time |
-| `BlockStatus` | `Components/Status/BlockStatus.cs` | Block stance modifier |
-| `DamageMultiplierStatus` | `Components/Status/DamageMultiplierStatus.cs` | Damage scaling |
-| `DoubleDamageStatus` | `Components/Status/DoubleDamageStatus.cs` | 2× damage |
-| `Stagger` | `Components/Status/Stagger.cs` | Force stagger state |
+| `StatusManager` | `Status/StatusManager.cs` | Per-actor status ticker |
+| `BaseStatus` | `Status/BaseStatus.cs` | Abstract SO base |
+| `PoisonStatus` | `Status/PoisonStatus.cs` | Damage over time |
+| `BlockStatus` | `Status/BlockStatus.cs` | Block stance modifier |
+| `DamageMultiplierStatus` | `Status/DamageMultiplierStatus.cs` | Damage scaling |
+| `DoubleDamageStatus` | `Status/DoubleDamageStatus.cs` | 2× damage |
+| `Stagger` | `Status/Stagger.cs` | Force stagger state |
 
 ---
 

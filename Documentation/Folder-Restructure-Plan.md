@@ -1,7 +1,7 @@
 # Folder Restructure Plan — Gates of Gehera
 
 > Committed **before** any restructuring begins so we have a clear, versioned outline of objectives.
-> Status: **IN PROGRESS** — updated as phases complete.
+> Status: **Phases 0–5 COMPLETE** — Phase 6 (verification) pending. Updated as phases complete.
 
 ---
 
@@ -9,15 +9,15 @@
 
 The project's folder layout has grown organically and needs reorganizing. This plan fixes, in seven independently-verifiable phases:
 
-| # | Phase | Risk | Code changes |
-|---|-------|------|--------------|
-| 0 | Commit this plan to the repo | none | none |
-| 1 | Asset cleanup (delete junk, add `Settings/` + `ThirdParty/`, split `Sounds/`/`Textures/`/`Animations`) | low | none |
-| 2 | `Resources/` restructure + update `Resources.Load` callers | low | 6 files |
-| 3 | `Scripts/` restructure + namespace updates | high | ~180 files |
-| 4 | Add asmdefs (`GoG.Runtime` + `GoG.Editor`) | medium | 2 new files |
-| 5 | Documentation sync | low | 3 docs |
-| 6 | Verification (compile, scenes, playtest, builds) | — | none |
+| # | Phase | Risk | Code changes | Status |
+|---|-------|------|--------------|--------|
+| 0 | Commit this plan to the repo | none | none | ✅ done |
+| 1 | Asset cleanup (delete junk, add `Settings/` + `ThirdParty/`, split `Sounds/`/`Textures/`/`Animations`) | low | none | ✅ done |
+| 2 | `Resources/` restructure + update `Resources.Load` callers | low | 6 files | ✅ done |
+| 3 | `Scripts/` restructure + namespace updates | high | ~180 files | ✅ done |
+| 4 | Add asmdefs (`GoG.Runtime` + `GoG.Editor` + LeanTween) | medium | 4 asmdefs | ✅ done |
+| 5 | Documentation sync | low | 4 docs | ✅ done |
+| 6 | Verification (compile, scenes, playtest, builds) | — | none | ⏳ pending |
 
 ---
 
@@ -182,3 +182,12 @@ Assets/Scripts/
 
 - Each phase ends with a verification gate before moving on.
 - Rollback: `git` revert of the affected phase. Asset moves are safe (GUIDs preserved); deleted junk was confirmed-dead; if a deletion turns out to be needed, restore from git history.
+
+---
+
+## 8. Execution Notes (deviations & details)
+
+- **Phase 2**: `Resources/` root → `Statuses/`, `Prefabs/`, `Database/` subfolders. Only `EffectsRepository.cs` needed path updates (`"Prefabs/HpPopup"`, `"Prefabs/PosturePopup"`). `Resources.LoadAll<BaseAction>("Actions")` includes subfolders, so deeper `Actions/Movement/` moves were safe. Player template stays at `Resources/Actors/MC.asset` (`PlayerTemplatePath = "Actors/MC"`).
+- **Phase 3**: The namespace reality was messier than documented — several files already had drifted namespaces (`UIManager` in `Assets.Scripts`, `IAttack` in `.Actor.States`, `AttackSkill/GenericSkill/ProjectileAttack` already in `.Skills`, `Block`/`Dodge` in `.Reactions`, and many files in the global namespace). All `.Actions.Actions`, `.Actions.Reactions`, `.Components.Status`, `.Pattern`, `.Battle.Idle` references were deterministically renamed; duplicate `using` lines were deduped. One manual fix after compile: `ActionButtonBattle.cs` `Actor.Actor` → `Actor` (namespace no longer resolves from `.UI`).
+- **Phase 4**: `LeanTween` did **not** have asmdefs (stale `LeanTween.Runtime.csproj` was a leftover) — they were created. 8 runtime scripts had unused `using UnityEditor;` which were removed (they compile in-editor via the `Editor` configuration but would break player builds / runtime asmdefs). `GoG.Runtime.asmdef` needed explicit references: `Unity.TextMeshPro`, `Unity.InputSystem`, `Unity.Mathematics`, `Unity.RenderPipelines.Core.Runtime`, `MackySoft.SerializeReferenceExtensions`, `Unity.VisualScripting.Core` (these are not auto-referenced). Stale `GoG.Battle/Crawler/Pattern/UI/Utility.csproj` deleted (gitignored). On-disk `.csproj` files are IDE artifacts — Unity regenerates them on focus.
+- **Docs**: `Documentation/Plans/` now holds the plan .md files formerly in `Assets/Scripts/Docs/`.

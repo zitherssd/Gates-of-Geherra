@@ -134,7 +134,7 @@
 ---
 
 ### BaseStatus (Abstract)
-**Script**: `Scripts/Battle/Components/Status/BaseStatus.cs`  
+**Script**: `Scripts/Battle/Status/BaseStatus.cs`  
 **Purpose**: Defines a status effect type.  
 
 **Known Concrete Types**:

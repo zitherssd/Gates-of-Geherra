@@ -210,7 +210,7 @@ Sub-systems like `EffectManager`, `AudioManager`, `MovementSystem`, and `Targeti
 
 ### 2.3 `BlockStatus` subscribes to `BattleManager.OnNewTurn` — never unsubscribes
 
-**File:** `Assets/Scripts/Battle/Components/Status/BlockStatus.cs`
+**File:** `Assets/Scripts/Battle/Status/BlockStatus.cs`
 
 ```csharp
 BattleManager.instance.OnNewTurn += Remove;
@@ -220,13 +220,9 @@ The `Remove()` method calls `base.Remove()` (which is empty in `BaseStatus`). Th
 
 ---
 
-### 2.4 Duplicate `Status` directories
+### 2.4 Duplicate `Status` directories — RESOLVED
 
-Two parallel status directories exist:
-- `Assets/Scripts/Battle/Components/Status/` — `BaseStatus.cs`, `BlockStatus.cs`, `StatusManager.cs`, etc.
-- `Assets/Scripts/Battle/Status/` — `StatusManager.cs`, `PoisonStatus.cs`, `StatusEffect.cs`, etc.
-
-These contain similar code creating potential confusion, compilation conflicts, and duplicate definitions. One should be removed.
+The legacy `Assets/Scripts/Battle/Status/` (old status system: `StatusManager.cs`, `StatusEffect.cs`, `PoisonStatus.cs`, `EffectLogic/*`) was **removed** during the folder restructure (verified unreferenced in code and scenes). The live system was moved up from `Battle/Components/Status/` to `Assets/Scripts/Battle/Status/` with namespace `Assets.Scripts.Battle.Status`. The duplicate-definition issue is gone.
 
 ---
 
@@ -732,7 +728,7 @@ Stats are rolled 3d6 at start and only increased via `TrainingManager`. There's 
 | `CrawlerManager.cs` | Empty stub | Full `MonoBehaviour` with empty `Start()`/`Update()` — no functionality |
 | `ActorBehaviorTree.cs` | Empty stub | Full `MonoBehaviour` with empty `Start()`/`Update()` — appears to be a leftover |
 | `SkillGenerator.cs` — commented-out methods | ~100 lines of dead code | `UpgradeSkillAtRandom()` and `UpgradeReactionAtRandom()` fully commented out |
-| `Battle/Status/*` | Duplicate directory | Conflicts with `Battle/Components/Status/*` |
+| `Battle/Status/*` (legacy) | Removed | Old duplicate status system deleted in folder restructure; live system at `Battle/Status/` |
 | `BaseSkill.CalculateDuration()` | Always returns 0 | Reflection-based method with no actual calculation |
 | `TrainingManager.case 3` | Dead code | Unreachable due to `Random.Range(0, 3)` exclusive upper bound |
 | `AiRuleset.Ninja` | Empty behavior | No behaviors assigned — does nothing |
