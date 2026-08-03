@@ -1,9 +1,9 @@
-﻿using Assets.Scripts.Battle.Actions;
+using Assets.Scripts.Battle.Actions;
 using Assets.Scripts.Battle.Items;
 using Assets.Scripts.Battle.Items.UI;
 using Assets.Scripts.Crawler;
 using Assets.Scripts.Game;
-using Assets.Scripts.Pattern;
+using Assets.Scripts.Core;
 using Assets.Scripts.Save;
 using Assets.Scripts.Utility;
 using System;

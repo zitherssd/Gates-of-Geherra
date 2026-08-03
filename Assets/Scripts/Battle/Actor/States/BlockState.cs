@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using Assets.Scripts.Battle.Actions;
-using Assets.Scripts.Battle.Actions.Reactions;
-using Assets.Scripts.Pattern;
+using Assets.Scripts.Battle.Actions.Skills;
+using Assets.Scripts.Core;
 using Assets.Scripts.Utility;
 using UnityEngine;
 using static Assets.Scripts.Battle.Actions.BaseAction;

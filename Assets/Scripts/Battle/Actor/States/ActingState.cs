@@ -1,6 +1,6 @@
-﻿using Assets.Scripts.Battle.Actions;
+using Assets.Scripts.Battle.Actions;
 using Assets.Scripts.Battle.Actions.Skills;
-using Assets.Scripts.Pattern;
+using Assets.Scripts.Core;
 using System;
 using UnityEngine;
 

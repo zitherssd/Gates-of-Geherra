@@ -1,4 +1,4 @@
-﻿using Assets.Scripts.Battle.Actions.Actions.Effects;
+using Assets.Scripts.Battle.Actions.Effects;
 using System.Collections.Generic;
 using UnityEngine;
 

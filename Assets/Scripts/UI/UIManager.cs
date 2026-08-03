@@ -8,6 +8,7 @@ using Assets.Scripts.Battle.Manager;
 using Assets.Scripts.Game;
 using Assets.Scripts.Save;
 using Assets.Scripts.Utility;
+using Assets.Scripts.UI;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;

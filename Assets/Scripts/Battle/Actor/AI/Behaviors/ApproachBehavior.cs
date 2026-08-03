@@ -1,6 +1,6 @@
-﻿﻿using System.Linq;
-using Assets.Scripts.Battle.Actions.Actions;
-using Assets.Scripts.Pattern;
+using System.Linq;
+using Assets.Scripts.Battle.Actions.Skills;
+using Assets.Scripts.Core;
 
 namespace Assets.Scripts.Battle.Actor.AI.Behaviors
 {

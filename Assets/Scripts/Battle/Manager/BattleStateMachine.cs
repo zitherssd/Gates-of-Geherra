@@ -1,8 +1,7 @@
-﻿using Assets.Scripts.Battle.Actions.Actions;
 using Assets.Scripts.Battle.Actions.Skills;
 using Assets.Scripts.Battle.Actions;
 using Assets.Scripts.Battle.Actor.States;
-using Assets.Scripts.Pattern;
+using Assets.Scripts.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;

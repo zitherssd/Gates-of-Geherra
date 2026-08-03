@@ -1,6 +1,6 @@
-﻿﻿using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Assets.Scripts.Battle.Actions.Actions;
+using Assets.Scripts.Battle.Actions.Skills;
 using Assets.Scripts.Battle.Manager;
 using UnityEngine;
 

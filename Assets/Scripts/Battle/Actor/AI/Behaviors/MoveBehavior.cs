@@ -1,5 +1,5 @@
-﻿using Assets.Scripts.Battle.Actions;
-using Assets.Scripts.Battle.Actions.Actions;
+using Assets.Scripts.Battle.Actions;
+using Assets.Scripts.Battle.Actions.Skills;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;

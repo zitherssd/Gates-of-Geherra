@@ -5,6 +5,7 @@ using Assets.Scripts.Battle.Actions;
 using Assets.Scripts.Battle.Actor;
 using Assets.Scripts.Utility;
 using Assets.Scripts;
+using Assets.Scripts.UI;
 
 public class WorldActionTrigger : MonoBehaviour
 {

@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using Assets.Scripts.Battle.Actions.Skills;
 using Assets.Scripts.Battle.Actor.States;
-using Assets.Scripts.Battle.Components.Status;
+using Assets.Scripts.Battle.Status;
 using Assets.Scripts.Battle.Manager;
-using Assets.Scripts.Pattern;
+using Assets.Scripts.Core;
 using Assets.Scripts.Utility;
 using TMPro;
 using UnityEngine;

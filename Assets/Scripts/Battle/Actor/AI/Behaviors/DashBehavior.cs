@@ -1,5 +1,5 @@
-﻿using System.Linq;
-using Assets.Scripts.Battle.Actions.Actions;
+using System.Linq;
+using Assets.Scripts.Battle.Actions.Skills;
 
 namespace Assets.Scripts.Battle.Actor.AI.Behaviors
 {

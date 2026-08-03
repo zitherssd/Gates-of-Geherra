@@ -1,4 +1,4 @@
-﻿using Assets.Scripts.Pattern;
+using Assets.Scripts.Core;
 using UnityEngine;
 
 namespace Assets.Scripts.Battle.Actor.States

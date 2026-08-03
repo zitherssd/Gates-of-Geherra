@@ -1,4 +1,4 @@
-﻿using Assets.Scripts.Pattern;
+using Assets.Scripts.Core;
 using Assets.Scripts.Save;
 using Assets.Scripts.Utility;
 using Assets.Scripts.Game;

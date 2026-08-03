@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 using Assets.Scripts.Battle.Manager;
-using Assets.Scripts.Pattern;
+using Assets.Scripts.Core;
 using UnityEngine;
 
 namespace Assets.Scripts.Battle.Actor.States

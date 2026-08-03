@@ -1,6 +1,6 @@
-﻿﻿using Assets.Scripts.Battle.Actions.Actions.Effects;
+using Assets.Scripts.Battle.Actions.Effects;
 using Assets.Scripts.Battle.Actor.States;
-using Assets.Scripts.Pattern;
+using Assets.Scripts.Core;
 using Assets.Scripts.Utility;
 using System;
 using System.Collections.Generic;
