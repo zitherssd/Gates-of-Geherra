@@ -747,6 +747,18 @@ Stats are rolled 3d6 at start and only increased via `TrainingManager`. There's 
 
 ---
 
+## 20. Pre-existing data issues found during folder restructure (NOT caused by it)
+
+These were verified as pre-existing (git history / untouched files) while validating the restructure:
+
+| Issue | Detail | Recommendation |
+|-------|--------|----------------|
+| 5 broken droptable assets | `Resources/Crawler/Droptables/1-5/` — `Forward Kick.asset`, `High Kick.asset`, `Kick(Air).asset`, `Palm Strike.asset`, `Shuriken.asset` reference scripts deleted in an earlier "action rework" (unresolved `m_Script` GUIDs `3be3547e…` / `0a010cb8…`). Log "The referenced script (Unknown) on this Behaviour is missing!" when loaded. | Delete if unused, or recreate against current action classes. |
+| `Teleport_Omae.asset` missing `guid` | `Resources/Actions/Droptable/Teleport_Omae.asset` has an empty `guid` field → `ActionDatabase.Initialize()` logs "Action 'Teleport_Omae' has no ID!". | Assign a unique GUID. |
+| "Fixing reference to the runtime script in scene file!" | Logged from `ActionDatabase.Initialize()` → `Resources.LoadAll<BaseAction>("Actions")` every play. All action `m_Script` references verified consistent; Unity auto-repairs it. Likely a legacy/reconciliation artifact (assembly `Assembly-CSharp` → `GoG.Runtime`). | Monitor; no action required unless a functional issue appears. |
+
+---
+
 ## Appendix: Files with Highest Improvement Potential
 
 1. **`Actor.cs`** — Event cleanup, null safety, missing `RequireComponent`, pooling
