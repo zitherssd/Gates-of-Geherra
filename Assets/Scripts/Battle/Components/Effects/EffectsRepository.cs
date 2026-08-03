@@ -5,7 +5,7 @@ namespace Assets.Scripts.Battle.Components.Effects
 {
     public static class EffectsRepository
     {
-        public static GameObject DamagePopupPrefab = Resources.Load<GameObject>("HpPopup");
-        public static GameObject PosturePopupPrefab = Resources.Load<GameObject>("PosturePopup");
+        public static GameObject DamagePopupPrefab = Resources.Load<GameObject>("Prefabs/HpPopup");
+        public static GameObject PosturePopupPrefab = Resources.Load<GameObject>("Prefabs/PosturePopup");
     }
 }
