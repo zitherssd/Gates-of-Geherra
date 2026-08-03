@@ -23,10 +23,10 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 6357900276064845826
-      type: {class: PlayParticleEffect, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: PlayParticleEffect, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data:
         psPrefab: {fileID: 4678103677468820507, guid: 1245b8d2997d5b34fb1637be70a7eb05, type: 3}
         OnPlayer: 1
     - rid: 8809521392958308352
-      type: {class: HealEffect, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: HealEffect, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data: 

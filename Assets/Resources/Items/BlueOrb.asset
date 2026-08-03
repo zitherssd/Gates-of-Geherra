@@ -23,6 +23,6 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 8809521441176813571
-      type: {class: GainBuildup, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: GainBuildup, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data:
         BuildupGain: 20

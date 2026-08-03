@@ -63,7 +63,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 3754567654245662720
-      type: {class: DamageEffect, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: DamageEffect, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data:
         UseHitbox: 1
         DamageData:
@@ -77,7 +77,7 @@ MonoBehaviour:
           MindScaling: 0
           BuildupGainOnHit: 5
     - rid: 3754567654245662721
-      type: {class: ShowHitboxOnPlayer, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: ShowHitboxOnPlayer, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data:
         HitboxPoints:
         - {x: -0.12, y: 0, z: 0.4}
@@ -86,12 +86,12 @@ MonoBehaviour:
         - {x: -0.18, y: 0, z: 0.85}
         HitboxScale: 1
     - rid: 3754567654245662724
-      type: {class: ClearHitbox, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: ClearHitbox, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data: 
     - rid: 3754567654245662734
-      type: {class: FaceDirection, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: FaceDirection, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data: 
     - rid: 3754567654245662735
-      type: {class: AddForceDirection, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: AddForceDirection, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data:
         Force: 1

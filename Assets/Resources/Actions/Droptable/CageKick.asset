@@ -69,25 +69,25 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 1722353188518232064
-      type: {class: SetFriction, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: SetFriction, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data:
         Friction: 0
     - rid: 1722353188518232065
-      type: {class: ResestFriction, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: ResestFriction, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data:
         Friction: 0
     - rid: 1722353188518232066
-      type: {class: FaceClosestEnemy, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: FaceClosestEnemy, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data: 
     - rid: 1722353188518232067
-      type: {class: KillMomentum, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: KillMomentum, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data: 
     - rid: 6073795310272905229
-      type: {class: AddForceTarget, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: AddForceTarget, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data:
         Force: 2.5
     - rid: 6073795310272905230
-      type: {class: DamageEffect, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: DamageEffect, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data:
         UseHitbox: 1
         DamageData:
@@ -101,7 +101,7 @@ MonoBehaviour:
           MindScaling: 0
           BuildupGainOnHit: 5
     - rid: 6073795310272905232
-      type: {class: ShowHitboxOnPlayer, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: ShowHitboxOnPlayer, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data:
         HitboxPoints:
         - {x: -0.1, y: 0, z: 0.2}
@@ -110,5 +110,5 @@ MonoBehaviour:
         - {x: 0.1, y: 0, z: 0.2}
         HitboxScale: 1
     - rid: 6073795310272905236
-      type: {class: ClearHitbox, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: ClearHitbox, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data: 

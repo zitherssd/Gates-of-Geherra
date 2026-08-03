@@ -23,5 +23,5 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 6357900276064845825
-      type: {class: HealLivingBars, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: HealLivingBars, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data: 

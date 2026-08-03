@@ -43,10 +43,10 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 8685422100207370255
-      type: {class: Teleport, ns: Assets.Scripts.Battle.Actions.Skills, asm: Assembly-CSharp}
+      type: {class: Teleport, ns: Assets.Scripts.Battle.Actions.Skills, asm: GoG.Runtime}
     - rid: 8685422100207370256
-      type: {class: FaceClosestEnemy, ns: Assets.Scripts.Battle.Actions.Skills, asm: Assembly-CSharp}
+      type: {class: FaceClosestEnemy, ns: Assets.Scripts.Battle.Actions.Skills, asm: GoG.Runtime}
     - rid: 8685422152096153601
-      type: {class: MeterGainEffect, ns: Assets.Scripts.Battle.Actions.Skills, asm: Assembly-CSharp}
+      type: {class: MeterGainEffect, ns: Assets.Scripts.Battle.Actions.Skills, asm: GoG.Runtime}
       data:
         MeterGainValue: 0.75

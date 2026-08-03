@@ -63,32 +63,32 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 910004
-      type: {class: SetFriction, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: SetFriction, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data:
         Friction: 3.5
     - rid: 910005
-      type: {class: FaceClosestEnemy, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: FaceClosestEnemy, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data: 
     - rid: 910006
-      type: {class: SlowTrack, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: SlowTrack, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data:
         active: 1
     - rid: 3754567654245662736
-      type: {class: ResestFriction, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: ResestFriction, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data:
         Friction: 0
     - rid: 3754567654245662745
-      type: {class: SlowTrack, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: SlowTrack, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data:
         active: 1
     - rid: 3754567654245662746
-      type: {class: KillMomentum, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: KillMomentum, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data: 
     - rid: 3754567654245662747
-      type: {class: SetFriction, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: SetFriction, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data:
         Friction: 0
     - rid: 3754567654245662748
-      type: {class: AddForceDirection, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: AddForceDirection, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data:
         Force: 3.3

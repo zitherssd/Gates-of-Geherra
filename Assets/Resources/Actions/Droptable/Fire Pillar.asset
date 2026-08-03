@@ -56,7 +56,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 3754567654245662738
-      type: {class: DamageEffect, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: DamageEffect, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data:
         UseHitbox: 1
         DamageData:
@@ -70,7 +70,7 @@ MonoBehaviour:
           MindScaling: 0.4
           BuildupGainOnHit: 5
     - rid: 3754567654245662739
-      type: {class: ShowHitboxOnPoint, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: ShowHitboxOnPoint, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data:
         HitboxPoints:
         - {x: 1, y: 0, z: 0}
@@ -88,16 +88,16 @@ MonoBehaviour:
         HitboxScale: 0.5
         point: {x: 0, y: 0, z: 0}
     - rid: 3754567654245662740
-      type: {class: PlayParticleEffect, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: PlayParticleEffect, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data:
         psPrefab: {fileID: 7528961806869292416, guid: 3c23d0a787efa59488b8866012d0facb, type: 3}
         OnPlayer: 0
     - rid: 6357899949336690688
-      type: {class: FlashColor, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: FlashColor, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data:
         intensity: 0.5
     - rid: 6357899949336690694
-      type: {class: ShowHitboxOnPoint, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: ShowHitboxOnPoint, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data:
         HitboxPoints:
         - {x: 1, y: 0, z: 0}
@@ -115,7 +115,7 @@ MonoBehaviour:
         HitboxScale: 0.5
         point: {x: 0, y: 0, z: 0}
     - rid: 6357899973538611203
-      type: {class: PlayParticleEffect, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: PlayParticleEffect, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data:
         psPrefab: {fileID: 8225998914541537083, guid: 2ef14b77c5927a4439a217a8818a39b6, type: 3}
         OnPlayer: 1

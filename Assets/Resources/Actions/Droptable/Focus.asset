@@ -51,35 +51,35 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 6357900109471809536
-      type: {class: FlashColor, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: FlashColor, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data:
         intensity: 0.77
     - rid: 6357900109471809537
-      type: {class: MeterGainEffect, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: MeterGainEffect, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data:
         MeterGainValue: 10
     - rid: 6357900109471809538
-      type: {class: FaceClosestEnemy, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: FaceClosestEnemy, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data: 
     - rid: 6357900109471809539
-      type: {class: StaminaHealEffect, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: StaminaHealEffect, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data:
         HealAmount: 20
     - rid: 6357900109471809542
-      type: {class: SlowTrack, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: SlowTrack, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data:
         active: 0
     - rid: 6357900109471809543
-      type: {class: SlowTrack, ns: Assets.Scripts.Battle.Actions.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: SlowTrack, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data:
         active: 1
     - rid: 8809521716795801652
-      type: {class: AddStatusEffect, ns: Assets.Scripts.Battle.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: AddStatusEffect, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data:
         StatusToApply: {fileID: 11400000, guid: 847236cc04cb22947986c371c6e690e3, type: 2}
         ApplyTo: 0
     - rid: 8809521716795801653
-      type: {class: AddStatusEffect, ns: Assets.Scripts.Battle.Actions.Effects, asm: Assembly-CSharp}
+      type: {class: AddStatusEffect, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data:
         StatusToApply: {fileID: 11400000, guid: 2fd099bb850e61f4f90fb65592df3fdb, type: 2}
         ApplyTo: 0
