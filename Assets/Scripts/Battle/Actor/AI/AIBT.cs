@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Battle.Actor.AI
 {
-    public enum AiRuleset { DEFAULT, OldMan, Ninja, Maniac, Hungry, ShurkienThrower, TacticalFlanker }
+    public enum AiRuleset { DEFAULT, OldMan, Ninja, Maniac, Hungry, ShurkienThrower, TacticalFlanker, SmartApproach }
     public enum AIState { Thinking, Acting, Moving }
 
     public class AIBT
@@ -49,6 +49,9 @@ namespace Assets.Scripts.Battle.Actor.AI
                         break;
                     case AiRuleset.TacticalFlanker:
                         behaviors = TacticalFlankerBehavior;
+                        break;
+                    case AiRuleset.SmartApproach:
+                        behaviors = SmartApproachBehaviorTree;
                         break;
                 }
             }
@@ -106,7 +109,7 @@ namespace Assets.Scripts.Battle.Actor.AI
             new SequenceNode(new List<BTNode>
             {
                 new DistanceToPlayerSmallerThan(6.0f),
-                new CircleApproachBehavior(),
+                new SmartApproachBehavior(),
             }),
             new ApproachBehavior(),
         };
@@ -152,6 +155,32 @@ namespace Assets.Scripts.Battle.Actor.AI
                 new DistanceToPlayerSmallerThan(6.0f),
                 new CircleApproachBehavior(),
             }),
+            new ApproachBehavior(),
+        };
+
+        /// <summary>
+        /// Smart Approach behavior tree: enemies spread out to surround the player
+        /// instead of all beelining together. Uses SmartApproachBehavior for
+        /// crowd-aware encirclement, with standard dodge, block, and attack nodes.
+        /// Falls back to direct ApproachBehavior so enemies always push in.
+        /// </summary>
+        private static readonly List<BTNode> SmartApproachBehaviorTree = new List<BTNode>
+        {
+            new SequenceNode(new List<BTNode>
+            {
+                new InsideEnemyHitbox(),
+                new DodgeBehavior(0.5f),
+            }),
+            new SequenceNode(new List<BTNode>
+            {
+                new InsideEnemyHitbox(),
+                new BlockBehavior(0.75f),
+            }),
+            new SequenceNode(new List<BTNode>
+            {
+                new AttackWithValidSkill(),
+            }),
+            new SmartApproachBehavior(),
             new ApproachBehavior(),
         };
 

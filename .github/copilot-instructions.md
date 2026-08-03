@@ -11,3 +11,7 @@ Before making code changes, consult the relevant documentation in `Documentation
 - **`improvements.md`** — Known bugs, code quality issues, and improvement suggestions organized by priority.
 - **`SystemDependencyGraph.json`** — Machine-readable dependency data.
 - **`Documentation/Systems/*.md`** — Deep dives into individual systems: Combat, AI, Audio, Camera, Input, Items, Progression, SaveSystem, StatusEffects, TimeControl, UI.
+
+## Skills
+
+The agent has access to gamedev skill files under `.agents/skills/`. **Always consult `find-skills` first before making code changes — it will route to the right domain skill.**

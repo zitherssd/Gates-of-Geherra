@@ -27,7 +27,6 @@
 17. [Skill Domain: Physics Tuning](#17-skill-domain-physics-tuning)
 18. [Skill Domain: Procedural Gen / Roguelike / RPG](#18-skill-domain-procedural-gen--roguelike--rpg)
 19. [Dead Code & Stubs](#19-dead-code--stubs)
-20. [Quick Wins](#20-quick-wins)
 
 ---
 
@@ -738,24 +737,6 @@ Stats are rolled 3d6 at start and only increased via `TrainingManager`. There's 
 | `TrainingManager.case 3` | Dead code | Unreachable due to `Random.Range(0, 3)` exclusive upper bound |
 | `AiRuleset.Ninja` | Empty behavior | No behaviors assigned — does nothing |
 
----
-
-## 20. Quick Wins
-
-These are low-effort, high-impact fixes that can be done quickly:
-
-| # | Fix | Effort | Impact | File |
-|---|-----|--------|--------|------|
-| 1 | Change `Random.Range(0, 3)` → `Random.Range(0, 4)` in TrainingManager | 1 min | Fixes dead training failure path | `TrainingManager.cs` |
-| 2 | Assign `Mathf.Clamp` result to `currentBuildup` | 1 min | Fixes buildup overflow/underflow | `ActorRuntime.cs` |
-| 3 | Add null check on `BattleManager.instance` in `Actor.Update()` | 1 min | Prevents NRE in non-battle scenes | `Actor.cs` |
-| 4 | Add singleton guard in `SaveManager.Awake()` | 2 min | Prevents instance corruption | `SaveManager.cs` |
-| 5 | Wrap debug subs in `#if UNITY_EDITOR` in `InputHandler` | 2 min | Removes perf overhead in release builds | `InputHandler.cs` |
-| 6 | Uncomment AI tick cooldown | 1 min | Reduces AI CPU usage by ~20× | `AIBT.cs` |
-| 7 | Change `GetCurrentHP()` LINQ to `for` loop | 5 min | Reduces per-hit allocations | `ActorRuntime.cs` |
-| 8 | Add `FirstOrDefault()` + null check in `ClosestEnemy` | 2 min | Prevents crash when all enemies dead | `TargetingSystem.cs` |
-| 9 | Add `RequireComponent` attributes to `Actor` | 3 min | Ensures dependencies exist | `Actor.cs` |
-| 10 | Guard `QuickFight()` against empty `RandomBattles` | 2 min | Prevents crash on empty pool | `FloorManager.cs` |
 
 ---
 
