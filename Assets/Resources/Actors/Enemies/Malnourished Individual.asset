@@ -23,13 +23,13 @@ MonoBehaviour:
     alive: 0
   baseMaxBuildup: 15
   baseMaxPosture: 15
-  baseMaxStamina: 30
+  baseMaxStamina: 45
   Strength: 3
   Agility: 3
   Mind: 3
   Spirit: 7
   postureRegenRate: 1
-  staminaRegenRate: 2
+  staminaRegenRate: 2.5
   Controllable: 0
   AIRuleset: 1
   mainColor: {r: 0.12376268, g: 0.2679245, b: 0.11475256, a: 0}
@@ -38,6 +38,5 @@ MonoBehaviour:
   baseActions:
   - {fileID: 11400000, guid: bbf04903c613b684fbee4bea1e99fc92, type: 2}
   - {fileID: 11400000, guid: eb94d8da9dbb0de4f9022395c5c28ce9, type: 2}
-  - {fileID: 11400000, guid: bee8d5fdedd9f2441991e17989df781b, type: 2}
   - {fileID: 11400000, guid: 30f4820f0cb9091489efd45c0d0700e4, type: 2}
-  - {fileID: 11400000, guid: e6f5605b38a52a7419d7547b23b1c33c, type: 2}
+  - {fileID: 11400000, guid: 47a0c1d11ae1a2646a66890bc383145e, type: 2}

@@ -7,22 +7,32 @@ namespace Assets.Scripts.Battle.Status
     public class StatusManager : MonoBehaviour
     {
         private Actor.Actor owner;
-        public List<BaseStatus> activeStatuses; 
+        public List<BaseStatus> activeStatuses;
 
-        public StatusManager(Actor.Actor owner)
+        private void Awake()
         {
-            this.owner = owner;
-            activeStatuses = new List<BaseStatus>();
+            owner = GetComponent<Actor.Actor>();
+            if (activeStatuses == null) activeStatuses = new List<BaseStatus>();
         }
 
         public void Add(BaseStatus status)
         {
-           // if (status.singleInstance == true && activeStatuses.OfType<Stagger>().Any()) return;
+            if (status == null) return;
+
+            // singleInstance: replace an existing status of the same type instead of stacking.
+            if (status.singleInstance)
+            {
+                var existing = activeStatuses.FirstOrDefault(s => s != null && s.GetType() == status.GetType());
+                if (existing != null)
+                {
+                    activeStatuses.Remove(existing);
+                    existing.Remove();
+                }
+            }
 
             activeStatuses.Add(status);
             status.owner = owner;
             status.Apply();
- 
         }
         public void Tick()
         {
@@ -34,8 +44,13 @@ namespace Assets.Scripts.Battle.Status
 
         public void Remove(BaseStatus status)
         {
+            if (status == null || !activeStatuses.Contains(status)) return;
             activeStatuses.Remove(status);
             status.Remove();
         }
+
+        public bool HasStatus<T>() where T : BaseStatus => activeStatuses.Any(s => s is T);
+
+        public T GetStatus<T>() where T : BaseStatus => activeStatuses.OfType<T>().FirstOrDefault();
     }
 }

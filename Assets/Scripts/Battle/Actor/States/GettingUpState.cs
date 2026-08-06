@@ -1,3 +1,4 @@
+using Assets.Scripts.Battle.Status;
 using Assets.Scripts.Core;
 using UnityEngine;
 
@@ -15,6 +16,10 @@ namespace Assets.Scripts.Battle.Actor.States
             cc.center = new Vector3(0, 0.3f, 0);
             actor.Runtime.currentPosture = actor.Runtime.maxPosture;
             elapsedTime = 0f; // Reset the timer when entering the state
+
+            // Full immunity (damage, posture, knockback) while down and getting up.
+            if (!actor.statusManager.HasStatus<InvincibilityStatus>())
+                actor.statusManager.Add(ScriptableObject.CreateInstance<InvincibilityStatus>());
         }
 
         public GettingUpState(Actor actor)
@@ -27,6 +32,11 @@ namespace Assets.Scripts.Battle.Actor.States
         {
             cc.height = 1.2f;
             cc.center = new Vector3(0, 0.6f, 0);
+
+            // Remove invincibility now that the actor is back on their feet.
+            var active = actor.statusManager.GetStatus<InvincibilityStatus>();
+            if (active != null)
+                actor.statusManager.Remove(active);
         }
 
         public void OnCollisionEnter(Collision collision)

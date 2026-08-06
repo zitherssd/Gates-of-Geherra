@@ -1,5 +1,7 @@
 # AI System
 
+> **Last verified:** 2026-08-03
+
 ## Purpose
 
 Controls the decision-making of non-player actors using a priority-ordered Behavior Tree.
@@ -22,7 +24,8 @@ Controls the decision-making of non-player actors using a priority-ordered Behav
 | `AIBT.cs` | Top-level BT controller; holds behavior lists, ticks every frame |
 | `BTNode.cs` | Base behavior tree node |
 | `Behaviors/ApproachBehavior.cs` | Move toward player |
-| `Behaviors/FlankApproachBehavior.cs` | Move toward player from a flank angle |
+| `Behaviors/FlankApproachBehavior.cs` | Move toward player from a flank angle (also defines `CircleApproachBehavior`) |
+| `Behaviors/SmartApproachBehavior.cs` | Crowd-aware surround: stable slot angles + ring positioning (used by `SmartApproachBehaviorTree`) |
 | `Behaviors/GroupFlankBehavior.cs` | Coordinate flank with other enemies |
 | `Behaviors/MoveToOrbitBehavior.cs` | Circle at a set radius |
 | `Behaviors/MoveBehavior.cs` | Generic directional move |
@@ -60,13 +63,14 @@ No events emitted. AI reads actor state and calls `actor.UseAction()` directly.
 
 | Ruleset | Behavior | Aggression |
 |---------|----------|-----------|
-| `SandboxGuy` (DEFAULT) | Move away from level edge | Passive |
-| `OldManBehavior` | Block → attack → circle | Defensive |
-| `EngragedManiac` | Dodge hits → attack aggressively → chase | High |
-| `ShurkienThrower` | Stay 3–5u away, throw projectiles | Ranged |
-| `TacticalFlanker` | Block → hesitate+token gate → attack → orbit | Tactical |
-| `Ninja` | [UNVERIFIED — empty behavior list] | Unknown |
-| `Hungry` | Same as OldMan [code assigns OldManBehavior] | Moderate |
+| `DEFAULT` | `SandboxGuy` — move away from level edge | Passive |
+| `OldMan` | `OldManBehavior` — block → attack → circle | Defensive |
+| `Maniac` | `EngragedManiac` — dodge hits → attack aggressively → chase | High |
+| `ShurkienThrower` | `ShurkienThrowerBehavior` — stay 3–5u away, throw projectiles | Ranged |
+| `TacticalFlanker` | `TacticalFlankerBehavior` — block → hesitate+token gate → attack → orbit | Tactical |
+| `SmartApproach` | `SmartApproachBehaviorTree` — surround with stable slot angles + ring hold, falls back to `ApproachBehavior` | Smart |
+| `Hungry` | Maps to `OldManBehavior` | Moderate |
+| `Ninja` | Empty behavior list — does nothing | Unknown |
 
 ---
 
@@ -89,7 +93,7 @@ No events emitted. AI reads actor state and calls `actor.UseAction()` directly.
 
 ## Risks
 
-- **AI tick runs at frame rate** — no throttle currently active (timer code is commented out in AIBT.Update()). Dense enemy groups may cause performance issues.
+- **AI tick throttled** — `aiTickCooldown = 0.05f` (throttle re-enabled 2026-08-03); dense enemy groups still run LINQ-heavy evaluations per tick.
 - **Ninja ruleset is empty** — assigning `AiRuleset.Ninja` to an actor produces a passive, non-functioning AI.
 - **GlobalAttackTokenCondition** limits simultaneous attacks globally, but the token budget and reset logic need verification for balance.
 - **AIBT.Reset()** is called on `Actor.OnReset` — if OnReset fires mid-battle, AI state is wiped.

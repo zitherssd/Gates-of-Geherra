@@ -1,5 +1,7 @@
 # Progression System
 
+> **Last verified:** 2026-08-03
+
 ## Purpose
 
 Manages the player's advancement through floors, skill accumulation, stat growth, and run persistence.
@@ -25,6 +27,8 @@ Manages the player's advancement through floors, skill accumulation, stat growth
 | `TrainingManager.cs` | Training timer, stat award, time-lock gating |
 | `GameSession.cs` | Owns all persistent run-state; DontDestroyOnLoad |
 | `GameFlowManager.cs` | Delegates `trainingsDone`, `timelocks` to GameSession; orchestrates mode transitions |
+
+> **No dedicated `Progression` folder** — run progression lives across `Game/GameSession.cs`, `Save/SaveData.cs`, and `Battle/Manager/BattleManager.cs` (see `Architecture.md`).
 
 ---
 
@@ -114,5 +118,5 @@ Each frame in TrainingManager.Update():
 
 - **5-floor hard limit**: `StoryBattles` array is indexed as `[floor-1]` — index out of range if `currentFloor > StoryBattles.Count`.
 - **No run-complete state**: After the 5th floor, no victory condition or post-game flow is implemented.
-- **Training award is [UNVERIFIED]**: `AwardRandomStat()` is referenced but its body was not confirmed in reviewed code.
+- **Training award verified 2026-08-03**: `AwardRandomStat()` rolls `Random.Range(0, 4)` and grants +1 to STR/AGI/MND/SPT (case 3 = SPT).
 - **Droptable loaded once at Start**: `allActions` is populated in `SkillGenerator.Start()`; changes to `Resources/Actions/Droptable/` at runtime have no effect.

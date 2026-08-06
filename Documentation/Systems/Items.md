@@ -1,5 +1,7 @@
 # Item System
 
+> **Last verified:** 2026-08-03
+
 ## Purpose
 
 Provides collectible items that passively or actively modify actor behavior during a run.

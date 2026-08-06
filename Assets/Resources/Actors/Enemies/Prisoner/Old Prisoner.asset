@@ -28,7 +28,7 @@ MonoBehaviour:
   postureRegenRate: 1
   staminaRegenRate: 20
   Controllable: 0
-  AIRuleset: 6
+  AIRuleset: 1
   mainColor: {r: 0.4113207, g: 0.4113207, b: 0.4113207, a: 1}
   secondaryColor: {r: 0.5169811, g: 0.09728259, b: 0, a: 1}
   startingItems: []

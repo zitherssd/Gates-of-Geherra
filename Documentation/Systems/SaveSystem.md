@@ -1,5 +1,7 @@
 # Save System
 
+> **Last verified:** 2026-08-03
+
 ## Purpose
 
 Provides persistent run-state across game sessions using JSON serialization to disk (or PlayerPrefs on WebGL).
@@ -20,7 +22,7 @@ Provides persistent run-state across game sessions using JSON serialization to d
 
 | Script | Role |
 |--------|------|
-| `SaveManager.cs` | Orchestrates all save/load; DontDestroyOnLoad singleton |
+| `SaveManager.cs` | Orchestrates all save/load; DontDestroyOnLoad singleton (duplicate-instance guard added 2026-08-03) |
 | `SaveData.cs` | Root serializable container |
 | `ActorSaveData.cs` | Actor state serializer/deserializer |
 | `ActionSlotSaveData.cs` | Single action slot: containerID + slotIndex + actionGuid |

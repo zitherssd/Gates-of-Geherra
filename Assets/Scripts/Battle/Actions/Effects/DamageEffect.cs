@@ -2,6 +2,7 @@ using Assets.Scripts.Battle.Actions;
 using Assets.Scripts.Battle.Actions.Skills;
 using Assets.Scripts.Utility;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using static Assets.Scripts.Battle.Actions.BaseAction;
@@ -14,7 +15,10 @@ namespace Assets.Scripts.Battle.Actions.Effects
         public bool UseHitbox = true;
         public IHitbox HitboxEffect; //How to get hitbox?
         public DamageInstance DamageData;
-        
+
+        [SerializeReference, SubclassSelector]
+        public List<IOnHitEffect> OnHitEffects = new List<IOnHitEffect>();
+
         private int currentWindowIndex = -1;
 
 
@@ -91,6 +95,16 @@ namespace Assets.Scripts.Battle.Actions.Effects
                 casterActor.Runtime.ChangeBuildup(DamageData.BuildupGainOnHit);
 
             targetActor.ApplyDamageInstance(DamageData, casterActor, action);
+
+            // Apply on-hit statuses/effects to the specific target that was hit.
+            if (OnHitEffects != null)
+            {
+                foreach (var effect in OnHitEffects)
+                {
+                    if (effect == null) continue;
+                    effect.Eval(targetActor, casterActor, action);
+                }
+            }
         }
     }
 }

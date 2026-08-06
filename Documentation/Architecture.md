@@ -2,6 +2,7 @@
 
 > Combined reference for runtime behaviour, system dependencies, and data flow across scenes.
 > Covers: startup sequence → initialization order → persistent objects → dependency tree → singleton relationships → events → state machines → execution flow → scene-to-scene data flow.
+> **Last verified:** 2026-08-03
 
 ---
 
@@ -110,7 +111,7 @@ Arena Scene Loads
         → Instantiate(playerPrefab, spawnPos, spawnRot)
         → player.Bind(session.PlayerRuntime)
         → session.NotifyPlayerSpawned(player) → CameraManager.SetPlayer(player)
-    → BattleManager.PlayerActors = [player]
+    → BattleManager.PlayerActors = [player]   // BattleManager.Player computed property resolves to PlayerActors[0]
     → UIManager.InitializePlayerActionButtonPrefabs(runtime.actions, session.Loadout)
     → UIManager.DisableBattleSkills()
     → session.PendingBattle = null
@@ -139,7 +140,7 @@ BattleEndState.Enter()
     → if RewardPool.Actions.Count > 2:
         SkillGenerator.DrawSkillsFromSelection([3 random], callback)
           [selection callback]:
-          → action added to PlayerActors[0].Runtime.actions
+          → action added to BattleManager.Player.Runtime.actions
           → UIManager.InitializePlayerActionButtonPrefabs(actions)
           → destroy cards
           → UIManager.DisableBattleSkills()
@@ -232,7 +233,8 @@ BattleManager
 │       ├── SaveManager
 │       ├── SkillGenerator
 │       └── GameSession
-├── Actor[] PlayerActors
+├── Actor Player (computed property → PlayerActors[0], fallback to GameFlowManager.playerActor)
+├── Actor[] PlayerActors (legacy list; prefer `Player`)
 └── Actor[] EnemyActors (spawned from ActorDefinition)
 
 FloorManager

@@ -1,8 +1,12 @@
 # Gates of Gehera — Codebase Improvement Report
 
 > **Date:** 2026-07-27
+> **Last verified:** 2026-08-03 (re-checked against current code)
 > **Scope:** Full codebase review against game-development best practices (skill domains)
 > **Priority levels:** 🔴 Critical | 🟠 High | 📌 Medium | 💡 Low/Suggestion
+>
+> Items marked **✅ Fixed** were verified resolved on 2026-08-03; **🟠/🔴 Still open** remain
+> live issues. Section 21 captures actionable items salvaged from the deleted `Plans/` docs.
 
 ---
 
@@ -34,6 +38,8 @@
 
 ### 1.1 `Mathf.Clamp` result not assigned — `ActorRuntime.ChangeBuildup()`
 
+> ✅ **Fixed (verified 2026-08-03)** — `ActorRuntime.cs` L244 now assigns: `currentBuildup = Mathf.Clamp(currentBuildup + value, 0, maxBuildup);`
+
 **File:** `Assets/Scripts/Battle/Actor/ActorRuntime.cs` — Line ~245
 
 ```csharp
@@ -56,6 +62,8 @@ currentBuildup = Mathf.Clamp(currentBuildup, 0, maxBuildup);
 
 ### 1.2 `TrainingManager.AwardRandomStat()` — unreachable `case 3`
 
+> ✅ **Fixed (verified 2026-08-03)** — now `Random.Range(0, 4)`, so `case 3` is reachable. (`TrainingManager` also gained a `switch (trainingsDone)` with `case >4`.)
+
 **File:** `Assets/Scripts/Game/TrainingManager.cs` — Lines ~115–131
 
 ```csharp
@@ -75,6 +83,8 @@ switch (roll)
 ---
 
 ### 1.3 `TargetingSystem.ClosestEnemy` — `.First()` throws on empty collection
+
+> ✅ **Fixed (verified 2026-08-03)** — uses `FirstOrDefault()` and guards `PlayerActors.Count == 0` (returns null).
 
 **File:** `Assets/Scripts/Battle/Actor/Systems/TargetingSystem.cs` — Lines ~85–89
 
@@ -100,6 +110,8 @@ This property is accessed every frame by AI behaviors, targeting logic, and `Act
 
 ### 1.4 `InputHandler` — Debug event subscriptions leak in release builds
 
+> ✅ **Fixed (verified 2026-08-03)** — debug lambdas now wrapped in `#if UNITY_EDITOR`.
+
 **File:** `Assets/Scripts/Utility/InputHandler.cs` — Lines ~53–55
 
 ```csharp
@@ -113,6 +125,8 @@ These permanent lambda subscriptions allocate delegate objects and execute on ev
 ---
 
 ### 1.5 `Actor.Update()` — `BattleManager.instance` accessed without null check
+
+> ✅ **Fixed (verified 2026-08-03)** — `Actor.cs` L102 now guards `BattleManager.instance == null || !BattleManager.instance.enabled`.
 
 **File:** `Assets/Scripts/Battle/Actor/Actor.cs` — Line ~98
 
@@ -129,6 +143,8 @@ if (BattleManager.instance == null || !BattleManager.instance.enabled) return;
 ---
 
 ### 1.6 `SaveManager.Awake()` — no duplicate-instance protection
+
+> ✅ **Fixed (verified 2026-08-03)** — `Awake()` now destroys duplicates: `if (instance != null && instance != this) { Destroy(gameObject); return; }`.
 
 **File:** `Assets/Scripts/Save/SaveManager.cs` — Lines ~12–15
 
@@ -152,6 +168,8 @@ DontDestroyOnLoad(gameObject);
 
 ### 1.7 `ItemEventBus` — static dictionary leaks actor references
 
+> ⚠️ **Partially addressed (verified 2026-08-03)** — `ItemEventBus.Unsubscribe()` now exists and `BaseTrinket.Unequip()` calls it; there is still no `Actor.OnDestroy` cleanup, so a body destroyed without unequipping can still leak.
+
 **File:** `Assets/Scripts/Battle/Items/ItemEventBus.cs`
 
 ```csharp
@@ -165,6 +183,8 @@ There is no mechanism to clean up subscriptions when an `Actor` is destroyed. If
 ## 2. 🟠 High-Priority Issues
 
 ### 2.1 `BaseSkill.CalculateDuration()` — reflection on private field, always returns 0
+
+> 🔴 **Still open (verified 2026-08-03)** — reflection on `AnimationClip.m_Events` still present.
 
 **File:** `Assets/Scripts/Battle/Actions/BaseSkill.cs` — Lines ~41–76
 
@@ -190,6 +210,8 @@ Either implement the calculation properly (iterate clip events to find the last 
 
 ### 2.2 `Actor` events — no systematic unsubscribe on `OnDestroy()`
 
+> 🟠 **Still open (verified 2026-08-03)** — no `OnDestroy()`/`IDisposable` cleanup on `Actor`.
+
 **File:** `Assets/Scripts/Battle/Actor/Actor.cs` — Lines ~37–42
 
 ```csharp
@@ -210,6 +232,8 @@ Sub-systems like `EffectManager`, `AudioManager`, `MovementSystem`, and `Targeti
 
 ### 2.3 `BlockStatus` subscribes to `BattleManager.OnNewTurn` — never unsubscribes
 
+> 🟠 **Still open (verified 2026-08-03)** — `OnNewTurn += Remove` has no matching `-=`.
+
 **File:** `Assets/Scripts/Battle/Status/BlockStatus.cs`
 
 ```csharp
@@ -227,6 +251,8 @@ The legacy `Assets/Scripts/Battle/Status/` (old status system: `StatusManager.cs
 ---
 
 ### 2.5 `ActorSaveData` stat naming — `CON` stores Agility, `AGI` stores Mind
+
+> 🟠 **Still open (verified 2026-08-03)** — `save.CON = ad.Agility; save.AGI = ad.Mind` still present (`SaveData.cs` L89–90).
 
 **File:** `Assets/Scripts/Save/SaveData.cs` — Lines ~53–56
 
@@ -248,6 +274,8 @@ The round-trip works because save and load use the same wrong mapping, but:
 
 ### 2.6 AI tick cooldown disabled — AI evaluates every frame
 
+> ✅ **Fixed (verified 2026-08-03)** — throttle re-enabled (`AIBT.cs` L191–193, `aiTickCooldown = 0.05f`).
+
 **File:** `Assets/Scripts/Battle/Actor/AI/AIBT.cs` — Lines ~114–117
 
 ```csharp
@@ -257,6 +285,46 @@ The round-trip works because save and load use the same wrong mapping, but:
 ```
 
 The throttle mechanism is commented out, so every enemy's AI runs every frame. With multiple enemies, this means many LINQ-heavy evaluations per frame. Uncomment and tune `aiTickCooldown` (0.05s = ~20 evaluations/sec is reasonable).
+
+---
+
+### 2.7 `Actor.ApplyDamageInstance` fires `OnBeforeTakeDamage` AFTER `Calculate()` — modifiers never apply
+
+> 🟠 **Still open (verified 2026-08-03)** — ordering bug in `Actor.cs`.
+
+**File:** `Assets/Scripts/Battle/Actor/Actor.cs` — `ApplyDamageInstance()`
+
+```csharp
+DamageInstanceResult result = damageInstance.Calculate(attacker, this, action); // <-- damage computed here
+var damage = result.DamageDealt;
+...
+OnBeforeTakeDamage?.Invoke(damageInstance);  // <-- fires AFTER, so mutating damageInstance has no effect
+```
+
+`OnBeforeTakeDamage` is documented as "allowing listeners to modify the damage," but `result.DamageDealt` is already extracted before the event fires. So `BlockState.ModifyIncomingDamage()` (Block/Parry/Guard reduction) and any other `OnBeforeTakeDamage` listener never affect the current hit. Impact:
+- Block damage/posture/knockback modifiers silently do nothing
+- Any future damage-gate (e.g. damage-reduction buffs) must not rely on this event
+
+**Fix:** Move `OnBeforeTakeDamage?.Invoke(damageInstance)` to the top of `ApplyDamageInstance`, BEFORE `Calculate()`. Verify Block/AttackSkill behavior after the change. (Note: `OnBeforeDealDamage` in `DealDamage()` fires at the correct time and is unaffected. Invincibility avoids this entirely by early-returning before `Calculate()`.)
+
+---
+
+### 2.8 Status system wiring — RESOLVED (2026-08-03)
+
+> ✅ **Fixed (verified 2026-08-03)** — statuses now actually apply and tick.
+
+Two bugs made the status system non-functional:
+
+1. **`StatusManager.owner` was never set.** `StatusManager` is a MonoBehaviour added via `[RequireComponent]`, but its `owner` field was only assigned in a constructor (which Unity never calls for MonoBehaviours). `StatusManager.Add()` then set `status.owner = owner` (null), so `PoisonStatus.Tick()` bailed on `if (owner == null) return;` — no status ever ticked. **Fixed:** `StatusManager.Awake()` now wires `owner = GetComponent<Actor.Actor>()` and initializes `activeStatuses`.
+
+2. **`AddStatusEffect.Eval()` had the apply call commented out.** Statuses could never be applied from an action. **Fixed:** restored `UnityEngine.Object.Instantiate(StatusToApply)` + `finalTarget.statusManager.Add(statusInstance)`.
+
+Also implemented in the same pass:
+- `BaseStatus.Duration` (seconds) + centralized auto-removal timer in `BaseStatus.Tick()` via new virtual `TickStatus()`; `0` = manual removal only.
+- `StatusManager.singleInstance` now honored (replaces same-type status instead of stacking).
+- `StatusManager.HasStatus<T>()` / `GetStatus<T>()` helpers.
+- New statuses `SlowStatus`, `BurnStatus`, `InvincibilityStatus` (+ assets in `Resources/Statuses/`).
+- On-hit statuses: `IOnHitEffect` + `AddStatusOnHitEffect` on `DamageEffect.OnHitEffects`; `RemoveStatusEffect` to turn a status off.
 
 ---
 
@@ -725,13 +793,13 @@ Stats are rolled 3d6 at start and only increased via `TrainingManager`. There's 
 
 | File | Status | Notes |
 |------|--------|-------|
-| `CrawlerManager.cs` | Empty stub | Full `MonoBehaviour` with empty `Start()`/`Update()` — no functionality |
-| `ActorBehaviorTree.cs` | Empty stub | Full `MonoBehaviour` with empty `Start()`/`Update()` — appears to be a leftover |
-| `SkillGenerator.cs` — commented-out methods | ~100 lines of dead code | `UpgradeSkillAtRandom()` and `UpgradeReactionAtRandom()` fully commented out |
+| `CrawlerManager.cs` | Still empty stub (2026-08-03) | Full `MonoBehaviour` with empty `Start()`/`Update()` — no functionality |
+| `ActorBehaviorTree.cs` | Still empty stub (2026-08-03) | Full `MonoBehaviour` with empty `Start()`/`Update()` — appears to be a leftover |
+| `SkillGenerator.cs` — commented-out methods | Still commented out (2026-08-03) | `UpgradeSkillAtRandom()` and `UpgradeReactionAtRandom()` fully commented out |
 | `Battle/Status/*` (legacy) | Removed | Old duplicate status system deleted in folder restructure; live system at `Battle/Status/` |
-| `BaseSkill.CalculateDuration()` | Always returns 0 | Reflection-based method with no actual calculation |
-| `TrainingManager.case 3` | Dead code | Unreachable due to `Random.Range(0, 3)` exclusive upper bound |
-| `AiRuleset.Ninja` | Empty behavior | No behaviors assigned — does nothing |
+| `BaseSkill.CalculateDuration()` | Still open (2026-08-03) | Reflection-based method with no actual calculation |
+| `TrainingManager.case 3` | ✅ Fixed (2026-08-03) | `Random.Range(0, 4)` now — `case 3` reachable |
+| `AiRuleset.Ninja` | Still empty (2026-08-03) | No behaviors assigned — does nothing |
 
 
 ---
@@ -744,6 +812,8 @@ Stats are rolled 3d6 at start and only increased via `TrainingManager`. There's 
 | 🟠 High | 6 | Event leaks, perf, AI throttling, save schema, duplicate code |
 | 📌 Medium | 6 | Code quality, public fields, `GameObject.Find`, string anim params |
 | 💡 Suggestions | Many | Object pooling, audio ducking, input buffering, safe areas |
+
+> **2026-08-03 re-verification:** 6 of 7 🔴 Critical and 2 of 6 🟠 High items are ✅ Fixed (see markers).
 
 ---
 
@@ -758,6 +828,56 @@ These were verified as pre-existing (git history / untouched files) while valida
 | "Fixing reference to the runtime script in scene file!" | Logged from `ActionDatabase.Initialize()` → `Resources.LoadAll<BaseAction>("Actions")` every play. All action `m_Script` references verified consistent; Unity auto-repairs it. Likely a legacy/reconciliation artifact (assembly `Assembly-CSharp` → `GoG.Runtime`). | Monitor; no action required unless a functional issue appears. |
 
 ---
+
+## 21. Migrated from archived plans (2026-08-03)
+
+> These items were captured in `Documentation/Plans/*.md`, which were deleted during the
+> 2026-08-03 documentation consolidation. The still-actionable parts are preserved here.
+
+### 21.1 Editor wiring checklist (arena / multi-scene flow) — PENDING
+
+All run-persistence + multi-scene arena code is in place and compiling; the remaining work is
+editor wiring in Unity. Everything is **additive** — the in-scene CaveScene flow keeps working
+until a battle opts into an arena.
+
+1. **Player prefab (once):** the Actor with NavMeshAgent + an `ActorDefinition` fallback.
+2. **Rest scene** (`GameFlowManager`): assign `playerPrefab` and `playerSpawnPoint`; leave
+   `playerActor` empty to spawn from prefab (a pre-placed body keeps working).
+3. **Arena scenes:** register in `ArenaCatalog` (`Battle/Manager/Arena.cs`) — current mapping:
+   `Arena.Cave -> "Cave"`, `Arena.Debug -> "DebugScene"`, `Arena.Sandbox -> "SandboxScene"`,
+   `Arena.Crossing -> "Crossing"`. Add per-scene `BattleManager`/`UIManager`/`CameraManager`/
+   `SoundManager` (+`SlowdownManager`/`TooltipUI`/`SkillGenerator`), an `ArenaBootstrapper`
+   (`playerPrefab`, optional `debugBattle`), and `SpawnGroup`s (`id`, `playerSpawn`,
+   `enemySpawns`, `cameraAnchor`).
+4. **BattleDefinition assets:** set `arena` (`None` = in-scene) + `spawnGroup`; the removed
+   `enemyStartPosition`/`playerStartPosition` fields drop off on reserialize.
+5. **Behavior change to verify:** rolled stats + entered name now apply (`GameSession.StartNewRun()`
+   no longer re-resets); a bound player's `inventory.Items` *is* `ActorRuntime.items` (shared).
+
+### 21.2 Deferred: persistent BattleUI + audio across scenes
+
+Proposal to make `UIManager` + BattleUI canvas, `SoundManager`, `InputHandler`, `SlowdownManager`
+persistent DDOL singletons created once in TitleScene, re-bound per scene via `OnPlayerSpawned`.
+**Still deferred** — `UIManager` remains scene-local. When doing it, audit hard-cached scene refs:
+- `UIManager.cs` (~L70) `GameObject.FindGameObjectWithTag("OriginPoint")`
+- `ActionButtonBattle.cs` `GameObject.Find("LeftContainer"/"RightContainer"/"PlacementGuide")`
+- `JoystickManager.cs` `GameObject.Find("VirtualJoystickBase"/"VirtualKnob")`
+Gotchas: persistent canvas + per-scene camera = stale `worldCamera`; rebind subscriptions via
+`OnPlayerSpawned`; don't restart music on scene load.
+
+### 21.3 Deferred: collapse `BattleManager.PlayerActors` → single `Player`
+
+Partially done — `BattleManager.Player` computed property now exists (falls back to
+`PlayerActors[0]`). Remaining: replace `PlayerActors[0]` reads with `Player` in `CameraManager.cs`
+(~L68–72) and `TargetingSystem.cs` (~L92–93, L133), then remove the list. `EnemyActors` stays a
+list. Co-op explicitly out of scope.
+
+### 21.4 Deferred: direct arena-scene testing (no TitleScene)
+
+Entering an arena scene directly works for combat, but `GameSession.PlayerRuntime` is null, so the
+player falls back to prefab stats. Want: bootstrap guard `if (GameSession.Instance == null)
+StartDebugRun();` (default MC + debug battle), lazy-init services, a `[DEBUG]` warning, optional
+`DebugRunConfig` SO. Must be a no-op in the real flow.
 
 ## Appendix: Files with Highest Improvement Potential
 

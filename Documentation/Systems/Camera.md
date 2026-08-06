@@ -1,5 +1,7 @@
 # Camera System
 
+> **Last verified:** 2026-08-03
+
 ## Purpose
 
 Provides a dynamic 3D camera that tracks the player and enemies, adapts framing to combat spread, and handles visual effects (shake, slow-track, occlusion).
@@ -74,7 +76,7 @@ None emitted. Reads from GameSession event.
 ## External Dependencies
 
 - `GameSession.OnPlayerSpawned` — subscribes/unsubscribes in OnEnable/OnDisable
-- `BattleManager.PlayerActors[0]` — fallback player reference on Start
+- `BattleManager.Player` — fallback player reference on Start (computed property resolving `PlayerActors[0]` / `GameFlowManager.playerActor`)
 - `TargetingSystem` (via player Actor) — enemy position queries
 
 ---

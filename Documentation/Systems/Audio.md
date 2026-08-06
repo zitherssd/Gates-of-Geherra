@@ -1,5 +1,7 @@
 # Audio System
 
+> **Last verified:** 2026-08-03
+
 ## Purpose
 
 Plays and manages background music and sound effects throughout the game.
@@ -21,7 +23,7 @@ Plays and manages background music and sound effects throughout the game.
 |--------|------|
 | `SoundManager.cs` | Singleton; exposes `PlayMusic`, `PlayMusicRest`, `PlaySE`, `FadeOutMusic` |
 | `AudioManager.cs` | Per-actor audio; handles actor-specific sounds (hit sounds, etc.) — class, not MonoBehaviour |
-| `Battle/Components/Audio/` | [UNVERIFIED — contains actor audio component(s)] |
+| `AudioManager.cs` | (`Scripts/Battle/Components/Audio/`) Per-actor audio; plain class owned by the Actor |
 
 ---
 

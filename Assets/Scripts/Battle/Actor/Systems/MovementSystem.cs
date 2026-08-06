@@ -13,6 +13,7 @@ namespace Assets.Scripts.Battle.Actor.Systems
         public bool ApplyForces;
         public bool ApplyGravity;
         public float speed { get { return rigidbody.velocity.magnitude; } }
+        public float MoveSpeedMultiplier = 1f;
         public NavMeshAgent agent;
 
         public MovementSystem(Actor actor)
@@ -95,8 +96,8 @@ namespace Assets.Scripts.Battle.Actor.Systems
             // Get the current velocity
             Vector3 currentVelocity = rigidbody.velocity;
 
-            // Calculate the desired velocity (direction * max speed)
-            Vector3 desiredVelocity = directionToTarget * maxSpeed;
+            // Calculate the desired velocity (direction * max speed, scaled by statuses like Slow)
+            Vector3 desiredVelocity = directionToTarget * (maxSpeed * MoveSpeedMultiplier);
 
             // Smoothly interpolate the velocity (acceleration defines how quickly it adjusts)
             Vector3 newVelocity = Vector3.Lerp(currentVelocity, desiredVelocity, acceleration * Time.fixedDeltaTime);
@@ -116,8 +117,8 @@ namespace Assets.Scripts.Battle.Actor.Systems
             // Get the current velocity
             Vector3 currentVelocity = rigidbody.velocity;
 
-            // Calculate the desired velocity (direction * max speed)
-            Vector3 desiredVelocity = direction * maxSpeed;
+            // Calculate the desired velocity (direction * max speed, scaled by statuses like Slow)
+            Vector3 desiredVelocity = direction * (maxSpeed * MoveSpeedMultiplier);
 
             // Smoothly interpolate the velocity (acceleration defines how quickly it adjusts)
             Vector3 newVelocity = Vector3.Lerp(currentVelocity, desiredVelocity, acceleration * Time.fixedDeltaTime);

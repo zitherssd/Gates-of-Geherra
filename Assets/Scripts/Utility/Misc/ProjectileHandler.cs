@@ -33,6 +33,14 @@ namespace Assets.Scripts.Utility
             if (other.gameObject == owner.gameObject) return;
             Actor enemyBattler = other.gameObject.GetComponent<Actor>();
 
+            // Pass straight through invincible actors (e.g. player Weave iframes):
+            // no hit, no VFX detach, and crucially no Destroy — so projectiles keep
+            // flying instead of vanishing on contact.
+            if (enemyBattler != null && enemyBattler.IsInvincible)
+            {
+                return;
+            }
+
             // --- Detach travel particles BEFORE destroying the projectile ---
             DetachAndLetVFXFinish();
 

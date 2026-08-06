@@ -1,5 +1,7 @@
 # Input System
 
+> **Last verified:** 2026-08-03
+
 ## Purpose
 
 Handles player input (touch / on-screen controls) and routes it to UI action buttons and camera controls.
@@ -45,7 +47,7 @@ OnScreenStick (VirtualJoystickBase)
 ActionButton (screen tap)
   → ActionButtonBattle.OnPointerDown/Up
   → resolves BaseAction from ActionButtonHandler.ReferencedAction
-  → calls BattleManager.PlayerActors[0].UseAction(action)
+  → calls BattleManager.Player.UseAction(action)
 
 Hold Gesture
   → SlowdownInputController
@@ -74,7 +76,7 @@ Hold Gesture
 
 ## External Dependencies
 
-- `BattleManager.PlayerActors[0]` — action execution target
+- `BattleManager.Player` — action execution target
 - `SlowdownManager` — hold-to-resume slowdown
 
 ---
@@ -82,5 +84,5 @@ Hold Gesture
 ## Risks
 
 - **Touch-only architecture**: `InputHandler` uses `touchPressed`, `touchEnd`, etc. — keyboard/gamepad not handled for gameplay actions. [UNVERIFIED if Input System actions have fallback bindings]
-- **Debug logs on all events**: `InputHandler.Start()` adds Debug.Log listeners to all events — these remain in release builds.
+- **Debug logs on all events**: `InputHandler.Start()` adds Debug.Log listeners — wrapped in `#if UNITY_EDITOR` (2026-08-03), so they don't ship in builds.
 - **`OnPointerUp()` is empty**: `InputHandler.OnPointerUp()` has commented-out code — may indicate incomplete implementation.

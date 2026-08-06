@@ -212,11 +212,27 @@ namespace Assets.Scripts.Utility
             if (positions.Count == 0)
                 return playerTransform.position + playerTransform.forward * 2f;
 
+            // Weight closer actors more, but with a gentle falloff so the focus
+            // point still tracks the battle as actors move. The player sits at
+            // distance 0 (weight ~1); enemies lose influence smoothly with
+            // distance instead of the sharp drop-off of a 1/d curve, which was
+            // pinning the camera to the player.
             Vector3 sum = Vector3.zero;
-            foreach (var position in positions)
-                sum += position;
+            float totalWeight = 0f;
 
-            return sum / positions.Count;
+            const float falloff = 0.2f;
+            foreach (var position in positions)
+            {
+                float distance = Vector3.Distance(position, playerTransform.position);
+                float weight = 1f / (1f + distance * falloff);
+                sum += position * weight;
+                totalWeight += weight;
+            }
+
+            if (totalWeight <= 0f)
+                return playerTransform.position;
+
+            return sum / totalWeight;
         }
 
         private Vector3 GetBattleSideAxis()

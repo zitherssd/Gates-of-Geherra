@@ -1,6 +1,7 @@
 # Gates of Gehera — Project Registry
 
 > Consolidated reference for scripts, scenes, and prefabs in the project.
+> **Last verified:** 2026-08-03
 
 ---
 
@@ -24,7 +25,7 @@
 | `Assets.Scripts.Battle.Status` | `Scripts/Battle/Status/` | BaseStatus, StatusManager, Poison, Stagger, BlockStatus, ... |
 | `Assets.Scripts.Battle.Components.Effects` | `Scripts/Battle/Components/Effects/` | EffectManager, EffectsRepository |
 | `Assets.Scripts.Battle.Components.Audio` | `Scripts/Battle/Components/Audio/` | AudioManager |
-| `Assets.Scripts.Battle.Timelock` | `Scripts/Battle/Timelock/` | TimelockManager, Timelock, CooldownDisplay |
+| `Assets.Scripts.Battle.Timelock` | `Scripts/Battle/Timelock/` | CooldownDisplay (namespaced); `TimeLock` + `TimeLockManager` are global-namespace |
 | `Assets.Scripts.Battle.Items` | `Scripts/Battle/Items/` | BaseItem, BaseConsumable, BaseTrinket, CraftingSystem |
 | `Assets.Scripts.Crawler` | `Scripts/Crawler/` | FloorManager, SkillGenerator, CrawlerManager (stub) |
 | `Assets.Scripts.Save` | `Scripts/Save/` | SaveManager, SaveData, ActorSaveData |
@@ -34,6 +35,8 @@
 | `Assets.Scripts.Utility` | `Scripts/Utility/` (Camera/, Feedback/, Input/, Audio/, Misc/) | Cameras, slowdown, sound, input, misc helpers (single namespace) |
 
 > **Assemblies**: `GoG.Runtime` (all of `Scripts/` except `Editor/`), `GoG.Editor` (`Scripts/Editor/`, Editor-only), `LeanTween.Runtime` / `LeanTween.Editor` (`ThirdParty/LeanTween/`). Game code no longer compiles into `Assembly-CSharp`.
+>
+> **Namespace exceptions** (files in the **global namespace**, not `Assets.Scripts.*`): `ActionDatabase` (`Utility/Misc/ActionDatabase.cs`), `TimeLock` + `TimeLockManager` (`Battle/Timelock/`), `ItemEventBus` (`Battle/Items/ItemEventBus.cs`), `MainMenuController` (`UI/Title/`), and all `Editor/*.cs`. `UIManager` (`Scripts/UI/UIManager.cs`) lives in the root `Assets.Scripts` namespace (not `.UI`). `TargetingManager.cs` (`Scripts/UI/`) is entirely commented out.
 
 ---
 
@@ -85,6 +88,7 @@
 ### BattleManager
 **File**: `Scripts/Battle/Manager/BattleManager.cs` — Orchestrates a single battle. Spawns enemies, positions player.  
 **API**: `Enter(BattleDefinition, onBattleEnd)`, `TriggerBattleEnd()`  
+**Property**: `Player` (computed — resolves to `PlayerActors[0]`, falling back to `GameFlowManager.playerActor`).  
 **Events**: `OnBattleEnd`, `OnNewTurn`  
 **Note**: Sets `Physics.gravity = (0, -6, 0)` in Start().
 
@@ -120,16 +124,25 @@
 **Files**: `HitWindows/HitWindow.cs` (struct), `HitWindows/HitWindowManager.cs` (class)  
 Frame-based hit windows with per-enemy hit limits. Used by `GenericSkill` in `OnUpdate()`.
 
+### Action Assets (Resources/Actions)
+| Asset | Type | Notes |
+|-------|------|-------|
+| `Weave` (`Defensive/Weave.asset`) | GenericSkill (INSTANT) | 2 rechargeable charges (~7s each), Ninjutsu animation. Iframes frames 2–8 via `AddInvincible` (frame-2 window; auto-removes on cleanup) + `RemoveStatusEffect` (frame-9 window) on InvincibilityStatus; random-direction hop via `AddRandomForce`. Added to `MC.asset` baseActions (player starting kit). |
+
+### Effects (Actions/Effects/)
+`AddRandomForce` (`IEffect`, in `AddForceDirection.cs`) — applies a small force in a random horizontal direction. Used for INSTANT actions, where `Direction` is never set (so `AddForceDirection` is a no-op). Example: Weave's dodge hop.
+`AddInvincible` (`IEffect + IEndableEffect`, in `AddStatusEffect.cs`) — grants `InvincibilityStatus` to the caster; auto-removed on action cleanup (safety net). Pair with `RemoveStatusEffect` in a later hit window for a precise frame window (Weave frames 2–8).
+
 ---
 
 ## AI System
 
 ### AIBT
 **File**: `Scripts/Battle/Actor/AI/AIBT.cs` — Behavior tree controller, ticks highest-priority valid behavior each frame.  
-**Rulesets**: `SandboxGuy` (passive), `OldManBehavior` (defensive), `EngragedManiac` (aggressive), `ShurkienThrower` (ranged), `TacticalFlanker` (tactical), `Ninja` (empty — non-functional)
+**Rulesets** (`AiRuleset` enum in `AIBT.cs`): `DEFAULT` (passive/SandboxGuy), `OldMan` (defensive), `Maniac` (aggressive), `Hungry` (maps to `OldManBehavior`), `ShurkienThrower` (ranged), `TacticalFlanker` (tactical), `SmartApproach` (crowd-aware surround), `Ninja` (empty — non-functional). Note: internal behavior-list variable names differ from enum members (e.g. `SandboxGuy`, `EngragedManiac`, `ShurkienThrowerBehavior`).
 
 ### AI Behaviors
-`ApproachBehavior`, `FlankApproachBehavior`, `GroupFlankBehavior`, `MoveToOrbitBehavior`, `MoveBehavior`, `DashBehavior`, `DodgeBehavior`, `AttackWithValidSkill`, `AttackProjectile`, `BlockBehavior`, `BlockCancelBehavior`, `ReactionBehavior`
+`ApproachBehavior`, `SmartApproachBehavior`, `FlankApproachBehavior` (+ `CircleApproachBehavior`, defined in the same file), `GroupFlankBehavior`, `MoveToOrbitBehavior`, `MoveBehavior`, `DashBehavior`, `DodgeBehavior`, `AttackWithValidSkill`, `AttackProjectile`, `BlockBehavior`, `BlockCancelBehavior`, `ReactionBehavior`
 
 ### AI Conditions
 `DistanceConditions`, `GlobalAttackTokenCondition`, `HesitateCondition`, `InsideEnemyHitbox`, `StaminaConditions`
@@ -144,7 +157,7 @@ Frame-based hit windows with per-enemy hit limits. Used by `GenericSkill` in `On
 | `SaveData` | `Scripts/Save/SaveData.cs` | Root serializable container |
 | `ActorSaveData` | `Scripts/Save/ActorSaveData.cs` | Actor state serializer. **Note**: `CON` stores Agility, `AGI` stores Mind (legacy naming bug). |
 | `ActionSlotSaveData` | `Scripts/Save/ActionSlotSaveData.cs` | (ContainerID, SlotIndex, ActionGuid) |
-| `ActionDatabase` | `Scripts/Utility/ActionDatabase.cs` | GUID→BaseAction lookup. Asset at `Resources/Action Database.asset`. |
+| `ActionDatabase` | `Scripts/Utility/Misc/ActionDatabase.cs` | GUID→BaseAction lookup. Asset at `Resources/Database/Action Database.asset`. |
 
 ---
 
@@ -174,14 +187,14 @@ Frame-based hit windows with per-enemy hit limits. Used by `GenericSkill` in `On
 
 | Script | File | Role |
 |--------|------|------|
-| `CameraManager` | `Utility/CameraManager.cs` | Dynamic camera, shake, slow-track |
-| `CameraOcclusionManager` | `Utility/CameraOcclusionManager.cs` | Makes occluding objects transparent |
-| `SlowdownManager` | `Utility/SlowdownManager.cs` | TimeScale manipulation (4 modes) |
-| `SlowdownVisualEffect` | `Utility/SlowdownVisualEffect.cs` | Post-process during slowdown |
-| `SoundManager` | `Utility/SoundManager.cs` | Music + SFX playback |
-| `InputHandler` | `Utility/InputHandler.cs` | Touch gesture detection |
-| `StaticHelpers` | `Utility/StaticHelpers.cs` | Math utilities (LinearMap) |
-| `TimeLockManager` | `Utility/TimeLockManager.cs` | Real-time named timers |
+| `CameraManager` | `Utility/Camera/CameraManager.cs` | Dynamic camera, shake, slow-track |
+| `CameraOcclusionManager` | `Utility/Camera/CameraOcclusionManager.cs` | Makes occluding objects transparent |
+| `SlowdownManager` | `Utility/Feedback/SlowdownManager.cs` | TimeScale manipulation (4 modes) |
+| `SlowdownVisualEffect` | `Utility/Feedback/SlowdownVisualEffect.cs` | Post-process during slowdown |
+| `SoundManager` | `Utility/Audio/SoundManager.cs` | Music + SFX playback |
+| `InputHandler` | `Utility/Input/InputHandler.cs` | Touch gesture detection |
+| `StaticHelpers` | `Core/StaticHelpers.cs` | Math utilities (LinearMap) |
+| `TimeLockManager` | `Battle/Timelock/TimelockManager.cs` | Real-time named timers (global namespace) |
 
 ---
 
@@ -201,13 +214,22 @@ Frame-based hit windows with per-enemy hit limits. Used by `GenericSkill` in `On
 
 | Script | File | Role |
 |--------|------|------|
-| `StatusManager` | `Status/StatusManager.cs` | Per-actor status ticker |
-| `BaseStatus` | `Status/BaseStatus.cs` | Abstract SO base |
+| `StatusManager` | `Status/StatusManager.cs` | Per-actor status ticker (owner wiring, singleInstance, HasStatus/GetStatus helpers) |
+| `BaseStatus` | `Status/BaseStatus.cs` | Abstract SO base (unified `Duration` auto-removal via `TickStatus`) |
 | `PoisonStatus` | `Status/PoisonStatus.cs` | Damage over time |
+| `BurnStatus` | `Status/BurnStatus.cs` | Fire damage over time |
+| `SlowStatus` | `Status/SlowStatus.cs` | Movement speed reduction (`MovementSystem.MoveSpeedMultiplier`) |
+| `InvincibilityStatus` | `Status/InvincibilityStatus.cs` | Full damage immunity (`Actor.IsInvincible`) |
 | `BlockStatus` | `Status/BlockStatus.cs` | Block stance modifier |
 | `DamageMultiplierStatus` | `Status/DamageMultiplierStatus.cs` | Damage scaling |
 | `DoubleDamageStatus` | `Status/DoubleDamageStatus.cs` | 2× damage |
 | `Stagger` | `Status/Stagger.cs` | Force stagger state |
+
+**Status-related effects** (`Actions/Effects/`):
+- `AddStatusEffect` (`IEffect`) — applies a status to the caster or closest enemy (window effects / buffs-debuffs)
+- `RemoveStatusEffect` (`IEffect`) — removes an active status by type (e.g. turn invincibility OFF in a later hit window)
+- `IOnHitEffect` (`interface`) — target-centric hook evaluated per enemy hit by `DamageEffect.OnHitEffects`
+- `AddStatusOnHitEffect` (`IOnHitEffect`) — applies a status to each enemy actually hit (1vN safe)
 
 ---
 
@@ -222,6 +244,7 @@ Frame-based hit windows with per-enemy hit limits. Used by `GenericSkill` in `On
 | 2 | `Assets/Scenes/DebugScene.unity` | **No** | Developer debug / legacy |
 | 3 | `Assets/Scenes/SandboxScene.unity` | Yes | Sandbox / free testing |
 | 4 | `Assets/Scenes/ArenaScenes/Crossing.unity` | Yes | Dedicated arena battle |
+| 5 | `Assets/Scenes/ArenaScenes/Cave.unity` | Yes | Dedicated arena battle (`Arena.Cave`) |
 
 ---
 
@@ -298,6 +321,16 @@ Entry: `MainMenuController.StartSandbox()`.
 ## ArenaScenes/Crossing (Build 4)
 
 **Purpose**: Dedicated arena for battles with `arena = Arena.Crossing`.  
+**Entry**: `GameFlowManager.EnterBattle()` loads this scene.  
+**Exit**: Victory → ReturnScene (on GameSession); Death → TitleScene.  
+**Components**: `ArenaBootstrapper`, `BattleManager`, `SpawnGroup`, Camera, lights.  
+**Dependencies**: `GameSession.PendingBattle` and `ReturnScene` must be set before load.
+
+---
+
+## ArenaScenes/Cave (Build 5)
+
+**Purpose**: Dedicated arena for battles with `arena = Arena.Cave` (mapped to scene `"Cave"` in `ArenaCatalog.SceneName`).  
 **Entry**: `GameFlowManager.EnterBattle()` loads this scene.  
 **Exit**: Victory → ReturnScene (on GameSession); Death → TitleScene.  
 **Components**: `ArenaBootstrapper`, `BattleManager`, `SpawnGroup`, Camera, lights.  

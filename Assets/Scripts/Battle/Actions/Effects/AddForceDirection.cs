@@ -60,5 +60,22 @@ namespace Assets.Scripts.Battle.Actions.Effects
         }
 }
 
+    /// <summary>
+    /// Applies a small force in a random horizontal direction.
+    /// Used for INSTANT actions (no directional input), e.g. the Weave dodge.
+    /// </summary>
+    [Serializable]
+    public class AddRandomForce : IEffect
+    {
+        public float Force;
+
+        public void Eval(Actor.Actor actor, BaseAction action)
+        {
+            var randomDir = UnityEngine.Random.insideUnitCircle; // (x, y) in unit circle
+            var dir = new Vector3(randomDir.x, 0f, randomDir.y).normalized;
+            actor.movement.AddForce(dir * Force);
+        }
+    }
+
 }
 

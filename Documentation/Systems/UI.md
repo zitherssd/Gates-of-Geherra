@@ -1,5 +1,7 @@
 # UI System
 
+> **Last verified:** 2026-08-03
+
 ## Purpose
 
 Manages all user-facing interfaces: combat action buttons (drag-and-drop), battle feedback, menus, fades, skill selection, and tooltip/prompt overlays.
@@ -89,7 +91,7 @@ ROOT UI (Canvas)
 ### Execution (Battle)
 - `ActionButtonBattle` on tap → reads `ActionButtonHandler.ReferencedAction`
 - Validates: cooldown, uses, stamina, buildup
-- Calls `BattleManager.PlayerActors[0].UseAction(action)`
+- Calls `BattleManager.Player.UseAction(action)`
 
 ### Drag-and-Drop
 - `ActionButtonHandler` (or `DragMove`) handles drag gesture.
@@ -117,7 +119,7 @@ ROOT UI (Canvas)
 
 ## External Dependencies
 
-- `BattleManager.PlayerActors[0]` — target actor for action execution
+- `BattleManager.Player` — target actor for action execution
 - `GameSession.Loadout` — persistent layout source
 - `SlowdownManager` — read by `SlowdownInputController`
 - `SoundManager` — audio on button tap [UNVERIFIED]
@@ -134,6 +136,6 @@ ROOT UI (Canvas)
 
 ## Risks
 
-- **`BattleManager.PlayerActors[0]` null check**: Action buttons assume index 0 is always valid; if player list is empty, clicking a button throws.
+- **`BattleManager.Player` null check**: Action buttons assume the player is valid; if no player is bound (no run), clicking a button throws. Prefer `BattleManager.Player` over `PlayerActors[0]`.
 - **UIManager is scene-local**: It is NOT DontDestroyOnLoad. Arena scenes must have their own UIManager instance, or actions from CaveScene's UIManager reference won't be available.
 - **Loadout rebuild destroys all buttons**: `InitializePlayerActionButtonPrefabs()` destroys all existing buttons — do not call this mid-battle.

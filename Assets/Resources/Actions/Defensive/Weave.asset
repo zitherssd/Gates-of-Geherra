@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5a2e800b20efe647a3894bd700a7333, type: 3}
+  m_Name: Weave
+  m_EditorClassIdentifier: 
+  guid: d1e2f3a4b5c60718293a4b5c6d7e8f90
+  Type: 0
+  Name: Weave
+  Rarity: 0
+  Description: Weave through attacks - brief invulnerability
+  CooldownTimer: 4
+  TotalUses: 3
+  remainingUses: 0
+  BuildupCost: 5
+  BuildupGain: 4
+  StaminaCost: 5
+  Tags: 0a000000
+  Direction: {x: 0, y: 0, z: 0}
+  currentCooldownTimer: 0
+  StickMult: 1
+  Animation: 14
+  animationPhase:
+    animation: 14
+    windupTimeMult: 1
+    recoveryTimeMult: 3.33
+    hitWindows:
+    - displayName: Invincibility On
+      startFrame: 0
+      endFrame: 1
+      maxHitsPerEnemy: 0
+      maxTriggersPerPlayer: 1
+      windowEffects:
+      - rid: 3754567654245662761
+      - rid: 137872248622022659
+    - displayName: Invincibility Off
+      startFrame: 10
+      endFrame: 10
+      maxHitsPerEnemy: 0
+      maxTriggersPerPlayer: 1
+      windowEffects:
+      - rid: 3754567654245662762
+  OnStartEffects: []
+  OnEndEffects: []
+  OnUpdateEffects: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 137872248622022659
+      type: {class: AddRandomForce, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
+      data:
+        Force: 0.3
+    - rid: 3754567654245662761
+      type: {class: AddInvincible, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
+      data: 
+    - rid: 3754567654245662762
+      type: {class: RemoveStatusEffect, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
+      data:
+        StatusToRemove: {fileID: 11400000, guid: 33333333444455556666777788889999, type: 2}
+        ApplyTo: 0

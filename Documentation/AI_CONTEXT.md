@@ -2,6 +2,7 @@
 
 > This file is the primary orientation guide for AI agents working on this project.  
 > Read this before making any changes. For deeper dives, follow the links to the dedicated system docs.
+> **Last verified:** 2026-08-03
 
 ---
 
@@ -88,7 +89,7 @@ Both actors and battles use a state-machine pattern (`IState` interface, `StateM
 
 ### Scene Architecture
 - **CaveScene**: The "hub" — rest area + optional legacy in-scene battles. Most singleton managers live here.
-- **Arena Scenes** (e.g., Crossing): Dedicated battle arenas bootstrapped by `ArenaBootstrapper`. Player data arrives via `GameSession`, no disk round-trip needed.
+- **Arena Scenes** (e.g., `Crossing`, `Cave`): Dedicated battle arenas bootstrapped by `ArenaBootstrapper`. Player data arrives via `GameSession`, no disk round-trip needed.
 - **GameSession + SaveManager** are DontDestroyOnLoad. Everything else is scene-local.
 
 ---
@@ -125,7 +126,7 @@ Both actors and battles use a state-machine pattern (`IState` interface, `StateM
 ## Dangerous Areas
 
 ### 1. Actor in Non-Battle Scenes
-`Actor.Update()` calls `BattleManager.instance.enabled` — if an `Actor` exists in a scene without a `BattleManager`, this throws immediately. Always check before adding actors to new scenes.
+`Actor.Update()` guards `BattleManager.instance == null || !BattleManager.instance.enabled` (null-safety added 2026-08-03), but an `Actor` outside a battle still has no battle systems wired. Always verify a new scene provides what the actor needs.
 
 ### 2. Save Schema Has No Versioning
 Adding fields to `SaveData` or `ActorSaveData` is safe. **Renaming or removing fields silently breaks existing saves.** The stat field bug (`CON` stores Agility data, `AGI` stores Mind data) must be preserved or all saves break.
@@ -145,12 +146,15 @@ If `OnEnd()` is not called in the Animator clip (e.g., clip is interrupted, dele
 ### 7. Skill ScriptableObjects Are Cloned but Mutable
 `ActorRuntime` clones actions from `ActorDefinition.baseActions` via `Instantiate(skill)`. But the clones are runtime instances — fields modified on the clone do not affect the source asset. However, `SkillGenerator` post-battle rewards are direct `ScriptableObject.Instantiate()` copies — same protection applies.
 
+### 8. `[SerializeReference]` Breaks on Namespace/Assembly Renames
+Unity serializes `[SerializeReference]` effect lists by `type: {class, ns, asm}` in `.asset` files (NOT GUID). Renaming an effect namespace or switching the assembly (e.g. `Assembly-CSharp` → `GoG.Runtime`) silently breaks all effect data → "Missing types referenced from component GenericSkill..." in the console, effects lost. After any namespace/asmdef change, re-scan `ns:`/`asm:` in `.asset` files and repair (13 action/item assets were repaired during the folder restructure).
+
 ---
 
 ## Common Workflows
 
 ### Add a New Enemy Type
-1. Create a new `ActorDefinition` SO at `Resources/Actors/`.
+1. Create a new `ActorDefinition` SO at `Resources/Actors/Enemies/` (the player `MC` stays at `Resources/Actors/MC.asset`).
 2. Set name, HP bars, stats, `Controllable = false`, assign `AIRuleset`.
 3. Assign starting actions from existing action assets.
 4. Add the definition to a `BattleDefinition.enemyActors` list.
@@ -180,14 +184,14 @@ If `OnEnd()` is not called in the Animator clip (e.g., clip is interrupted, dele
 1. Duplicate `Assets/Scenes/ArenaScenes/Crossing.unity`.
 2. Ensure `ArenaBootstrapper`, `BattleManager`, `SpawnGroup`, Camera, Light are present.
 3. Add to Build Settings.
-4. Add `Arena.NewArena` to the `Arena` enum and map it in `GameFlowManager.EnterBattle()`.
+4. Add `Arena.NewArena` to the `Arena` enum and map it in `ArenaCatalog.SceneName()`.
 
 ---
 
 ## AI Instructions
 
 ### Before Making Code Changes
-- Check `Docs/Architecture.md` for initialization order and system dependency graph.
+- Check `Documentation/Architecture.md` for initialization order and system dependency graph.
 - Check repo memory `action-system-architecture.md` for deep action/effect system details.
 - Never store scene references in `GameSession` or `SaveManager`.
 

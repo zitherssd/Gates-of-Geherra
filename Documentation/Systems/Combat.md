@@ -1,5 +1,7 @@
 # Combat System
 
+> **Last verified:** 2026-08-03
+
 ## Purpose
 
 The core real-time combat system. Manages all fighting between actors — damage dealing, hitbox detection, actions, stagger, and death.
@@ -68,7 +70,7 @@ The core real-time combat system. Manages all fighting between actors — damage
 
 - `SlowdownManager` — triggered on player hit (0.4s temporary slowdown), on player action use (exit state slowdown)
 - `CameraManager.SlowTrack` — enabled on death hit
-- `BattleManager.EnemyActors / PlayerActors` — checked by `BattleActiveState`
+- `BattleManager.EnemyActors / Player` — checked by `BattleActiveState`
 - `StatusManager` — ticked in `Actor.Update()`, applies status effects
 - `ItemEventBus` — `OnDamageTaken` raised in `ApplyDamageInstance()`
 
@@ -85,7 +87,7 @@ The core real-time combat system. Manages all fighting between actors — damage
 
 ## Risks
 
-- **`BattleManager.instance` assumed not null** in `Actor.Update()` — if `Actor` exists outside a battle scene, this throws a NullReferenceException.
+- **`BattleManager.instance` null-guarded** in `Actor.Update()` (fixed 2026-08-03) — but an `Actor` outside a battle still has no battle systems wired.
 - **Animation event timing is fragile** — `EnterWindup`, `OnHit`, `EnterRecovery`, `OnEnd` must be precisely placed in the Animator. Wrong frame → action never fires damage or never ends.
 - **Hitbox polygon is manual** — `AttackSkill.HitboxPoints` defined as world-space offsets; incorrect setup produces invisible or oversized hitboxes.
 - **No multi-hit immunity** — same enemy can be hit multiple times per attack if DamageTickEffect is active.

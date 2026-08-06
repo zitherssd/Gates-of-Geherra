@@ -3,10 +3,10 @@ using UnityEngine;
 
 namespace Assets.Scripts.Battle.Status
 {
-    [CreateAssetMenu(fileName = "PoisonStatus", menuName = "ScriptableObjects/Status/PoisonStatus")]
-    public class PoisonStatus : BaseStatus
+    [CreateAssetMenu(fileName = "BurnStatus", menuName = "ScriptableObjects/Status/BurnStatus")]
+    public class BurnStatus : BaseStatus
     {
-        public float DamagePerTick = 1f;
+        public float DamagePerTick = 2f;
         public float TickInterval = 1f;
 
         private float _tickTimer;

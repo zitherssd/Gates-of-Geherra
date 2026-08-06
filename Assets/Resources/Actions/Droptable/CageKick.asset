@@ -23,7 +23,7 @@ MonoBehaviour:
   BuildupCost: 0
   BuildupGain: 0
   StaminaCost: 3
-  Tags: 00000000
+  Tags: 0f000000
   Direction: {x: 0, y: 0, z: 0}
   currentCooldownTimer: 0
   StickMult: 1
@@ -37,6 +37,7 @@ MonoBehaviour:
       startFrame: 13
       endFrame: 13
       maxHitsPerEnemy: 0
+      maxTriggersPerPlayer: 0
       windowEffects:
       - rid: 1722353188518232067
       - rid: 1722353188518232066
@@ -46,25 +47,27 @@ MonoBehaviour:
       startFrame: 17
       endFrame: 45
       maxHitsPerEnemy: 1
+      maxTriggersPerPlayer: 0
       windowEffects:
       - rid: 6073795310272905230
     - displayName: hitbox
       startFrame: 17
       endFrame: 17
       maxHitsPerEnemy: 1
+      maxTriggersPerPlayer: 0
       windowEffects:
       - rid: 6073795310272905232
     - displayName: clear
       startFrame: 48
       endFrame: 48
       maxHitsPerEnemy: 1
+      maxTriggersPerPlayer: 0
       windowEffects:
       - rid: 6073795310272905236
       - rid: 1722353188518232065
   OnStartEffects: []
   OnEndEffects: []
   OnUpdateEffects: []
-  OnHitEffects: []
   references:
     version: 2
     RefIds:
@@ -100,6 +103,7 @@ MonoBehaviour:
           AgilityScaling: 0
           MindScaling: 0
           BuildupGainOnHit: 5
+        OnHitEffects: []
     - rid: 6073795310272905232
       type: {class: ShowHitboxOnPlayer, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data:

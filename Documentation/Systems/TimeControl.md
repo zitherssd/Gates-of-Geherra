@@ -1,5 +1,7 @@
 # Time Control System (Slowdown)
 
+> **Last verified:** 2026-08-03
+
 ## Purpose
 
 Provides cinematic time-dilation effects: a state-based pause (for action confirmation), a temporary slowdown (on hit), and a hold-to-resume mechanic.

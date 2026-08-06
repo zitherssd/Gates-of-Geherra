@@ -109,7 +109,7 @@ namespace Assets.Scripts.Battle.Actor.AI
             new SequenceNode(new List<BTNode>
             {
                 new DistanceToPlayerSmallerThan(6.0f),
-                new SmartApproachBehavior(),
+                new ApproachBehavior(),
             }),
             new ApproachBehavior(),
         };

@@ -60,6 +60,9 @@ namespace Assets.Scripts.Battle.Actor
         public float PostureREgenRate = 1.0f;
         public bool isControllable { get { return Definition != null && Definition.Controllable; } private set { } }
 
+        /// <summary>True while an InvincibilityStatus is active on this actor (full damage immunity).</summary>
+        public bool IsInvincible => statusManager != null && statusManager.HasStatus<InvincibilityStatus>();
+
         public BaseAction GetCurrentAction() => _currentAction;
 
         // Public methods
@@ -207,6 +210,9 @@ namespace Assets.Scripts.Battle.Actor
 
         public void ApplyDamageInstance(DamageInstance damageInstance, Actor attacker, BaseAction action = null)
         {
+            // Full immunity while invincible — skip damage, posture, and knockback entirely.
+            if (IsInvincible) return;
+
             DamageInstanceResult result = damageInstance.Calculate(attacker, this, action);
             var damage = result.DamageDealt;
             var postureDamage = result.PostureDamageDealt;
@@ -230,7 +236,7 @@ namespace Assets.Scripts.Battle.Actor
             if (DiedFromThisHit)
             {
                 CameraManager.instance.SlowTrack = true;
-                state.GetState<StaggerState>().Set(2f);
+                state.GetState<StaggerState>().Set(0.2f);
                 state.TransitionTo<StaggerState>();
 
                 if (knockbackForce.magnitude > 0f)
