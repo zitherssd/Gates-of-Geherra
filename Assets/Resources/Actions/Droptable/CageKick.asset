@@ -17,12 +17,12 @@ MonoBehaviour:
   Name: Cage Kick
   Rarity: 1
   Description: Dash Forward
-  CooldownTimer: 1
-  TotalUses: 5
+  CooldownTimer: 10
+  TotalUses: 2
   remainingUses: 0
-  BuildupCost: 0
+  BuildupCost: 10
   BuildupGain: 0
-  StaminaCost: 3
+  StaminaCost: 17
   Tags: 0f000000
   Direction: {x: 0, y: 0, z: 0}
   currentCooldownTimer: 0
@@ -31,7 +31,7 @@ MonoBehaviour:
   animationPhase:
     animation: 9
     windupTimeMult: 1
-    recoveryTimeMult: 0.33
+    recoveryTimeMult: 0.5
     hitWindows:
     - displayName: Boost
       startFrame: 13

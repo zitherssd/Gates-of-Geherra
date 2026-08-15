@@ -33,6 +33,9 @@ Controls the decision-making of non-player actors using a priority-ordered Behav
 | `Behaviors/DodgeBehavior.cs` | Use dodge action |
 | `Behaviors/AttackWithValidSkill.cs` | Select and use a valid melee action |
 | `Behaviors/AttackProjectile.cs` | Select and use a valid ranged action |
+| `Behaviors/LineOfFireClear.cs` | Condition: true when no friendly blocks the projectile corridor to the target (friendly-fire gate) |
+| `Behaviors/FriendlyFireCheck.cs` | Static helpers: corridor block detection + lateral sidestep direction for ranged AI |
+| `Behaviors/RepositionForClearShot.cs` | Sidestep laterally (cutting in toward the player) until the line of fire is clear of friendlies |
 | `Behaviors/BlockBehavior.cs` | Enter block stance |
 | `Behaviors/BlockCancelBehavior.cs` | Cancel active block |
 | `Behaviors/ReactionBehavior.cs` | React to incoming attack |
@@ -65,8 +68,8 @@ No events emitted. AI reads actor state and calls `actor.UseAction()` directly.
 |---------|----------|-----------|
 | `DEFAULT` | `SandboxGuy` — move away from level edge | Passive |
 | `OldMan` | `OldManBehavior` — block → attack → circle | Defensive |
-| `Maniac` | `EngragedManiac` — dodge hits → attack aggressively → chase | High |
-| `ShurkienThrower` | `ShurkienThrowerBehavior` — stay 3–5u away, throw projectiles | Ranged |
+| `Maniac` | `EngragedManiac` — dodge hits → back off when tired (stamina < 25%) → attack & chase only at full stamina (100%) | High, stamina-gated |
+| `ShurkienThrower` | `ShurkienThrowerBehavior` — stay 3–5u away, throw only when no friendly blocks the shot, otherwise sidestep for a clear angle (`LineOfFireClear` + `RepositionForClearShot`) | Ranged |
 | `TacticalFlanker` | `TacticalFlankerBehavior` — block → hesitate+token gate → attack → orbit | Tactical |
 | `SmartApproach` | `SmartApproachBehaviorTree` — surround with stable slot angles + ring hold, falls back to `ApproachBehavior` | Smart |
 | `Hungry` | Maps to `OldManBehavior` | Moderate |

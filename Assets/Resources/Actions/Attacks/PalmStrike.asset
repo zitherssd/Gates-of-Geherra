@@ -17,7 +17,7 @@ MonoBehaviour:
   Name: Palm Strike
   Rarity: 0
   Description: Excellend crowd control move
-  CooldownTimer: 10
+  CooldownTimer: 6
   TotalUses: 0
   remainingUses: 0
   BuildupCost: 10
@@ -29,7 +29,7 @@ MonoBehaviour:
   StickMult: 2
   Animation: 5
   Range: 1.1
-  Damage: 1
+  Damage: 2.5
   PostureDamage: 11
   KnockbackForce: 1.4
   windupTimeMult: 0.6
@@ -44,7 +44,7 @@ MonoBehaviour:
   HitboxScale: 1
   windupPostureDamageMult: 1
   recoveryPostureDamageMult: 1
-  BuildupGainOnHit: 3
+  BuildupGainOnHit: 8
   StrengthScaling: 0
   AgilityScaling: 0
   MindScaling: 0

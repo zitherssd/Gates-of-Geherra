@@ -17,27 +17,22 @@ MonoBehaviour:
   Name: Parry
   Rarity: 0
   Description: Do a Sekiro!
-  CooldownTimer: 6
+  CooldownTimer: 6.5
   TotalUses: 0
   remainingUses: 0
-  BuildupCost: 0
+  BuildupCost: 3
   BuildupGain: 0
   StaminaCost: 0
-  Speed: 0
   Tags: 
   Direction: {x: 0, y: 0, z: 0}
   currentCooldownTimer: 0
   StickMult: 1
-  SlowdownMeterGain: 3
-  SlowdownMeterGainOnEnd: 0
-  SlowDownMeterGainOnPress: 0
-  SlowdownMeterGainOnRelease: 0
   Animation: 0
-  DamageModifier: 0.2
+  DamageModifier: 0
   PostureModifier: 0.2
-  KnockbackModifier: 0.2
-  StaminaCostMult: -2
-  duration: 2
-  startupDelay: 0
+  KnockbackModifier: 1.5
+  StaminaCostMult: 1
+  duration: 0.28
+  startupDelay: 0.02
   BuildupGainOnBlock: 5
   blockType: 1

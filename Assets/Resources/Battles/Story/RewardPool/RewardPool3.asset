@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e59ddb9a982f5324695b24c7a8668f23, type: 3}
+  m_Name: RewardPool3
+  m_EditorClassIdentifier: 
+  Actions:
+  - {fileID: 11400000, guid: 2777e9bab12011c4c9e72a69350dbe16, type: 2}
+  - {fileID: 11400000, guid: 37e5b136dca9c114ab3b7b61a6b3c714, type: 2}
+  - {fileID: 11400000, guid: aefc094f10c5be24e9452209eaebfaba, type: 2}
+  - {fileID: 11400000, guid: 73d11a4d079983942bb6c9479b47c2c2, type: 2}

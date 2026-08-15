@@ -17,7 +17,7 @@ MonoBehaviour:
   Name: Jab
   Rarity: 0
   Description: Reliable jab attack
-  CooldownTimer: 3
+  CooldownTimer: 2.5
   TotalUses: 2
   remainingUses: 0
   BuildupCost: 0

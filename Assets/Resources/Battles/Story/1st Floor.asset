@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 1st Floor
   m_EditorClassIdentifier: 
   enemyActors:
-  - {fileID: 11400000, guid: f37eb8c8a780f98419ee07350d193ef2, type: 2}
+  - {fileID: 11400000, guid: 0ee2c13cc5de470dace1f5efe8bde6af, type: 2}
   arena: 4
   spawnGroup: 0
   Level: Hall

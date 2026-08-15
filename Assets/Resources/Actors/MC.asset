@@ -34,27 +34,9 @@ MonoBehaviour:
   AIRuleset: 0
   mainColor: {r: 0, g: 0.61666656, b: 1, a: 0}
   secondaryColor: {r: 1, g: 0.05429987, b: 0, a: 1}
-  startingItems:
-  - {fileID: 11400000, guid: 5b6c739aefd38644ea98ff8f193967b7, type: 2}
-  - {fileID: 11400000, guid: 9929547627aa6c94d840fd5766eb1036, type: 2}
-  - {fileID: 11400000, guid: b5495c701cd7d9040adffb62f79fd415, type: 2}
-  - {fileID: 11400000, guid: b1cf4dcd96447f643b9838901f8fe9f0, type: 2}
+  startingItems: []
   baseActions:
   - {fileID: 11400000, guid: 498ba4be69212c045ad9de12e867357c, type: 2}
-  - {fileID: 11400000, guid: 6cd80372eb4448f4bb1a4a5482806f75, type: 2}
   - {fileID: 11400000, guid: e50784aadad8cdb459c92505f169fb00, type: 2}
   - {fileID: 11400000, guid: bee8d5fdedd9f2441991e17989df781b, type: 2}
   - {fileID: 11400000, guid: a1c570f435c346f4ea38b3e6145f57d1, type: 2}
-  - {fileID: 11400000, guid: 7a9771d855ce02343aea8b6afd56e150, type: 2}
-  - {fileID: 11400000, guid: 7702bb00753068943bca06cfbbdd50e9, type: 2}
-  - {fileID: 11400000, guid: 65c5309366f7f6543b418ac5a7a9b5d0, type: 2}
-  - {fileID: 11400000, guid: aefc094f10c5be24e9452209eaebfaba, type: 2}
-  - {fileID: 11400000, guid: 37e5b136dca9c114ab3b7b61a6b3c714, type: 2}
-  - {fileID: 11400000, guid: 73d11a4d079983942bb6c9479b47c2c2, type: 2}
-  - {fileID: 11400000, guid: 5616ca93a2d8be24ab7510fb48ad3c15, type: 2}
-  - {fileID: 11400000, guid: 6b10ff94bcb4c55448ad32fd641ab3f4, type: 2}
-  - {fileID: 11400000, guid: abef5758c624d4d41a5922e1e6846602, type: 2}
-  - {fileID: 11400000, guid: 65e0cd7e139f4c54b9327beabbe9aa28, type: 2}
-  - {fileID: 11400000, guid: 1fd389a9fb3e8e042ba5b3564ae3e936, type: 2}
-  - {fileID: 11400000, guid: 286b2c3c0ed136d4db82da603fb36818, type: 2}
-  - {fileID: 11400000, guid: d1e2f3a4b5c60718293a4b5c6d7e8f90, type: 2}

@@ -355,8 +355,8 @@ BattleStart → IdleState
 UseAction → ActingState
   ActingState.OnEnd → IdleState
   ActingState.EndAction(Interrupted) → IdleState
-ApplyDamageInstance (posture ≤ 50%) → StaggerState
-  StaggerState (duration expires) → [GettingUpState or IdleState — UNVERIFIED]
+ApplyDamageInstance (posture reaches 0) → StaggerState
+  StaggerState (duration expires) → IdleState; hit while staggered → AirStaggerState → GettingUpState
 ApplyDamageInstance (HP = 0) → StaggerState (then DeathState)
 Block.PerformSpecific → BlockState
 Jump → AirNeutralState

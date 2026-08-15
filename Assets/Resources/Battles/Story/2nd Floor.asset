@@ -13,12 +13,8 @@ MonoBehaviour:
   m_Name: 2nd Floor
   m_EditorClassIdentifier: 
   enemyActors:
-  - {fileID: 11400000, guid: f37eb8c8a780f98419ee07350d193ef2, type: 2}
-  - {fileID: 11400000, guid: f37eb8c8a780f98419ee07350d193ef2, type: 2}
-  - {fileID: 11400000, guid: f37eb8c8a780f98419ee07350d193ef2, type: 2}
-  - {fileID: 11400000, guid: f37eb8c8a780f98419ee07350d193ef2, type: 2}
-  - {fileID: 11400000, guid: f37eb8c8a780f98419ee07350d193ef2, type: 2}
-  - {fileID: 11400000, guid: f37eb8c8a780f98419ee07350d193ef2, type: 2}
+  - {fileID: 11400000, guid: 5c777c1ad3913004aab5763eb39282da, type: 2}
+  - {fileID: 11400000, guid: 673d60f927db261469da60afc4701909, type: 2}
   arena: 1
   spawnGroup: 4
   Level: Original

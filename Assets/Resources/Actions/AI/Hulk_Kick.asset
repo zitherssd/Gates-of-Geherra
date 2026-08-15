@@ -10,88 +10,81 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a5a2e800b20efe647a3894bd700a7333, type: 3}
-  m_Name: ForceRepel
+  m_Name: Hulk_Kick
   m_EditorClassIdentifier: 
-  guid: 286b2c3c0ed136d4db82da603fb36818
+  guid: 91218b6dcb4d45bdac9f32a4ea493059
   Type: 0
-  Name: Repel
+  Name: Hulk Kick
   Rarity: 0
-  Description: Push them away
-  CooldownTimer: 15
+  Description: Quick kick that sends the player flying.
+  CooldownTimer: 4
   TotalUses: 0
   remainingUses: 0
-  BuildupCost: 15
+  BuildupCost: 0
   BuildupGain: 0
-  StaminaCost: 17
+  StaminaCost: 10
   Tags: 
   Direction: {x: 0, y: 0, z: 0}
   currentCooldownTimer: 0
   StickMult: 1
-  Animation: 6
+  Animation: 9
   animationPhase:
-    animation: 6
-    windupTimeMult: 0.7
-    recoveryTimeMult: 0.2
+    animation: 9
+    windupTimeMult: 0.5
+    recoveryTimeMult: 0.3
     hitWindows:
-    - displayName: Frame 0 setup
+    - displayName: show hitbox
       startFrame: 0
       endFrame: 0
-      maxHitsPerEnemy: 0
+      maxHitsPerEnemy: 1
+      maxTriggersPerPlayer: 1
+      windowEffects:
+      - rid: 8200000000000000000
+    - displayName: hit
+      startFrame: 17
+      endFrame: 19
+      maxHitsPerEnemy: 1
       maxTriggersPerPlayer: 0
       windowEffects:
-      - rid: 3754567693683130368
-    - displayName: Force
+      - rid: 8200000000000000001
+    - displayName: clear hitbox
       startFrame: 20
       endFrame: 20
       maxHitsPerEnemy: 1
       maxTriggersPerPlayer: 0
       windowEffects:
-      - rid: 3754567693683130369
-      - rid: 3754567693683130370
-      - rid: 3754567693683130372
+      - rid: 8200000000000000002
+  Range: 0.9
   OnStartEffects: []
   OnEndEffects: []
   OnUpdateEffects: []
   references:
     version: 2
     RefIds:
-    - rid: 3754567693683130368
+    - rid: 8200000000000000000
       type: {class: ShowHitboxOnPlayer, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data:
         HitboxPoints:
-        - {x: 1, y: 0, z: 0}
-        - {x: 0.86, y: 0, z: 0.5}
-        - {x: 0.5, y: 0, z: 0.86}
-        - {x: 0, y: 0, z: 1}
-        - {x: -0.5, y: 0, z: 0.86}
-        - {x: -0.86, y: 0, z: 0.5}
-        - {x: -1, y: 0, z: 0}
-        - {x: -0.86, y: 0, z: -0.5}
-        - {x: -0.5, y: 0, z: -0.86}
-        - {x: 0, y: 0, z: -1}
-        - {x: 0.5, y: 0, z: -0.86}
-        - {x: 0.86, y: 0, z: -0.5}
+        - {x: -0.2, y: 0, z: 0.4}
+        - {x: 0.2, y: 0, z: 0.4}
+        - {x: 0.25, y: 0, z: 1}
+        - {x: -0.25, y: 0, z: 1}
         HitboxScale: 1
-    - rid: 3754567693683130369
+    - rid: 8200000000000000001
       type: {class: DamageEffect, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data:
         UseHitbox: 1
         DamageData:
           Damage: 4
-          PostureDamage: 12
-          KnockbackForce: 2.5
+          PostureDamage: 15
+          KnockbackForce: 4
           KnockbackForceUp: 0
           KnockbackType: 1
           StrengthScaling: 0
           AgilityScaling: 0
           MindScaling: 0
-          BuildupGainOnHit: 4
+          BuildupGainOnHit: 6
         OnHitEffects: []
-    - rid: 3754567693683130370
+    - rid: 8200000000000000002
       type: {class: ClearHitbox, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data: 
-    - rid: 3754567693683130372
-      type: {class: PlayParticleEffect, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
-      data:
-        psPrefab: {fileID: 797784518864179116, guid: 5edac89522a3e634b81eca01e3f9a501, type: 3}
-        OnPlayer: 1

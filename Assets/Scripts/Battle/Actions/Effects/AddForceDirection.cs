@@ -77,5 +77,33 @@ namespace Assets.Scripts.Battle.Actions.Effects
         }
     }
 
+    /// <summary>
+    /// Applies a force in the direction the camera is looking, projected onto the
+    /// horizontal plane — i.e. away from the camera. Used for INSTANT actions
+    /// (no directional input), e.g. the Weave dodge hop.
+    /// </summary>
+    [Serializable]
+    public class AddForceAwayCamera : IEffect
+    {
+        public float Force;
+
+        public void Eval(Actor.Actor actor, BaseAction action)
+        {
+            var camera = Camera.main;
+            if (camera == null) return;
+
+            var dir = camera.transform.forward;
+            dir.y = 0f;
+            dir.Normalize();
+
+            if (actor.isControllable)
+            {
+                Debug.Log($"Applying force away from camera {dir} with magnitude {Force}");
+            }
+
+            actor.movement.AddForce(dir * Force);
+        }
+    }
+
 }
 

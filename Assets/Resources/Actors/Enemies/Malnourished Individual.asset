@@ -16,13 +16,10 @@ MonoBehaviour:
   Name: Starving Individual
   hpBars:
   - _currentHp: 0
-    maxHp: 8
-    alive: 0
-  - _currentHp: 0
-    maxHp: 8
+    maxHp: 13
     alive: 0
   baseMaxBuildup: 15
-  baseMaxPosture: 15
+  baseMaxPosture: 9
   baseMaxStamina: 45
   Strength: 3
   Agility: 3

@@ -71,8 +71,12 @@ namespace Assets.Scripts.Crawler
                 // Assign button click event
                 UICard.GetComponent<Button>().onClick.AddListener(() =>
                 {
-                    BattleManager.instance.PlayerActors[0].Runtime.actions.Add(handler.ReferencedAction);
-                    UIManager.instance.InitializePlayerActionButtonPrefabs(BattleManager.instance.PlayerActors[0].Runtime.actions);
+                    var playerActor = BattleManager.instance.PlayerActors[0];
+                    playerActor.Runtime.actions.Add(handler.ReferencedAction);
+
+                    // Auto-equip the new skill into a loadout container if one has space,
+                    // otherwise it lands in the inventory.
+                    UIManager.instance.AddNewActionToLoadout(handler.ReferencedAction, playerActor.Runtime.actions);
 
                     // Destroy all skill cards after selection
                     foreach (Transform child in parent)

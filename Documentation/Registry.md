@@ -74,7 +74,7 @@
 
 ### ActorDefinition
 **File**: `Scripts/Battle/Actor/ActorDefinition.cs` — ScriptableObject template. `CreateAssetMenu: ScriptableObjects/Actor`.  
-**Key Assets**: `Resources/Actors/MC.asset`, `Old Prisoner.asset`, `Enraged Maniac.asset`, `Shuriken Thrower.asset`, `Boxer.asset`, `Malnourished Individual.asset`, `Tutorial Guy.asset`
+**Key Assets**: `Resources/Actors/MC.asset`, `Old Prisoner.asset`, `Enraged Maniac.asset`, `Hulk.asset`, `Shuriken Thrower.asset`, `Boxer.asset`, `Malnourished Individual.asset`, `Tutorial Guy.asset`
 
 ### ActorStateMachine
 **File**: `Scripts/Battle/Actor/ActorStateMachine.cs` — State transitions + animation event entry points.  
@@ -127,10 +127,13 @@ Frame-based hit windows with per-enemy hit limits. Used by `GenericSkill` in `On
 ### Action Assets (Resources/Actions)
 | Asset | Type | Notes |
 |-------|------|-------|
-| `Weave` (`Defensive/Weave.asset`) | GenericSkill (INSTANT) | 2 rechargeable charges (~7s each), Ninjutsu animation. Iframes frames 2–8 via `AddInvincible` (frame-2 window; auto-removes on cleanup) + `RemoveStatusEffect` (frame-9 window) on InvincibilityStatus; random-direction hop via `AddRandomForce`. Added to `MC.asset` baseActions (player starting kit). |
+| `Weave` (`Defensive/Weave.asset`) | GenericSkill (INSTANT) | 2 rechargeable charges (~7s each), Ninjutsu animation. Iframes frames 2–8 via `AddInvincible` (frame-2 window; auto-removes on cleanup) + `RemoveStatusEffect` (frame-9 window) on InvincibilityStatus; camera-away hop via `AddForceAwayCamera`. Added to `MC.asset` baseActions (player starting kit). |
+| `Hulk_Slam` (`AI/Hulk_Slam.asset`) | GenericSkill | Enemy (Hulk) — sluggish (windup 0.3×), wide hitbox ±0.5 × z 0.3–1.2, Punch anim, hit 11–14, Range 1.3, Posture 6, knockback AWAY 0.8 |
+| `Hulk_Kick` (`AI/Hulk_Kick.asset`) | GenericSkill | Enemy (Hulk) — quick (windup 1.3×), ForwardKick anim, hit 16–19, Range 1.1, Posture 12, knockback UP_AND_AWAY 3/3 |
 
 ### Effects (Actions/Effects/)
-`AddRandomForce` (`IEffect`, in `AddForceDirection.cs`) — applies a small force in a random horizontal direction. Used for INSTANT actions, where `Direction` is never set (so `AddForceDirection` is a no-op). Example: Weave's dodge hop.
+`AddRandomForce` (`IEffect`, in `AddForceDirection.cs`) — applies a small force in a random horizontal direction. Used for INSTANT actions, where `Direction` is never set (so `AddForceDirection` is a no-op).
+`AddForceAwayCamera` (`IEffect`, in `AddForceDirection.cs`) — applies a force in the camera's forward direction (projected to the horizontal plane), i.e. away from the camera. Used for INSTANT actions, where `Direction` is never set. Example: Weave's dodge hop.
 `AddInvincible` (`IEffect + IEndableEffect`, in `AddStatusEffect.cs`) — grants `InvincibilityStatus` to the caster; auto-removed on action cleanup (safety net). Pair with `RemoveStatusEffect` in a later hit window for a precise frame window (Weave frames 2–8).
 
 ---
@@ -139,7 +142,7 @@ Frame-based hit windows with per-enemy hit limits. Used by `GenericSkill` in `On
 
 ### AIBT
 **File**: `Scripts/Battle/Actor/AI/AIBT.cs` — Behavior tree controller, ticks highest-priority valid behavior each frame.  
-**Rulesets** (`AiRuleset` enum in `AIBT.cs`): `DEFAULT` (passive/SandboxGuy), `OldMan` (defensive), `Maniac` (aggressive), `Hungry` (maps to `OldManBehavior`), `ShurkienThrower` (ranged), `TacticalFlanker` (tactical), `SmartApproach` (crowd-aware surround), `Ninja` (empty — non-functional). Note: internal behavior-list variable names differ from enum members (e.g. `SandboxGuy`, `EngragedManiac`, `ShurkienThrowerBehavior`).
+**Rulesets** (`AiRuleset` enum in `AIBT.cs`): `DEFAULT` (passive/SandboxGuy), `OldMan` (defensive), `Maniac` (aggressive), `Hungry` (maps to `OldManBehavior`), `ShurkienThrower` (ranged), `TacticalFlanker` (tactical), `SmartApproach` (crowd-aware surround), `Hulk` (approach + attack only, no defense), `Ninja` (empty — non-functional). Note: internal behavior-list variable names differ from enum members (e.g. `SandboxGuy`, `EngragedManiac`, `ShurkienThrowerBehavior`).
 
 ### AI Behaviors
 `ApproachBehavior`, `SmartApproachBehavior`, `FlankApproachBehavior` (+ `CircleApproachBehavior`, defined in the same file), `GroupFlankBehavior`, `MoveToOrbitBehavior`, `MoveBehavior`, `DashBehavior`, `DodgeBehavior`, `AttackWithValidSkill`, `AttackProjectile`, `BlockBehavior`, `BlockCancelBehavior`, `ReactionBehavior`

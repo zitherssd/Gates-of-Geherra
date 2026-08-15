@@ -17,13 +17,13 @@ MonoBehaviour:
   Name: High Kick
   Rarity: 0
   Description: Rock and roll
-  CooldownTimer: 2
+  CooldownTimer: 5
   TotalUses: 0
   remainingUses: 0
   BuildupCost: 15
   BuildupGain: 0
   StaminaCost: 10
-  Tags: 0f000000
+  Tags: 0f00000013000000
   Direction: {x: 0, y: 0, z: 0}
   currentCooldownTimer: 0
   StickMult: 1
@@ -76,6 +76,7 @@ MonoBehaviour:
           AgilityScaling: 0.1
           MindScaling: 0
           BuildupGainOnHit: 5
+        OnHitEffects: []
     - rid: 3754567654245662721
       type: {class: ShowHitboxOnPlayer, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data:

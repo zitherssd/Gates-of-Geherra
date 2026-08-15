@@ -14,30 +14,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid: d71b702805a26db45a66daff55b696d2
   Type: 0
-  Name: Block
+  Name: Eat It
   Rarity: 0
   Description: Eat those hits!
-  CooldownTimer: 5
+  CooldownTimer: 4
   TotalUses: 0
   remainingUses: 0
   BuildupCost: 0
-  BuildupGain: 3
+  BuildupGain: 0
   StaminaCost: 0
-  Speed: 0
   Tags: 
   Direction: {x: 0, y: 0, z: 0}
   currentCooldownTimer: 0
   StickMult: 1
-  SlowdownMeterGain: 2
-  SlowdownMeterGainOnEnd: 1
-  SlowDownMeterGainOnPress: 0
-  SlowdownMeterGainOnRelease: 0
   Animation: 0
-  DamageModifier: 0.4
-  PostureModifier: 0.4
-  KnockbackModifier: 0.4
-  StaminaCostMult: 2
-  duration: 1
-  startupDelay: 0
-  BuildupGainOnBlock: 3
+  DamageModifier: 0.2
+  PostureModifier: 2
+  KnockbackModifier: 1.2
+  StaminaCostMult: -0.5
+  duration: 0.5
+  startupDelay: 0.08
+  BuildupGainOnBlock: 8
   blockType: 0

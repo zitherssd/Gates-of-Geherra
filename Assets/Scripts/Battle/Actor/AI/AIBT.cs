@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Battle.Actor.AI
 {
-    public enum AiRuleset { DEFAULT, OldMan, Ninja, Maniac, Hungry, ShurkienThrower, TacticalFlanker, SmartApproach }
+    public enum AiRuleset { DEFAULT, OldMan, Ninja, Maniac, Hungry, ShurkienThrower, TacticalFlanker, SmartApproach, Hulk }
     public enum AIState { Thinking, Acting, Moving }
 
     public class AIBT
@@ -53,6 +53,9 @@ namespace Assets.Scripts.Battle.Actor.AI
                     case AiRuleset.SmartApproach:
                         behaviors = SmartApproachBehaviorTree;
                         break;
+                    case AiRuleset.Hulk:
+                        behaviors = HulkBehavior;
+                        break;
                 }
             }
         }
@@ -68,26 +71,51 @@ namespace Assets.Scripts.Battle.Actor.AI
 
         private static readonly List<BTNode> EngragedManiac = new List<BTNode>
         {
+            // Always able to dodge out of danger, regardless of stamina.
             new SequenceNode(new List<BTNode>
             {
                 new InsideEnemyHitbox(),
                 new DodgeBehavior(.5f),
             }),
+            // Tired: stamina below 25% — backs off to recover and refuses to fight
+            // again until stamina is fully restored to 100%.
+            new SequenceNode(new List<BTNode>
+            {
+                new StaminaLesserThan(0.25f),
+                new DistanceToPlayerSmallerThan(3f),
+                new MoveAwayFromPlayer(1.5f),
+            }),
+            // Fights only when stamina is full (100%).
+            new SequenceNode(new List<BTNode>
+            {
+                new StaminaGreaterThan(0.99f),
+                new AttackWithValidSkill(),
+            }),
+            // Chases the player only when stamina is full (100%).
+            new SequenceNode(new List<BTNode>
+            {
+                new StaminaGreaterThan(0.99f),
+                new DistanceToPlayerGreaterThan(1.5f),
+                new MoveTowardsPlayer(.5f),
+            }),
+        };
+
+        /// <summary>
+        /// Hulk: slow heavy brute with NO defensive options — attacks whenever a
+        /// skill is in range, otherwise approaches the player.
+        /// </summary>
+        private static readonly List<BTNode> HulkBehavior = new List<BTNode>
+        {
             new SequenceNode(new List<BTNode>
             {
                 new AttackWithValidSkill(),
             }),
             new SequenceNode(new List<BTNode>
             {
-                new StaminaLesserThan(0.5f),
-                new DistanceToPlayerSmallerThan(3f),
-                new MoveAwayFromPlayer(.5f),
+                new DistanceToPlayerSmallerThan(6f),
+                new ApproachBehavior(),
             }),
-            new SequenceNode(new List<BTNode>
-            {
-                new DistanceToPlayerGreaterThan(1.5f),
-                new MoveTowardsPlayer(.5f)
-            }),
+            new ApproachBehavior(),
         };
 
         private static readonly List<BTNode> OldManBehavior = new List<BTNode>
@@ -119,7 +147,17 @@ namespace Assets.Scripts.Battle.Actor.AI
             new SequenceNode(new List<BTNode>
             {
                 new ConditionNode(actor => actor.target.DistanceToClosestEnemy > 3 && actor.target.DistanceToClosestEnemy < 5),
-                new AttackWithValidProjectileSkill(),
+                new SelectorNode(new List<BTNode>
+                {
+                    // Throw only when no friendly is in the way...
+                    new SequenceNode(new List<BTNode>
+                    {
+                        new LineOfFireClear(),
+                        new AttackWithValidProjectileSkill(),
+                    }),
+                    // ...otherwise sidestep laterally to find a clear angle of fire.
+                    new RepositionForClearShot(),
+                }),
             }),
             new SequenceNode(new List<BTNode>
             {

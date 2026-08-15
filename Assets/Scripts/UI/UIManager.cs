@@ -139,7 +139,7 @@ namespace Assets.Scripts
                     if (defaultPlacedCount < maxDefaultActions)
                     {
                         // Legacy default placement
-                        if (actions[i] is AttackSkill || actions[i] is ProjectileAttack)
+                        if (actions[i] is AttackSkill || actions[i] is ProjectileAttack || actions[i].Tags.Contains(BaseAction.TAG.CONTAINER_RIGHT))
                             CreateAndPlaceButton(actions[i], SkillHolder);
                         else
                             CreateAndPlaceButton(actions[i], ActionsHolder);
@@ -168,6 +168,71 @@ namespace Assets.Scripts
             {
                 ActionButtonGameobject.transform.SetSiblingIndex(siblingIndex);
             }
+        }
+
+        /// <summary>
+        /// Places a newly awarded skill (e.g. a post-fight reward) into the first loadout
+        /// container that has room, checked against each container's DropSlot.maxItems
+        /// (Left -> LeftSec -> Right -> RightSec). If every container is full the skill
+        /// stays in the inventory. Rebuilds the action bar with the updated layout.
+        /// </summary>
+        public void AddNewActionToLoadout(BaseAction action, List<BaseAction> ownedActions)
+        {
+            // Capture the current layout. The new skill has no button yet, so GetCurrentLoadout()
+            // records it under Inventory — we promote it to a real container when one has space.
+            var loadout = GetCurrentLoadout();
+
+            var container = GetContainerWithSpace(action);
+            if (container != null)
+            {
+                string containerID = GetIDByContainer(container);
+                int slotIndex = container.transform.childCount;
+
+                var slot = loadout.FirstOrDefault(s => s.ActionGuid == action.guid);
+                if (slot != null)
+                {
+                    slot.ContainerID = containerID;
+                    slot.SlotIndex = slotIndex;
+                }
+                else
+                {
+                    loadout.Add(new ActionSlotSaveData
+                    {
+                        ActionGuid = action.guid,
+                        ContainerID = containerID,
+                        SlotIndex = slotIndex
+                    });
+                }
+            }
+
+            InitializePlayerActionButtonPrefabs(ownedActions, loadout);
+        }
+
+        /// <summary>
+        /// Returns the first loadout container with room for another button, using its
+        /// DropSlot.maxItems. The skill's CONTAINER_RIGHT / CONTAINER_LEFT tags steer the
+        /// search order: a CONTAINER_RIGHT skill fills Right -> RightSec first (falling back
+        /// to the left side); otherwise it fills Left -> LeftSec first (falling back to the
+        /// right side). Null when every loadout container is full.
+        /// </summary>
+        private GameObject GetContainerWithSpace(BaseAction action)
+        {
+            bool wantsRight = action != null && action.Tags.Contains(BaseAction.TAG.CONTAINER_RIGHT);
+
+            var ordered = wantsRight
+                ? new[] { SkillHolder, RightSecondaryContainer, ActionsHolder, LeftSecondaryContainer }
+                : new[] { ActionsHolder, LeftSecondaryContainer, SkillHolder, RightSecondaryContainer };
+
+            foreach (var container in ordered)
+            {
+                if (container == null) continue;
+
+                var dropSlot = container.GetComponent<DropSlot>();
+                int maxItems = dropSlot != null ? dropSlot.maxItems : int.MaxValue;
+                if (container.transform.childCount < maxItems)
+                    return container;
+            }
+            return null;
         }
 
         public GameObject GetContainerByID(string id)

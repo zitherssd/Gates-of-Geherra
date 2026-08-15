@@ -17,7 +17,7 @@ MonoBehaviour:
   Name: Weave
   Rarity: 0
   Description: Weave through attacks - brief invulnerability
-  CooldownTimer: 4
+  CooldownTimer: 6
   TotalUses: 3
   remainingUses: 0
   BuildupCost: 5
@@ -42,8 +42,8 @@ MonoBehaviour:
       - rid: 3754567654245662761
       - rid: 137872248622022659
     - displayName: Invincibility Off
-      startFrame: 10
-      endFrame: 10
+      startFrame: 30
+      endFrame: 30
       maxHitsPerEnemy: 0
       maxTriggersPerPlayer: 1
       windowEffects:
@@ -55,9 +55,9 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 137872248622022659
-      type: {class: AddRandomForce, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
+      type: {class: AddForceAwayCamera, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data:
-        Force: 0.3
+        Force: 0.4
     - rid: 3754567654245662761
       type: {class: AddInvincible, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
       data: 

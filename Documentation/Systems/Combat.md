@@ -98,5 +98,5 @@ The core real-time combat system. Manages all fighting between actors — damage
 
 - Add a new attack: `Resources/Actions/Attacks/` (new `AttackSkill` or `GenericSkill` asset).
 - Change damage formula: `DamageInstance.Calculate()`.
-- Change stagger threshold: `Actor.ApplyDamageInstance()` — `currentPosture <= maxPosture / 2` comparison.
+- Change stagger trigger/duration: `Actor.ApplyDamageInstance()` — staggers on posture break (`currentPosture` reaches 0); duration from overkill past 0 (0% → 0.4s, 100% → 1.8s). Knockback-up only applies on break hits or already-staggered actors.
 - Extend AI combatant reactions: `Actor.ApplyDamageInstance()` damage/death branches.

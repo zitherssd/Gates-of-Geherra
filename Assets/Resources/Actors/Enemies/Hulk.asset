@@ -10,29 +10,32 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8e110cd302acb85459812d80addcbd30, type: 3}
-  m_Name: Old Prisoner
+  m_Name: Hulk
   m_EditorClassIdentifier: 
-  guid: f37eb8c8a780f98419ee07350d193ef2
-  Name: Old Prisoner
+  guid: 5508591bd897448b95730089acf8b362
+  Name: Hulk
   hpBars:
   - _currentHp: 0
-    maxHp: 10
+    maxHp: 13
     alive: 1
-  baseMaxBuildup: 10
-  baseMaxPosture: 7
-  baseMaxStamina: 20
-  Strength: 2
-  Agility: 1
+  - _currentHp: 0
+    maxHp: 13
+    alive: 1
+  baseMaxBuildup: 30
+  baseMaxPosture: 20
+  baseMaxStamina: 50
+  Strength: 5
+  Agility: 0
   Mind: 1
-  Spirit: 3
+  Spirit: 1
   postureRegenRate: 1
-  staminaRegenRate: 20
+  staminaRegenRate: 2.5
   Controllable: 0
-  AIRuleset: 1
-  mainColor: {r: 0.4113207, g: 0.4113207, b: 0.4113207, a: 1}
-  secondaryColor: {r: 0.5169811, g: 0.09728259, b: 0, a: 1}
+  AIRuleset: 8
+  mainColor: {r: 0.12, g: 0.6, b: 0.12, a: 0}
+  secondaryColor: {r: 0.3, g: 0.32, b: 0.35, a: 0}
   startingItems: []
   baseActions:
+  - {fileID: 11400000, guid: 28c41ea810be4d8b8fe7b74828265c98, type: 2}
+  - {fileID: 11400000, guid: ca1277764aec45dcbbc78b7107fdc74d, type: 2}
   - {fileID: 11400000, guid: eb94d8da9dbb0de4f9022395c5c28ce9, type: 2}
-  - {fileID: 11400000, guid: e6f5605b38a52a7419d7547b23b1c33c, type: 2}
-  - {fileID: 11400000, guid: bbf04903c613b684fbee4bea1e99fc92, type: 2}

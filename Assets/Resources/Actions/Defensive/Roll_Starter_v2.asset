@@ -23,7 +23,7 @@ MonoBehaviour:
   BuildupCost: 0
   BuildupGain: 4
   StaminaCost: 8
-  Tags: 0a000000
+  Tags: 0a00000013000000
   Direction: {x: 0, y: 0, z: 0}
   currentCooldownTimer: 0
   StickMult: 1
@@ -37,17 +37,20 @@ MonoBehaviour:
       startFrame: 0
       endFrame: 0
       maxHitsPerEnemy: 0
+      maxTriggersPerPlayer: 0
       windowEffects: []
     - displayName: Recovery Friction
       startFrame: 33
       endFrame: 33
       maxHitsPerEnemy: 0
+      maxTriggersPerPlayer: 0
       windowEffects:
       - rid: 910004
     - displayName: Roll End
       startFrame: 53
       endFrame: 53
       maxHitsPerEnemy: 0
+      maxTriggersPerPlayer: 0
       windowEffects:
       - rid: 910005
       - rid: 910006

@@ -39,6 +39,7 @@
 | `MC_Uncontrollable.asset` | `Resources/Actors/` | Non-player MC (cutscene?) |
 | `Boxer.asset` | `Resources/Actors/Enemies/` | Enemy |
 | `Enraged Maniac.asset` | `Resources/Actors/Enemies/` | Enemy — `AiRuleset.Maniac` |
+| `Hulk.asset` | `Resources/Actors/Enemies/` | Enemy — `AiRuleset.Hulk` (slow heavy brute, no defense) |
 | `Malnourished Individual.asset` | `Resources/Actors/Enemies/` | Enemy |
 | `Old Prisoner.asset` | `Resources/Actors/Enemies/Prisoner/` | Enemy — `AiRuleset.OldMan` |
 | `Shuriken Thrower.asset` | `Resources/Actors/Enemies/` | Enemy — `AiRuleset.ShurkienThrower` |
@@ -72,7 +73,7 @@
 - **`Droptable/`**: `CageKick`, `Charge`, `EnhancedPunch`, `Fire Jutsu`, `Fire Pillar`, `Fireball`, `Focus`, `Kick_Forward`/`Kick_Sweep` (+`v2`), `Shuriken_Big`, `Shuriken_Small`, `Teleport_Omae`
 - **`Movement/`**: `AI Move.asset`, `Player Move.asset`, `Jump.asset`
 - **`Defensive/`**: `Block_Starter`, `Flick_Shuffle`, `Guard_Starter`, `Parry_Starter`, `Roll_Starter` (+`v2`), `Step_Starter`
-- **`AI/`**: `Block_AI`, `Jab_OldMan`, `Kick_Slow`, `Roll_Single`, `Shuriken throwers`
+- **`AI/`**: `Block_AI`, `Jab_OldMan`, `Kick_Slow`, `Roll_Single`, `Shuriken throwers`, `Hulk_Slam`, `Hulk_Kick` (enemy GenericSkills — use `Range` for AI range checks; `AttackWithValidSkill` now selects GenericSkills too)
 
 ---
 

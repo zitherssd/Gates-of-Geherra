@@ -13,7 +13,11 @@ MonoBehaviour:
   m_Name: RewardPool2
   m_EditorClassIdentifier: 
   Actions:
-  - {fileID: 11400000, guid: 2777e9bab12011c4c9e72a69350dbe16, type: 2}
-  - {fileID: 11400000, guid: 37e5b136dca9c114ab3b7b61a6b3c714, type: 2}
-  - {fileID: 11400000, guid: aefc094f10c5be24e9452209eaebfaba, type: 2}
-  - {fileID: 11400000, guid: 73d11a4d079983942bb6c9479b47c2c2, type: 2}
+  - {fileID: 11400000, guid: 6156ef38c6ee2b647849b0a5cf9a53e3, type: 2}
+  - {fileID: 11400000, guid: 7a9771d855ce02343aea8b6afd56e150, type: 2}
+  - {fileID: 11400000, guid: 1fd389a9fb3e8e042ba5b3564ae3e936, type: 2}
+  - {fileID: 11400000, guid: c3707ec2b9ef3ee44943c2373b10be71, type: 2}
+  - {fileID: 11400000, guid: abef5758c624d4d41a5922e1e6846602, type: 2}
+  - {fileID: 11400000, guid: c20cd38fc008ba543838343b9943f338, type: 2}
+  - {fileID: 11400000, guid: 5e56ae64a0508514885143487d0c12e9, type: 2}
+  - {fileID: 11400000, guid: f16ffd28d0060b64bab67118ca889777, type: 2}

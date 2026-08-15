@@ -15,10 +15,9 @@ MonoBehaviour:
   enemyActors:
   - {fileID: 11400000, guid: f37eb8c8a780f98419ee07350d193ef2, type: 2}
   - {fileID: 11400000, guid: 7b1857963b332e64b87b7f2be2c368a7, type: 2}
-  - {fileID: 11400000, guid: 5c777c1ad3913004aab5763eb39282da, type: 2}
-  - {fileID: 11400000, guid: 673d60f927db261469da60afc4701909, type: 2}
+  - {fileID: 11400000, guid: f37eb8c8a780f98419ee07350d193ef2, type: 2}
   arena: 4
-  spawnGroup: 0
+  spawnGroup: 1
   Level: Hall
   RewardPool: {fileID: 11400000, guid: b7a4c2ae9d2141e4dab161a879a09d3f, type: 2}
   RewardItemsPools: []

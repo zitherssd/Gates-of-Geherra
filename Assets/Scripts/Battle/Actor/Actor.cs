@@ -50,6 +50,7 @@ namespace Assets.Scripts.Battle.Actor
         private Animator animator;
         private static readonly int SpeedParam = Animator.StringToHash("Movement_Speed");
         private float postureRegenCooldownTimer;
+        private const float StaggerHitLaunchUp = 0.4f; // Small upward knockback when hitting an already-staggered actor (→ air Stagger → get up).
         private BaseAction _currentAction;
         private bool _bound;
 
@@ -213,14 +214,17 @@ namespace Assets.Scripts.Battle.Actor
             // Full immunity while invincible — skip damage, posture, and knockback entirely.
             if (IsInvincible) return;
 
+            // 1. Invoke OnBeforeTakeDamage event FIRST, allowing listeners to modify the damage
+            //    BEFORE it is calculated/applied. (BlockState/parry relies on this: it multiplies
+            //    damageInstance.Damage by DamageModifier, e.g. 0 for a parry. Previously this fired
+            //    AFTER Calculate(), so the reduction never reached the value actually dealt.)
+            OnBeforeTakeDamage?.Invoke(damageInstance);
+
             DamageInstanceResult result = damageInstance.Calculate(attacker, this, action);
             var damage = result.DamageDealt;
             var postureDamage = result.PostureDamageDealt;
             var knockbackForce = result.KnockbackForceApplied;
             var direction = result.KnockbackApplied;
-
-            // 1. Invoke OnBeforeTakeDamage event, allowing listeners to modify the damage.
-            OnBeforeTakeDamage?.Invoke(damageInstance);
 
             //Damage
             #region damage
@@ -250,26 +254,39 @@ namespace Assets.Scripts.Battle.Actor
             {
                 //Posture
                 var previousPosture = Runtime.currentPosture;
+                var wasAlreadyStaggered = state.IsStaggered(); // pre-hit stagger state (determines launch behavior below)
                 Runtime.DealPostureDamage(postureDamage);
                 // Stop posture regeneration and start the cooldown
                 CanRegenPosture = false;
                 postureRegenCooldownTimer = PostureRegenCooldownDelay;
 
-
-                var postureLostPercentage = (Mathf.Min(postureDamage, previousPosture) / Runtime.maxPosture) * 100;
-                if (Runtime.currentPosture <= Runtime.maxPosture / 2)
+                // Stagger only when posture breaks (reaches 0).
+                var brokePosture = previousPosture > 0f && Runtime.currentPosture <= 0f;
+                if (brokePosture)
                 {
-                    // Calculate stagger duration
-                    float staggerDuration = StaticHelpers.LinearMap(Mathf.Min(postureLostPercentage), 0, 100, 1f, 2.5f);
+                    // Stagger duration scales with how much the bar was broken by
+                    // (overkill past 0, as % of max posture): 0% → 0.4s, 100% → 1.8s.
+                    var overkill = Mathf.Max(0f, postureDamage - previousPosture);
+                    float overkillPercent = Mathf.Clamp01(overkill / Runtime.maxPosture) * 100f;
+                    float staggerDuration = StaticHelpers.LinearMap(overkillPercent, 0f, 100f, 0.4f, 1.8f);
                     state.GetState<StaggerState>().Set(staggerDuration);
                     state.TransitionTo<StaggerState>();
                 }
 
-                if (knockbackForce.magnitude > 0)
+                // Knockback: up only applies if this hit broke posture or the actor was already staggered.
+                if (wasAlreadyStaggered)
+                {
+                    // Hitting a staggered actor launches them up slightly → air Stagger → get up.
+                    var launchForce = Vector3.up * StaggerHitLaunchUp;
+                    if (knockbackForce.magnitude > 0f)
+                        launchForce += new Vector3(knockbackForce.x, 0f, knockbackForce.z); // keep horizontal push
+                    movement.AddForce(launchForce);
+                }
+                else if (knockbackForce.magnitude > 0f)
                 {
                     var applyForce = knockbackForce;
-                    if (!state.IsStaggered())
-                        applyForce.y = 0;
+                    if (!brokePosture)
+                        applyForce.y = 0f;
 
                     movement.AddForce(applyForce);
                 }

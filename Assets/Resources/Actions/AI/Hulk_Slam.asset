@@ -1,0 +1,90 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5a2e800b20efe647a3894bd700a7333, type: 3}
+  m_Name: Hulk_Slam
+  m_EditorClassIdentifier: 
+  guid: 7127f5687c2f4979952c5127c7db9607
+  Type: 0
+  Name: Hulk Slam
+  Rarity: 0
+  Description: Heavy telegraphed slam with a wide hitbox.
+  CooldownTimer: 6
+  TotalUses: 3
+  remainingUses: 0
+  BuildupCost: 0
+  BuildupGain: 0
+  StaminaCost: 8
+  Tags: 0a000000
+  Direction: {x: 0, y: 0, z: 0}
+  currentCooldownTimer: 0
+  StickMult: 1
+  Animation: 1
+  animationPhase:
+    animation: 1
+    windupTimeMult: 0.25
+    recoveryTimeMult: 0.25
+    hitWindows:
+    - displayName: show hitbox
+      startFrame: 0
+      endFrame: 0
+      maxHitsPerEnemy: 1
+      maxTriggersPerPlayer: 1
+      windowEffects:
+      - rid: 8100000000000000000
+    - displayName: hit
+      startFrame: 12
+      endFrame: 14
+      maxHitsPerEnemy: 1
+      maxTriggersPerPlayer: 0
+      windowEffects:
+      - rid: 8100000000000000001
+    - displayName: clear hitbox
+      startFrame: 12
+      endFrame: 14
+      maxHitsPerEnemy: 0
+      maxTriggersPerPlayer: 0
+      windowEffects:
+      - rid: 8100000000000000002
+  Range: 1.3
+  OnStartEffects: []
+  OnEndEffects: []
+  OnUpdateEffects: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 8100000000000000000
+      type: {class: ShowHitboxOnPlayer, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
+      data:
+        HitboxPoints:
+        - {x: -0.5, y: 0, z: 0.3}
+        - {x: 0.5, y: 0, z: 0.3}
+        - {x: 0.5, y: 0, z: 1.2}
+        - {x: -0.5, y: 0, z: 1.2}
+        HitboxScale: 1.5
+    - rid: 8100000000000000001
+      type: {class: DamageEffect, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
+      data:
+        UseHitbox: 1
+        DamageData:
+          Damage: 3.5
+          PostureDamage: 8
+          KnockbackForce: 0.8
+          KnockbackForceUp: 0.8
+          KnockbackType: 5
+          StrengthScaling: 0
+          AgilityScaling: 0
+          MindScaling: 0
+          BuildupGainOnHit: 5
+        OnHitEffects: []
+    - rid: 8100000000000000002
+      type: {class: ClearHitbox, ns: Assets.Scripts.Battle.Actions.Effects, asm: GoG.Runtime}
+      data: 

@@ -99,7 +99,7 @@ namespace Assets.Scripts.Utility
 
             if (!Override)
             {
-                var input = Mathf.Clamp( playerActor.target.LargestDirectionFromEnemies().magnitude, 1, 30);
+                var input = Mathf.Clamp( Mathf.Min(playerActor.target.LargestDirectionFromEnemies().magnitude, 10), 1, 30);
                 UpDistance = LinearMap(input, 1, 16, 1.7f, 5f);
                 BackDistance = LinearMap(input, 1, 30, 3.3f, 16f);
             }

@@ -11,6 +11,7 @@ namespace Assets.Scripts.Battle.Actions.Skills
     public class GenericSkill : BaseSkill
     {
         public AnimationPhase animationPhase;
+        public float Range;
         
         [SerializeReference, SubclassSelector]
         public List<IEffect> OnStartEffects = new List<IEffect>();
@@ -137,6 +138,15 @@ namespace Assets.Scripts.Battle.Actions.Skills
         public override void OnEnterRecovery(Animator animator)
         {
             animator.speed = animationPhase.recoveryTimeMult;
+        }
+
+        public override bool IsValidAndInRange(Actor.Actor caster)
+        {
+            if (IsValid(caster, out _))
+            {
+                return caster.target.DistanceToClosestEnemy < Range;
+            }
+            return false;
         }
     }
 }
